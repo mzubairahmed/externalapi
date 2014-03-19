@@ -1,0 +1,279 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.asi.service</groupId>
+  <artifactId>productService</artifactId>
+  <version>0.0.1</version>
+  <packaging>war</packaging>
+  
+    <properties>
+
+		<!-- Generic properties -->
+		<java.version>1.7</java.version> 
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		
+		<!-- Web -->
+		<jsp.version>2.2</jsp.version>
+		<jstl.version>1.2</jstl.version>
+		<servlet.version>2.5</servlet.version>
+		
+
+		<!-- Spring -->
+		<spring-framework.version>4.0.2.RELEASE</spring-framework.version>
+		<spring.security.version>3.2.2.RELEASE</spring.security.version>
+		<spring.security.oauth.version>2.0.0.M4</spring.security.oauth.version>
+
+		<!-- Hibernate / JPA -->
+		<hibernate.version>4.2.1.Final</hibernate.version>
+
+		<!-- Logging -->
+		<logback.version>1.0.13</logback.version>
+		<slf4j.version>1.7.5</slf4j.version>
+
+		<!-- Test -->
+		<junit.version>4.11</junit.version>
+        <jdk5Name>J2SE-1.7</jdk5Name>
+        <jdk.version>1.7</jdk.version>
+        <antVersion>1.7.0</antVersion>
+        <antlrVersion>3.1.1</antlrVersion>
+        <derbyVersion>10.10.1.1</derbyVersion>
+	</properties>
+	
+	<dependencies>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${spring-framework.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${spring-framework.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring-framework.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring-framework.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>${spring-framework.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>1.9.13</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>bootstrap</artifactId>
+			<version>3.0.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>rome</groupId>
+			<artifactId>rome</artifactId>
+			<version>0.5</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>2.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>2.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${spring-framework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>2.8.1</version>
+		</dependency>		
+		 <dependency>
+			<groupId>net.sourceforge.jexcelapi</groupId>
+			<artifactId>jxl</artifactId>
+			<version>2.6.12</version>
+		</dependency>
+		<dependency>
+		    <groupId>net.sf.supercsv</groupId>
+		    <artifactId>super-csv</artifactId>
+		    <version>2.1.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>net.sf.supercsv</groupId>
+		    <artifactId>super-csv-dozer</artifactId>
+		    <version>2.1.0</version>
+		</dependency>
+
+	</dependencies>	
+	
+    <scm>
+        <connection>scm:git:git@github.com:mansar/service.git</connection>
+        <developerConnection>scm:git:git@github.com:mansar/service.git</developerConnection>
+        <url>https://github.com/mansar/service</url>
+      <tag>productService-0.0.1</tag>
+  </scm>	
+	<build>
+	<pluginManagement>
+		<plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+		         <executions>
+		           <execution>
+		             <goals>
+		                <goal>compile</goal>
+		             </goals>
+		           </execution>
+		         </executions>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                    <encoding>ISO-8859-1</encoding>
+                    
+                </configuration>
+            </plugin>		
+			<plugin>
+	            <groupId>org.apache.tomcat.maven</groupId>
+	            <artifactId>tomcat7-maven-plugin</artifactId>
+	            
+	            <version>2.2</version>
+	            <configuration>
+	            	<!--<port>9090</port>  
+	            	<serverXml>D:\\WebSites\\muleservice\\Servers\\tcat-config\\server.xml</serverXml>
+	                <tomcatUsers>D:\\WebSites\\muleservice\\Servers\\tcat-config\\conf/tomcat-users.xml</tomcatUsers>
+	                
+					<tomcatLoggingFile>D:\\temp\\tomcat_server.log</tomcatLoggingFile>
+					-->
+					<addContextWarDependencies>true</addContextWarDependencies>
+	                <extraDependencies>
+	                    <dependency>
+	                        <groupId>org.slf4j</groupId>
+	                        <artifactId>slf4j-api</artifactId>
+	                        <version>1.7.2</version>
+	                    </dependency>
+	                    <dependency>
+	                        <groupId>org.slf4j</groupId>
+	                        <artifactId>jul-to-slf4j</artifactId>
+	                        <version>1.7.2</version>
+	                    </dependency>
+	                    <dependency>
+	                        <groupId>ch.qos.logback</groupId>
+	                        <artifactId>logback-classic</artifactId>
+	                        <version>1.0.7</version>
+	                    </dependency>
+	                    <dependency>
+	                        <groupId>ch.qos.logback</groupId>
+	                        <artifactId>logback-core</artifactId>
+	                        <version>1.0.7</version>
+	                    </dependency>
+	                </extraDependencies>
+	                
+	            </configuration>
+				<dependencies>
+			      <dependency>
+			        <groupId>org.apache.derby</groupId>
+			        <artifactId>derby</artifactId>
+			        <version>${derbyVersion}</version>
+			      </dependency>
+			      <dependency>
+			        <groupId>javax.mail</groupId>
+			        <artifactId>mail</artifactId>
+			        <version>1.4</version>
+			      </dependency>
+			    </dependencies>	            
+	        </plugin>
+	        <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.2</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
+        </plugins>
+        </pluginManagement>	
+	</build>
+	<repositories>
+		<repository>
+			<id>spring-release</id>
+			<name>Spring Framework Release Repository</name>
+			<url>http://maven.springframework.org/release</url>
+		</repository>
+		<repository>
+			<id>java.net</id>
+			<url>http://download.java.net/maven/2</url>
+		</repository>
+		<repository>
+			<id>apache-maven</id>
+			<url>http://repo.maven.apache.org/maven2</url>
+		</repository>
+	</repositories>
+</project>
