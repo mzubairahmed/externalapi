@@ -7,8 +7,10 @@ public class PricingItem {
 	@JsonProperty("ID")
 	private String id;
 	private String productId;
+	@JsonProperty("CriteriaSetValueId")
 	private String criteriaSetValueId;
 	private String marketSegmentCode;
+	@JsonProperty("PriceGridId")
 	private String priceGridId;
 	private String priceGridTypeCode;
 	private String isPrimary;

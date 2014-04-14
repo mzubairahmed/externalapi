@@ -25,7 +25,6 @@ public class ProductSearchService {
 	@Autowired ProductRepo repository;
 	private Logger _LOGGER = LoggerFactory.getLogger(getClass());
 	
-
 	@RequestMapping(value = "product/{companyid}/prices/{xid}",method = RequestMethod.GET, headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
 	public ResponseEntity<Product> handle(HttpEntity<byte[]> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") int xid) throws UnsupportedEncodingException {
 		//String companyID="3879";

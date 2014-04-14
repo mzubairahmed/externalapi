@@ -14,9 +14,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @XmlRootElement(name = "itemPrices")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name="ItemPrices", propOrder={"priceName","priceType","priceIncludes","priceUponRequest","productNumber","isMultiPriceGrid","priceDetails"})
+@XmlType(name="ItemPrices", propOrder={"priceName","priceType","priceIncludes","priceUponRequest","productNumber","firstPriceCriteria","secondPriceCriteria","isMultiPriceGrid","priceDetails"})
 
-@JsonPropertyOrder({"priceName","priceType","priceIncludes","priceUponRequest","productNumber","isMultiPriceGrid","priceDetails"})
+@JsonPropertyOrder({"priceName","priceType","priceIncludes","priceUponRequest","productNumber","firstPriceCriteria","secondPriceCriteria","isMultiPriceGrid","priceDetails"})
 public class ItemPriceDetail {
 	@XmlEnum(String.class)
     public static enum PRICE_Type { REGL }
@@ -30,11 +30,26 @@ public class ItemPriceDetail {
     private Boolean priceUponRequest =Boolean.FALSE;
 	@XmlElement(name="productNumber")
     private String productNumber= "";
+	@XmlElement(name="firstPriceCriteria")
+    private String firstPriceCriteria= "";
+	@XmlElement(name="secondPriceCriteria")
+    private String secondPriceCriteria= "";	
 	@XmlElement(name="isMultiPriceGrid")
     private Boolean isMultiPriceGrid= Boolean.FALSE;
 	@XmlElement(name="priceDetail")
     private List<PriceDetail> priceDetails = new ArrayList<PriceDetail>();
-    
+	public String getFirstPriceCriteria() {
+		return firstPriceCriteria;
+	}
+	public void setFirstPriceCriteria(String firstPriceCriteria) {
+		this.firstPriceCriteria = firstPriceCriteria;
+	}
+	public String getSecondPriceCriteria() {
+		return secondPriceCriteria;
+	}
+	public void setSecondPriceCriteria(String secondPriceCriteria) {
+		this.secondPriceCriteria = secondPriceCriteria;
+	}
 	/**
 	 * @return the priceType
 	 */

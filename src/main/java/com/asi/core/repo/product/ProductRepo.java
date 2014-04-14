@@ -18,6 +18,7 @@ import com.asi.service.product.vo.ItemPriceDetail;
 import com.asi.service.product.vo.ItemPriceDetail.PRICE_Type;
 import com.asi.service.product.vo.PriceDetail;
 import com.asi.service.product.vo.Product;
+import com.asi.service.product.vo.ProductConfigurationsParser;
 
 @Component
 public class ProductRepo {
@@ -52,7 +53,7 @@ public class ProductRepo {
 		for(PriceGrid prices:priceGrids)
 		{
 			if(prices.getPriceGridSubTypeCode().equalsIgnoreCase(PRICE_Type.REGL.name()))
-				pricesInfo.add(getBasePriceDetails(ItemPriceDetail.PRICE_Type.REGL,prices,false));
+				pricesInfo.add(getBasePriceDetails(productDetail,ItemPriceDetail.PRICE_Type.REGL,prices,false));
 		}
 		product.setItemPrices(pricesInfo);
 
@@ -63,8 +64,9 @@ public class ProductRepo {
 		return product;
 		
 	}
-    private ItemPriceDetail getBasePriceDetails(ItemPriceDetail.PRICE_Type priceType,PriceGrid priceGrid, boolean setCurrency) {
+    private ItemPriceDetail getBasePriceDetails(ProductDetail productDetail,ItemPriceDetail.PRICE_Type priceType,PriceGrid priceGrid, boolean setCurrency) {
     	ItemPriceDetail itemPrices = new ItemPriceDetail();
+    	ProductConfigurationsParser pcParser=new ProductConfigurationsParser();
     	itemPrices.setPriceType(priceType);
         itemPrices.setPriceName(priceGrid.getDescription());
         itemPrices.setPriceIncludes(priceGrid.getPriceIncludes());
@@ -85,9 +87,21 @@ public class ProductRepo {
             pricesList.add(priceDetail);
         }
         itemPrices.setPriceDetails(pricesList);
-        
-
-        return itemPrices;
+        String[] basePriceCriterias=pcParser.getPriceCriteria(productDetail,priceGrid.getID());
+        if(null!=basePriceCriterias && basePriceCriterias.length>0)
+        {
+        	if(basePriceCriterias.length>1)
+        	{
+        		itemPrices.setFirstPriceCriteria(basePriceCriterias[0]);
+        		itemPrices.setSecondPriceCriteria(basePriceCriterias[1]);
+        	}
+        	else
+        	{
+        		itemPrices.setFirstPriceCriteria(basePriceCriterias[0]);
+        	}
+        }
+      return itemPrices;
     }
+    
 
 }
