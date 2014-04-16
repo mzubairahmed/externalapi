@@ -15,11 +15,11 @@ public class ProductClient {
 
 
 
-	public ProductDetail doIt(String companyID,Integer productID) {
+	public ProductDetail doIt(String companyID,String productID) {
 		return searchProduct(companyID, productID);
 	 }
 	 
-	 private ProductDetail searchProduct(String companyID, Integer productID)
+	 private ProductDetail searchProduct(String companyID, String productID)
 	 {
 		 String productSearchUrl = getProductSearchUrl() + "?companyId={companyID}&externalProductId={productID}";
 		

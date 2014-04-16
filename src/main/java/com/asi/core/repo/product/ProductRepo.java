@@ -24,6 +24,7 @@ import com.asi.service.product.vo.ProductConfigurationsParser;
 public class ProductRepo {
 	private final static Logger _LOGGER = Logger
 			.getLogger(ProductRepo.class.getName());
+	
 	/**
 	 * @return the productClient
 	 */
@@ -39,8 +40,9 @@ public class ProductRepo {
 	@Autowired  @Qualifier("productServiceClient") ProductClient productClient;
 	@Autowired ProductDetail productDetail;
 	@Autowired LookupValuesClient lookupColor;
+	@Autowired ProductConfigurationsParser productConfiguration;
 	
-	public Product getProductPrices(String companyID, Integer productID)
+	public Product getProductPrices(String companyID, String productID)
 	{
 	    
 		productDetail = productClient.doIt(companyID,productID);
@@ -66,7 +68,6 @@ public class ProductRepo {
 	}
     private ItemPriceDetail getBasePriceDetails(ProductDetail productDetail,ItemPriceDetail.PRICE_Type priceType,PriceGrid priceGrid, boolean setCurrency) {
     	ItemPriceDetail itemPrices = new ItemPriceDetail();
-    	ProductConfigurationsParser pcParser=new ProductConfigurationsParser();
     	itemPrices.setPriceType(priceType);
         itemPrices.setPriceName(priceGrid.getDescription());
         itemPrices.setPriceIncludes(priceGrid.getPriceIncludes());
@@ -87,7 +88,7 @@ public class ProductRepo {
             pricesList.add(priceDetail);
         }
         itemPrices.setPriceDetails(pricesList);
-        String[] basePriceCriterias=pcParser.getPriceCriteria(productDetail,priceGrid.getID());
+        String[] basePriceCriterias=productConfiguration.getPriceCriteria(productDetail,priceGrid.getID());
         if(null!=basePriceCriterias && basePriceCriterias.length>0)
         {
         	if(basePriceCriterias.length>1)
@@ -102,6 +103,12 @@ public class ProductRepo {
         }
       return itemPrices;
     }
-    
+    public ProductConfigurationsParser getProductConfiguration() {
+		return productConfiguration;
+	}
+	public void setProductConfiguration(
+			ProductConfigurationsParser productConfiguration) {
+		this.productConfiguration = productConfiguration;
+	}
 
 }
