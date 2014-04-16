@@ -19,7 +19,7 @@
 		
 
 		<!-- Spring -->
-		<spring-framework.version>4.0.2.RELEASE</spring-framework.version>
+		<spring-framework.version>4.0.3.RELEASE</spring-framework.version>
 		<spring.security.version>3.2.2.RELEASE</spring.security.version>
 		<spring.security.oauth.version>2.0.0.M4</spring.security.oauth.version>
 
@@ -40,13 +40,29 @@
 	</properties>
 	
 	<dependencies>
+<dependency>
+	<groupId>log4j</groupId>
+	<artifactId>log4j</artifactId>
+	<version>1.2.17</version>
+</dependency>
+				    <dependency>
+				        <groupId>org.slf4j</groupId>
+				        <artifactId>slf4j-simple</artifactId>
+				        <version>1.6.4</version>
+				    </dependency>            
 
+
+	    <dependency>
+	        <groupId>org.springframework</groupId>
+	        <artifactId>spring-context</artifactId>
+	        <version>${spring-framework.version}</version>
+	    </dependency>
+            	    
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
 			<version>${spring-framework.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
@@ -58,7 +74,11 @@
 			<artifactId>spring-webmvc</artifactId>
 			<version>${spring-framework.version}</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring-framework.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
@@ -140,11 +160,16 @@
 			<artifactId>spring-context-support</artifactId>
 			<version>${spring-framework.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>net.sf.ehcache</groupId>
-			<artifactId>ehcache</artifactId>
-			<version>2.8.1</version>
-		</dependency>		
+	    <dependency>
+	        <groupId>org.springframework.security</groupId>
+	        <artifactId>spring-security-web</artifactId>
+	        <version>${spring.security.version}</version>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.springframework.security</groupId>
+	        <artifactId>spring-security-config</artifactId>
+	        <version>${spring.security.version}</version>
+	    </dependency>		
 		 <dependency>
 			<groupId>net.sourceforge.jexcelapi</groupId>
 			<artifactId>jxl</artifactId>
@@ -159,8 +184,14 @@
 		    <groupId>net.sf.supercsv</groupId>
 		    <artifactId>super-csv-dozer</artifactId>
 		    <version>2.1.0</version>
+ 		    
 		</dependency>
-
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>2.8.1</version>
+		</dependency>
+		
 	</dependencies>	
 	
     <scm>
@@ -190,56 +221,6 @@
                     
                 </configuration>
             </plugin>		
-			<plugin>
-	            <groupId>org.apache.tomcat.maven</groupId>
-	            <artifactId>tomcat7-maven-plugin</artifactId>
-	            
-	            <version>2.2</version>
-	            <configuration>
-	            	<!--<port>9090</port>  
-	            	<serverXml>D:\\WebSites\\muleservice\\Servers\\tcat-config\\server.xml</serverXml>
-	                <tomcatUsers>D:\\WebSites\\muleservice\\Servers\\tcat-config\\conf/tomcat-users.xml</tomcatUsers>
-	                
-					<tomcatLoggingFile>D:\\temp\\tomcat_server.log</tomcatLoggingFile>
-					-->
-					<addContextWarDependencies>true</addContextWarDependencies>
-	                <extraDependencies>
-	                    <dependency>
-	                        <groupId>org.slf4j</groupId>
-	                        <artifactId>slf4j-api</artifactId>
-	                        <version>1.7.2</version>
-	                    </dependency>
-	                    <dependency>
-	                        <groupId>org.slf4j</groupId>
-	                        <artifactId>jul-to-slf4j</artifactId>
-	                        <version>1.7.2</version>
-	                    </dependency>
-	                    <dependency>
-	                        <groupId>ch.qos.logback</groupId>
-	                        <artifactId>logback-classic</artifactId>
-	                        <version>1.0.7</version>
-	                    </dependency>
-	                    <dependency>
-	                        <groupId>ch.qos.logback</groupId>
-	                        <artifactId>logback-core</artifactId>
-	                        <version>1.0.7</version>
-	                    </dependency>
-	                </extraDependencies>
-	                
-	            </configuration>
-				<dependencies>
-			      <dependency>
-			        <groupId>org.apache.derby</groupId>
-			        <artifactId>derby</artifactId>
-			        <version>${derbyVersion}</version>
-			      </dependency>
-			      <dependency>
-			        <groupId>javax.mail</groupId>
-			        <artifactId>mail</artifactId>
-			        <version>1.4</version>
-			      </dependency>
-			    </dependencies>	            
-	        </plugin>
 	        <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
@@ -257,7 +238,49 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+<plugin>
+            <groupId>org.apache.tomcat.maven</groupId>
+            <artifactId>tomcat7-maven-plugin</artifactId>
+            <version>2.1</version>
+            <configuration>
+                <path>/productService</path>
+                <extraDependencies>
+				   <dependency>
+				        <groupId>org.slf4j</groupId>
+				        <artifactId>slf4j-api</artifactId>
+				        <version>1.7.1</version>
+				    </dependency>
+				
+				    <dependency>
+				        <groupId>org.slf4j</groupId>
+				        <artifactId>slf4j-simple</artifactId>
+				        <version>1.6.4</version>
+				    </dependency>
+				
+				    <dependency>
+				        <groupId>org.slf4j</groupId>
+				        <artifactId>slf4j-log4j12</artifactId>
+				        <version>1.7.1</version>
+				    </dependency>
+                    <dependency>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>jul-to-slf4j</artifactId>
+                        <version>1.7.5</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-classic</artifactId>
+                        <version>1.0.7</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-core</artifactId>
+                        <version>1.0.7</version>
+                    </dependency>
+                </extraDependencies>
+            </configuration>
+            
+        </plugin>			
         </plugins>
         </pluginManagement>	
 	</build>

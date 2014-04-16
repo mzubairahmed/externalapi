@@ -1,13 +1,18 @@
 package com.asi.core.product.config;
 
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
-//@Configuration
-//@EnableWebSecurity
-public class SecurityConfiguration {
-//extends WebSecurityConfigurerAdapter {
 
- /*   @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+@Configuration
+@EnableWebSecurity
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+ protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication().withUser("customer1").password("customer1").roles("USER").and().withUser("asi")
                 .password("asi").roles("USER");
     }
@@ -17,20 +22,21 @@ public class SecurityConfiguration {
         web.ignoring().antMatchers("/webjars/**", "/images/**", "/oauth/uncache_approvals", "/oauth/cache_approvals");
     }
 
-    @Override
-    @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
+//    @Override
+//    @Bean
+//    public AuthenticationManager authenticationManagerBean() throws Exception {
+//        return super.authenticationManagerBean();
+//    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // @formatter:off
                  http
-            .authorizeRequests().antMatchers("/login.jsp").permitAll().and()
+            .authorizeRequests().antMatchers("/api/product/**").permitAll().and()
             .authorizeRequests()
-                .anyRequest().hasRole("USER")
-                .and()
+                .anyRequest().hasRole("USER");
+                 
+/*                .and()
             .exceptionHandling()
                 .accessDeniedPage("/login.jsp?authorization_error=true")
                 .and()
@@ -46,7 +52,7 @@ public class SecurityConfiguration {
                     .passwordParameter("j_password")
                     .failureUrl("/login.jsp?authentication_error=true")
                     .loginPage("/login.jsp")
-                    .loginProcessingUrl("/login.do");
+                    .loginProcessingUrl("/login.do");*/
         // @formatter:on
-    }*/
+    }
 }

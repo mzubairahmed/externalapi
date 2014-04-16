@@ -19,7 +19,7 @@ import com.asi.service.product.vo.ItemPriceDetail.PRICE_Type;
 import com.asi.service.product.vo.PriceDetail;
 import com.asi.service.product.vo.Product;
 
-@Component
+
 public class ProductRepo {
 	private final static Logger _LOGGER = Logger
 			.getLogger(ProductRepo.class.getName());

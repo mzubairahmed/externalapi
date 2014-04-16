@@ -11,7 +11,7 @@ import com.asi.service.product.client.vo.colors.Color;
 import com.asi.service.product.client.vo.criteria.Criterium;
 import com.asi.service.product.client.vo.material.Material;
 
-@Component
+
 public class LookupValuesClient {
 	@Autowired RestOperations lookupRestTemplate;
 	
