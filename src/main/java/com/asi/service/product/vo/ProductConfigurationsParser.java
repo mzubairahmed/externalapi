@@ -21,12 +21,15 @@ public class ProductConfigurationsParser {
 	
 	private HashMap<String,HashMap<String, String>> criteriaSet=new HashMap<>();
 	public String[] getPriceCriteria(ProductDetail productDetail,Integer priceGridId) {
-		String[] priceCrterias=new String[2];
+		String[] priceCrterias=null;
 		String criteriaOne="",criteria1Value="";
 		String criteriaTwo="",criteria2Value="";
 		String currentCriteria="";
+		if(null!=productDetail && null!=priceGridId)
+		{
+		priceCrterias=new String[2];
 		String externalId=productDetail.getExternalProductId();
-		if(criteriaSet.isEmpty())
+		if(criteriaSet.isEmpty() && null!=externalId)
 		{
 			criteriaSet=setCriteriaSet(productDetail,externalId);
 		}
@@ -51,7 +54,7 @@ public class ProductConfigurationsParser {
 						{
 							criteria1Value+=","+currentCriteria.substring(currentCriteria.indexOf(":")+1);
 						}
-						else if(criteriaTwo.equalsIgnoreCase(currentCriteria.substring(currentCriteria.indexOf(":"))))
+						else if(criteriaTwo.equalsIgnoreCase(currentCriteria.substring(0,currentCriteria.indexOf(":"))))
 								{
 							criteria2Value+=","+currentCriteria.substring(currentCriteria.indexOf(":")+1);
 								}
@@ -66,6 +69,7 @@ public class ProductConfigurationsParser {
 		criteriaSet=new HashMap<>();
 		priceCrterias[0]=(!criteriaOne.isEmpty())?criteriaOne+":"+criteria1Value:"";
 		priceCrterias[1]=(!criteriaTwo.isEmpty())?criteriaTwo+":"+criteria2Value:"";
+		}
 		return priceCrterias;
 	}
 	private HashMap<String,HashMap<String, String>> setCriteriaSet(ProductDetail productDetails,String externalId)
