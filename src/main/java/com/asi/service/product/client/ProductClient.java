@@ -1,12 +1,8 @@
 package com.asi.service.product.client;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.asi.service.product.client.vo.ProductDetail;
@@ -19,11 +15,11 @@ public class ProductClient {
 
 
 
-	public ProductDetail doIt(String companyID,Integer productID) {
+	public ProductDetail doIt(String companyID,String productID) {
 		return searchProduct(companyID, productID);
 	 }
 	 
-	 private ProductDetail searchProduct(String companyID, Integer productID)
+	 private ProductDetail searchProduct(String companyID, String productID)
 	 {
 		 String productSearchUrl = getProductSearchUrl() + "?companyId={companyID}&externalProductId={productID}";
 		

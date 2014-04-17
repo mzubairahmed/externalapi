@@ -18,11 +18,13 @@ import com.asi.service.product.vo.ItemPriceDetail;
 import com.asi.service.product.vo.ItemPriceDetail.PRICE_Type;
 import com.asi.service.product.vo.PriceDetail;
 import com.asi.service.product.vo.Product;
+import com.asi.service.product.vo.ProductConfigurationsParser;
 
 
 public class ProductRepo {
 	private final static Logger _LOGGER = Logger
 			.getLogger(ProductRepo.class.getName());
+	
 	/**
 	 * @return the productClient
 	 */
@@ -38,8 +40,9 @@ public class ProductRepo {
 	@Autowired  @Qualifier("productServiceClient") ProductClient productClient;
 	@Autowired ProductDetail productDetail;
 	@Autowired LookupValuesClient lookupColor;
+	@Autowired ProductConfigurationsParser productConfiguration;
 	
-	public Product getProductPrices(String companyID, Integer productID)
+	public Product getProductPrices(String companyID, String productID)
 	{
 	    
 		productDetail = productClient.doIt(companyID,productID);
@@ -52,7 +55,7 @@ public class ProductRepo {
 		for(PriceGrid prices:priceGrids)
 		{
 			if(prices.getPriceGridSubTypeCode().equalsIgnoreCase(PRICE_Type.REGL.name()))
-				pricesInfo.add(getBasePriceDetails(ItemPriceDetail.PRICE_Type.REGL,prices,false));
+				pricesInfo.add(getBasePriceDetails(productDetail,ItemPriceDetail.PRICE_Type.REGL,prices,false));
 		}
 		product.setItemPrices(pricesInfo);
 
@@ -63,7 +66,7 @@ public class ProductRepo {
 		return product;
 		
 	}
-    private ItemPriceDetail getBasePriceDetails(ItemPriceDetail.PRICE_Type priceType,PriceGrid priceGrid, boolean setCurrency) {
+    private ItemPriceDetail getBasePriceDetails(ProductDetail productDetail,ItemPriceDetail.PRICE_Type priceType,PriceGrid priceGrid, boolean setCurrency) {
     	ItemPriceDetail itemPrices = new ItemPriceDetail();
     	itemPrices.setPriceType(priceType);
         itemPrices.setPriceName(priceGrid.getDescription());
@@ -85,9 +88,27 @@ public class ProductRepo {
             pricesList.add(priceDetail);
         }
         itemPrices.setPriceDetails(pricesList);
-        
-
-        return itemPrices;
+        String[] basePriceCriterias=productConfiguration.getPriceCriteria(productDetail,priceGrid.getID());
+        if(null!=basePriceCriterias && basePriceCriterias.length>0)
+        {
+        	if(basePriceCriterias.length>1)
+        	{
+        		itemPrices.setFirstPriceCriteria(basePriceCriterias[0]);
+        		itemPrices.setSecondPriceCriteria(basePriceCriterias[1]);
+        	}
+        	else
+        	{
+        		itemPrices.setFirstPriceCriteria(basePriceCriterias[0]);
+        	}
+        }
+      return itemPrices;
     }
+    public ProductConfigurationsParser getProductConfiguration() {
+		return productConfiguration;
+	}
+	public void setProductConfiguration(
+			ProductConfigurationsParser productConfiguration) {
+		this.productConfiguration = productConfiguration;
+	}
 
 }

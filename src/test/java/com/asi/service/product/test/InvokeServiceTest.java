@@ -32,7 +32,7 @@ public class InvokeServiceTest {
 		requestHeaders.setAccept(Arrays.asList(new MediaType[] {MediaType.APPLICATION_JSON}));
 		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
 		ResponseEntity<Product> result = template.exchange(url,HttpMethod.GET, new HttpEntity<String>(requestHeaders), Product.class);
-		
+	
 		//assertEquals(result.getStatusCode(),HttpStatus.ACCEPTED);
 		
 	}

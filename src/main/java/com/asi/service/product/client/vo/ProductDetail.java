@@ -77,7 +77,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ProductDetail {
 
     @JsonProperty("ID")
-    private Integer iD;
+    private Integer ID;
     @JsonProperty("ProductTypeCode")
     private String productTypeCode;
     @JsonProperty("OriginalProductId")
@@ -204,12 +204,12 @@ public class ProductDetail {
     private String processedURL = "";
     @JsonProperty("ID")
     public Integer getID() {
-        return iD;
+        return ID;
     }
 
     @JsonProperty("ID")
-    public void setID(Integer iD) {
-        this.iD = iD;
+    public void setID(Integer ID) {
+        this.ID = ID;
     }
 
     @JsonProperty("ProductTypeCode")

@@ -51,10 +51,17 @@
 	         <property name="lookupColorURL" value="${lookup.color.url}"></property> 
 	         <property name="lookupSizeURL" value="${lookup.sizes.url}"></property> 
 	         <property name="lookupMaterialURL" value="${lookup.material.url}"></property> 
+	         <property name="lookupcriteriaAttributeURL" value="${lookup.sizes.criteria.url}"></property> 
 	    </bean>
-	   
+	     <bean id="lookupParser" class="com.asi.service.product.client.vo.parser.LookupParser">
+	       <property name="lookupClient" ref="lookupValuesClient"/>        
+	    </bean> 
+	    <bean id="productConfigurationParser" class="com.asi.service.product.vo.ProductConfigurationsParser">
+	     	 <property name="productLookupParser" ref="lookupParser"/>   
+	    </bean>
 	    <bean id="productRepo" class="com.asi.core.repo.product.ProductRepo">
 	    	<property name="productClient" ref="productServiceClient"/>
+	    	<property name="productConfiguration" ref="productConfigurationParser"/>
 	    </bean>
 	   	<!-- To enable @RequestMapping process on type level and method level -->
    		<bean id="productDetail" class="com.asi.service.product.client.vo.ProductDetail"/>

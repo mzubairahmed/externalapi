@@ -1,6 +1,7 @@
 package com.asi.service.product.client;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -18,13 +19,24 @@ public class LookupValuesClient {
 	private String lookupColorURL;
 	private String lookupSizeURL;
 	private String lookupMaterialURL;
+	private String lookupcriteriaAttributeURL;
 	@Cacheable("lookupCache")
 	public ArrayList<Color> getColor()
 	 {
 		return getColorFromLookup(lookupColorURL);
 		
 	 }
+	
+	
 
+	@SuppressWarnings("rawtypes")
+	@Cacheable(value="lookupCache",key="#lookupcriteriaAttributeURL")
+	public ArrayList<LinkedHashMap> getCriteriaAttributesFromLookup(String lookupcriteriaAttributeURL)
+	{
+		@SuppressWarnings("unchecked")
+		ArrayList<LinkedHashMap> criteriaAttribute = lookupRestTemplate.getForObject(lookupcriteriaAttributeURL,ArrayList.class);
+		return criteriaAttribute;
+	}
 	@Cacheable(value="lookupCache",key="#colorLookupURL")
 	public ArrayList<Color> getColorFromLookup(String colorLookupURL)
 	{
@@ -99,5 +111,11 @@ public class LookupValuesClient {
 		this.lookupMaterialURL = lookupMaterialURL;
 	}
 	
+	public String getLookupcriteriaAttributeURL() {
+		return lookupcriteriaAttributeURL;
+	}
 
+	public void setLookupcriteriaAttributeURL(String lookupcriteriaAttributeURL) {
+		this.lookupcriteriaAttributeURL = lookupcriteriaAttributeURL;
+	}
 }

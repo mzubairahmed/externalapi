@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name="productDetail")
 @XmlType(propOrder={    
-		   "iD",
+		   "ID",
 		   "asiProdNo",
 		   "companyId",
 		   "originalProductId",
@@ -52,7 +52,7 @@ import javax.xml.bind.annotation.XmlType;
 public class Product {
     
     
-    private Integer iD;
+    private Integer ID;
     
     private String productTypeCode;
     
@@ -151,15 +151,15 @@ public class Product {
 	/**
 	 * @return the iD
 	 */
-	public Integer getiD() {
-		return iD;
+	public Integer getID() {
+		return ID;
 	}
 
 	/**
 	 * @param iD the iD to set
 	 */
-	public void setiD(Integer iD) {
-		this.iD = iD;
+	public void setID(Integer ID) {
+		this.ID = ID;
 	}
 
 	/**
