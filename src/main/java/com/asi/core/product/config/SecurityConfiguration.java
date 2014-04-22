@@ -34,7 +34,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                  http
             .authorizeRequests().antMatchers("/api/product/**").permitAll().and()
             .authorizeRequests()
-                .anyRequest().hasRole("USER");
+                .anyRequest().hasRole("USER").and().csrf().disable();
                  
 /*                .and()
             .exceptionHandling()
