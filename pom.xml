@@ -248,7 +248,7 @@
 	            <version>2.1</version>
 	            <configuration>
 	                <path>/productService</path>
-					<url>http://127.0.0.1:8085/manager</url>
+					<url>http://asi-tfsbld-03.asinetwork.local:8085/manager</url>
 					<server>TomcatServer</server>                
 	                <extraDependencies>
 					   <dependency>
