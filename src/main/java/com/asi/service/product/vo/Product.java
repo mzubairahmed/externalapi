@@ -2,10 +2,12 @@ package com.asi.service.product.vo;
 
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlRootElement(name="productDetail")
+@XmlRootElement(namespace = "http://www.asicentral.com/schema/product" , name="productDetail")
 @XmlType(propOrder={    
 		   "ID",
 		   "asiProdNo",
@@ -15,7 +17,6 @@ import javax.xml.bind.annotation.XmlType;
 		   "name",
 		   "description",
 		   "summary",
-		   "itemPrice",
 		   "workflowStatusCode",
 		   "changeProductReasonCode",
 		   "workflowStatusStateCode",
@@ -47,8 +48,10 @@ import javax.xml.bind.annotation.XmlType;
 		   "isProductNumberBreakout",
 		   "isPriceBreakoutFlag",
 		   "distributorComments",
-		   "additionalInfo"
+		   "additionalInfo",
+		   "itemPrice"
 })
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Product {
     
     

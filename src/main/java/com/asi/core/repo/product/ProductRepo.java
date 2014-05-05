@@ -101,7 +101,7 @@ public class ProductRepo {
         
         for (Price p : priceGrid.getPrices()) {
         	PriceDetail priceDetail = new PriceDetail();
-        	
+        	priceDetail.setSequenceNumber(p.getSequenceNumber());
         	priceDetail.setPrice(p.getListPrice());
             priceDetail.setQuanty(p.getQuantity());
             priceDetail.setDiscount(p.getDiscountRate().getIndustryDiscountCode());
