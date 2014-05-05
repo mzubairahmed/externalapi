@@ -1,0 +1,16 @@
+	<!-- Entry point for REST service. -->
+	<bean id="restServicesEntryPoint" class="com.asi.core.security.RestAuthenticationEntryPoint" />
+	<!-- Filter for REST services. -->
+	<bean id="restServicesFilter" class="com.asi.core.security.RestUsernamePasswordAuthenticationFilter">
+		<property name="postOnly" value="false" />
+		<property name="authenticationManager" ref="authenticationManager" />
+		<property name="authenticationSuccessHandler" ref="restServicesSuccessHandler" />
+	</bean>
+	<!-- A handler for successful REST service authentication. -->
+	<bean id="restServicesSuccessHandler" class="com.asi.core.security.RestAuthenticationSuccessHandler" />
+	<!-- Security configuration for other resources. Use login form. -->
+	<security:http use-expressions="true" create-session="always">
+		<security:intercept-url pattern="/api/**" access="isAuthenticated()" />
+		<security:form-login login-page="/security/login.html?project=sample-project" authentication-failure-url="/security/login.html?project=sample-project&amp;error=true" />
+		<security:logout logout-success-url="/security/login.html?project=sample-project" />
+	</security:http>
