@@ -58,7 +58,7 @@ public class ProductRepo {
 		if(pricesInfo.isEmpty())
 			_LOGGER.error("Invalid price grid id or price grid not found for company %1 product %2",companyID,productID);
 		
-		product.setItemPrices(pricesInfo);
+		product.setItemPrice(pricesInfo);
 
 		return product;
 		
@@ -70,6 +70,7 @@ public class ProductRepo {
 		
 		List<PriceGrid> priceGrids = productDetail.getPriceGrids();
 		List<ItemPriceDetail> pricesInfo = new ArrayList<ItemPriceDetail>();
+		ItemPriceDetail itemPrice;
 
 		Product product = new Product();
 		BeanUtils.copyProperties(productDetail, product);
@@ -77,22 +78,25 @@ public class ProductRepo {
 		for(PriceGrid prices:priceGrids)
 		{
 			if(prices.getPriceGridSubTypeCode().equalsIgnoreCase(PRICE_Type.REGL.name()) && prices.getID().equals(priceGridID))
-				pricesInfo.add(getBasePriceDetails(productDetail,ItemPriceDetail.PRICE_Type.REGL,prices,false));
+			{
+				itemPrice = getBasePriceDetails(productDetail,ItemPriceDetail.PRICE_Type.REGL,prices,false);
+				pricesInfo.add(itemPrice);
+			}
 		}
 		if(pricesInfo.isEmpty())
 			_LOGGER.error("Invalid price grid id or price grid not found for company %1 product %2 with priceGridId %3",companyID,productID,priceGridID);
 
-		product.setItemPrices(pricesInfo);
+		product.setItemPrice(pricesInfo);
 		
 		return product;
 		
 	}	
     private ItemPriceDetail getBasePriceDetails(ProductDetail productDetail,ItemPriceDetail.PRICE_Type priceType,PriceGrid priceGrid, boolean setCurrency) {
-    	ItemPriceDetail itemPrices = new ItemPriceDetail();
-    	itemPrices.setPriceType(priceType);
-        itemPrices.setPriceName(priceGrid.getDescription());
-        itemPrices.setPriceIncludes(priceGrid.getPriceIncludes());
-        itemPrices.setPriceUponRequest(priceGrid.getIsQUR());
+    	ItemPriceDetail itemPrice = new ItemPriceDetail();
+    	itemPrice.setPriceType(priceType);
+        itemPrice.setPriceName(priceGrid.getDescription());
+        itemPrice.setPriceIncludes(priceGrid.getPriceIncludes());
+        itemPrice.setPriceUponRequest(priceGrid.getIsQUR());
         List<PriceDetail> pricesList = new ArrayList<PriceDetail>();
         
         for (Price p : priceGrid.getPrices()) {
@@ -108,18 +112,19 @@ public class ProductRepo {
             priceDetail.setItemsPerUnitBy(p.getPriceUnit().getDisplayName());
             pricesList.add(priceDetail);
         }
-        itemPrices.setPriceDetails(pricesList);
+        itemPrice.setProductID(productDetail.getName());
+        itemPrice.setPriceDetails(pricesList);
         String[] basePriceCriterias=productConfiguration.getPriceCriteria(productDetail,priceGrid.getID());
         if(null!=basePriceCriterias && basePriceCriterias.length>0)
         {
-        	itemPrices.setFirstPriceCriteria(basePriceCriterias[0]);
+        	itemPrice.setFirstPriceCriteria(basePriceCriterias[0]);
         	if(basePriceCriterias.length>1)
         	{
-        		itemPrices.setSecondPriceCriteria(basePriceCriterias[1]);
+        		itemPrice.setSecondPriceCriteria(basePriceCriterias[1]);
         	}
-        	itemPrices.setPriceID(priceGrid.getID().toString());
+        	itemPrice.setPriceID(priceGrid.getID().toString());
         }
-      return itemPrices;
+      return itemPrice;
     }
     public ProductConfigurationsParser getProductConfiguration() {
 		return productConfiguration;

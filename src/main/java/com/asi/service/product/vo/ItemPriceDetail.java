@@ -12,14 +12,16 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@XmlRootElement(name = "itemPrices")
+@XmlRootElement(name = "itemPrice")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name="ItemPrices", propOrder={"priceID","priceName","priceType","priceIncludes","priceUponRequest","productNumber","firstPriceCriteria","secondPriceCriteria","isMultiPriceGrid","priceDetails"})
+@XmlType(name="ItemPrice", propOrder={"productID","priceID","priceName","priceType","priceIncludes","priceUponRequest","productNumber","firstPriceCriteria","secondPriceCriteria","isMultiPriceGrid","priceDetails"})
 
-@JsonPropertyOrder({"priceID","priceName","priceType","priceIncludes","priceUponRequest","productNumber","firstPriceCriteria","secondPriceCriteria","isMultiPriceGrid","priceDetails"})
+@JsonPropertyOrder({"productID","priceID","priceName","priceType","priceIncludes","priceUponRequest","productNumber","firstPriceCriteria","secondPriceCriteria","isMultiPriceGrid","priceDetails"})
 public class ItemPriceDetail {
 	@XmlEnum(String.class)
     public static enum PRICE_Type { REGL }
+	@XmlElement(name="productID",required=true)
+    private String productID= "";
 	@XmlElement(name="priceID")
     private String priceID= "";
 	@XmlElement(name="priceName")
@@ -41,6 +43,12 @@ public class ItemPriceDetail {
 	@XmlElement(name="priceDetail")
     private List<PriceDetail> priceDetails = new ArrayList<PriceDetail>();
 	
+	public String getProductID() {
+		return productID;
+	}
+	public void setProductID(String productID) {
+		this.productID = productID;
+	}
 	public String getPriceID() {
 		return priceID;
 	}

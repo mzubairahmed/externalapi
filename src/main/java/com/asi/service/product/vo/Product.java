@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlType;
 		   "name",
 		   "description",
 		   "summary",
-		   "itemPrices",
+		   "itemPrice",
 		   "workflowStatusCode",
 		   "changeProductReasonCode",
 		   "workflowStatusStateCode",
@@ -132,20 +132,20 @@ public class Product {
    
     private String additionalInfo;
     
-    private List<ItemPriceDetail> itemPrices;
+    private List<ItemPriceDetail> itemPrice;
 
 	/**
 	 * @return the itemPrices
 	 */
-	public List<ItemPriceDetail> getItemPrices() {
-		return itemPrices;
+	public List<ItemPriceDetail> getItemPrice() {
+		return itemPrice;
 	}
 
 	/**
 	 * @param itemPrices the itemPrices to set
 	 */
-	public void setItemPrices(List<ItemPriceDetail> itemPrices) {
-		this.itemPrices = itemPrices;
+	public void setItemPrice(List<ItemPriceDetail> itemPrice) {
+		this.itemPrice = itemPrice;
 	}
 
 	/**
