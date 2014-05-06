@@ -29,9 +29,20 @@ public class ProductSearchService {
 	public ResponseEntity<Product> handle(HttpEntity<byte[]> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws UnsupportedEncodingException {
 		//String companyID="3879";
 		//int xid=1472;
-		if(_LOGGER.isTraceEnabled()) _LOGGER.trace("calling service");
+		if(_LOGGER.isTraceEnabled()) _LOGGER.trace("calling Prices Service");
 		
 		Product productResponse = repository.getProductPrices(companyId, xid);
+		HttpHeaders responseHeaders = new HttpHeaders();
+	    responseHeaders.set("MyResponseHeader", "MyValue");
+	    return new ResponseEntity<Product>(productResponse, responseHeaders, HttpStatus.OK);
+	}
+	@RequestMapping(value = "product/{companyid}/imprintMethods/{xid}",method = RequestMethod.GET, headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<Product> handleImprintMethods(HttpEntity<byte[]> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws UnsupportedEncodingException {
+		//String companyID="3879";
+		//int xid=1472;
+		if(_LOGGER.isTraceEnabled()) _LOGGER.trace("calling Imprint Method Service");
+		
+		Product productResponse = repository.getProductImprintMethodDetails(companyId, xid);
 		HttpHeaders responseHeaders = new HttpHeaders();
 	    responseHeaders.set("MyResponseHeader", "MyValue");
 	    return new ResponseEntity<Product>(productResponse, responseHeaders, HttpStatus.OK);

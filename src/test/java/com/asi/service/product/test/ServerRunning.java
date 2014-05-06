@@ -38,8 +38,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 import org.springframework.web.util.UriUtils;
 
-import com.asi.service.product.vo.Product;
-
 /**
  * <p>
  * A rule that prevents integration tests from failing if the server application is not running or not accessible. If

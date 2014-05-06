@@ -1,0 +1,2182 @@
+{
+    "ID": 550042671,
+    "ProductTypeCode": "",
+    "OriginalProductId": 550042671,
+    "ExternalProductId": "00-1069",
+    "CompanyId": 491276,
+    "StatusCode": "INCT",
+    "Name": "00-BSK TestProduct",
+    "Description": "Description of the product",
+    "Summary": "Test Summary ",
+    "RushServiceFlag": "Y",
+    "SameDayRushFlag": "U",
+    "AsiProdNo": "IMP-02406-1069",
+    "NewProductFlag": "Y",
+    "NewProductExpirationDate": "2014-10-09T08:36:45.043",
+    "FullColorProcessFlag": "N",
+    "VisibleForAllUsersFlag": "Y",
+    "VirtualProductFlag": "N",
+    "NLevelConnectFlag": "N",
+    "ProductLockedFlag": "N",
+    "WorkflowStatusCode": "INPR",
+    "ChangeProductReasonCode": "NONE",
+    "WorkflowStatusStateCode": "INCP",
+    "Show1MediaIdIm": 0,
+    "Show1MediaIdVd": 0,
+    "IsCustomProduct": false,
+    "ShipperBillsByCode": "WEIG",
+    "IsShippableInPlainBox": true,
+    "IsAvailableUnimprinted": true,
+    "IsPersonalizationAvailable": true,
+    "IsOrderLessThanMinimumAllowed": true,
+    "Disclaimer": "",
+    "PriceConfirmationDate": "2015-04-09T00:00:00",
+    "LocationCode": "WIPD",
+    "IsWIP": true,
+    "IsProductNumberBreakout": false,
+    "IsPriceBreakoutFlag": true,
+    "DistributorComments": "",
+    "AdditionalInfo": "",
+    "IncludeAppOfferList": "ESPW",
+    "ProductConfigurations": [
+        {
+            "ID": 1173436,
+            "ProductId": 550042671,
+            "IsDefault": true,
+            "ProductCriteriaSets": [
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710800,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "MINO",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751187988,
+                            "CriteriaCode": "MINO",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": [
+                                {
+                                    "CriteriaAttributeId": 9,
+                                    "UnitValue": "8",
+                                    "UnitOfMeasureCode": "CASE"
+                                }
+                            ],
+                            "FormatValue": "8 cases",
+                            "CriteriaSetId": 766710800,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085953,
+                                    "CriteriaSetValueId": 751187988,
+                                    "SetCodeValueId": 750000013,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751187989,
+                            "CriteriaCode": "MINO",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": [
+                                {
+                                    "CriteriaAttributeId": 9,
+                                    "UnitValue": "7",
+                                    "UnitOfMeasureCode": "BOXE"
+                                }
+                            ],
+                            "FormatValue": "7 boxes",
+                            "CriteriaSetId": 766710800,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085952,
+                                    "CriteriaSetValueId": 751187989,
+                                    "SetCodeValueId": 750000013,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710801,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "ARTW",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751187990,
+                            "CriteriaCode": "ARTW",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "cgg",
+                            "FormatValue": "cgg",
+                            "CriteriaSetId": 766710801,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085951,
+                                    "CriteriaSetValueId": 751187990,
+                                    "SetCodeValueId": 200137849,
+                                    "CodeValue": "cgg",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751187991,
+                            "CriteriaCode": "ARTW",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "add2",
+                            "FormatValue": "add2",
+                            "CriteriaSetId": 766710801,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085950,
+                                    "CriteriaSetValueId": 751187991,
+                                    "SetCodeValueId": 200137849,
+                                    "CodeValue": "add2",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751187992,
+                            "CriteriaCode": "ARTW",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "add1",
+                            "FormatValue": "add1",
+                            "CriteriaSetId": 766710801,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085949,
+                                    "CriteriaSetValueId": 751187992,
+                                    "SetCodeValueId": 200137849,
+                                    "CodeValue": "add1",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751187993,
+                            "CriteriaCode": "ARTW",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "Paper Proof",
+                            "FormatValue": "Paper Proof",
+                            "CriteriaSetId": 766710801,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085948,
+                                    "CriteriaSetValueId": 751187993,
+                                    "SetCodeValueId": 200137847,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751187994,
+                            "CriteriaCode": "ARTW",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "Virtual Proof",
+                            "FormatValue": "Virtual Proof",
+                            "CriteriaSetId": 766710801,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085947,
+                                    "CriteriaSetValueId": 751187994,
+                                    "SetCodeValueId": 200137846,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751187995,
+                            "CriteriaCode": "ARTW",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "Pre-production Proof",
+                            "FormatValue": "Pre-production Proof",
+                            "CriteriaSetId": 766710801,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085946,
+                                    "CriteriaSetValueId": 751187995,
+                                    "SetCodeValueId": 750127232,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751187996,
+                            "CriteriaCode": "ARTW",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "Art Services",
+                            "FormatValue": "Art Services",
+                            "CriteriaSetId": 766710801,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085945,
+                                    "CriteriaSetValueId": 751187996,
+                                    "SetCodeValueId": 200137848,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710802,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "IMMD",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751187997,
+                            "CriteriaCode": "IMMD",
+                            "ValueTypeCode": "LOOK",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "BaseLookupValue": "Unimprinted",
+                            "Value": "Unimprinted",
+                            "FormatValue": "Unimprinted",
+                            "CriteriaSetId": 766710802,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085944,
+                                    "CriteriaSetValueId": 751187997,
+                                    "SetCodeValueId": 750000022,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751187998,
+                            "CriteriaCode": "IMMD",
+                            "ValueTypeCode": "LOOK",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "BaseLookupValue": "Personalization",
+                            "Value": "Personalization",
+                            "FormatValue": "Personalization",
+                            "CriteriaSetId": 766710802,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085943,
+                                    "CriteriaSetValueId": 751187998,
+                                    "SetCodeValueId": 750000021,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710803,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "SHWT",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751188001,
+                            "CriteriaCode": "SHWT",
+                            "ValueTypeCode": "LOOK",
+                            "CriteriaValueDetail": "none",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "BaseLookupValue": "Other",
+                            "Value": [
+                                {
+                                    "CriteriaAttributeId": 20,
+                                    "UnitValue": "22",
+                                    "UnitOfMeasureCode": "OUNC"
+                                }
+                            ],
+                            "FormatValue": "22 oz",
+                            "CriteriaSetId": 766710803,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085940,
+                                    "CriteriaSetValueId": 751188001,
+                                    "SetCodeValueId": 750000025,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710804,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "SDIM",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751188002,
+                            "CriteriaCode": "SDIM",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "none",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": [
+                                {
+                                    "CriteriaAttributeId": 7,
+                                    "UnitValue": "2",
+                                    "UnitOfMeasureCode": "INCH"
+                                },
+                                {
+                                    "CriteriaAttributeId": 12,
+                                    "UnitValue": "3",
+                                    "UnitOfMeasureCode": "CENT"
+                                },
+                                {
+                                    "CriteriaAttributeId": 6,
+                                    "UnitValue": "4",
+                                    "UnitOfMeasureCode": "FEET"
+                                }
+                            ],
+                            "FormatValue": "2 \" x 3 cm x 4 '",
+                            "CriteriaSetId": 766710804,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085939,
+                                    "CriteriaSetValueId": 751188002,
+                                    "SetCodeValueId": 750000023,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710805,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "SAHU",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751188003,
+                            "CriteriaCode": "SAHU",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": [
+                                {
+                                    "CriteriaAttributeId": 27,
+                                    "UnitValue": "XX",
+                                    "UnitOfMeasureCode": ""
+                                }
+                            ],
+                            "FormatValue": "XX ",
+                            "DisplaySequence": 0,
+                            "CriteriaSetId": 766710805,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085938,
+                                    "CriteriaSetValueId": 751188003,
+                                    "SetCodeValueId": 201160238,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188004,
+                            "CriteriaCode": "SAHU",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": [
+                                {
+                                    "CriteriaAttributeId": 27,
+                                    "UnitValue": "YY",
+                                    "UnitOfMeasureCode": ""
+                                }
+                            ],
+                            "FormatValue": "YY ",
+                            "DisplaySequence": 1,
+                            "CriteriaSetId": 766710805,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085937,
+                                    "CriteriaSetValueId": 751188004,
+                                    "SetCodeValueId": 201160238,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188005,
+                            "CriteriaCode": "SAHU",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": [
+                                {
+                                    "CriteriaAttributeId": 27,
+                                    "UnitValue": "ZZ",
+                                    "UnitOfMeasureCode": ""
+                                }
+                            ],
+                            "FormatValue": "ZZ ",
+                            "DisplaySequence": 2,
+                            "CriteriaSetId": 766710805,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085936,
+                                    "CriteriaSetValueId": 751188005,
+                                    "SetCodeValueId": 201160238,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188006,
+                            "CriteriaCode": "SAHU",
+                            "ValueTypeCode": "LOOK",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "BaseLookupValue": "AB",
+                            "Value": "AB",
+                            "FormatValue": "AB",
+                            "CriteriaSetId": 766710805,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085935,
+                                    "CriteriaSetValueId": 751188006,
+                                    "SetCodeValueId": 300146277,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188007,
+                            "CriteriaCode": "SAHU",
+                            "ValueTypeCode": "LOOK",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "BaseLookupValue": "A",
+                            "Value": "A",
+                            "FormatValue": "A",
+                            "CriteriaSetId": 766710805,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085934,
+                                    "CriteriaSetValueId": 751188007,
+                                    "SetCodeValueId": 300146341,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710806,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "LMIN",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751188008,
+                            "CriteriaCode": "LMIN",
+                            "ValueTypeCode": "LOOK",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "BaseLookupValue": "Other",
+                            "Value": "Can order less than minimum",
+                            "FormatValue": "Can order less than minimum",
+                            "CriteriaSetId": 766710806,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085933,
+                                    "CriteriaSetValueId": 751188008,
+                                    "SetCodeValueId": 750000016,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710807,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "SDRU",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751188009,
+                            "CriteriaCode": "SDRU",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "Same Day Service",
+                            "FormatValue": "Same Day Service",
+                            "CriteriaSetId": 766710807,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085932,
+                                    "CriteriaSetValueId": 751188009,
+                                    "SetCodeValueId": 750000017,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710808,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "SHOP",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "s3",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751188010,
+                            "CriteriaCode": "SHOP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "27",
+                            "FormatValue": "27",
+                            "CriteriaSetId": 766710808,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085931,
+                                    "CriteriaSetValueId": 751188010,
+                                    "SetCodeValueId": 750000027,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188011,
+                            "CriteriaCode": "SHOP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "26",
+                            "FormatValue": "26",
+                            "CriteriaSetId": 766710808,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085930,
+                                    "CriteriaSetValueId": 751188011,
+                                    "SetCodeValueId": 750000027,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188012,
+                            "CriteriaCode": "SHOP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "25",
+                            "FormatValue": "25",
+                            "CriteriaSetId": 766710808,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085929,
+                                    "CriteriaSetValueId": 751188012,
+                                    "SetCodeValueId": 750000027,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710809,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "SHOP",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "s2",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751188013,
+                            "CriteriaCode": "SHOP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "24",
+                            "FormatValue": "24",
+                            "CriteriaSetId": 766710809,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085928,
+                                    "CriteriaSetValueId": 751188013,
+                                    "SetCodeValueId": 750000027,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188014,
+                            "CriteriaCode": "SHOP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "23",
+                            "FormatValue": "23",
+                            "CriteriaSetId": 766710809,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085927,
+                                    "CriteriaSetValueId": 751188014,
+                                    "SetCodeValueId": 750000027,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188015,
+                            "CriteriaCode": "SHOP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "22",
+                            "FormatValue": "22",
+                            "CriteriaSetId": 766710809,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085926,
+                                    "CriteriaSetValueId": 751188015,
+                                    "SetCodeValueId": 750000027,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710810,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "SHOP",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "s1",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751188016,
+                            "CriteriaCode": "SHOP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "21",
+                            "FormatValue": "21",
+                            "CriteriaSetId": 766710810,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085925,
+                                    "CriteriaSetValueId": 751188016,
+                                    "SetCodeValueId": 750000027,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188017,
+                            "CriteriaCode": "SHOP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "20",
+                            "FormatValue": "20",
+                            "CriteriaSetId": 766710810,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085924,
+                                    "CriteriaSetValueId": 751188017,
+                                    "SetCodeValueId": 750000027,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188018,
+                            "CriteriaCode": "SHOP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "19",
+                            "FormatValue": "19",
+                            "CriteriaSetId": 766710810,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085923,
+                                    "CriteriaSetValueId": 751188018,
+                                    "SetCodeValueId": 750000027,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710811,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "PROP",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "p3",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751188019,
+                            "CriteriaCode": "PROP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "18",
+                            "FormatValue": "18",
+                            "CriteriaSetId": 766710811,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085922,
+                                    "CriteriaSetValueId": 751188019,
+                                    "SetCodeValueId": 750000026,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188020,
+                            "CriteriaCode": "PROP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "17",
+                            "FormatValue": "17",
+                            "CriteriaSetId": 766710811,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085921,
+                                    "CriteriaSetValueId": 751188020,
+                                    "SetCodeValueId": 750000026,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188021,
+                            "CriteriaCode": "PROP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "16",
+                            "FormatValue": "16",
+                            "CriteriaSetId": 766710811,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085920,
+                                    "CriteriaSetValueId": 751188021,
+                                    "SetCodeValueId": 750000026,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710812,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "PROP",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "p2",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751188022,
+                            "CriteriaCode": "PROP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "15",
+                            "FormatValue": "15",
+                            "CriteriaSetId": 766710812,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085919,
+                                    "CriteriaSetValueId": 751188022,
+                                    "SetCodeValueId": 750000026,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188023,
+                            "CriteriaCode": "PROP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "14",
+                            "FormatValue": "14",
+                            "CriteriaSetId": 766710812,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085918,
+                                    "CriteriaSetValueId": 751188023,
+                                    "SetCodeValueId": 750000026,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188024,
+                            "CriteriaCode": "PROP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "13",
+                            "FormatValue": "13",
+                            "CriteriaSetId": 766710812,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085917,
+                                    "CriteriaSetValueId": 751188024,
+                                    "SetCodeValueId": 750000026,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710813,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "PROP",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "p1",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751188025,
+                            "CriteriaCode": "PROP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "12",
+                            "FormatValue": "12",
+                            "CriteriaSetId": 766710813,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085916,
+                                    "CriteriaSetValueId": 751188025,
+                                    "SetCodeValueId": 750000026,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188026,
+                            "CriteriaCode": "PROP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "11",
+                            "FormatValue": "11",
+                            "CriteriaSetId": 766710813,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085915,
+                                    "CriteriaSetValueId": 751188026,
+                                    "SetCodeValueId": 750000026,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188027,
+                            "CriteriaCode": "PROP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "10",
+                            "FormatValue": "10",
+                            "CriteriaSetId": 766710813,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085914,
+                                    "CriteriaSetValueId": 751188027,
+                                    "SetCodeValueId": 750000026,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710814,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "IMOP",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "n3",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751188028,
+                            "CriteriaCode": "IMOP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "9",
+                            "FormatValue": "9",
+                            "CriteriaSetId": 766710814,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085913,
+                                    "CriteriaSetValueId": 751188028,
+                                    "SetCodeValueId": 750000012,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188029,
+                            "CriteriaCode": "IMOP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "8",
+                            "FormatValue": "8",
+                            "CriteriaSetId": 766710814,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085912,
+                                    "CriteriaSetValueId": 751188029,
+                                    "SetCodeValueId": 750000012,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188030,
+                            "CriteriaCode": "IMOP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "7",
+                            "FormatValue": "7",
+                            "CriteriaSetId": 766710814,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085911,
+                                    "CriteriaSetValueId": 751188030,
+                                    "SetCodeValueId": 750000012,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710815,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "IMOP",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "n2",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": true,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751188031,
+                            "CriteriaCode": "IMOP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "6",
+                            "FormatValue": "6",
+                            "CriteriaSetId": 766710815,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085910,
+                                    "CriteriaSetValueId": 751188031,
+                                    "SetCodeValueId": 750000012,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188032,
+                            "CriteriaCode": "IMOP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "5",
+                            "FormatValue": "5",
+                            "CriteriaSetId": 766710815,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085909,
+                                    "CriteriaSetValueId": 751188032,
+                                    "SetCodeValueId": 750000012,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188033,
+                            "CriteriaCode": "IMOP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "4",
+                            "FormatValue": "4",
+                            "CriteriaSetId": 766710815,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085908,
+                                    "CriteriaSetValueId": 751188033,
+                                    "SetCodeValueId": 750000012,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710816,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "IMOP",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "n1",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": true,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751188034,
+                            "CriteriaCode": "IMOP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "3",
+                            "FormatValue": "3",
+                            "CriteriaSetId": 766710816,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085907,
+                                    "CriteriaSetValueId": 751188034,
+                                    "SetCodeValueId": 750000012,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188035,
+                            "CriteriaCode": "IMOP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "2",
+                            "FormatValue": "2",
+                            "CriteriaSetId": 766710816,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085906,
+                                    "CriteriaSetValueId": 751188035,
+                                    "SetCodeValueId": 750000012,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188036,
+                            "CriteriaCode": "IMOP",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "1",
+                            "FormatValue": "1",
+                            "CriteriaSetId": 766710816,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085905,
+                                    "CriteriaSetValueId": 751188036,
+                                    "SetCodeValueId": 750000012,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710817,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "SHES",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751188037,
+                            "CriteriaCode": "SHES",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": [
+                                {
+                                    "CriteriaAttributeId": 21,
+                                    "UnitValue": "13",
+                                    "UnitOfMeasureCode": "BOXE"
+                                }
+                            ],
+                            "FormatValue": "13 boxes",
+                            "CriteriaSetId": 766710817,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085904,
+                                    "CriteriaSetValueId": 751188037,
+                                    "SetCodeValueId": 750000024,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710819,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "PRTM",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751188040,
+                            "CriteriaCode": "PRTM",
+                            "ValueTypeCode": "LOOK",
+                            "CriteriaValueDetail": "adadad",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "BaseLookupValue": "Other",
+                            "Value": "",
+                            "CriteriaSetId": 766710819,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085901,
+                                    "CriteriaSetValueId": 751188040,
+                                    "SetCodeValueId": 750000018,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751201504,
+                            "CriteriaCode": "PRTM",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "adadafafafaf",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": [
+                                {
+                                    "CriteriaAttributeId": 0,
+                                    "UnitValue": "",
+                                    "UnitOfMeasureCode": ""
+                                }
+                            ],
+                            "FormatValue": " ",
+                            "DisplaySequence": 4,
+                            "CriteriaSetId": 766710819,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757097964,
+                                    "CriteriaSetValueId": 751201504,
+                                    "SetCodeValueId": 750000018,
+                                    "CodeValue": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710820,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "PCKG",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751188041,
+                            "CriteriaCode": "PCKG",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "second",
+                            "FormatValue": "second",
+                            "CriteriaSetId": 766710820,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085900,
+                                    "CriteriaSetValueId": 751188041,
+                                    "SetCodeValueId": 201160080,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188042,
+                            "CriteriaCode": "PCKG",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "additional",
+                            "FormatValue": "additional",
+                            "CriteriaSetId": 766710820,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085899,
+                                    "CriteriaSetValueId": 751188042,
+                                    "SetCodeValueId": 201160080,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188043,
+                            "CriteriaCode": "PCKG",
+                            "ValueTypeCode": "LOOK",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "BaseLookupValue": "Pouch",
+                            "Value": "Pouch",
+                            "FormatValue": "Pouch",
+                            "CriteriaSetId": 766710820,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085898,
+                                    "CriteriaSetValueId": 751188043,
+                                    "SetCodeValueId": 201160077,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188044,
+                            "CriteriaCode": "PCKG",
+                            "ValueTypeCode": "LOOK",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "BaseLookupValue": "Gift Wrapped",
+                            "Value": "Gift Wrapped",
+                            "FormatValue": "Gift Wrapped",
+                            "CriteriaSetId": 766710820,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085897,
+                                    "CriteriaSetValueId": 751188044,
+                                    "SetCodeValueId": 201160074,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710821,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "IMSZ",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751188045,
+                            "CriteriaCode": "IMSZ",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": "s1|l2",
+                            "FormatValue": "s1|l2",
+                            "CriteriaSetId": 766710821,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757087808,
+                                    "CriteriaSetValueId": 751188045,
+                                    "SetCodeValueId": 750000289,
+                                    "CodeValue": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710822,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "TDNM",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751188046,
+                            "CriteriaCode": "TDNM",
+                            "ValueTypeCode": "LOOK",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "BaseLookupValue": "Inspirations for Life",
+                            "Value": "Inspirations for Life",
+                            "FormatValue": "Inspirations for Life",
+                            "CriteriaSetId": 766710822,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085896,
+                                    "CriteriaSetValueId": 751188046,
+                                    "SetCodeValueId": 2006580,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188047,
+                            "CriteriaCode": "TDNM",
+                            "ValueTypeCode": "LOOK",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "BaseLookupValue": "International Carpenter",
+                            "Value": "International Carpenter",
+                            "FormatValue": "International Carpenter",
+                            "CriteriaSetId": 766710822,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085895,
+                                    "CriteriaSetValueId": 751188047,
+                                    "SetCodeValueId": 2005536,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188048,
+                            "CriteriaCode": "TDNM",
+                            "ValueTypeCode": "LOOK",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "BaseLookupValue": "Titleist (R) Pro V1 (R)",
+                            "Value": "Titleist (R) Pro V1 (R)",
+                            "FormatValue": "Titleist (R) Pro V1 (R)",
+                            "CriteriaSetId": 766710822,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085894,
+                                    "CriteriaSetValueId": 751188048,
+                                    "SetCodeValueId": 2000842,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710823,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "SHAP",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751188049,
+                            "CriteriaCode": "SHAP",
+                            "ValueTypeCode": "LOOK",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "BaseLookupValue": "Custom Shape",
+                            "Value": "Custom Shape",
+                            "FormatValue": "Custom Shape",
+                            "CriteriaSetId": 766710823,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085893,
+                                    "CriteriaSetValueId": 751188049,
+                                    "SetCodeValueId": 750000080,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188050,
+                            "CriteriaCode": "SHAP",
+                            "ValueTypeCode": "LOOK",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "BaseLookupValue": "Comedy/Tragedy",
+                            "Value": "Comedy/Tragedy",
+                            "FormatValue": "Comedy/Tragedy",
+                            "CriteriaSetId": 766710823,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085892,
+                                    "CriteriaSetValueId": 751188050,
+                                    "SetCodeValueId": 750003163,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188051,
+                            "CriteriaCode": "SHAP",
+                            "ValueTypeCode": "LOOK",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "BaseLookupValue": "Any Shape",
+                            "Value": "Any Shape",
+                            "FormatValue": "Any Shape",
+                            "CriteriaSetId": 766710823,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085891,
+                                    "CriteriaSetValueId": 751188051,
+                                    "SetCodeValueId": 750000079,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710824,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "MTRL",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751188052,
+                            "CriteriaCode": "MTRL",
+                            "ValueTypeCode": "LOOK",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "BaseLookupValue": "Other Leather/Suede",
+                            "Value": "Other Leather/Suede",
+                            "FormatValue": "Other Leather/Suede",
+                            "CriteriaSetId": 766710824,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085890,
+                                    "CriteriaSetValueId": 751188052,
+                                    "SetCodeValueId": 201160372,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188053,
+                            "CriteriaCode": "MTRL",
+                            "ValueTypeCode": "LOOK",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "BaseLookupValue": "Other Fabric",
+                            "Value": "Other Fabric",
+                            "FormatValue": "Other Fabric",
+                            "CriteriaSetId": 766710824,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085889,
+                                    "CriteriaSetValueId": 751188053,
+                                    "SetCodeValueId": 201160361,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751188054,
+                            "CriteriaCode": "MTRL",
+                            "ValueTypeCode": "LOOK",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "BaseLookupValue": "Blend",
+                            "Value": "Blend",
+                            "FormatValue": "Blend",
+                            "CriteriaSetId": 766710824,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085888,
+                                    "CriteriaSetValueId": 751188054,
+                                    "SetCodeValueId": 201160374,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710825,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "PRCL",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751201450,
+                            "CriteriaCode": "PRCL",
+                            "ValueTypeCode": "LOOK",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "BaseLookupValue": "Medium Red",
+                            "Value": "Red",
+                            "FormatValue": "Red",
+                            "DisplaySequence": 1,
+                            "CriteriaSetId": 766710825,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757097935,
+                                    "CriteriaSetValueId": 751201450,
+                                    "SetCodeValueId": 201160380,
+                                    "CodeValue": "",
+                                    "CodeValueDetail": "main",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        },
+                        {
+                            "ID": 751201451,
+                            "CriteriaCode": "PRCL",
+                            "ValueTypeCode": "LOOK",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "BaseLookupValue": "Dark Red",
+                            "Value": "Burgundy",
+                            "FormatValue": "Burgundy",
+                            "DisplaySequence": 2,
+                            "CriteriaSetId": 766710825,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757097934,
+                                    "CriteriaSetValueId": 751201451,
+                                    "SetCodeValueId": 2209739,
+                                    "CodeValue": "8C001A",
+                                    "CodeValueDetail": "main",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ProductId": 550042671,
+                    "CompanyId": 491276,
+                    "ParentCriteriaSetId": 0,
+                    "CriteriaSetId": 766710847,
+                    "ConfigId": 1173436,
+                    "CriteriaCode": "RUSH",
+                    "Description": "",
+                    "OrderDetail": "",
+                    "CriteriaDetail": "",
+                    "IsBase": false,
+                    "IsRequiredForOrder": false,
+                    "IsMultipleChoiceAllowed": false,
+                    "IsBrokenOutOn": false,
+                    "IsTemplate": false,
+                    "IsDefaultConfiguration": true,
+                    "CriteriaSetValues": [
+                        {
+                            "ID": 751188100,
+                            "CriteriaCode": "RUSH",
+                            "ValueTypeCode": "CUST",
+                            "CriteriaValueDetail": "",
+                            "IsSubset": false,
+                            "IsSetValueMeasurement": false,
+                            "Value": [
+                                {
+                                    "CriteriaAttributeId": 14,
+                                    "UnitValue": "5",
+                                    "UnitOfMeasureCode": "BUSI"
+                                }
+                            ],
+                            "FormatValue": "5 business days",
+                            "DisplaySequence": 3,
+                            "CriteriaSetId": 766710847,
+                            "CriteriaSetCodeValues": [
+                                {
+                                    "ID": 757085998,
+                                    "CriteriaSetValueId": 751188100,
+                                    "SetCodeValueId": 750000019,
+                                    "CodeValue": "",
+                                    "ChildCriteriaSetCodeValues": []
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "ProductKeywords": [],
+    "SelectedProductCategories": [
+        {
+            "Code": "Y06640003",
+            "ProductId": 550042671,
+            "IsPrimary": false,
+            "AdCategoryFlg": false
+        }
+    ],
+    "SelectedLineNames": [],
+    "SelectedComplianceCerts": [
+        {
+            "ID": 550200607,
+            "ProductId": 550042671,
+            "ComplianceCertId": 50000058,
+            "Description": "",
+            "CompanyId": 491276
+        },
+        {
+            "ID": 550200608,
+            "ProductId": 550042671,
+            "ComplianceCertId": -1,
+            "Description": "cust1",
+            "CompanyId": 491276
+        },
+        {
+            "ID": 550200609,
+            "ProductId": 550042671,
+            "ComplianceCertId": -1,
+            "Description": "cust2",
+            "CompanyId": 491276
+        },
+        {
+            "ID": 550200610,
+            "ProductId": 550042671,
+            "ComplianceCertId": 47,
+            "Description": "",
+            "CompanyId": 491276
+        },
+        {
+            "ID": 550200611,
+            "ProductId": 550042671,
+            "ComplianceCertId": 42,
+            "Description": "",
+            "CompanyId": 491276
+        }
+    ],
+    "SelectedSafetyWarnings": [],
+    "ProductMediaItems": [],
+    "ProductMediaCitations": [],
+    "PriceGrids": [
+        {
+            "ID": 801456966,
+            "ProductId": 550042671,
+            "IsBasePrice": true,
+            "IsQUR": false,
+            "PriceGridSubTypeCode": "REGL",
+            "UsageLevelCode": "NONE",
+            "Description": "Personalization, Unimprinted, Blend, Other Fabric",
+            "IsRange": false,
+            "IsSpecial": false,
+            "PriceIncludes": "",
+            "DisplaySequence": 1,
+            "IsCopy": false,
+            "Currency": {
+                "Code": "MXN",
+                "Name": "Mexican Peso",
+                "Number": 484,
+                "ISODisplaySymbol": "$",
+                "IsISO": true,
+                "IsActive": true,
+                "DisplaySequence": 6
+            },
+            "Prices": [],
+            "PricingItems": [
+                {
+                    "ID": 551539291,
+                    "ProductId": 550042671,
+                    "CriteriaSetValueId": 751188053,
+                    "MarketSegmentCode": "USAALL",
+                    "PriceGridId": 801456966,
+                    "PriceGridTypeCode": "REGL",
+                    "IsPrimary": false,
+                    "Description": "",
+                    "IsDateBased": false
+                },
+                {
+                    "ID": 551539292,
+                    "ProductId": 550042671,
+                    "CriteriaSetValueId": 751188054,
+                    "MarketSegmentCode": "USAALL",
+                    "PriceGridId": 801456966,
+                    "PriceGridTypeCode": "REGL",
+                    "IsPrimary": false,
+                    "Description": "",
+                    "IsDateBased": false
+                },
+                {
+                    "ID": 551539293,
+                    "ProductId": 550042671,
+                    "CriteriaSetValueId": 751187997,
+                    "MarketSegmentCode": "USAALL",
+                    "PriceGridId": 801456966,
+                    "PriceGridTypeCode": "REGL",
+                    "IsPrimary": false,
+                    "Description": "",
+                    "IsDateBased": false
+                },
+                {
+                    "ID": 551539294,
+                    "ProductId": 550042671,
+                    "CriteriaSetValueId": 751187998,
+                    "MarketSegmentCode": "USAALL",
+                    "PriceGridId": 801456966,
+                    "PriceGridTypeCode": "REGL",
+                    "IsPrimary": false,
+                    "Description": "",
+                    "IsDateBased": false
+                }
+            ]
+        }
+    ],
+    "ProductNumbers": [
+        {
+            "ID": 992581,
+            "ProductId": 550042671,
+            "Value": "1425654",
+            "ProductNumberConfigurations": [
+                {
+                    "ID": 1599419,
+                    "ProductNumberId": 992581,
+                    "CriteriaSetValueId": 751188007
+                }
+            ]
+        }
+    ],
+    "Relationships": [],
+    "ProductSKUs": []
+}

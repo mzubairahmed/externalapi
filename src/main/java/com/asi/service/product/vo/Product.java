@@ -5,6 +5,8 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 @XmlRootElement(name="productDetail")
 @XmlType(propOrder={    
 		   "ID",
@@ -16,6 +18,7 @@ import javax.xml.bind.annotation.XmlType;
 		   "description",
 		   "summary",
 		   "itemPrices",
+		   "imprintMethod",
 		   "workflowStatusCode",
 		   "changeProductReasonCode",
 		   "workflowStatusStateCode",
@@ -51,7 +54,7 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class Product {
     
-    
+    @JsonProperty("ID")
     private Integer ID;
     
     private String productTypeCode;
@@ -131,8 +134,16 @@ public class Product {
     private String distributorComments;
    
     private String additionalInfo;
-    
-    private List<ItemPriceDetail> itemPrices;
+    private List<ImprintMethod> imprintMethods;
+    public List<ImprintMethod> getImprintMethod() {
+		return imprintMethods;
+	}
+
+	public void setImprintMethod(List<ImprintMethod> imprintMethods) {
+		this.imprintMethods = imprintMethods;
+	}
+
+	private List<ItemPriceDetail> itemPrices;
 
 	/**
 	 * @return the itemPrices
