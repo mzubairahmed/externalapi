@@ -3,7 +3,8 @@ package com.asi.core.repo.product;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,10 +25,11 @@ import com.asi.service.product.vo.PriceDetail;
 import com.asi.service.product.vo.Product;
 import com.asi.service.product.vo.ProductConfigurationsParser;
 
-public class ProductRepo {
-	private final static Logger _LOGGER = Logger.getLogger(ProductRepo.class
-			.getName());
 
+
+
+public class ProductRepo {
+	private final static Logger _LOGGER = LoggerFactory.getLogger(ProductRepo.class);
 	/**
 	 * @return the productClient
 	 */
@@ -68,18 +70,38 @@ public class ProductRepo {
 				pricesInfo.add(getBasePriceDetails(productDetail,
 						ItemPriceDetail.PRICE_Type.REGL, prices, false));
 		}
-		product.setItemPrices(pricesInfo);
+		if(pricesInfo.isEmpty())
+			_LOGGER.error("Invalid price grid id or price grid not found for company %1 product %2",companyID,productID);
+		
+		product.setItemPrice(pricesInfo);
 
-		_LOGGER.debug("Color "
-				+ lookupColor.getColorFromLookup(
-						lookupColor.getLookupColorURL()).toString());
-		_LOGGER.debug("Sizes "
-				+ lookupColor
-						.getSizesFromLookup(lookupColor.getLookupSizeURL())
-						.toString());
-		_LOGGER.debug("Material "
-				+ lookupColor.getMaterialFromLookup(
-						lookupColor.getLookupMaterialURL()).toString());
+		return product;
+		
+	}
+	public Product getProductPrices(String companyID, String productID,Integer priceGridID)
+	{
+	    
+		productDetail = productClient.doIt(companyID,productID);
+		
+		List<PriceGrid> priceGrids = productDetail.getPriceGrids();
+		List<ItemPriceDetail> pricesInfo = new ArrayList<ItemPriceDetail>();
+		ItemPriceDetail itemPrice;
+
+		Product product = new Product();
+		BeanUtils.copyProperties(productDetail, product);
+		
+		for(PriceGrid prices:priceGrids)
+		{
+			if(prices.getPriceGridSubTypeCode().equalsIgnoreCase(PRICE_Type.REGL.name()) && prices.getID().equals(priceGridID))
+			{
+				itemPrice = getBasePriceDetails(productDetail,ItemPriceDetail.PRICE_Type.REGL,prices,false);
+				pricesInfo.add(itemPrice);
+			}
+		}
+		if(pricesInfo.isEmpty())
+			_LOGGER.error("Invalid price grid id or price grid not found for company %1 product %2 with priceGridId %3",companyID,productID,priceGridID);
+
+	product.setItemPrice(pricesInfo);
 
 		return product;
 
@@ -88,16 +110,16 @@ public class ProductRepo {
 	private ItemPriceDetail getBasePriceDetails(ProductDetail productDetail,
 			ItemPriceDetail.PRICE_Type priceType, PriceGrid priceGrid,
 			boolean setCurrency) {
-		ItemPriceDetail itemPrices = new ItemPriceDetail();
-		itemPrices.setPriceType(priceType);
-		itemPrices.setPriceName(priceGrid.getDescription());
-		itemPrices.setPriceIncludes(priceGrid.getPriceIncludes());
-		itemPrices.setPriceUponRequest(priceGrid.getIsQUR());
+    	ItemPriceDetail itemPrice = new ItemPriceDetail();
+    	itemPrice.setPriceType(priceType);
+        itemPrice.setPriceName(priceGrid.getDescription());
+        itemPrice.setPriceIncludes(priceGrid.getPriceIncludes());
+        itemPrice.setPriceUponRequest(priceGrid.getIsQUR());
 		List<PriceDetail> pricesList = new ArrayList<PriceDetail>();
 
 		for (Price p : priceGrid.getPrices()) {
 			PriceDetail priceDetail = new PriceDetail();
-
+        	priceDetail.setSequenceNumber(p.getSequenceNumber());
 			priceDetail.setPrice(p.getListPrice());
 			priceDetail.setQuanty(p.getQuantity());
 			priceDetail.setDiscount(p.getDiscountRate()
@@ -109,18 +131,20 @@ public class ProductRepo {
 			priceDetail.setItemsPerUnitBy(p.getPriceUnit().getDisplayName());
 			pricesList.add(priceDetail);
 		}
-		itemPrices.setPriceDetails(pricesList);
-		String[] basePriceCriterias = productConfiguration.getPriceCriteria(
-				productDetail, priceGrid.getID());
-		if (null != basePriceCriterias && basePriceCriterias.length > 0) {
-			if (basePriceCriterias.length > 1) {
-				itemPrices.setFirstPriceCriteria(basePriceCriterias[0]);
-				itemPrices.setSecondPriceCriteria(basePriceCriterias[1]);
-			} else {
-				itemPrices.setFirstPriceCriteria(basePriceCriterias[0]);
-			}
-		}
-		return itemPrices;
+        itemPrice.setProductID(productDetail.getName());
+        itemPrice.setPriceDetails(pricesList);
+	 String[] basePriceCriterias=productConfiguration.getPriceCriteria(productDetail,priceGrid.getID());
+        if(null!=basePriceCriterias && basePriceCriterias.length>0)
+        {
+        	itemPrice.setFirstPriceCriteria(basePriceCriterias[0]);
+        	if(basePriceCriterias.length>1)
+        	{
+        		itemPrice.setSecondPriceCriteria(basePriceCriterias[1]);
+        	}
+        	itemPrice.setPriceID(priceGrid.getID().toString());
+        }
+      return itemPrice;
+
 	}
 
 	public ProductConfigurationsParser getProductConfiguration() {

@@ -2,12 +2,12 @@ package com.asi.service.product.vo;
 
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-
-@XmlRootElement(name="productDetail")
+@XmlRootElement(namespace = "http://www.asicentral.com/schema/product" , name="productDetail")
 @XmlType(propOrder={    
 		   "ID",
 		   "asiProdNo",
@@ -50,11 +50,12 @@ import org.codehaus.jackson.annotate.JsonProperty;
 		   "isProductNumberBreakout",
 		   "isPriceBreakoutFlag",
 		   "distributorComments",
-		   "additionalInfo"
+		   "additionalInfo",
+		   "itemPrice"
 })
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Product {
     
-    @JsonProperty("ID")
     private Integer ID;
     
     private String productTypeCode;
@@ -143,20 +144,20 @@ public class Product {
 		this.imprintMethods = imprintMethods;
 	}
 
-	private List<ItemPriceDetail> itemPrices;
+	private List<ItemPriceDetail> itemPrice;
 
 	/**
 	 * @return the itemPrices
 	 */
-	public List<ItemPriceDetail> getItemPrices() {
-		return itemPrices;
+	public List<ItemPriceDetail> getItemPrice() {
+		return itemPrice;
 	}
 
 	/**
 	 * @param itemPrices the itemPrices to set
 	 */
-	public void setItemPrices(List<ItemPriceDetail> itemPrices) {
-		this.itemPrices = itemPrices;
+	public void setItemPrice(List<ItemPriceDetail> itemPrice) {
+		this.itemPrice = itemPrice;
 	}
 
 	/**

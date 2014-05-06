@@ -8,10 +8,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 @XmlRootElement(name="pricingDetail")
-@XmlType(propOrder={"price","quanty","discount","lowQuantity","highQuantity","netCost","maxDecimalPlaces","itemsPerUnit","itemsPerUnitBy"})
-@JsonPropertyOrder({"price","quanty","discount","lowQuantity","highQuantity","netCost","maxDecimalPlaces","itemsPerUnit","itemsPerUnitBy"})
+@XmlType(propOrder={"sequenceNumber","price","quanty","discount","lowQuantity","highQuantity","netCost","maxDecimalPlaces","itemsPerUnit","itemsPerUnitBy"})
+@JsonPropertyOrder({"sequenceNumber","price","quanty","discount","lowQuantity","highQuantity","netCost","maxDecimalPlaces","itemsPerUnit","itemsPerUnitBy"})
 public class PriceDetail {
  
+	private Integer sequenceNumber;
 	private Double price;
     private Integer quanty;
     private String discount = "";
@@ -21,7 +22,9 @@ public class PriceDetail {
     private int maxDecimalPlaces;
     private int itemsPerUnit;
     private String itemsPerUnitBy;
-	/**
+
+    
+    /**
 	 * @return the price
 	 */
 	public Double getPrice() {
@@ -128,6 +131,12 @@ public class PriceDetail {
 	 */
 	public void setItemsPerUnitBy(String itemsPerUnitBy) {
 		this.itemsPerUnitBy = itemsPerUnitBy;
+	}
+	public Integer getSequenceNumber() {
+		return sequenceNumber;
+	}
+	public void setSequenceNumber(Integer sequenceNumber) {
+		this.sequenceNumber = sequenceNumber;
 	}
     
 }

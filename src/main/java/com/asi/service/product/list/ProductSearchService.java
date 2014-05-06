@@ -9,6 +9,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.asi.core.repo.product.ProductRepo;
 import com.asi.service.product.client.vo.ProductDetail;
+import com.asi.service.product.vo.ItemPriceDetail;
 import com.asi.service.product.vo.Product;
 
 @RestController
@@ -23,18 +25,22 @@ import com.asi.service.product.vo.Product;
 public class ProductSearchService {
 	@Autowired ProductDetail serviceResponse; 
 	@Autowired ProductRepo repository;
-	private Logger _LOGGER = LoggerFactory.getLogger(getClass());
-	
-	@RequestMapping(value = "product/{companyid}/prices/{xid}",method = RequestMethod.GET, headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
-	public ResponseEntity<Product> handle(HttpEntity<byte[]> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws UnsupportedEncodingException {
-		//String companyID="3879";
-		//int xid=1472;
-		if(_LOGGER.isTraceEnabled()) _LOGGER.trace("calling Prices Service");
-		
+	private Logger _LOGGER = LoggerFactory.getLogger(ProductSearchService.class);
+	@Secured("ROLE_CUSTOMER")
+	@RequestMapping(value = "{companyid}/pid/{xid}", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<Product> getProduct(HttpEntity<byte[]> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws UnsupportedEncodingException {
+		if(_LOGGER.isDebugEnabled()) 
+			_LOGGER.debug("calling service");
 		Product productResponse = repository.getProductPrices(companyId, xid);
-		HttpHeaders responseHeaders = new HttpHeaders();
-	    responseHeaders.set("MyResponseHeader", "MyValue");
-	    return new ResponseEntity<Product>(productResponse, responseHeaders, HttpStatus.OK);
+		return new ResponseEntity<Product>(productResponse, null, HttpStatus.OK);
+	}
+	@Secured("ROLE_CUSTOMER")
+	@RequestMapping(value = "{companyid}/pid/{xid}/price/{priceGridId}", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<ItemPriceDetail> getPrice(HttpEntity<byte[]> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid,@PathVariable("priceGridId") Integer priceGridId) throws UnsupportedEncodingException {
+		if(_LOGGER.isDebugEnabled()) 
+			_LOGGER.debug("calling service with priceid");	
+		ItemPriceDetail itemPrice = repository.getProductPrices(companyId, xid,priceGridId).getItemPrice().get(0);
+	    return new ResponseEntity<ItemPriceDetail>(itemPrice, null, HttpStatus.OK);
 	}
 	@RequestMapping(value = "product/{companyid}/imprintMethods/{xid}",method = RequestMethod.GET, headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
 	public ResponseEntity<Product> handleImprintMethods(HttpEntity<byte[]> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws UnsupportedEncodingException {
@@ -47,6 +53,4 @@ public class ProductSearchService {
 	    responseHeaders.set("MyResponseHeader", "MyValue");
 	    return new ResponseEntity<Product>(productResponse, responseHeaders, HttpStatus.OK);
 	}
-
 }
-///,@PathVariable String companyID, @PathVariable int xid
