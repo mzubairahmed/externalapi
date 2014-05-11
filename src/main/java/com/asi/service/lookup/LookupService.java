@@ -16,7 +16,7 @@ import com.asi.service.lookup.vo.AsiColor;
 import com.asi.service.lookup.vo.AsiColorsList;
 
 @RestController
-@RequestMapping("api")
+@RequestMapping("api/lookup")
 public class LookupService {
 	@Autowired LookupValuesRepo colorRepository;
 	@Secured("ROLE_CUSTOMER")
