@@ -17,6 +17,8 @@ import javax.xml.bind.annotation.XmlType;
 		   "name",
 		   "description",
 		   "summary",
+		   "itemPrices",
+		   "imprintMethod",
 		   "workflowStatusCode",
 		   "changeProductReasonCode",
 		   "workflowStatusStateCode",
@@ -53,7 +55,6 @@ import javax.xml.bind.annotation.XmlType;
 })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Product {
-    
     
     private Integer ID;
     
@@ -134,8 +135,16 @@ public class Product {
     private String distributorComments;
    
     private String additionalInfo;
-    
-    private List<ItemPriceDetail> itemPrice;
+    private List<ImprintMethod> imprintMethods;
+    public List<ImprintMethod> getImprintMethod() {
+		return imprintMethods;
+	}
+
+	public void setImprintMethod(List<ImprintMethod> imprintMethods) {
+		this.imprintMethods = imprintMethods;
+	}
+
+	private List<ItemPriceDetail> itemPrice;
 
 	/**
 	 * @return the itemPrices
