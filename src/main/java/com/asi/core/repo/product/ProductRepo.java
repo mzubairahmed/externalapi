@@ -185,7 +185,7 @@ public class ProductRepo {
 	}
 	
 	public Imprints getProductImprintMethods(String companyId, String xid) {
-		productDetail = productClient.doIt(companyId,xid);
+		productDetail = getProductFromService(companyId,xid);
 		List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
 		ProductConfiguration productConfiguration=productDetail.getProductConfigurations().get(0);
 		ProductCriteriaSet imprintCriteriaSet=imprintParser.getCriteriaSetBasedOnCriteriaCode(productConfiguration.getProductCriteriaSets(), "IMMD");

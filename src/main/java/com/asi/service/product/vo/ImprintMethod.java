@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @XmlRootElement(namespace = "http://www.asicentral.com/schema/product" , name = "imprintMethod")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name="imprintMethod", propOrder={"methodName","minimumOrder","artworkName"})
+@XmlType(propOrder={"methodName","minimumOrder","artworkName"})
 
 @JsonPropertyOrder({"methodName","minimumOrder","artworkName"})
 public class ImprintMethod {
