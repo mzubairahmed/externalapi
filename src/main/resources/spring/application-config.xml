@@ -56,12 +56,19 @@
 	     <bean id="lookupParser" class="com.asi.service.product.client.vo.parser.LookupParser">
 	       <property name="lookupClient" ref="lookupValuesClient"/>        
 	    </bean> 
+	     <bean id="criteriasParser" class="com.asi.service.product.client.vo.parser.CriteriaSetParser">
+	     	 <property name="productLookupParser" ref="lookupParser"/>   
+	    </bean>
 	    <bean id="productConfigurationParser" class="com.asi.service.product.vo.ProductConfigurationsParser">
 	     	 <property name="productLookupParser" ref="lookupParser"/>   
+	    </bean>
+	    <bean id="imprintMethodParser" class="com.asi.service.product.client.vo.parser.ImprintParser">
+	    <property name="criteriaLookupParser" ref="criteriasParser"/>   
 	    </bean>
 	    <bean id="productRepo" class="com.asi.core.repo.product.ProductRepo">
 	    	<property name="productClient" ref="productServiceClient"/>
 	    	<property name="productConfiguration" ref="productConfigurationParser"/>
+	    	<property name="imprintParser" ref="imprintMethodParser"/>
 	    </bean>
 	   	<!-- To enable @RequestMapping process on type level and method level -->
    		<bean id="productDetail" class="com.asi.service.product.client.vo.ProductDetail"/>

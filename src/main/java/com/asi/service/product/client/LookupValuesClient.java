@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
 
 import com.asi.service.product.client.vo.colors.Color;

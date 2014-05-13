@@ -97,7 +97,7 @@ public class LookupParser {
 		return valueStr;
 	}
 
-	private String getElementValue(String criteriaCode,String criteriaAttributeId,String unitValue, String unitOfMeasureCode) {
+	public String getElementValue(String criteriaCode,String criteriaAttributeId,String unitValue, String unitOfMeasureCode) {
 		String elementUnit="";
 		String elementValue="";
 		@SuppressWarnings("rawtypes")

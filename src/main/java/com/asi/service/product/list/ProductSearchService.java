@@ -46,11 +46,11 @@ public class ProductSearchService {
 	public ResponseEntity<Product> handleImprintMethods(HttpEntity<byte[]> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws UnsupportedEncodingException {
 		//String companyID="3879";
 		//int xid=1472;
-		if(_LOGGER.isTraceEnabled()) _LOGGER.trace("calling Imprint Method Service");
-		
+		if(_LOGGER.isDebugEnabled()) 
+			_LOGGER.debug("calling Imprint Method Service");
 		Product productResponse = repository.getProductImprintMethodDetails(companyId, xid);
-		HttpHeaders responseHeaders = new HttpHeaders();
-	    responseHeaders.set("MyResponseHeader", "MyValue");
-	    return new ResponseEntity<Product>(productResponse, responseHeaders, HttpStatus.OK);
+		/*HttpHeaders responseHeaders = new HttpHeaders();
+	    responseHeaders.set("MyResponseHeader", "MyValue");*/
+	    return new ResponseEntity<Product>(productResponse, null, HttpStatus.OK);
 	}
 }

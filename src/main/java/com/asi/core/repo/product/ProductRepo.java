@@ -54,6 +54,15 @@ public class ProductRepo {
 	LookupValuesClient lookupColor;
 	@Autowired
 	ProductConfigurationsParser productConfiguration;
+	@Autowired ImprintParser imprintParser;
+	
+	public ImprintParser getImprintParser() {
+		return imprintParser;
+	}
+
+	public void setImprintParser(ImprintParser imprintParser) {
+		this.imprintParser = imprintParser;
+	}
 
 	public Product getProductPrices(String companyID, String productID) {
 
@@ -161,9 +170,7 @@ public class ProductRepo {
 		Product product = new Product();
 		BeanUtils.copyProperties(productDetail, product);
 		
-		ImprintParser imprintParser=new ImprintParser();
 		List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
-		ImprintMethod imprintMethod=null;
 		//List<ProductConfiguration> productConfigurations = productDetail.getProductConfigurations();
 		ProductConfiguration productConfiguration=productDetail.getProductConfigurations().get(0);
 		ProductCriteriaSet imprintCriteriaSet=imprintParser.getCriteriaSetBasedOnCriteriaCode(productConfiguration.getProductCriteriaSets(), "IMMD");
@@ -171,56 +178,11 @@ public class ProductRepo {
 		List<CriteriaSetValue> criteriaSetValues=imprintCriteriaSet.getCriteriaSetValues();
 		for(CriteriaSetValue criteriaSetValue: criteriaSetValues)
 			{
-			imprintMethod=new ImprintMethod();
-			if(null!=criteriaSetValue.getValue() && criteriaSetValue.getValue() instanceof String)
-			{
-				imprintMethod.setMethodName(criteriaSetValue.getValue().toString());
-			}else imprintMethod.setMethodName(criteriaSetValue.getBaseLookupValue());
+			imprintMethodsList=imprintParser.getImprintMethodRelations(productDetail.getExternalProductId(),criteriaSetValue.getCriteriaSetId(),productConfiguration.getProductCriteriaSets(),productDetail.getRelationships());
 			}
-		 imprintMethodsList.add(imprintMethod);
 		}
 		
-		
-		
-	/*	
-		for(ProductConfiguration productConfiguration:productConfigurations)
-		{
-			List<ProductCriteriaSet> productCriteriaSets=productConfiguration.getProductCriteriaSets();
-			
-		for(ProductCriteriaSet productCriteriaSet:productCriteriaSets)
-		{
-			if(productCriteriaSet.getCriteriaCode().equalsIgnoreCase("IMMD"))
-			{
-				if(null==imprintMethod) imprintMethod=new ImprintMethod();
-				criteriaSetValues=productCriteriaSet.getCriteriaSetValues();
-				if(null!=criteriaSetValues && criteriaSetValues.size()>0 && criteriaSetValues.get(0).getValue() instanceof String)
-				{
-				imprintMethod.setMethodName(criteriaSetValues.get(0).getValue().toString());
-				}
-			}else if(productCriteriaSet.getCriteriaCode().equalsIgnoreCase("MINO"))
-			{
-				criteriaSetValues=productCriteriaSet.getCriteriaSetValues();
-				if(null!=criteriaSetValues && criteriaSetValues.size()>0)
-				{
-					if(criteriaSetValues.get(0).getValue() instanceof List)
-					{
-						if(null!=imprintMethod) imprintMethod.setMinimumOrder(criteriaSetValues.get(0).getFormatValue());
-						ArrayList<?> valueList=(ArrayList<?>)criteriaSetValues.get(0).getValue();
-						Iterator<?> valueItr=valueList.iterator();
-						while(valueItr.hasNext())
-						{
-							//LinkedHashMap<?, ?> valueMap=(LinkedHashMap<?, ?>)valueItr.next();
-							//valueText=valueMap.get("UnitValue").toString();
-						}
-					}else if(criteriaSetValues.get(0).getValue() instanceof String)
-					{
-						if(null!=imprintMethod) imprintMethod.setMinimumOrder(criteriaSetValues.get(0).getValue().toString());
-					}
-				}
-			}
-			if(null!=imprintMethod) imprintMethodsList.add(imprintMethod);
-		}
-		}*/
+
 		product.setImprintMethod(imprintMethodsList);
 		return product;
 	}
