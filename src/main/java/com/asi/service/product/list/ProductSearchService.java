@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.asi.core.repo.product.ProductRepo;
 import com.asi.service.product.client.vo.ProductDetail;
+import com.asi.service.product.vo.Imprints;
 import com.asi.service.product.vo.ItemPriceDetail;
 import com.asi.service.product.vo.Product;
 
@@ -43,10 +44,10 @@ public class ProductSearchService {
 	    return new ResponseEntity<ItemPriceDetail>(itemPrice, null, HttpStatus.OK);
 	}
 	@RequestMapping(value = "{companyid}/pid/{xid}/imprintMethods",method = RequestMethod.GET, headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
-	public ResponseEntity<Product> handleImprintMethods(HttpEntity<byte[]> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws UnsupportedEncodingException {
+	public ResponseEntity<Imprints> getImprintMethods(HttpEntity<byte[]> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws UnsupportedEncodingException {
 		if(_LOGGER.isDebugEnabled()) 
 			_LOGGER.debug("calling Imprint Method Service");
-		Product productResponse = repository.getProductImprintMethodDetails(companyId, xid);
-	    return new ResponseEntity<Product>(productResponse, null, HttpStatus.OK);
+		Imprints productResponse = repository.getProductImprintMethods(companyId, xid);
+	    return new ResponseEntity<Imprints>(productResponse, null, HttpStatus.OK);
 	}
 }
