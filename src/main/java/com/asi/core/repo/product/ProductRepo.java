@@ -19,6 +19,7 @@ import com.asi.service.product.client.vo.ProductCriteriaSet;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.parser.ImprintParser;
 import com.asi.service.product.vo.ImprintMethod;
+import com.asi.service.product.vo.Imprints;
 import com.asi.service.product.vo.ItemPriceDetail;
 import com.asi.service.product.vo.ItemPriceDetail.PRICE_Type;
 import com.asi.service.product.vo.PriceDetail;
@@ -63,12 +64,33 @@ public class ProductRepo {
 	public void setImprintParser(ImprintParser imprintParser) {
 		this.imprintParser = imprintParser;
 	}
+	public ProductConfigurationsParser getProductConfiguration() {
+		return productConfiguration;
+	}
 
-	public Product getProductPrices(String companyID, String productID) {
-
-		productDetail = productClient.doIt(companyID, productID);
+	public void setProductConfiguration(
+			ProductConfigurationsParser productConfiguration) {
+		this.productConfiguration = productConfiguration;
+	}
+	
+	private Product prepairProduct(String companyID, String productID)
+	{
+		productDetail = getProductFromService(companyID, productID);
 		Product product = new Product();
 		BeanUtils.copyProperties(productDetail, product);
+		return product;
+	}
+	private ProductDetail getProductFromService(String companyID, String productID)
+	{
+		if(null !=productDetail)
+			productDetail = productClient.doIt(companyID,productID);
+		
+		return productDetail;
+		
+	}	
+	public Product getProductPrices(String companyID, String productID) {
+
+		Product product = prepairProduct(companyID, productID);
 
 		List<PriceGrid> priceGrids = productDetail.getPriceGrids();
 		List<ItemPriceDetail> pricesInfo = new ArrayList<ItemPriceDetail>();
@@ -87,17 +109,17 @@ public class ProductRepo {
 		return product;
 		
 	}
+
 	public Product getProductPrices(String companyID, String productID,Integer priceGridID)
 	{
 	    
-		productDetail = productClient.doIt(companyID,productID);
+		productDetail = getProductFromService(companyID,productID);
 		
 		List<PriceGrid> priceGrids = productDetail.getPriceGrids();
 		List<ItemPriceDetail> pricesInfo = new ArrayList<ItemPriceDetail>();
 		ItemPriceDetail itemPrice;
 
-		Product product = new Product();
-		BeanUtils.copyProperties(productDetail, product);
+		Product product = prepairProduct(companyID, productID);
 		
 		for(PriceGrid prices:priceGrids)
 		{
@@ -142,7 +164,7 @@ public class ProductRepo {
 		}
         itemPrice.setProductID(productDetail.getName());
         itemPrice.setPriceDetails(pricesList);
-	 String[] basePriceCriterias=productConfiguration.getPriceCriteria(productDetail,priceGrid.getID());
+        String[] basePriceCriterias=productConfiguration.getPriceCriteria(productDetail,priceGrid.getID());
         if(null!=basePriceCriterias && basePriceCriterias.length>0)
         {
         	itemPrice.setFirstPriceCriteria(basePriceCriterias[0]);
@@ -156,22 +178,15 @@ public class ProductRepo {
 
 	}
 
-	public ProductConfigurationsParser getProductConfiguration() {
-		return productConfiguration;
-	}
-
-	public void setProductConfiguration(
-			ProductConfigurationsParser productConfiguration) {
-		this.productConfiguration = productConfiguration;
-	}
-
 	public Product getProductImprintMethodDetails(String companyId, String xid) {
-		productDetail = productClient.doIt(companyId,xid);
-		Product product = new Product();
-		BeanUtils.copyProperties(productDetail, product);
-		
+		Product product = prepairProduct(companyId, xid);
+		product.setImprints(getProductImprintMethods(companyId, xid));
+		return product;
+	}
+	
+	public Imprints getProductImprintMethods(String companyId, String xid) {
+		productDetail = getProductFromService(companyId,xid);
 		List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
-		//List<ProductConfiguration> productConfigurations = productDetail.getProductConfigurations();
 		ProductConfiguration productConfiguration=productDetail.getProductConfigurations().get(0);
 		ProductCriteriaSet imprintCriteriaSet=imprintParser.getCriteriaSetBasedOnCriteriaCode(productConfiguration.getProductCriteriaSets(), "IMMD");
 		if(null!=imprintCriteriaSet){
@@ -181,9 +196,9 @@ public class ProductRepo {
 			imprintMethodsList=imprintParser.getImprintMethodRelations(productDetail.getExternalProductId(),criteriaSetValue.getCriteriaSetId(),productConfiguration.getProductCriteriaSets(),productDetail.getRelationships());
 			}
 		}
+		Imprints imprints = new Imprints();
+		imprints.setImprintMethod(imprintMethodsList);
+		return imprints;
 		
-
-		product.setImprintMethod(imprintMethodsList);
-		return product;
 	}
 }
