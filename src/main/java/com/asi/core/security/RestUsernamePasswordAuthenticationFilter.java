@@ -12,6 +12,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 public class RestUsernamePasswordAuthenticationFilter extends
 		UsernamePasswordAuthenticationFilter {
+	@SuppressWarnings("deprecation")
 	@Override
 	protected boolean requiresAuthentication(HttpServletRequest request,
 			HttpServletResponse response) {
