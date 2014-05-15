@@ -21,7 +21,7 @@ import com.asi.service.product.vo.ItemPriceDetail;
 import com.asi.service.product.vo.Product;
 
 @RestController
-@RequestMapping("api")
+@RequestMapping("resources")
 public class ProductSearchService {
 	@Autowired ProductDetail serviceResponse; 
 	@Autowired ProductRepo repository;
