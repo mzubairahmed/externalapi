@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.ProductClient;
@@ -18,6 +19,7 @@ import com.asi.service.product.client.vo.ProductConfiguration;
 import com.asi.service.product.client.vo.ProductCriteriaSet;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.parser.ImprintParser;
+import com.asi.service.product.exception.ProductNotFoundException;
 import com.asi.service.product.vo.ImprintMethod;
 import com.asi.service.product.vo.Imprints;
 import com.asi.service.product.vo.ItemPriceDetail;
@@ -28,7 +30,7 @@ import com.asi.service.product.vo.ProductConfigurationsParser;
 
 
 
-
+@Component
 public class ProductRepo {
 	private final static Logger _LOGGER = LoggerFactory.getLogger(ProductRepo.class);
 	/**
@@ -73,14 +75,14 @@ public class ProductRepo {
 		this.productConfiguration = productConfiguration;
 	}
 	
-	private Product prepairProduct(String companyID, String productID)
+	private Product prepairProduct(String companyID, String productID) throws ProductNotFoundException
 	{
 		productDetail = getProductFromService(companyID, productID);
 		Product product = new Product();
 		BeanUtils.copyProperties(productDetail, product);
 		return product;
 	}
-	private ProductDetail getProductFromService(String companyID, String productID)
+	private ProductDetail getProductFromService(String companyID, String productID) throws ProductNotFoundException
 	{
 		if(null !=productDetail)
 			productDetail = productClient.doIt(companyID,productID);
@@ -88,7 +90,7 @@ public class ProductRepo {
 		return productDetail;
 		
 	}	
-	public Product getProductPrices(String companyID, String productID) {
+	public Product getProductPrices(String companyID, String productID) throws ProductNotFoundException {
 
 		Product product = prepairProduct(companyID, productID);
 
@@ -110,7 +112,7 @@ public class ProductRepo {
 		
 	}
 
-	public Product getProductPrices(String companyID, String productID,Integer priceGridID)
+	public Product getProductPrices(String companyID, String productID,Integer priceGridID) throws ProductNotFoundException
 	{
 	    
 		productDetail = getProductFromService(companyID,productID);
@@ -178,13 +180,13 @@ public class ProductRepo {
 
 	}
 
-	public Product getProductImprintMethodDetails(String companyId, String xid) {
+	public Product getProductImprintMethodDetails(String companyId, String xid) throws ProductNotFoundException {
 		Product product = prepairProduct(companyId, xid);
 		product.setImprints(getProductImprintMethods(companyId, xid));
 		return product;
 	}
 	
-	public Imprints getProductImprintMethods(String companyId, String xid) {
+	public Imprints getProductImprintMethods(String companyId, String xid) throws ProductNotFoundException {
 		productDetail = getProductFromService(companyId,xid);
 		List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
 		ProductConfiguration productConfiguration=productDetail.getProductConfigurations().get(0);
