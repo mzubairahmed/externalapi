@@ -2,6 +2,8 @@ package com.asi.service.product.list;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,13 +36,13 @@ import com.asi.service.product.vo.Product;
 public class ProductSearchService {
 	@Autowired ProductDetail serviceResponse; 
 	@Autowired ProductRepo repository;
-	private Logger _LOGGER = LoggerFactory.getLogger(ProductSearchService.class);
+	private static Logger _LOGGER = LoggerFactory.getLogger(ProductSearchService.class);
 	@Autowired
 	private MessageSource messageSource;
 	
 	@Secured("ROLE_CUSTOMER")
 	@RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.GET,headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
-	public ResponseEntity<Product> getProduct(HttpEntity<byte[]> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws UnsupportedEncodingException, ProductNotFoundException {
+	public ResponseEntity<Product> getProduct(@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws UnsupportedEncodingException, ProductNotFoundException {
 		if(_LOGGER.isDebugEnabled()) 
 			_LOGGER.debug("calling service");
 		Product productResponse = repository.getProductPrices(companyId, xid);
@@ -49,14 +51,14 @@ public class ProductSearchService {
 	}
 	@Secured("ROLE_CUSTOMER")
 	@RequestMapping(value = "{companyid}/pid/{xid}/price/{priceGridId}", method = RequestMethod.GET, headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
-	public ResponseEntity<ItemPriceDetail> getPrice(HttpEntity<byte[]> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid,@PathVariable("priceGridId") Integer priceGridId) throws UnsupportedEncodingException, ProductNotFoundException {
+	public ResponseEntity<ItemPriceDetail> getPrice(@PathVariable("companyid") String companyId, @PathVariable("xid") String xid,@PathVariable("priceGridId") Integer priceGridId) throws UnsupportedEncodingException, ProductNotFoundException {
 		if(_LOGGER.isDebugEnabled()) 
 			_LOGGER.debug("calling service with priceid");	
 		ItemPriceDetail itemPrice = repository.getProductPrices(companyId, xid,priceGridId).getItemPrice().get(0);
 	    return new ResponseEntity<ItemPriceDetail>(itemPrice, null, HttpStatus.OK);
 	}
 	@RequestMapping(value = "{companyid}/pid/{xid}/imprintMethods",method = RequestMethod.GET, headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
-	public ResponseEntity<Imprints> getImprintMethods(HttpEntity<byte[]> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws UnsupportedEncodingException, ProductNotFoundException {
+	public ResponseEntity<Imprints> getImprintMethods(@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws UnsupportedEncodingException, ProductNotFoundException {
 		if(_LOGGER.isDebugEnabled()) 
 			_LOGGER.debug("calling Imprint Method Service");
 		Imprints productResponse = repository.getProductImprintMethods(companyId, xid);
@@ -97,6 +99,9 @@ public class ProductSearchService {
 		errorInfo.setErrorMessage(errorMessage);
 		errorInfo.setErrorURL(errorURL);
 		errorInfo.setStatusCode(HttpStatus.NOT_FOUND);
+		List<String> errorsList = new ArrayList<String>();
+		errorsList.add(ex.getMessage());
+		errorInfo.setErrors(errorsList);
 		_LOGGER.error(errorMessage + errorURL);
 		return new ResponseEntity<ErrorMessage>(errorInfo, null, HttpStatus.NOT_FOUND);
 	}	

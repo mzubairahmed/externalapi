@@ -9,12 +9,14 @@ import org.springframework.web.client.RestTemplate;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.exception.ProductNotFoundException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class ProductClient {
 	@Autowired  @Qualifier("restTemplate")  RestTemplate restTemplate;
 	private String productSearchUrl;
-
+	private static Logger _LOGGER = LoggerFactory.getLogger(ProductClient.class);
 
 
 	public ProductDetail doIt(String companyID,String productID) throws ProductNotFoundException {
@@ -34,7 +36,10 @@ public class ProductClient {
 		
 		 } catch(RestClientException ex)
 		 {
-			 throw new ProductNotFoundException(productID);
+			 _LOGGER.error(ex.getMessage());
+			 ProductNotFoundException exc = new ProductNotFoundException(ex.getMessage(), ex.getCause());
+			 exc.setProductID(productID);
+			 throw exc;
 		 }
 		 return product;
 	 }

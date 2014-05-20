@@ -1,10 +1,8 @@
 package com.asi.service.product.exception;
 
-import java.io.IOException;
-
 import org.springframework.http.HttpStatus;
 
-public class ProductNotFoundException extends IOException {
+public class ProductNotFoundException extends Exception {
 
 	/**
 	 * 
@@ -14,11 +12,16 @@ public class ProductNotFoundException extends IOException {
 	private HttpStatus statusCode;
 	public ProductNotFoundException(String productID)
 	{
+		
 		this.productID = productID;
 	}
 
 	public String getProductID() {
 		return productID;
+	}
+
+	public void setProductID(String productID) {
+		this.productID = productID;
 	}
 
 	public HttpStatus getStatusCode() {
@@ -27,6 +30,10 @@ public class ProductNotFoundException extends IOException {
 
 	public void setStatusCode(HttpStatus statusCode) {
 		this.statusCode = statusCode;
+	}
+
+	public ProductNotFoundException(String message, Throwable throwable) {
+		super(throwable);
 	}
 
 }

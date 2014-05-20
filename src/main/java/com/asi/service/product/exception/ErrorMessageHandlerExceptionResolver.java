@@ -45,7 +45,8 @@ public class ErrorMessageHandlerExceptionResolver extends AbstractHandlerExcepti
     @SuppressWarnings("unchecked")
     @Override
     protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-        ErrorMessageFactory errorMessageFactory = errorMessageFactories.get(ex.getClass());
+        @SuppressWarnings("rawtypes")
+		ErrorMessageFactory errorMessageFactory = errorMessageFactories.get(ex.getClass());
         if (errorMessageFactory != null) {
             response.setStatus(errorMessageFactory.getResponseCode());
             ErrorMessage errorMessage = errorMessageFactory.getErrorMessage(ex);
