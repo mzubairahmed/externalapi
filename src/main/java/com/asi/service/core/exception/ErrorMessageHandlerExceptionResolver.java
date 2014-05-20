@@ -1,4 +1,4 @@
-package com.asi.service.product.exception;
+package com.asi.service.core.exception;
 
 import java.io.IOException;
 import java.util.Collections;

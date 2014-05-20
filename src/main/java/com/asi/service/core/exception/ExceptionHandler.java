@@ -1,4 +1,4 @@
-package com.asi.service.product.exception;
+package com.asi.service.core.exception;
 
 import java.util.ArrayList;
 import java.util.List;

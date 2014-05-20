@@ -1,7 +1,8 @@
-package com.asi.service.product.exception;
+package com.asi.service.core.exception;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -12,16 +13,34 @@ import org.springframework.http.HttpStatus;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @XmlRootElement(namespace = "http://www.asicentral.com/schema/error" , name="errorInfo")
-@XmlType(propOrder={"errorMessage","errorURL","statusCode","errors"})
-@JsonPropertyOrder({"errorMessage","errorURL","statusCode","errors"})
+@XmlType(propOrder={"errorMessage","errorURL","statusCode","errors","errorDate","remoteHost"})
+@JsonPropertyOrder({"errorMessage","errorURL","statusCode","errors","errorDate","remoteHost"})
 public class ErrorMessage {
 	private String errorMessage=null;
 	private String errorURL;
 	private HttpStatus statusCode;
+	private Date errorDate;
+	private String remoteHost;
 	
 	
 
-    public String getErrorMessage() {
+    public Date getErrorDate() {
+		return errorDate;
+	}
+
+	public void setErrorDate(Date errorDate) {
+		this.errorDate = errorDate;
+	}
+
+	public String getRemoteHost() {
+		return remoteHost;
+	}
+
+	public void setRemoteHost(String remoteHost) {
+		this.remoteHost = remoteHost;
+	}
+
+	public String getErrorMessage() {
 		return errorMessage;
 	}
 

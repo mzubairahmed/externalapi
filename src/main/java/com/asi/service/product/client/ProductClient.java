@@ -1,5 +1,7 @@
 package com.asi.service.product.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -8,9 +10,6 @@ import org.springframework.web.client.RestTemplate;
 
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.exception.ProductNotFoundException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Component
 public class ProductClient {
@@ -37,8 +36,7 @@ public class ProductClient {
 		 } catch(RestClientException ex)
 		 {
 			 _LOGGER.error(ex.getMessage());
-			 ProductNotFoundException exc = new ProductNotFoundException(ex.getMessage(), ex.getCause());
-			 exc.setProductID(productID);
+			 ProductNotFoundException exc = new ProductNotFoundException(productID);
 			 throw exc;
 		 }
 		 return product;

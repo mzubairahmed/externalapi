@@ -1,4 +1,4 @@
-package com.asi.service.product.exception;
+package com.asi.service.core.exception;
 
 public interface ErrorMessageFactory<T extends Exception> {
 
