@@ -1,4 +1,4 @@
-package com.asi.service.core.exception;
+package com.asi.core.exception;
 
 import java.util.List;
 import java.util.Locale;

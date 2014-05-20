@@ -4,4 +4,4 @@
           @javax.xml.bind.annotation.XmlNs(prefix = "error", namespaceURI ="http://www.asicentral.com/schema/error")
             }, 
     elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
-    package com.asi.service.core.exception;
+    package com.asi.core.exception;

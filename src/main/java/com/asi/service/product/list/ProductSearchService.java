@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.asi.core.exception.ErrorMessage;
+import com.asi.core.exception.ErrorMessageHandler;
 import com.asi.core.repo.product.ProductRepo;
-import com.asi.service.core.exception.ErrorMessage;
-import com.asi.service.core.exception.ErrorMessageHandler;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.exception.ProductNotFoundException;
 import com.asi.service.product.vo.Imprints;
