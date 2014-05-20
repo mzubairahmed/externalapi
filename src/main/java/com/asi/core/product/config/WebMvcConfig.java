@@ -1,30 +1,25 @@
 package com.asi.core.product.config;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-
-import com.asi.service.core.exception.ErrorMessageFactory;
-import com.asi.service.core.exception.ErrorMessageHandlerExceptionResolver;
-import com.asi.service.core.exception.HttpMediaTypeNotSupportedExceptionErrorMessageFactory;
 
 
 
-@Configuration
+//@Configuration
 //@PropertySource({"classpath:dev-environment.properties", "classpath:velocity-import.properties"})
-public class WebMvcConfig extends WebMvcConfigurationSupport {
-	@Bean(name="errorMessageHandlerExceptionResolver")
-    public ErrorMessageHandlerExceptionResolver createErrorMessageHandlerExceptionResolver() {
-		ErrorMessageHandlerExceptionResolver r =
-              new ErrorMessageHandlerExceptionResolver();
-		ErrorMessageFactory<?>[] errorMessageFactories = new ErrorMessageFactory<?>[1];
-		HttpMediaTypeNotSupportedExceptionErrorMessageFactory hmtException =new HttpMediaTypeNotSupportedExceptionErrorMessageFactory();
-		errorMessageFactories[0]=hmtException;
+public class WebMvcConfig{
+//	extends WebMvcConfigurationSupport {
 
-		r.setErrorMessageFactories(errorMessageFactories);
-
-        return r;
-    }
+//	@Bean(name="errorMessageHandlerExceptionResolver")
+//    public ErrorMessageHandlerExceptionResolver createErrorMessageHandlerExceptionResolver() {
+//		ErrorMessageHandlerExceptionResolver r =
+//              new ErrorMessageHandlerExceptionResolver();
+//		ErrorMessageFactory<?>[] errorMessageFactories = new ErrorMessageFactory<?>[1];
+//		HttpMediaTypeNotSupportedExceptionErrorMessageFactory hmtException =new HttpMediaTypeNotSupportedExceptionErrorMessageFactory();
+//		errorMessageFactories[0]=hmtException;
+//
+//		r.setErrorMessageFactories(errorMessageFactories);
+//
+//        return r;
+//    }
 //	 @Bean
 //	 public RequestMappingHandlerMapping requestMappingHandlerMapping() {
 //	  RequestMappingHandlerMapping handlerMapping = super.requestMappingHandlerMapping();
