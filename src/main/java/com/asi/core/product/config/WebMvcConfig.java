@@ -1,40 +1,38 @@
 package com.asi.core.product.config;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.BufferedImageHttpMessageConverter;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.web.accept.ContentNegotiationManagerFactoryBean;
-import org.springframework.web.client.RestOperations;
-import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import com.asi.core.repo.product.ProductRepo;
-import com.asi.service.product.client.ProductClient;
+import com.asi.service.product.exception.ErrorMessageFactory;
+import com.asi.service.product.exception.ErrorMessageHandlerExceptionResolver;
+import com.asi.service.product.exception.HttpMediaTypeNotSupportedExceptionErrorMessageFactory;
 
 
 
-//@Configuration
-//@EnableWebMvc
+@Configuration
 //@PropertySource({"classpath:dev-environment.properties", "classpath:velocity-import.properties"})
-public class WebMvcConfig{// extends WebMvcConfigurerAdapter {
+public class WebMvcConfig extends WebMvcConfigurationSupport {
+	@Bean(name="errorMessageHandlerExceptionResolver")
+    public ErrorMessageHandlerExceptionResolver createErrorMessageHandlerExceptionResolver() {
+		ErrorMessageHandlerExceptionResolver r =
+              new ErrorMessageHandlerExceptionResolver();
+		ErrorMessageFactory<?>[] errorMessageFactories = new ErrorMessageFactory<?>[1];
+		HttpMediaTypeNotSupportedExceptionErrorMessageFactory hmtException =new HttpMediaTypeNotSupportedExceptionErrorMessageFactory();
+		errorMessageFactories[0]=hmtException;
 
+		r.setErrorMessageFactories(errorMessageFactories);
+
+        return r;
+    }
+//	 @Bean
+//	 public RequestMappingHandlerMapping requestMappingHandlerMapping() {
+//	  RequestMappingHandlerMapping handlerMapping = super.requestMappingHandlerMapping();
+//	  handlerMapping.setUseSuffixPatternMatch(false);
+//	  handlerMapping.setUseTrailingSlashMatch(false);
+//	  return handlerMapping;
+//	 } 
 	/*
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {

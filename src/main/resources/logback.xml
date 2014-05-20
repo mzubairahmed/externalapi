@@ -19,7 +19,7 @@ See here for more details: http://gordondickens.com/wordpress/2013/03/27/sawing-
 	<!--<logger name="org.hibernate" level="debug"/> -->
    <!-- Uncomment and add your logger here:
     <logger name="org.springframework.samples.service.service" level="debug"/> -->
-     <logger name="com.asi.core.repo.product" level="debug"/>    
+     <logger name="com.asi.*" level="debug"/>    
      <logger name="org.springframework.*" level="debug"/>
     <root level="debug">
         <appender-ref ref="console"/>
