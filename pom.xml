@@ -17,8 +17,6 @@
 		<jsp.version>2.2</jsp.version>
 		<jstl.version>1.2</jstl.version>
 		<servlet.version>2.5</servlet.version>
-		<project.build.directory>D:\\WebSites\\service\\MuleService</project.build.directory>
-
 		<!-- Spring -->
 		<spring-framework.version>4.0.3.RELEASE</spring-framework.version>
 		<spring.security.version>3.2.2.RELEASE</spring.security.version>
@@ -324,10 +322,7 @@
  	        <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>2.2</version>
-		        <configuration>
-		          <webappDirectory>D:/tomcat-7.0.52/webapps</webappDirectory>
-		        </configuration>				
+				<version>2.2</version>				
 			</plugin>
         </plugins>
         </pluginManagement>	
