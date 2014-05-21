@@ -1,4 +1,4 @@
-package com.asi.core.exception;
+package com.asi.service.core.exception;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.asi.core.exception.ErrorMessage;
 
 @Controller
 public class ExceptionHandler {
@@ -33,4 +34,3 @@ public class ExceptionHandler {
 	    return new ErrorMessage(errors);
 	}
 }
-
