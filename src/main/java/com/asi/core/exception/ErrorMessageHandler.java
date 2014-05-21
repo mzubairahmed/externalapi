@@ -18,15 +18,7 @@ public final class ErrorMessageHandler {
 	private  MessageSource messageSource;
 	public  ErrorMessage prepairError(BaseException exception,  HttpServletRequest request,List<String> errorsList,HttpStatus status)
 	{
-		Locale locale = LocaleContextHolder.getLocale();
-		String errorMessage = messageSource.getMessage(exception.getErrorCode(), null, locale);
-    	errorMessage += " " + exception.getProductID();
-        String errorURL = request.getRequestURL().toString();
-        ErrorMessage errorInfo = new ErrorMessage();
-		errorInfo.setErrorMessage(errorMessage);
-		errorInfo.setErrorURL(errorURL);
-		errorInfo.setStatusCode(status);
-		errorInfo.setErrors(errorsList);
+		ErrorMessage errorInfo = prepairError(exception.getErrorCode(),request,errorsList,status);
 		return errorInfo;
 	}
 	public ErrorMessage prepairError(String errorKey, HttpServletRequest request, List<String> errorsList, HttpStatus status)
@@ -38,6 +30,7 @@ public final class ErrorMessageHandler {
 		errorInfo.setErrorMessage(errorMessage);
 		errorInfo.setErrorURL(errorURL);
 		errorInfo.setStatusCode(status);
+		errorInfo.setRemoteHost(request.getRemoteHost());
 		errorInfo.setErrors(errorsList);
 		return errorInfo;
 	}
