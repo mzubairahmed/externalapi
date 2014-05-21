@@ -17,7 +17,7 @@ import com.asi.service.product.vo.ServiceVersion;
 public class ServiceHeathCheck {
 
 	@RequestMapping(value = "status", method = RequestMethod.GET,headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
-	public ResponseEntity<ServiceVersion> getProduct() throws UnsupportedEncodingException {
+	public ResponseEntity<ServiceVersion> serviceInfo() throws UnsupportedEncodingException {
 		ServiceVersion version = new ServiceVersion();
 		RuntimeMXBean mx = ManagementFactory.getRuntimeMXBean();
 		version.setBootClassPath(mx.getBootClassPath());
