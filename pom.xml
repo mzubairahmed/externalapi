@@ -254,7 +254,7 @@
 	            <version>2.1</version>
 	            <configuration>
 	                <path>/productService</path>
-			<url>${asi.tomcat.server.url}</url>
+			<url>http://${asi.tomcat.server.url}/manager/text</url>
 			<server>${asi.tomcat.server.name}</server>              
 	                <extraDependencies>
 					   <dependency>
