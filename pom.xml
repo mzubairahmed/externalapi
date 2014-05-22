@@ -2,11 +2,11 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.asi.service</groupId>
   <artifactId>productService</artifactId>
-  <version>0.0.1</version>
+  <version>${build.number}</version>
   <packaging>war</packaging>
   
     <properties>
-
+		<build.number>0.0.1</build.number>
 		<!-- Generic properties -->
 		<java.version>1.7</java.version> 
 		<project>>productService</project>
