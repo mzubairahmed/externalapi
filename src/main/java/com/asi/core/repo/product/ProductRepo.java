@@ -1,8 +1,16 @@
 package com.asi.core.repo.product;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -202,5 +210,25 @@ public class ProductRepo {
 		imprints.setImprintMethod(imprintMethodsList);
 		return imprints;
 		
+	}
+
+	public Product updateProductBasePrices(Product currentProduct) throws Exception {
+	//	ArrayList<ItemPriceDetail> pricesList=(ArrayList<ItemPriceDetail>) currentProduct.getItemPrice();
+		ClientRequest request = new ClientRequest(
+				"http://stage-espupdates.asicentral.com/api/api/ProductImport/?");
+			request.accept("application/json");
+			String input = parameterAsJSON(currentProduct);
+			request.body("application/json", input);
+			ClientResponse<String> response = request.post(String.class);
+	 		return currentProduct;
+	}
+	private String parameterAsJSON(Product product) throws JAXBException {
+		JAXBContext jaxbContext=JAXBContext.newInstance(Product.class);
+		StringWriter stringWriter = new StringWriter();
+		Marshaller marshaller = jaxbContext.createMarshaller();
+		marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+		marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
+		marshaller.marshal(product, stringWriter);
+		return stringWriter.toString();
 	}
 }

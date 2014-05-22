@@ -37,4 +37,15 @@ public class ProductService {
 		Product productResponse = requestEntity.getBody();
 		return new ResponseEntity<Product>(productResponse, null, HttpStatus.CREATED);
 	}
+	@RequestMapping(value = "{companyid}/pid/{xid}/basePrices",method = RequestMethod.POST, headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<Product> getBasePrices(HttpEntity<Product> product) throws Exception {
+		//,HttpEntity<byte[]> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid
+		if(_LOGGER.isDebugEnabled()) 
+			_LOGGER.debug("calling Base Price Service Updation");
+		
+		
+		
+		Product productResponse = repository.updateProductBasePrices(product.getBody());
+	    return new ResponseEntity<Product>(productResponse, null, HttpStatus.OK);
+	  	}
 }
