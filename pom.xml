@@ -31,11 +31,14 @@
 
 		<!-- Test -->
 		<junit.version>4.11</junit.version>
-        <jdk5Name>J2SE-1.7</jdk5Name>
-        <jdk.version>1.7</jdk.version>
-        <antVersion>1.7.0</antVersion>
-        <antlrVersion>3.1.1</antlrVersion>
-        <derbyVersion>10.10.1.1</derbyVersion>
+	        <jdk5Name>J2SE-1.7</jdk5Name>
+	        <jdk.version>1.7</jdk.version>
+	        <antVersion>1.7.0</antVersion>
+	        <antlrVersion>3.1.1</antlrVersion>
+	        <derbyVersion>10.10.1.1</derbyVersion>
+	        <!-- Environment Properties -->
+	        <asi.tomcat.server.url></asi.tomcat.server.url>
+	        <asi.tomcat.server.name></asi.tomcat.server.name>	        
 	</properties>
 	
 	<dependencies>	    
@@ -251,8 +254,8 @@
 	            <version>2.1</version>
 	            <configuration>
 	                <path>/productService</path>
-					<url>http://asi-tfsbld-03.asinetwork.local:8085/manager/text</url>
-					<server>TomcatServer</server>                
+			<url>${asi.tomcat.server.url}</url>
+			<server>${asi.tomcat.server.name}</server>              
 	                <extraDependencies>
 					   <dependency>
 					        <groupId>org.slf4j</groupId>
