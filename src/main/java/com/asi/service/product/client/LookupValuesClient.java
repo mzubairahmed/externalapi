@@ -10,6 +10,7 @@ import org.springframework.web.client.RestOperations;
 import com.asi.service.product.client.vo.colors.Color;
 import com.asi.service.product.client.vo.criteria.Criterium;
 import com.asi.service.product.client.vo.material.Material;
+import com.asi.service.product.client.vo.origin.Origin;
 
 
 public class LookupValuesClient {
@@ -19,12 +20,31 @@ public class LookupValuesClient {
 	private String lookupSizeURL;
 	private String lookupMaterialURL;
 	private String lookupcriteriaAttributeURL;
+	private String originLookupURL;
+	
+	public String getOriginLookupURL() {
+		return originLookupURL;
+	}
+
+
+
+	public void setOriginLookupURL(String originLookupURL) {
+		this.originLookupURL = originLookupURL;
+	}
+
+
+
 	@Cacheable("lookupCache")
 	public ArrayList<Color> getColor()
 	 {
 		return getColorFromLookup(lookupColorURL);
 		
 	 }
+	@Cacheable("lookupCache")
+	public ArrayList<Origin> getOrigin()
+	{
+		return getOriginFromLookup(originLookupURL);
+	}
 	
 	
 
@@ -58,6 +78,13 @@ public class LookupValuesClient {
 		ArrayList<Material> material = lookupRestTemplate.getForObject(materialLookupURL,ArrayList.class);
 		return material;
 	}
+	@Cacheable(value="lookupCache",key="#originLookupURL")
+	public ArrayList<Origin> getOriginFromLookup(String originLookupURL)
+	{
+		@SuppressWarnings("unchecked")
+		ArrayList<Origin> serviceOrigin = lookupRestTemplate.getForObject(originLookupURL,ArrayList.class);
+		return serviceOrigin;
+	}	
 
 	/**
 	 * @return the lookupColorURL

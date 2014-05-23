@@ -16,6 +16,9 @@ import com.asi.service.lookup.vo.Colors;
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.vo.colors.CodeValueGroup;
 import com.asi.service.product.client.vo.colors.SetCodeValue;
+import com.asi.service.product.client.vo.origin.Origin;
+import com.asi.service.product.vo.CountryOfOrigin;
+import com.asi.service.product.vo.OriginOfCountries;
 
 @Component
 public class LookupValuesRepo {
@@ -112,5 +115,22 @@ public class LookupValuesRepo {
 			colors.setiD(codeValue.getID().toString());			
 		}
 		return colors;
+	}
+	
+	public OriginOfCountries getOrigin()
+	{
+		List<?> serviceOrigin = lookupClient.getOrigin();
+		List<CountryOfOrigin> countryOfOrigin = new ArrayList<CountryOfOrigin>();
+		Iterator<LinkedHashMap> origins = (Iterator<LinkedHashMap>) serviceOrigin.iterator();
+		while (origins.hasNext()) {
+			Map<?, ?> origin = (LinkedHashMap<?, ?>) origins.next();
+			CountryOfOrigin country = new CountryOfOrigin();
+			country.setId(origin.get("ID").toString());
+			country.setCountryOfOrigin(origin.get("CodeValue").toString());
+			countryOfOrigin.add(country);
+		}
+		OriginOfCountries originofCountries = new OriginOfCountries();
+		originofCountries.setOriginOfCountryList(countryOfOrigin);
+		return originofCountries;
 	}
 }

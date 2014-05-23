@@ -6,7 +6,7 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(namespace = "http://www.asicentral.com/schema/health" , name="serviceHealth")
+@XmlRootElement(namespace = "http://www.asicentral.com/schema/product" , name="serviceHealth")
 public class ServiceVersion {
 
 	private String version="v.0.0.1";
