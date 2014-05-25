@@ -16,7 +16,6 @@ import com.asi.service.lookup.vo.Colors;
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.vo.colors.CodeValueGroup;
 import com.asi.service.product.client.vo.colors.SetCodeValue;
-import com.asi.service.product.client.vo.origin.Origin;
 import com.asi.service.product.vo.CountryOfOrigin;
 import com.asi.service.product.vo.OriginOfCountries;
 
@@ -35,58 +34,60 @@ public class LookupValuesRepo {
 			AsiColor asiColor = new AsiColor();
 			asiColor.setDisplayName((String)crntColorJson.get("DisplayName"));
 			asiColor.setDescription((String)crntColorJson.get("Description"));
-			
-			@SuppressWarnings({ "rawtypes" })
-			ArrayList<LinkedHashMap> codeValueGrps = (ArrayList<LinkedHashMap>) crntColorJson.get("CodeValueGroups");
-			@SuppressWarnings("rawtypes")
-			Iterator<LinkedHashMap> iterator = codeValueGrps.iterator();
-			List<Colors> colorsList = new ArrayList<Colors>();
-
-			while (iterator.hasNext()) {
-				Colors colors = new Colors();
+			if(crntColorJson.containsKey("CodeValueGroups"))
+			{
 				@SuppressWarnings({ "rawtypes" })
-				Map codeValueGrpsMap = (LinkedHashMap) iterator.next();
-				if (null != codeValueGrpsMap.get("DisplayName"))
-				{
-					colors.setCode(codeValueGrpsMap.get("Code").toString()); 
-					colors.setDisplayName(codeValueGrpsMap.get("DisplayName").toString());
-					colors.setDescription(codeValueGrpsMap.get("Description").toString());
-				}
-				@SuppressWarnings("rawtypes")
-				ArrayList finalLst = (ArrayList) codeValueGrpsMap.get("SetCodeValues");
-				@SuppressWarnings("rawtypes")
-				Iterator finalItr = finalLst.iterator();
-				if (finalItr.hasNext()) {
-					@SuppressWarnings("rawtypes")
-					Map finalMap = (LinkedHashMap) finalItr.next();
-					// LOGGER.info("ID:"+finalMap.get("ID"));
-					String colorID = finalMap.get("ID").toString();
-					colors.setiD(colorID);
-				}
-				@SuppressWarnings("rawtypes")
-				LinkedHashMap  colorHueMap = (LinkedHashMap) codeValueGrpsMap.get("ColorHue");
-				String hueCode="";
-				String hueDescription="";
-				String hueDisplayName=""; 
-				if(colorHueMap.containsKey("Code"))
-					hueCode = colorHueMap.get("Code").toString();
-				if(colorHueMap.containsKey("Code"))
-					hueDescription = colorHueMap.get("Description").toString();
-				if(colorHueMap.containsKey("Code"))
-					hueDisplayName = colorHueMap.get("DisplayName").toString();
-					ColorHue colorHue = new ColorHue();					
-					colorHue.setCode(hueCode);
-					colorHue.setDescription(hueDescription);
-					colorHue.setDisplayName(hueDisplayName);
-					colors.setColorHue(colorHue);
-				
-				colorsList.add(colors);
-			}
-			asiColor.setColor(colorsList);
-			asiColorList.add(asiColor);
-		}	
-		
+				ArrayList<LinkedHashMap> codeValueGrps = (ArrayList<LinkedHashMap>) crntColorJson.get("CodeValueGroups");
 
+				@SuppressWarnings("rawtypes")
+				Iterator<LinkedHashMap> iterator = codeValueGrps.iterator();
+				List<Colors> colorsList = new ArrayList<Colors>();
+	
+				while (iterator.hasNext()) {
+					Colors colors = new Colors();
+					@SuppressWarnings({ "rawtypes" })
+					Map codeValueGrpsMap = (LinkedHashMap) iterator.next();
+					if (null != codeValueGrpsMap.get("DisplayName"))
+					{
+						colors.setCode(codeValueGrpsMap.get("Code").toString()); 
+						colors.setDisplayName(codeValueGrpsMap.get("DisplayName").toString());
+						colors.setDescription(codeValueGrpsMap.get("Description").toString());
+					}
+					@SuppressWarnings("rawtypes")
+					ArrayList finalLst = (ArrayList) codeValueGrpsMap.get("SetCodeValues");
+					@SuppressWarnings("rawtypes")
+					Iterator finalItr = finalLst.iterator();
+					if (finalItr.hasNext()) {
+						@SuppressWarnings("rawtypes")
+						Map finalMap = (LinkedHashMap) finalItr.next();
+						// LOGGER.info("ID:"+finalMap.get("ID"));
+						String colorID = finalMap.get("ID").toString();
+						colors.setiD(colorID);
+					}
+					@SuppressWarnings("rawtypes")
+					LinkedHashMap  colorHueMap = (LinkedHashMap) codeValueGrpsMap.get("ColorHue");
+					String hueCode="";
+					String hueDescription="";
+					String hueDisplayName=""; 
+					if(colorHueMap.containsKey("Code"))
+						hueCode = colorHueMap.get("Code").toString();
+					if(colorHueMap.containsKey("Code"))
+						hueDescription = colorHueMap.get("Description").toString();
+					if(colorHueMap.containsKey("Code"))
+						hueDisplayName = colorHueMap.get("DisplayName").toString();
+						ColorHue colorHue = new ColorHue();					
+						colorHue.setCode(hueCode);
+						colorHue.setDescription(hueDescription);
+						colorHue.setDisplayName(hueDisplayName);
+						colors.setColorHue(colorHue);
+					
+					colorsList.add(colors);
+				}
+				asiColor.setColor(colorsList);
+				asiColorList.add(asiColor);
+			}	
+			
+		}
 		return asiColorList;
 		
 	}
