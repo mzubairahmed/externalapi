@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +24,7 @@ import com.asi.service.product.vo.OriginOfCountries;
 @Component
 public class LookupValuesRepo {
 	@Autowired LookupValuesClient lookupClient;
-	
+	private static Logger _LOGGER = LoggerFactory.getLogger(LookupValuesRepo.class);
 	@SuppressWarnings("unchecked")
 	public List<AsiColor> getColors()
 	{

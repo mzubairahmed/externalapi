@@ -3,6 +3,8 @@ package com.asi.service.product.client;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.client.RestOperations;
@@ -15,7 +17,7 @@ import com.asi.service.product.client.vo.origin.Origin;
 
 public class LookupValuesClient {
 	@Autowired RestOperations lookupRestTemplate;
-	
+	private static Logger _LOGGER = LoggerFactory.getLogger(LookupValuesClient.class);
 	private String lookupColorURL;
 	private String lookupSizeURL;
 	private String lookupMaterialURL;
@@ -31,16 +33,12 @@ public class LookupValuesClient {
 	public void setOriginLookupURL(String originLookupURL) {
 		this.originLookupURL = originLookupURL;
 	}
-
-
-
-	@Cacheable("lookupCache")
 	public ArrayList<Color> getColor()
 	 {
 		return getColorFromLookup(lookupColorURL);
 		
 	 }
-	@Cacheable("lookupCache")
+	
 	public ArrayList<Origin> getOrigin()
 	{
 		return getOriginFromLookup(originLookupURL);
@@ -61,6 +59,7 @@ public class LookupValuesClient {
 	{
 		@SuppressWarnings("unchecked")
 		ArrayList<Color> color = lookupRestTemplate.getForObject(colorLookupURL,ArrayList.class);
+		_LOGGER.debug(colorLookupURL + "  " +  color.toString());
 		return color;
 	}
 	
