@@ -122,7 +122,7 @@ public class LookupValuesRepo {
 	
 	public OriginOfCountries getOrigin()
 	{
-		List<?> serviceOrigin = lookupClient.getOrigin();
+		List<?> serviceOrigin = lookupClient.getOriginFromLookup(lookupClient.getOriginLookupURL());
 		List<CountryOfOrigin> countryOfOrigin = new ArrayList<CountryOfOrigin>();
 		Iterator<LinkedHashMap> origins = (Iterator<LinkedHashMap>) serviceOrigin.iterator();
 		while (origins.hasNext()) {
