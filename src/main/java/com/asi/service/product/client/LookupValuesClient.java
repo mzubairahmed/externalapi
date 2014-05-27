@@ -33,12 +33,13 @@ public class LookupValuesClient {
 	public void setOriginLookupURL(String originLookupURL) {
 		this.originLookupURL = originLookupURL;
 	}
+	@Cacheable(value="lookupCache")
 	public ArrayList<Color> getColor()
 	 {
 		return getColorFromLookup(lookupColorURL);
 		
 	 }
-	
+	@Cacheable(value="lookupCache")
 	public ArrayList<Origin> getOrigin()
 	{
 		return getOriginFromLookup(originLookupURL);
