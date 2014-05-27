@@ -33,13 +33,13 @@ public class LookupValuesClient {
 	public void setOriginLookupURL(String originLookupURL) {
 		this.originLookupURL = originLookupURL;
 	}
-	@Cacheable(value="color")
+
 	public ArrayList<Color> getColor()
 	 {
 		return getColorFromLookup(lookupColorURL);
 		
 	 }
-	@Cacheable(value="origin")
+
 	public ArrayList<Origin> getOrigin()
 	{
 		return getOriginFromLookup(originLookupURL);
@@ -48,14 +48,14 @@ public class LookupValuesClient {
 	
 
 	@SuppressWarnings("rawtypes")
-	@Cacheable(value="criteriaAttributes",key="#lookupcriteriaAttributeURL")
+	@Cacheable(value="lookupCache",key="#lookupcriteriaAttributeURL")
 	public ArrayList<LinkedHashMap> getCriteriaAttributesFromLookup(String lookupcriteriaAttributeURL)
 	{
 		@SuppressWarnings("unchecked")
 		ArrayList<LinkedHashMap> criteriaAttribute = lookupRestTemplate.getForObject(lookupcriteriaAttributeURL,ArrayList.class);
 		return criteriaAttribute;
 	}
-	@Cacheable(value="color",key="#colorLookupURL")
+	@Cacheable(value="lookupCache",key="#colorLookupURL")
 	public ArrayList<Color> getColorFromLookup(String colorLookupURL)
 	{
 		@SuppressWarnings("unchecked")
@@ -64,21 +64,21 @@ public class LookupValuesClient {
 		return color;
 	}
 	
-	@Cacheable(value="sizes",key="#sizeLookupURL")
+	@Cacheable(value="lookupCache",key="#sizeLookupURL")
 	public ArrayList<Criterium> getSizesFromLookup(String sizeLookupURL)
 	{
 		@SuppressWarnings("unchecked")
 		ArrayList<Criterium> sizes = lookupRestTemplate.getForObject(sizeLookupURL,ArrayList.class);
 		return sizes;
 	}
-	@Cacheable(value="material",key="#materialLookupURL")
+	@Cacheable(value="lookupCache",key="#materialLookupURL")
 	public ArrayList<Material> getMaterialFromLookup(String materialLookupURL)
 	{
 		@SuppressWarnings("unchecked")
 		ArrayList<Material> material = lookupRestTemplate.getForObject(materialLookupURL,ArrayList.class);
 		return material;
 	}
-	@Cacheable(value="origin",key="#originLookupURL")
+	@Cacheable(value="lookupCache",key="#originLookupURL")
 	public ArrayList<Origin> getOriginFromLookup(String originLookupURL)
 	{
 		@SuppressWarnings("unchecked")

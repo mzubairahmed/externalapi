@@ -29,7 +29,7 @@ public class LookupValuesRepo {
 	public List<AsiColor> getColors()
 	{
 		List<AsiColor> asiColorList = new ArrayList<AsiColor>();
-		ArrayList<?> colorLookupResponse = lookupClient.getColor();
+		ArrayList<?> colorLookupResponse = lookupClient.getColorFromLookup(lookupClient.getLookupColorURL());
 		Iterator<?> iter = colorLookupResponse.iterator();
 		while (iter.hasNext()) {
 			Map<?, ?> crntColorJson = (LinkedHashMap<?, ?>) iter.next();
