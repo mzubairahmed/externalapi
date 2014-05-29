@@ -18,8 +18,11 @@ import com.asi.service.lookup.vo.Colors;
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.vo.colors.CodeValueGroup;
 import com.asi.service.product.client.vo.colors.SetCodeValue;
+import com.asi.service.product.vo.Constrain;
 import com.asi.service.product.vo.CountryOfOrigin;
 import com.asi.service.product.vo.OriginOfCountries;
+import com.asi.service.product.vo.Size;
+import com.asi.service.product.vo.SizeInfo;
 
 @Component
 public class LookupValuesRepo {
@@ -135,5 +138,47 @@ public class LookupValuesRepo {
 		OriginOfCountries originofCountries = new OriginOfCountries();
 		originofCountries.setOriginOfCountryList(countryOfOrigin);
 		return originofCountries;
+	}
+	
+	public SizeInfo getSizeInfo()
+	{
+		SizeInfo sizeInfo = new SizeInfo();
+		List<Size> sizes= new ArrayList<Size>();
+		ArrayList<LinkedHashMap> sizesFromService = lookupClient.getSizesFromLookup(lookupClient.getLookupSizeURL());
+		Iterator<?> sizeIterator=  sizesFromService.iterator();
+		while(sizeIterator.hasNext())
+		{
+			
+			Map<?, ?> sizeMap = (LinkedHashMap<?, ?>)sizeIterator.next();
+			Size size = makeSize(sizeMap);
+			sizes.add(size);
+			
+		}
+		sizeInfo.setSizes(sizes);
+		return sizeInfo;
+	}
+	private Size makeSize(Map<?,?> sizeMap)
+	{
+		Size size = new Size();
+		if(sizeMap.containsKey("Code"))
+			size.setSizeCode((String) sizeMap.get("Code"));
+		if(sizeMap.containsKey("Description"))
+			size.setDescription((String) sizeMap.get("Description"));
+		if(sizeMap.containsKey("DisplayName"))
+			size.setDisplayText((String) sizeMap.get("DisplayName"));
+		
+		Constrain constrain = new Constrain();
+		if(sizeMap.containsKey("IsAllowBasePrice"))
+			constrain.setAllowBasePrice((Boolean) sizeMap.get("IsAllowBasePrice"));		
+		if(sizeMap.containsKey("IsAllowUpcharge"))
+			constrain.setAllowUpcharge((Boolean)sizeMap.get("IsAllowUpcharge"));
+		if(sizeMap.containsKey("IsProductNumberAssignmentAllowed"))
+			constrain.setProductNumberAssignmentAllowed((Boolean)sizeMap.get("IsProductNumberAssignmentAllowed"));
+		if(sizeMap.containsKey("IsMediaAssignmentAllowed"))
+			constrain.setMediaAssignmentAllowed((Boolean)sizeMap.get("IsMediaAssignmentAllowed"));
+		if(sizeMap.containsKey("IsFlag"))
+			constrain.setFlag((Boolean)sizeMap.get("IsFlag"));
+		size.setConstrains(constrain);
+		return size;
 	}
 }

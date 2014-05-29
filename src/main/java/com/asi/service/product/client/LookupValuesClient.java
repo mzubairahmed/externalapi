@@ -65,10 +65,10 @@ public class LookupValuesClient {
 	}
 	
 	@Cacheable(value="lookupCache",key="#sizeLookupURL")
-	public ArrayList<Criterium> getSizesFromLookup(String sizeLookupURL)
+	public ArrayList<LinkedHashMap> getSizesFromLookup(String sizeLookupURL)
 	{
 		@SuppressWarnings("unchecked")
-		ArrayList<Criterium> sizes = lookupRestTemplate.getForObject(sizeLookupURL,ArrayList.class);
+		ArrayList<LinkedHashMap> sizes = lookupRestTemplate.getForObject(sizeLookupURL,ArrayList.class);
 		return sizes;
 	}
 	@Cacheable(value="lookupCache",key="#materialLookupURL")

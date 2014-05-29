@@ -14,6 +14,7 @@ import com.asi.core.repo.lookup.LookupValuesRepo;
 import com.asi.service.lookup.vo.AsiColor;
 import com.asi.service.lookup.vo.AsiColorsList;
 import com.asi.service.product.vo.OriginOfCountries;
+import com.asi.service.product.vo.SizeInfo;
 
 @RestController
 @RequestMapping("resources/lookup")
@@ -36,4 +37,11 @@ public class LookupService {
 		return new ResponseEntity<OriginOfCountries> (countires, null, HttpStatus.OK);
 		
 	}
+	@RequestMapping(value = "sizeInfo", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<SizeInfo> getsizeInfo()
+	{
+		SizeInfo sizeInfo = lookupValueRepository.getSizeInfo();
+		return new ResponseEntity<SizeInfo> (sizeInfo, null, HttpStatus.OK);
+		
+	}	
 }
