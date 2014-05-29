@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.asi.core.repo.lookup.LookupValuesRepo;
 import com.asi.service.lookup.vo.AsiColor;
 import com.asi.service.lookup.vo.AsiColorsList;
+import com.asi.service.lookup.vo.SizeInfo;
 import com.asi.service.product.vo.OriginOfCountries;
-import com.asi.service.product.vo.SizeInfo;
 
 @RestController
 @RequestMapping("resources/lookup")

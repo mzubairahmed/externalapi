@@ -1,4 +1,4 @@
-package com.asi.service.product.vo;
+package com.asi.service.lookup.vo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import com.asi.service.product.vo.Constrain;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @XmlRootElement(namespace = "http://www.asicentral.com/schema/product" , name = "sizes")

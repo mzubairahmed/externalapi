@@ -15,14 +15,14 @@ import org.springframework.stereotype.Component;
 import com.asi.service.lookup.vo.AsiColor;
 import com.asi.service.lookup.vo.ColorHue;
 import com.asi.service.lookup.vo.Colors;
+import com.asi.service.lookup.vo.Size;
+import com.asi.service.lookup.vo.SizeInfo;
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.vo.colors.CodeValueGroup;
 import com.asi.service.product.client.vo.colors.SetCodeValue;
 import com.asi.service.product.vo.Constrain;
 import com.asi.service.product.vo.CountryOfOrigin;
 import com.asi.service.product.vo.OriginOfCountries;
-import com.asi.service.product.vo.Size;
-import com.asi.service.product.vo.SizeInfo;
 
 @Component
 public class LookupValuesRepo {

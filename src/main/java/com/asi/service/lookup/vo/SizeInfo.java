@@ -1,4 +1,4 @@
-package com.asi.service.product.vo;
+package com.asi.service.lookup.vo;
 
 import java.util.ArrayList;
 import java.util.List;
