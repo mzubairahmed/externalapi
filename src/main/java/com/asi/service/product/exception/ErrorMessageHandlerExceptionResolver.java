@@ -24,14 +24,15 @@ public class ErrorMessageHandlerExceptionResolver extends AbstractHandlerExcepti
 
     private static final int DEFAULT_ORDER = 0;
     
-    private Map<Class<? extends Exception>, ErrorMessageFactory> errorMessageFactories;
+    @SuppressWarnings("rawtypes")
+	private Map<Class<? extends Exception>, ErrorMessageFactory> errorMessageFactories;
     private HttpMessageConverter<?>[] messageConverters;
 
     public ErrorMessageHandlerExceptionResolver() {
         setOrder(DEFAULT_ORDER);
     }
 
-    public void setErrorMessageFactories(ErrorMessageFactory[] errorMessageFactories) {
+    public void setErrorMessageFactories(@SuppressWarnings("rawtypes") ErrorMessageFactory[] errorMessageFactories) {
         this.errorMessageFactories = new HashMap<>(errorMessageFactories.length);
         for (ErrorMessageFactory<?> errorMessageFactory : errorMessageFactories) {
             this.errorMessageFactories.put(errorMessageFactory.getExceptionClass(), errorMessageFactory);
@@ -63,7 +64,7 @@ public class ErrorMessageHandlerExceptionResolver extends AbstractHandlerExcepti
     /**
      * Copied from {@link org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerExceptionResolver}
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "resource" })
     private ModelAndView handleResponseBody(Object returnValue, ServletWebRequest webRequest)
             throws ServletException, IOException {
 
@@ -77,7 +78,7 @@ public class ErrorMessageHandlerExceptionResolver extends AbstractHandlerExcepti
         Class<?> returnValueType = returnValue.getClass();
         if (this.messageConverters != null) {
             for (MediaType acceptedMediaType : acceptedMediaTypes) {
-                for (HttpMessageConverter messageConverter : this.messageConverters) {
+                for (@SuppressWarnings("rawtypes") HttpMessageConverter messageConverter : this.messageConverters) {
                     if (messageConverter.canWrite(returnValueType, acceptedMediaType)) {
                         messageConverter.write(returnValue, acceptedMediaType, outputMessage);
                         return new ModelAndView();

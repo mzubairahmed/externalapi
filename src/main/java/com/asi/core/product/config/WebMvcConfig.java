@@ -3,7 +3,6 @@ package com.asi.core.product.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import com.asi.service.product.exception.ErrorMessageFactory;
 import com.asi.service.product.exception.ErrorMessageHandlerExceptionResolver;

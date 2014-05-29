@@ -1,10 +1,8 @@
 package com.asi.core.product.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ServletInitializer { //extends AbstractDispatcherServletInitializer{
-	private static Logger LOG = LoggerFactory.getLogger(ServletInitializer.class);
+//	private static Logger LOG = LoggerFactory.getLogger(ServletInitializer.class);
 /*	@Override
 	protected WebApplicationContext createServletApplicationContext() {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();

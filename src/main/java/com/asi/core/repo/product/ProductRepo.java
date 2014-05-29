@@ -1,16 +1,11 @@
 package com.asi.core.repo.product;
 
-import java.io.StringWriter;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-
-import org.eclipse.persistence.jaxb.MarshallerProperties;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -18,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import com.asi.core.utils.JerseyClient;
+import com.asi.core.utils.JerseyClient.AsiHttpMethod;
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.ProductClient;
 import com.asi.service.product.client.vo.CriteriaSetValue;
@@ -35,6 +32,9 @@ import com.asi.service.product.vo.ItemPriceDetail.PRICE_Type;
 import com.asi.service.product.vo.PriceDetail;
 import com.asi.service.product.vo.Product;
 import com.asi.service.product.vo.ProductConfigurationsParser;
+import com.asi.velocity.bean.ProductDataSheet;
+import com.asi.velocity.bean.ProductInventoryLink;
+import com.asi.velocity.bean.SelectedProductCategories;
 
 
 
@@ -213,22 +213,63 @@ public class ProductRepo {
 	}
 
 	public Product updateProductBasePrices(Product currentProduct) throws Exception {
+		 ObjectMapper mapper = new ObjectMapper();
+         mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+         com.asi.velocity.bean.Product velocityBean=new com.asi.velocity.bean.Product();
+         velocityBean=setProductWithPriceDetails(currentProduct);
+         String productDetails = mapper.writeValueAsString(velocityBean);
+		 boolean batchFinalizeStatus = JerseyClient.sendRequst(new URI("http://stage-espupdates.asicentral.com/api/api/ProductImport"), AsiHttpMethod.POST, productDetails);
+		 System.out.println("Batch Final Status:"+batchFinalizeStatus);
 	//	ArrayList<ItemPriceDetail> pricesList=(ArrayList<ItemPriceDetail>) currentProduct.getItemPrice();
-		ClientRequest request = new ClientRequest(
+	/*	ClientRequest request = new ClientRequest(
 				"http://stage-espupdates.asicentral.com/api/api/ProductImport/?");
 			request.accept("application/json");
 			String input = parameterAsJSON(currentProduct);
 			request.body("application/json", input);
-			ClientResponse<String> response = request.post(String.class);
+			ClientResponse<String> response = request.post(String.class);*/
 	 		return currentProduct;
 	}
-	private String parameterAsJSON(Product product) throws JAXBException {
+	/*private String parameterAsJSON(Product product) throws JAXBException {
 		JAXBContext jaxbContext=JAXBContext.newInstance(Product.class);
 		StringWriter stringWriter = new StringWriter();
 		Marshaller marshaller = jaxbContext.createMarshaller();
 		marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-		marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
+	//	marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
 		marshaller.marshal(product, stringWriter);
 		return stringWriter.toString();
+	}*/
+
+	private com.asi.velocity.bean.Product setProductWithPriceDetails(
+			Product srcProduct) {
+		com.asi.velocity.bean.Product currentProduct=new com.asi.velocity.bean.Product();
+		currentProduct.setId(String.valueOf(srcProduct.getID()));
+		currentProduct.setCompanyId(String.valueOf(srcProduct.getCompanyId()));
+		currentProduct.setName(srcProduct.getName()+"ADED");
+		currentProduct.setDescription(srcProduct.getDescription());
+		currentProduct.setSummary(String.valueOf(srcProduct.getSummary())+"SR Ss");
+		currentProduct.setDataSourceId("12733");
+		currentProduct.setExternalProductId(srcProduct.getExternalProductId());
+		// Product DataSheet
+		ProductDataSheet productDataSheet=new ProductDataSheet();
+		productDataSheet.setProductId(String.valueOf(srcProduct.getID()));
+		productDataSheet.setCompanyId(String.valueOf(srcProduct.getCompanyId()));
+		productDataSheet.setId("0");
+		currentProduct.setProductDataSheet(productDataSheet);
+		// Product Category
+		List<SelectedProductCategories> productCategoriesLst=new ArrayList<>();
+		SelectedProductCategories productCategories=new SelectedProductCategories();
+		productCategories.setCode("B07449903");
+		productCategories.setProductId(String.valueOf(srcProduct.getID()));
+		productCategories.setIsPrimary("false");
+		productCategories.setAdCategoryFlg("false");
+		productCategoriesLst.add(productCategories);
+		currentProduct.setSelectedProductCategories(new SelectedProductCategories[]{productCategories});
+		//	Product Inventory Link
+		ProductInventoryLink productInventoryLink=new ProductInventoryLink();
+		productInventoryLink.setCompanyId(String.valueOf(srcProduct.getCompanyId()));
+		productInventoryLink.setProductId(String.valueOf(srcProduct.getID()));
+		productInventoryLink.setId("0");
+		currentProduct.setProductInventoryLink(productInventoryLink);
+		return currentProduct;
 	}
 }

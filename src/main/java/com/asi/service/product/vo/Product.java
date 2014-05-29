@@ -27,6 +27,7 @@ import javax.xml.bind.annotation.XmlType;
 		   "rushServiceFlag",
 		   "sameDayRushFlag",
 		   "newProductFlag",
+		   "newProductExpirationDate",
 		   "fullColorProcessFlag",
 		   "visibleForAllUsersFlag",
 		   "virtualProductFlag",
@@ -42,6 +43,7 @@ import javax.xml.bind.annotation.XmlType;
 		   "isAvailableUnimprinted",
 		   "isPersonalizationAvailable",
 		   "isOrderLessThanMinimumAllowed",
+		   "priceConfirmationDate",
 		   "disclaimer",
 		   "publishDate",
 		   "lastPublishedDate",
@@ -49,6 +51,7 @@ import javax.xml.bind.annotation.XmlType;
 		   "isWIP",
 		   "isProductNumberBreakout",
 		   "isPriceBreakoutFlag",
+		   "includeAppOfferList",
 		   "distributorComments",
 		   "additionalInfo"
 })
@@ -81,7 +84,16 @@ public class Product {
     
     private String newProductFlag;
     
-    private String fullColorProcessFlag;
+    private String newProductExpirationDate;
+    public String getNewProductExpirationDate() {
+		return newProductExpirationDate;
+	}
+
+	public void setNewProductExpirationDate(String newProductExpirationDate) {
+		this.newProductExpirationDate = newProductExpirationDate;
+	}
+
+	private String fullColorProcessFlag;
     
     private String visibleForAllUsersFlag;
     
@@ -117,7 +129,17 @@ public class Product {
     
     private Boolean isOrderLessThanMinimumAllowed;
     
-    private String disclaimer;
+    private String priceConfirmationDate;
+    
+    public String getPriceConfirmationDate() {
+		return priceConfirmationDate;
+	}
+
+	public void setPriceConfirmationDate(String priceConfirmationDate) {
+		this.priceConfirmationDate = priceConfirmationDate;
+	}
+
+	private String disclaimer;
     
     private String publishDate;
     
@@ -131,7 +153,17 @@ public class Product {
   
     private Boolean isPriceBreakoutFlag;
    
-    private String distributorComments;
+    private String includeAppOfferList;
+    
+    public String getIncludeAppOfferList() {
+		return includeAppOfferList;
+	}
+
+	public void setIncludeAppOfferList(String includeAppOfferList) {
+		this.includeAppOfferList = includeAppOfferList;
+	}
+
+	private String distributorComments;
    
     private String additionalInfo;
     private Imprints imprints;
