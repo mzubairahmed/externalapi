@@ -11,9 +11,11 @@ import com.asi.service.product.vo.Constrain;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @XmlRootElement(namespace = "http://www.asicentral.com/schema/product" , name = "sizes")
-@XmlType(propOrder={"sizeCode","description","displayText","constrains","isSupplierSpecific"})
-@JsonPropertyOrder({"sizeCode","description","displayText","constrains","isSupplierSpecific"})
+@XmlType(propOrder={"id","sizeCode","description","displayText","constrains","isSupplierSpecific"})
+@JsonPropertyOrder({"id","sizeCode","description","displayText","constrains","isSupplierSpecific"})
 public class Size {
+	@XmlElement(nillable=true, name="id")
+	private String id;
 	@XmlElement(nillable=true, name="Code")
 	private String sizeCode;
 	@XmlElement(nillable=true, name="description")
@@ -28,6 +30,18 @@ public class Size {
 	@XmlElement(nillable=true,name="sizeList")
 	private List<Size> sizeList = new ArrayList<Size>();
 	
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public List<Size> getSizeList() {
+		return sizeList;
+	}
+	public void setSizeList(List<Size> sizeList) {
+		this.sizeList = sizeList;
+	}
 	public String getSizeCode() {
 		return sizeCode;
 	}

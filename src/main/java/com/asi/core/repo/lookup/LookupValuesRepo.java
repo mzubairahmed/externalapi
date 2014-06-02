@@ -150,20 +150,43 @@ public class LookupValuesRepo {
 		{
 			
 			Map<?, ?> sizeMap = (LinkedHashMap<?, ?>)sizeIterator.next();
-			Size size = makeSize(sizeMap);
+			Size size = new Size();
+			size = makeSize(sizeMap,size);
+			ArrayList<?> codeValueGroupsList = (ArrayList<?>) sizeMap.get("CodeValueGroups");
+			Iterator<LinkedHashMap> codeValueGroupsIterator  = (Iterator<LinkedHashMap>) codeValueGroupsList.iterator();
+			while(codeValueGroupsIterator.hasNext())
+			{
+				Map<?, ?> codeValueGroupsMap = (LinkedHashMap<?, ?>)codeValueGroupsIterator.next();
+				List<Size> childSizes= new ArrayList<Size>();
+				Size childSize = new Size();
+				childSize = makeSize(codeValueGroupsMap,childSize);
+				if(codeValueGroupsMap.containsKey("SetCodeValues"))
+				{
+					Map<?,?> setCodeValuesMap = (Map<?,?>) sizeMap.get("SetCodeValues");
+					Size actualSize = makeSize(setCodeValuesMap,childSize);
+				}
+				
+				childSizes.add(childSize);
+				
+				size.setSizeList(childSizes);
+				
+			}
 			sizes.add(size);
 			
 		}
 		sizeInfo.setSizes(sizes);
 		return sizeInfo;
 	}
-	private Size makeSize(Map<?,?> sizeMap)
+	private Size makeSize(Map<?,?> sizeMap,Size size)
 	{
-		Size size = new Size();
+		if(sizeMap.containsKey("ID"))
+			size.setId((String) sizeMap.get("ID"));
 		if(sizeMap.containsKey("Code"))
 			size.setSizeCode((String) sizeMap.get("Code"));
 		if(sizeMap.containsKey("Description"))
 			size.setDescription((String) sizeMap.get("Description"));
+		if(sizeMap.containsKey("CodeValue") && (size.getDescription().isEmpty() || null==size.getDescription()))
+			size.setDescription((String) sizeMap.get("CodeValue"));
 		if(sizeMap.containsKey("DisplayName"))
 			size.setDisplayText((String) sizeMap.get("DisplayName"));
 		
