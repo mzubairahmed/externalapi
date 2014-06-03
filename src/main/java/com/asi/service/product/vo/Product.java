@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlType;
 		   "changeProductReasonCode",
 		   "workflowStatusStateCode",
 		   "statusCode",
+		   "dataSourceId",
 		   "productTypeCode",
 		   "rushServiceFlag",
 		   "sameDayRushFlag",
@@ -58,7 +59,15 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Product {
     
-    private Integer ID;
+    public String getDataSourceId() {
+		return dataSourceId;
+	}
+
+	public void setDataSourceId(String dataSourceId) {
+		this.dataSourceId = dataSourceId;
+	}
+
+	private Integer ID;
     
     private String productTypeCode;
     
@@ -69,6 +78,8 @@ public class Product {
     private Integer companyId;
     
     private String statusCode;
+    
+	private String dataSourceId="";
     
     private String name;
     
