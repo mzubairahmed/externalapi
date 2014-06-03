@@ -20,14 +20,14 @@
 <ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd" updateCheck="false">
 
-    <diskStore path="java.io.tmpdir/EhCacheSpringExample1" />
+    <diskStore path="java.io.tmpdir/productServiceCache" />
 
-    <defaultCache eternal="true" maxElementsInMemory="1000"
-        overflowToDisk="true" diskPersistent="true" timeToIdleSeconds="0"
+    <defaultCache eternal="false" maxElementsInMemory="1000"
+        overflowToDisk="false"  timeToIdleSeconds="0"
         timeToLiveSeconds="600" memoryStoreEvictionPolicy="LRU" statistics="true" />
 
-    <cache name="lookupCache" eternal="true" 
-        maxElementsInMemory="10000" overflowToDisk="false" diskPersistent="true"
+    <cache name="lookupCache" eternal="false" 
+        maxElementsInMemory="10000" overflowToDisk="false" 
         timeToIdleSeconds="0" timeToLiveSeconds="300"
         memoryStoreEvictionPolicy="LRU" statistics="false" />
  </ehcache>

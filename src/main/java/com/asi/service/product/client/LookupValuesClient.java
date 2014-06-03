@@ -3,6 +3,8 @@ package com.asi.service.product.client;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.client.RestOperations;
@@ -10,21 +12,38 @@ import org.springframework.web.client.RestOperations;
 import com.asi.service.product.client.vo.colors.Color;
 import com.asi.service.product.client.vo.criteria.Criterium;
 import com.asi.service.product.client.vo.material.Material;
+import com.asi.service.product.client.vo.origin.Origin;
 
 
 public class LookupValuesClient {
 	@Autowired RestOperations lookupRestTemplate;
-	
+	private static Logger _LOGGER = LoggerFactory.getLogger(LookupValuesClient.class);
 	private String lookupColorURL;
 	private String lookupSizeURL;
 	private String lookupMaterialURL;
 	private String lookupcriteriaAttributeURL;
-	@Cacheable("lookupCache")
+	private String originLookupURL;
+	
+	public String getOriginLookupURL() {
+		return originLookupURL;
+	}
+
+
+
+	public void setOriginLookupURL(String originLookupURL) {
+		this.originLookupURL = originLookupURL;
+	}
+
 	public ArrayList<Color> getColor()
 	 {
 		return getColorFromLookup(lookupColorURL);
 		
 	 }
+
+	public ArrayList<Origin> getOrigin()
+	{
+		return getOriginFromLookup(originLookupURL);
+	}
 	
 	
 
@@ -41,14 +60,15 @@ public class LookupValuesClient {
 	{
 		@SuppressWarnings("unchecked")
 		ArrayList<Color> color = lookupRestTemplate.getForObject(colorLookupURL,ArrayList.class);
+		_LOGGER.debug(colorLookupURL + "  " +  color.toString());
 		return color;
 	}
 	
 	@Cacheable(value="lookupCache",key="#sizeLookupURL")
-	public ArrayList<Criterium> getSizesFromLookup(String sizeLookupURL)
+	public ArrayList<LinkedHashMap> getSizesFromLookup(String sizeLookupURL)
 	{
 		@SuppressWarnings("unchecked")
-		ArrayList<Criterium> sizes = lookupRestTemplate.getForObject(sizeLookupURL,ArrayList.class);
+		ArrayList<LinkedHashMap> sizes = lookupRestTemplate.getForObject(sizeLookupURL,ArrayList.class);
 		return sizes;
 	}
 	@Cacheable(value="lookupCache",key="#materialLookupURL")
@@ -58,6 +78,13 @@ public class LookupValuesClient {
 		ArrayList<Material> material = lookupRestTemplate.getForObject(materialLookupURL,ArrayList.class);
 		return material;
 	}
+	@Cacheable(value="lookupCache",key="#originLookupURL")
+	public ArrayList<Origin> getOriginFromLookup(String originLookupURL)
+	{
+		@SuppressWarnings("unchecked")
+		ArrayList<Origin> serviceOrigin = lookupRestTemplate.getForObject(originLookupURL,ArrayList.class);
+		return serviceOrigin;
+	}	
 
 	/**
 	 * @return the lookupColorURL

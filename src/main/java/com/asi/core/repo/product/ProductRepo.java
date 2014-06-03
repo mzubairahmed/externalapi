@@ -259,10 +259,9 @@ public class ProductRepo {
 		com.asi.velocity.bean.Product currentProduct = new com.asi.velocity.bean.Product();
 		currentProduct.setId(String.valueOf(srcProduct.getID()));
 		currentProduct.setCompanyId(String.valueOf(srcProduct.getCompanyId()));
-		currentProduct.setName(srcProduct.getName() + "ADED");
+		currentProduct.setName(srcProduct.getName());
 		currentProduct.setDescription(srcProduct.getDescription());
-		currentProduct.setSummary(String.valueOf(srcProduct.getSummary())
-				+ "SR S5s");
+		currentProduct.setSummary(String.valueOf(srcProduct.getSummary()));
 		currentProduct.setDataSourceId(srcProduct.getDataSourceId());
 		currentProduct.setExternalProductId(srcProduct.getExternalProductId());
 		// Product DataSheet

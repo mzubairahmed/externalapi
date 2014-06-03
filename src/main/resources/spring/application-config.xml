@@ -51,7 +51,8 @@
 	         <property name="lookupColorURL" value="${lookup.color.url}"></property> 
 	         <property name="lookupSizeURL" value="${lookup.sizes.url}"></property> 
 	         <property name="lookupMaterialURL" value="${lookup.material.url}"></property> 
-	         <property name="lookupcriteriaAttributeURL" value="${lookup.sizes.criteria.url}"></property> 
+	         <property name="lookupcriteriaAttributeURL" value="${lookup.sizes.criteria.url}"></property>
+	         <property name="originLookupURL" value="${lookup.orgin.url}"></property> 
 	    </bean>
 	     <bean id="lookupParser" class="com.asi.service.product.client.vo.parser.LookupParser">
 	       <property name="lookupClient" ref="lookupValuesClient"/>        

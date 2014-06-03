@@ -4,4 +4,5 @@
           @javax.xml.bind.annotation.XmlNs(prefix = "p", namespaceURI ="http://www.asicentral.com/schema/product")
             }, 
     elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
-    package com.asi.service.product.vo;
+
+package com.asi.service.product.vo;
