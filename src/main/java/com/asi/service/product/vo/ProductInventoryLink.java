@@ -12,7 +12,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-@XmlRootElement
+@XmlRootElement(namespace = "http://www.asicentral.com/schema/product")
 
 public class ProductInventoryLink implements Serializable{
 

@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-@XmlRootElement
+@XmlRootElement(namespace = "http://www.asicentral.com/schema/product")
 
 public class ProductDataSheet  implements Serializable{
 

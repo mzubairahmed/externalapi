@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 
-@XmlRootElement(name="pricingDetail")
+@XmlRootElement(namespace = "http://www.asicentral.com/schema/product", name="pricingDetail")
 @XmlType(propOrder={"sequenceNumber","price","quanty","discount","lowQuantity","highQuantity","netCost","maxDecimalPlaces","itemsPerUnit","itemsPerUnitBy"})
 @JsonPropertyOrder({"sequenceNumber","price","quanty","discount","lowQuantity","highQuantity","netCost","maxDecimalPlaces","itemsPerUnit","itemsPerUnitBy"})
 public class PriceDetail {

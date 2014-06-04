@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@XmlRootElement(name = "itemPrice")
+@XmlRootElement(namespace = "http://www.asicentral.com/schema/product", name = "itemPrice")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="ItemPrice", propOrder={"productID","priceID","priceName","priceType","priceIncludes","priceUponRequest","productNumber","firstPriceCriteria","secondPriceCriteria","isMultiPriceGrid","priceDetails"})
 
