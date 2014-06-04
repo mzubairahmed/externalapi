@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:p="http://www.asicentral.com/schema/product" targetNamespace="http://www.asicentral.com/schema/product" elementFormDefault="qualified" attributeFormDefault="unqualified" >
+<xs:element name="priceDetail" type="p:productDetailType"></xs:element>
+  <xs:complexType name="productDetailType">
+    <xs:sequence>
+    	<xs:element name="ID" type="xs:int" />
+    	<xs:element name="asiProdNo" type="xs:int" />
+    	<xs:element name="companyId" type="xs:int" />
+    	<xs:element name="originalProductId" type="xs:int" />
+    	<xs:element name="externalProductId" type="xs:int" />
+    	<xs:element name="name" type="xs:int" />
+    	<xs:element name="description" type="xs:string" />
+    	<xs:element name="summary" type="xs:string" />
+    	<xs:element name="workflowStatusCode" type="xs:string" />
+    	<xs:element name="changeProductReasonCode" type="xs:string" />
+    	<xs:element name="workflowStatusStateCode" type="xs:string" />
+    	<xs:element name="statusCode" type="xs:string" />
+    	<xs:element name="productTypeCode" type="xs:string" />
+    	<xs:element name="rushServiceFlag" type="xs:string" />
+    	<xs:element name="sameDayRushFlag" type="xs:string" />
+    	<xs:element name="newProductFlag" type="xs:string" />
+    	<xs:element name="fullColorProcessFlag" type="xs:string" />
+    	<xs:element name="visibleForAllUsersFlag" type="xs:string" />
+    	<xs:element name="virtualProductFlag" type="xs:string" />
+    	<xs:element name="nLevelConnectFlag" type="xs:string" />
+    	<xs:element name="productLockedFlag" type="xs:string" />
+    	<xs:element name="show1MediaIdIm" type="xs:int" />
+    	<xs:element name="show1MediaIdVd" type="xs:int" />
+    	<xs:element name="isCustomProduct" type="xs:boolean" />
+    	<xs:element name="isShippableInPlainBox" type="xs:boolean" />
+    	<xs:element name="isAvailableUnimprinted" type="xs:boolean" />
+    	<xs:element name="isPersonalizationAvailable" type="xs:boolean" />
+    	<xs:element name="isOrderLessThanMinimumAllowed" type="xs:boolean" />
+    	<xs:element name="disclaimer" type="xs:string" />
+    	<xs:element name="locationCode" type="xs:string" />
+    	<xs:element name="isWIP" type="xs:boolean" />
+    	<xs:element name="isProductNumberBreakout" type="xs:boolean" />
+    	<xs:element name="isPriceBreakoutFlag" type="xs:boolean" />
+    	<xs:element name="distributorComments" type="xs:string" />
+    	<xs:element name="additionalInfo" type="xs:string" />
+            <xs:element name="itemPrice" type="p:itemPriceType" />
+        </xs:sequence>
+  </xs:complexType>
+ <xs:complexType name="itemPriceType">
+    <xs:sequence>
+    	<xs:element name="productID" type="xs:int" />
+    	<xs:element name="priceID" type="xs:int" />
+    	<xs:element name="priceName" type="xs:string" />
+    	<xs:element name="priceType" type="xs:string" />
+    	<xs:element name="priceIncludes" type="xs:string" />
+    	<xs:element name="priceUponRequest" type="xs:boolean" />
+    	<xs:element name="productNumber" type="xs:string" />
+    	<xs:element name="firstPriceCriteria" type="xs:string" />
+    	<xs:element name="secondPriceCriteria" type="xs:string" />
+    	<xs:element name="isMultiPriceGrid" type="xs:boolean" />
+    	<xs:element name="priceDetail" type="p:priceDetailType"></xs:element>
+    </xs:sequence>
+ </xs:complexType>
+  <xs:complexType name="priceDetailType">
+    <xs:sequence>
+      <xs:element name="sequenceNumber" type="xs:int" />
+      <xs:element name="price" type="xs:decimal" />
+      <xs:element name="quanty" type="xs:int" />
+      <xs:element name="discount" type="xs:string" />
+      <xs:element name="netCost" type="xs:decimal" />
+      <xs:element name="maxDecimalPlaces" type="xs:int" />
+      <xs:element name="itemsPerUnit" type="xs:int" />
+      <xs:element name="itemsPerUnitBy" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>  
+</xs:schema>
