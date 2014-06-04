@@ -26,7 +26,11 @@ public final class ErrorMessageHandler {
 		Locale locale = LocaleContextHolder.getLocale();
 		String errorMessage = messageSource.getMessage(errorKey, null, locale);
 		ErrorMessage errorInfo = new ErrorMessage();
-		String errorURL = request.getRequestURL().toString();
+		String errorURL="";
+		if(null!=request)
+		{
+			errorURL = request.getRequestURL().toString();
+		}
 		errorInfo.setErrorMessage(errorMessage);
 		errorInfo.setErrorURL(errorURL);
 		errorInfo.setStatusCode(status);
