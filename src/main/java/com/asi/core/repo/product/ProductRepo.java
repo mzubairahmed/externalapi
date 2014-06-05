@@ -1,7 +1,9 @@
 package com.asi.core.repo.product;
 
 import java.net.URI;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.codehaus.jackson.map.DeserializationConfig;
@@ -32,7 +34,10 @@ import com.asi.service.product.vo.ItemPriceDetail.PRICE_Type;
 import com.asi.service.product.vo.PriceDetail;
 import com.asi.service.product.vo.Product;
 import com.asi.service.product.vo.ProductConfigurationsParser;
+import com.asi.velocity.bean.Batch;
+import com.asi.velocity.bean.BatchDataSource;
 import com.asi.velocity.bean.Currency;
+import com.asi.velocity.bean.DiscountRate;
 import com.asi.velocity.bean.PriceGrids;
 import com.asi.velocity.bean.Prices;
 import com.asi.velocity.bean.PricingItems;
@@ -241,16 +246,51 @@ public class ProductRepo {
 				DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		com.asi.velocity.bean.Product velocityBean = new com.asi.velocity.bean.Product();
 		velocityBean = setProductWithPriceDetails(currentProduct);
+		velocityBean.setDataSourceId(getDataSourceId(currentProduct));
 		String productDetails = mapper.writeValueAsString(velocityBean);
 		boolean batchFinalizeStatus = JerseyClient
 				.sendRequst(
 						new URI(
 								"http://stage-espupdates.asicentral.com/api/api/ProductImport"),
 						AsiHttpMethod.POST, productDetails);
-		System.out.println("Batch Final Status:" + batchFinalizeStatus);
+		_LOGGER.info("Batch Final Status:" + batchFinalizeStatus);
 		// return
 		// prepairProduct(String.valueOf(currentProduct.getCompanyId()),currentProduct.getExternalProductId());
 		return currentProduct;
+	}
+
+	private String getDataSourceId(Product currentProduct) throws Exception {
+		String dataSourceId = "0";
+		Batch batchData = new Batch();
+		batchData.setBatchId(0);
+		batchData.setBatchTypeCode("IMRT");
+	
+	//	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-ddTmm:ss:ms");//2014-06-03T21:45:43.013
+	//String date = sdf.format() ); 
+		batchData.setStartDate(String.valueOf(new Timestamp(System.currentTimeMillis()).toString()));
+		batchData.setStatus("N");
+		batchData.setCompanyId(String.valueOf(currentProduct.getCompanyId()));
+		BatchDataSource batchDataSources=new BatchDataSource();
+		batchDataSources.setBatchId(0);
+		batchDataSources.setId(0);
+		batchDataSources.setDescription("Batch Created by API");
+		batchDataSources.setName("ASIF");
+		batchDataSources.setTypeCode("IMRT");
+		batchData.setBatchDataSources(new ArrayList<BatchDataSource>(Arrays.asList(batchDataSources)));
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(
+				DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		String batchDetails = mapper.writeValueAsString(batchData);
+		String batchId = JerseyClient.sendBatchRequst(new URI(
+				"http://stage-espupdates.asicentral.com/api/api/batch"),
+				AsiHttpMethod.POST, batchDetails);
+		_LOGGER.info("batch Id Created:"+batchId);
+		if(null!=batchId && !batchId.equals("0"))
+		{
+			// Get Data Source Id Based on Batch Id
+			dataSourceId=JerseyClient.getDataSourceByBatchId(batchId);
+		}
+		return dataSourceId;
 	}
 
 	private com.asi.velocity.bean.Product setProductWithPriceDetails(
@@ -291,13 +331,75 @@ public class ProductRepo {
 
 		// Price Details
 		PriceGrids[] pricegridList = new PriceGrids[] {};
-		if (currentProduct.getPriceGrids().length == 0) {
+		if (srcProduct.getItemPrice().size() == 0) {
 			pricegridList = new PriceGrids[1];
 			PriceGrids priceGrid = getQURPriceGrid(srcProduct);
 			pricegridList[0] = priceGrid;
 			currentProduct.setPriceGrids(pricegridList);
+		}else
+		{
+			pricegridList=setPriceDetails(srcProduct);
+			if(null!=pricegridList && pricegridList.length!=0)
+			currentProduct.setPriceGrids(pricegridList);
 		}
 		return currentProduct;
+	}
+
+	private PriceGrids[] setPriceDetails(Product srcProduct) {
+		PriceGrids[] pricegridList = new PriceGrids[srcProduct.getItemPrice().size()];
+		int priceGridCntr=0;
+		PriceGrids crntPriceGrids=null;
+		Currency currency=null;
+		Prices[] pricesList=null;
+		Prices prices=null;
+		DiscountRate discount=null;
+		int pricesCntr=0;
+		for(ItemPriceDetail crntItemPrice:srcProduct.getItemPrice())	
+		{
+			crntPriceGrids=new PriceGrids();
+			crntPriceGrids.setId(crntItemPrice.getPriceID());
+			crntPriceGrids.setProductId(crntItemPrice.getProductID());
+			if(crntItemPrice.getPriceType().toString().equals("REGL"))
+			{
+				crntPriceGrids.setIsBasePrice("true");
+				crntPriceGrids.setPriceGridSubTypeCode(crntItemPrice.getPriceType().toString());
+			}
+			if(!crntItemPrice.getPriceDetails().isEmpty() && crntItemPrice.getPriceDetails().size()>0)
+			{
+				crntPriceGrids.setIsQUR("false");
+			}
+			crntPriceGrids.setUsageLevelCode("NONE");
+			crntPriceGrids.setPriceIncludes(crntItemPrice.getPriceIncludes());
+			currency = new Currency();
+			currency.setCode("USD");
+			currency.setName("US Dollar");
+			currency.setiSODisplaySymbol("$");
+			currency.setIsISO("true");
+			currency.setIsActive("true");
+			crntPriceGrids.setCurrency(currency);
+			pricesList=new Prices[crntItemPrice.getPriceDetails().size()];
+			for(PriceDetail priceDetail:crntItemPrice.getPriceDetails())
+			{
+				prices=new Prices();
+				prices.setPriceGridId(crntItemPrice.getPriceID());
+				prices.setQuantity(String.valueOf(priceDetail.getQuanty()));
+				prices.setListPrice(String.valueOf(priceDetail.getPrice()));
+				prices.setNetCost(String.valueOf(priceDetail.getNetCost()));
+				prices.setItemsPerUnit(String.valueOf(priceDetail.getItemsPerUnit()));
+				prices.setItemsPerUnit(String.valueOf(priceDetail.getItemsPerUnit()));
+				discount=new DiscountRate();
+				discount.setIndustryDiscountCode(priceDetail.getDiscount());
+				discount.setCode(priceDetail.getDiscount().toUpperCase()+priceDetail.getDiscount().toUpperCase()+priceDetail.getDiscount().toUpperCase()+priceDetail.getDiscount().toUpperCase());
+				prices.setDiscountRate(discount);
+				prices.setSequenceNumber(String.valueOf(priceDetail.getSequenceNumber()));
+				pricesList[pricesCntr]=prices;
+				//prices.setd
+				pricesCntr++;
+			}
+			crntPriceGrids.setPrices(pricesList);
+			pricegridList[priceGridCntr]=crntPriceGrids;
+		}
+		return pricegridList;
 	}
 
 	private PriceGrids getQURPriceGrid(Product crntProduct) {
@@ -306,7 +408,6 @@ public class ProductRepo {
 		qurPriceGrid.setProductId(String.valueOf(crntProduct.getID()));
 		qurPriceGrid.setIsQUR("true");
 		qurPriceGrid.setIsBasePrice("true");
-		qurPriceGrid.setIsQUR("true");
 		qurPriceGrid.setPriceGridSubTypeCode("REGL");
 		qurPriceGrid.setUsageLevelCode("NONE");
 		// qurPriceGrid.setDescription("")

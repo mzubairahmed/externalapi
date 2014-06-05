@@ -1,6 +1,8 @@
 package com.asi.velocity.bean;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -22,9 +24,9 @@ public class Batch {
     private String               creatorSignOnId;
     // collection
     @JsonProperty("BatchErrorLogs")
-    private Set<BatchErrorLog>   batchErrorLogs   = new HashSet<>();
+    private List<BatchErrorLog>   batchErrorLogs   = new ArrayList<>();
     @JsonProperty("BatchDataSources")
-    private Set<BatchDataSource> batchDataSources = new HashSet<>();
+    private List<BatchDataSource> batchDataSources = new ArrayList<>();
     @JsonProperty("BatchProducts")
     private Set<BatchProduct>   batchProducts    = new HashSet<>();
 
@@ -32,7 +34,7 @@ public class Batch {
     }
 
     public Batch(Integer batchId, String batchTypeCode, String startDate, String endDate, String companyId, String status,
-            Set<BatchErrorLog> batchErrorLogs, Set<BatchDataSource> batchDataSources) {
+            List<BatchErrorLog> batchErrorLogs, List<BatchDataSource> batchDataSources) {
         this.batchId = batchId;
         this.batchTypeCode = batchTypeCode;
         this.startDate = startDate;
@@ -105,19 +107,19 @@ public class Batch {
         this.status = status;
     }
 
-    public Set<BatchErrorLog> getBatchErrorLogs() {
+    public List<BatchErrorLog> getBatchErrorLogs() {
         return batchErrorLogs;
     }
 
-    public void setBatchErrorLogs(Set<BatchErrorLog> batchErrorLogs) {
+    public void setBatchErrorLogs(List<BatchErrorLog> batchErrorLogs) {
         this.batchErrorLogs = batchErrorLogs;
     }
 
-    public Set<BatchDataSource> getBatchDataSources() {
+    public List<BatchDataSource> getBatchDataSources() {
         return batchDataSources;
     }
 
-    public void setBatchDataSources(Set<BatchDataSource> batchDataSources) {
+    public void setBatchDataSources(List<BatchDataSource> batchDataSources) {
         this.batchDataSources = batchDataSources;
     }
 
