@@ -8,15 +8,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 @XmlRootElement(namespace = "http://www.asicentral.com/schema/product", name="pricingDetail")
-@XmlType(propOrder={"sequenceNumber","price","quanty","discount","lowQuantity","highQuantity","netCost","maxDecimalPlaces","itemsPerUnit","itemsPerUnitBy"})
-@JsonPropertyOrder({"sequenceNumber","price","quanty","discount","lowQuantity","highQuantity","netCost","maxDecimalPlaces","itemsPerUnit","itemsPerUnitBy"})
+@XmlType(propOrder={"sequenceNumber","price","quanty","discount","priceUnitName","lowQuantity","highQuantity","netCost","maxDecimalPlaces","itemsPerUnit","itemsPerUnitBy"})
+@JsonPropertyOrder({"sequenceNumber","price","quanty","discount","priceUnitName","lowQuantity","highQuantity","netCost","maxDecimalPlaces","itemsPerUnit","itemsPerUnitBy"})
 public class PriceDetail {
  
 	private Integer sequenceNumber;
 	private Double price;
     private Integer quanty;
     private String discount = "";
-    private Integer lowQuantity;
+    private String priceUnitName="";
+    public String getPriceUnitName() {
+		return priceUnitName;
+	}
+	public void setPriceUnitName(String priceUnitName) {
+		this.priceUnitName = priceUnitName;
+	}
+	private Integer lowQuantity;
     private Integer highQuantity;
     private Double netCost;
     private int maxDecimalPlaces;

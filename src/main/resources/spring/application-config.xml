@@ -60,7 +60,9 @@
 	         <property name="lookupMaterialURL" value="${lookup.material.url}"></property> 
 	         <property name="lookupcriteriaAttributeURL" value="${lookup.sizes.criteria.url}"></property>
 	         <property name="originLookupURL" value="${lookup.orgin.url}"></property> 
+	          <property name="lookupCategoryURL" value="${lookup.product.categories.url}"></property> 
 	    </bean>
+	    
 	     <bean id="lookupParser" class="com.asi.service.product.client.vo.parser.LookupParser">
 	       <property name="lookupClient" ref="lookupValuesClient"/>        
 	    </bean> 
@@ -77,6 +79,9 @@
 	    	<property name="productClient" ref="productServiceClient"/>
 	    	<property name="productConfiguration" ref="productConfigurationParser"/>
 	    	<property name="imprintParser" ref="imprintMethodParser"/>
+	    	 <property name="productRestTemplate" ref="restTemplate"/>
+	    	 <property name="productImportURL" value="${ws.api.product.import}"></property> 
+	    	 <property name="batchProcessingURL" value="${lookup.batch.processing}"></property> 
 	    </bean>
 	   	<!-- To enable @RequestMapping process on type level and method level -->
    		<bean id="productDetail" class="com.asi.service.product.client.vo.ProductDetail"/>

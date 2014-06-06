@@ -1,22 +1,26 @@
 package com.asi.core.repo.product;
 
-import java.net.URI;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
-import com.asi.core.utils.JerseyClient;
-import com.asi.core.utils.JerseyClient.AsiHttpMethod;
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.ProductClient;
 import com.asi.service.product.client.vo.CriteriaSetValue;
@@ -72,13 +76,31 @@ public class ProductRepo {
 	ProductClient productClient;
 	@Autowired
 	ProductDetail productDetail;
+	String productImportURL;
+	String batchProcessingURL;
+	public String getProductImportURL() {
+		return productImportURL;
+	}
+
+	public void setProductImportURL(String productImportURL) {
+		this.productImportURL = productImportURL;
+	}
+
+	public String getBatchProcessingURL() {
+		return batchProcessingURL;
+	}
+
+	public void setBatchProcessingURL(String batchProcessingURL) {
+		this.batchProcessingURL = batchProcessingURL;
+	}
+
 	@Autowired
 	LookupValuesClient lookupColor;
 	@Autowired
 	ProductConfigurationsParser productConfiguration;
 	@Autowired
 	ImprintParser imprintParser;
-	
+	@Autowired RestTemplate productRestTemplate;
 	public ImprintParser getImprintParser() {
 		return imprintParser;
 	}
@@ -89,7 +111,13 @@ public class ProductRepo {
 	public ProductConfigurationsParser getProductConfiguration() {
 		return productConfiguration;
 	}
+	public RestTemplate getProductRestTemplate() {
+		return productRestTemplate;
+	}
 
+	public void setProductRestTemplate(RestTemplate productRestTemplate) {
+		this.productRestTemplate = productRestTemplate;
+	}
 	public void setProductConfiguration(
 			ProductConfigurationsParser productConfiguration) {
 		this.productConfiguration = productConfiguration;
@@ -242,32 +270,28 @@ public class ProductRepo {
 
 	public Product updateProductBasePrices(Product currentProduct)
 			throws Exception {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(
-				DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		com.asi.velocity.bean.Product velocityBean = new com.asi.velocity.bean.Product();
 		velocityBean = setProductWithPriceDetails(currentProduct);
+		//velocityBean.setDataSourceId("12938");
 		velocityBean.setDataSourceId(getDataSourceId(currentProduct));
-		String productDetails = mapper.writeValueAsString(velocityBean);
-		boolean batchFinalizeStatus = JerseyClient
-				.sendRequst(
-						new URI(
-								"http://stage-espupdates.asicentral.com/api/api/ProductImport"),
-						AsiHttpMethod.POST, productDetails);
-		_LOGGER.info("Batch Final Status:" + batchFinalizeStatus);
-		// return
-		// prepairProduct(String.valueOf(currentProduct.getCompanyId()),currentProduct.getExternalProductId());
+		productRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+		productRestTemplate.getMessageConverters().add(new StringHttpMessageConverter());
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.setContentType(new MediaType("application","json"));
+		HttpEntity<com.asi.velocity.bean.Product> requestEntity = new HttpEntity<com.asi.velocity.bean.Product>(velocityBean, requestHeaders);
+		ResponseEntity<String> responseEntity = productRestTemplate.exchange(productImportURL, HttpMethod.POST, requestEntity, String.class);
+		String result = String.valueOf(responseEntity.getStatusCode().value());
+		_LOGGER.info("Product Respones Status:" + result);
+		currentProduct=prepairProduct(String.valueOf(currentProduct.getCompanyId()),currentProduct.getExternalProductId());
 		return currentProduct;
 	}
 
+	@SuppressWarnings("unchecked")
 	private String getDataSourceId(Product currentProduct) throws Exception {
 		String dataSourceId = "0";
 		Batch batchData = new Batch();
 		batchData.setBatchId(0);
 		batchData.setBatchTypeCode("IMRT");
-	
-	//	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-ddTmm:ss:ms");//2014-06-03T21:45:43.013
-	//String date = sdf.format() ); 
 		batchData.setStartDate(String.valueOf(new Timestamp(System.currentTimeMillis()).toString()));
 		batchData.setStatus("N");
 		batchData.setCompanyId(String.valueOf(currentProduct.getCompanyId()));
@@ -278,25 +302,21 @@ public class ProductRepo {
 		batchDataSources.setName("ASIF");
 		batchDataSources.setTypeCode("IMRT");
 		batchData.setBatchDataSources(new ArrayList<BatchDataSource>(Arrays.asList(batchDataSources)));
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(
-				DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		String batchDetails = mapper.writeValueAsString(batchData);
-		String batchId = JerseyClient.sendBatchRequst(new URI(
-				"http://stage-espupdates.asicentral.com/api/api/batch"),
-				AsiHttpMethod.POST, batchDetails);
-		_LOGGER.info("batch Id Created:"+batchId);
+		productRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+		productRestTemplate.getMessageConverters().add(new StringHttpMessageConverter());
+		LinkedHashMap<String, String> batchDetails=productRestTemplate.postForObject(batchProcessingURL, batchData, LinkedHashMap.class);
+		String batchId=String.valueOf(batchDetails.get("BatchId"));
 		if(null!=batchId && !batchId.equals("0"))
 		{
-			// Get Data Source Id Based on Batch Id
-			dataSourceId=JerseyClient.getDataSourceByBatchId(batchId);
+			LinkedHashMap<Object, ArrayList<LinkedHashMap<String,String>>> crntObj=productRestTemplate.getForObject(batchProcessingURL+"/"+batchId,LinkedHashMap.class);
+			List<LinkedHashMap<String,String>> batchDataSourceList=(ArrayList<LinkedHashMap<String,String>>)crntObj.get("BatchDataSources");
+		   	dataSourceId = String.valueOf(batchDataSourceList.get(0).get("Id"));
 		}
 		return dataSourceId;
 	}
 
 	private com.asi.velocity.bean.Product setProductWithPriceDetails(
 			Product srcProduct) {
-		// String dataSourceId=getDataSourceId(srcProduct.getCompanyId());
 		com.asi.velocity.bean.Product currentProduct = new com.asi.velocity.bean.Product();
 		currentProduct.setId(String.valueOf(srcProduct.getID()));
 		currentProduct.setCompanyId(String.valueOf(srcProduct.getCompanyId()));

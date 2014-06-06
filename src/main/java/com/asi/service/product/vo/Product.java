@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlType;
 		   "name",
 		   "description",
 		   "summary",
+		   "category",
 		   "itemPrice",
 		   "imprints",
 		   "workflowStatusCode",
@@ -87,7 +88,17 @@ public class Product {
     
     private String summary;
     
-    private String rushServiceFlag;
+    private String category;
+    
+    public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	private String rushServiceFlag;
     
     private String sameDayRushFlag;
     

@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.client.RestOperations;
 
+import com.asi.service.lookup.vo.Category;
 import com.asi.service.product.client.vo.colors.Color;
-import com.asi.service.product.client.vo.criteria.Criterium;
 import com.asi.service.product.client.vo.material.Material;
 import com.asi.service.product.client.vo.origin.Origin;
 
@@ -23,6 +23,7 @@ public class LookupValuesClient {
 	private String lookupMaterialURL;
 	private String lookupcriteriaAttributeURL;
 	private String originLookupURL;
+	private String lookupCategoryURL;
 	
 	public String getOriginLookupURL() {
 		return originLookupURL;
@@ -85,7 +86,13 @@ public class LookupValuesClient {
 		ArrayList<Origin> serviceOrigin = lookupRestTemplate.getForObject(originLookupURL,ArrayList.class);
 		return serviceOrigin;
 	}	
-
+	@Cacheable(value="lookupCache",key="#categoryLookupURL")
+	public ArrayList<LinkedHashMap<String,String>> getCategoriesFromLookup(String categoryLookupURL)
+	{
+		@SuppressWarnings("unchecked")
+		ArrayList<LinkedHashMap<String,String>> serviceCategory = lookupRestTemplate.getForObject(categoryLookupURL,ArrayList.class);
+		return serviceCategory;
+	}
 	/**
 	 * @return the lookupColorURL
 	 */
@@ -144,4 +151,19 @@ public class LookupValuesClient {
 	public void setLookupcriteriaAttributeURL(String lookupcriteriaAttributeURL) {
 		this.lookupcriteriaAttributeURL = lookupcriteriaAttributeURL;
 	}
+
+
+
+	public String getLookupCategoryURL() {
+		return lookupCategoryURL;
+	}
+
+
+
+	public void setLookupCategoryURL(String lookupCategoryURL) {
+		this.lookupCategoryURL = lookupCategoryURL;
+	}
+
+
+
 }

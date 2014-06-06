@@ -5,10 +5,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 public class Batch {
-    @JsonProperty("BatchId")
+    @JsonProperty("BatchID")
     private Integer              batchId;
     @JsonProperty("BatchTypeCode")
     private String               batchTypeCode;
