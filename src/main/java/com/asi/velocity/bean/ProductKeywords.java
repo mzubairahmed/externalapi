@@ -3,7 +3,7 @@ package com.asi.velocity.bean;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 public class ProductKeywords {
-	@JsonProperty("ID")
+	//@JsonProperty("ID")
 	private String id="0";
 	public String getId() {
 		return id;

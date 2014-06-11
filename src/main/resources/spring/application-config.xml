@@ -82,6 +82,7 @@
 	    	 <property name="productRestTemplate" ref="restTemplate"/>
 	    	 <property name="productImportURL" value="${ws.api.product.import}"></property> 
 	    	 <property name="batchProcessingURL" value="${lookup.batch.processing}"></property> 
+	    	 <property name="lookupsParser" ref="lookupParser"/>    
 	    </bean>
 	   	<!-- To enable @RequestMapping process on type level and method level -->
    		<bean id="productDetail" class="com.asi.service.product.client.vo.ProductDetail"/>
