@@ -1,5 +1,4 @@
 package com.asi.service.product.vo;
-
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -18,6 +17,7 @@ import javax.xml.bind.annotation.XmlType;
 		   "description",
 		   "summary",
 		   "category",
+		   "keyword",
 		   "itemPrice",
 		   "imprints",
 		   "workflowStatusCode",
@@ -90,7 +90,17 @@ public class Product {
     
     private String category;
     
-    public String getCategory() {
+    private String keyword;
+    
+    public String getKeyword() {
+		return keyword;
+	}
+
+	public void setKeyword(String keyword) {
+		this.keyword = keyword;
+	}
+
+	public String getCategory() {
 		return category;
 	}
 

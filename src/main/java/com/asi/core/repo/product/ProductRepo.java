@@ -30,6 +30,7 @@ import com.asi.service.product.client.vo.ProductConfiguration;
 import com.asi.service.product.client.vo.ProductCriteriaSet;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.parser.ImprintParser;
+import com.asi.service.product.client.vo.parser.LookupParser;
 import com.asi.service.product.exception.ProductNotFoundException;
 import com.asi.service.product.vo.ImprintMethod;
 import com.asi.service.product.vo.Imprints;
@@ -76,7 +77,18 @@ public class ProductRepo {
 	ProductClient productClient;
 	@Autowired
 	ProductDetail productDetail;
+	@Autowired LookupParser lookupsParser;
 	String productImportURL;
+	
+
+	public LookupParser getLookupsParser() {
+		return lookupsParser;
+	}
+
+	public void setLookupsParser(LookupParser lookupsParser) {
+		this.lookupsParser = lookupsParser;
+	}
+
 	String batchProcessingURL;
 	public String getProductImportURL() {
 		return productImportURL;
@@ -128,6 +140,11 @@ public class ProductRepo {
 		productDetail = getProductFromService(companyID, productID);
 		Product product = new Product();
 		BeanUtils.copyProperties(productDetail, product);
+		product=lookupsParser.setProductCategory(productDetail,product);
+		product=lookupsParser.setProductServiceKeywords(productDetail,product);
+		product=lookupsParser.setProductServiceDataSheet(productDetail,product);
+		product=lookupsParser.setProductServiceInventoryLink(productDetail, product);
+		product=lookupsParser.setProductServiceBasePriceInfo(productDetail, product);
 		return product;
 	}
 
@@ -331,23 +348,55 @@ public class ProductRepo {
 		productDataSheet
 				.setCompanyId(String.valueOf(srcProduct.getCompanyId()));
 		productDataSheet.setId("0");
+		if(null!=srcProduct.getProductDataSheet())
+		{
+			productDataSheet.setUrl(srcProduct.getProductDataSheet().getUrl());
+		}		
 		currentProduct.setProductDataSheet(productDataSheet);
 		// Product Category
-		List<SelectedProductCategories> productCategoriesLst = new ArrayList<>();
-		SelectedProductCategories productCategories = new SelectedProductCategories();
-		productCategories.setCode("B07449903");
-		productCategories.setProductId(String.valueOf(srcProduct.getID()));
-		productCategories.setIsPrimary("false");
-		productCategories.setAdCategoryFlg("false");
-		productCategoriesLst.add(productCategories);
-		currentProduct
-				.setSelectedProductCategories(new SelectedProductCategories[] { productCategories });
+		SelectedProductCategories[] productCategoriesLst = new SelectedProductCategories[]{};
+		SelectedProductCategories productCategories = null;
+		String productCategory=srcProduct.getCategory();
+		String[] productCtgrs=productCategory.split(",");
+		int categoryCntr=0;
+		if(null!=productCtgrs && productCtgrs.length>0)
+		{
+			productCategoriesLst=new SelectedProductCategories[productCtgrs.length];
+			for(String crntCategory:productCtgrs)
+			{
+				productCategories = new SelectedProductCategories();
+				crntCategory=lookupsParser.getCategoryCodeByName(crntCategory.trim());
+				if(null!=crntCategory)
+				{
+					productCategories.setCode(crntCategory);
+					productCategories.setProductId(String.valueOf(srcProduct.getID()));
+					productCategories.setIsPrimary("false");
+					productCategories.setAdCategoryFlg("false");
+				}
+				productCategoriesLst[categoryCntr]=productCategories;
+				categoryCntr++;
+			}			
+		}
+		if(productCategoriesLst.length>0)
+		{
+			currentProduct
+				.setSelectedProductCategories(productCategoriesLst);
+		}
+		else
+		{
+			currentProduct
+			.setSelectedProductCategories(new SelectedProductCategories[] { productCategories });
+		}
+		// Product Keywords
+		currentProduct=lookupsParser.setProductKeyWords(currentProduct,srcProduct);
 		// Product Inventory Link
 		ProductInventoryLink productInventoryLink = new ProductInventoryLink();
 		productInventoryLink.setCompanyId(String.valueOf(srcProduct
 				.getCompanyId()));
 		productInventoryLink.setProductId(String.valueOf(srcProduct.getID()));
 		productInventoryLink.setId("0");
+		if(null!=srcProduct.getProductInventoryLink())
+			productInventoryLink.setUrl(srcProduct.getProductInventoryLink().getUrl());
 		currentProduct.setProductInventoryLink(productInventoryLink);
 
 		// Price Details
