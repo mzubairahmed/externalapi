@@ -75,7 +75,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ProductDetail {
 
     @JsonProperty("ID")
-    private Integer ID;
+    private String ID;
     @JsonProperty("ProductTypeCode")
     private String productTypeCode;
     @JsonProperty("OriginalProductId")
@@ -83,7 +83,7 @@ public class ProductDetail {
     @JsonProperty("ExternalProductId")
     private String externalProductId;
     @JsonProperty("CompanyId")
-    private Integer companyId;
+    private String companyId;
     @JsonProperty("StatusCode")
     private String statusCode;
     @JsonProperty("Name")
@@ -158,6 +158,14 @@ public class ProductDetail {
     private String includeAppOfferList;
     @JsonProperty("PriceConfirmationDate")
     private String priceConfirmationDate;
+	@JsonProperty("DataSourceId")
+	private String dataSourceId="";
+	public String getDataSourceId() {
+		return dataSourceId;
+	}
+	public void setDataSourceId(String dataSourceId) {
+		this.dataSourceId = dataSourceId;
+	}    
     public String getPriceConfirmationDate() {
 		return priceConfirmationDate;
 	}
@@ -201,12 +209,12 @@ public class ProductDetail {
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
     private String processedURL = "";
     @JsonProperty("ID")
-    public Integer getID() {
+    public String getID() {
         return ID;
     }
 
     @JsonProperty("ID")
-    public void setID(Integer ID) {
+    public void setID(String ID) {
         this.ID = ID;
     }
 
@@ -241,12 +249,12 @@ public class ProductDetail {
     }
 
     @JsonProperty("CompanyId")
-    public Integer getCompanyId() {
+    public String getCompanyId() {
         return companyId;
     }
 
     @JsonProperty("CompanyId")
-    public void setCompanyId(Integer companyId) {
+    public void setCompanyId(String companyId) {
         this.companyId = companyId;
     }
 

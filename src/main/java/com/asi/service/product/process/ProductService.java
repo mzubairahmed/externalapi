@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.asi.core.exception.ErrorMessage;
 import com.asi.core.repo.product.ProductRepo;
-import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.exception.ProductNotFoundException;
 import com.asi.service.product.vo.Imprints;
 import com.asi.service.product.vo.ItemPriceDetail;
@@ -33,7 +32,6 @@ import com.asi.service.product.vo.Product;
 @RestController
 @RequestMapping("api")
 public class ProductService {
-	@Autowired ProductDetail serviceResponse; 
 	@Autowired ProductRepo repository;
 	private static Logger _LOGGER = LoggerFactory.getLogger(ProductService.class);
 	@Autowired

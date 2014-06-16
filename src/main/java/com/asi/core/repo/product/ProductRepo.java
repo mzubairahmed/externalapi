@@ -19,18 +19,28 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.ProductClient;
 import com.asi.service.product.client.vo.CriteriaSetValue;
+import com.asi.service.product.client.vo.Currency;
+import com.asi.service.product.client.vo.DiscountRate;
 import com.asi.service.product.client.vo.Price;
 import com.asi.service.product.client.vo.PriceGrid;
+import com.asi.service.product.client.vo.PricingItem;
 import com.asi.service.product.client.vo.ProductConfiguration;
 import com.asi.service.product.client.vo.ProductCriteriaSet;
+import com.asi.service.product.client.vo.ProductDataSheet;
 import com.asi.service.product.client.vo.ProductDetail;
+import com.asi.service.product.client.vo.ProductInventoryLink;
+import com.asi.service.product.client.vo.SelectedProductCategory;
+import com.asi.service.product.client.vo.batch.Batch;
+import com.asi.service.product.client.vo.batch.BatchDataSource;
 import com.asi.service.product.client.vo.parser.ImprintParser;
 import com.asi.service.product.client.vo.parser.LookupParser;
+import com.asi.service.product.client.vo.parser.ProductConfigurationsParser;
 import com.asi.service.product.exception.ProductNotFoundException;
 import com.asi.service.product.vo.ImprintMethod;
 import com.asi.service.product.vo.Imprints;
@@ -38,17 +48,6 @@ import com.asi.service.product.vo.ItemPriceDetail;
 import com.asi.service.product.vo.ItemPriceDetail.PRICE_Type;
 import com.asi.service.product.vo.PriceDetail;
 import com.asi.service.product.vo.Product;
-import com.asi.service.product.vo.ProductConfigurationsParser;
-import com.asi.velocity.bean.Batch;
-import com.asi.velocity.bean.BatchDataSource;
-import com.asi.velocity.bean.Currency;
-import com.asi.velocity.bean.DiscountRate;
-import com.asi.velocity.bean.PriceGrids;
-import com.asi.velocity.bean.Prices;
-import com.asi.velocity.bean.PricingItems;
-import com.asi.velocity.bean.ProductDataSheet;
-import com.asi.velocity.bean.ProductInventoryLink;
-import com.asi.velocity.bean.SelectedProductCategories;
 
 
 
@@ -287,7 +286,7 @@ public class ProductRepo {
 
 	public Product updateProductBasePrices(Product currentProduct)
 			throws Exception {
-		com.asi.velocity.bean.Product velocityBean = new com.asi.velocity.bean.Product();
+		ProductDetail velocityBean = new ProductDetail();
 		velocityBean = setProductWithPriceDetails(currentProduct);
 		//velocityBean.setDataSourceId("12938");
 		velocityBean.setDataSourceId(getDataSourceId(currentProduct));
@@ -295,7 +294,7 @@ public class ProductRepo {
 		productRestTemplate.getMessageConverters().add(new StringHttpMessageConverter());
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.setContentType(new MediaType("application","json"));
-		HttpEntity<com.asi.velocity.bean.Product> requestEntity = new HttpEntity<com.asi.velocity.bean.Product>(velocityBean, requestHeaders);
+		HttpEntity<ProductDetail> requestEntity = new HttpEntity<ProductDetail>(velocityBean, requestHeaders);
 		ResponseEntity<String> responseEntity = productRestTemplate.exchange(productImportURL, HttpMethod.POST, requestEntity, String.class);
 		String result = String.valueOf(responseEntity.getStatusCode().value());
 		_LOGGER.info("Product Respones Status:" + result);
@@ -332,175 +331,155 @@ public class ProductRepo {
 		return dataSourceId;
 	}
 
-	private com.asi.velocity.bean.Product setProductWithPriceDetails(
+	private ProductDetail setProductWithPriceDetails(
 			Product srcProduct) {
-		com.asi.velocity.bean.Product currentProduct = new com.asi.velocity.bean.Product();
-		currentProduct.setId(String.valueOf(srcProduct.getID()));
-		currentProduct.setCompanyId(String.valueOf(srcProduct.getCompanyId()));
-		currentProduct.setName(srcProduct.getName());
-		currentProduct.setDescription(srcProduct.getDescription());
-		currentProduct.setSummary(String.valueOf(srcProduct.getSummary()));
-		currentProduct.setDataSourceId(srcProduct.getDataSourceId());
-		currentProduct.setExternalProductId(srcProduct.getExternalProductId());
+		
+		ProductDetail productToUpdate = new ProductDetail();
+		productToUpdate.setID(String.valueOf(srcProduct.getID()));
+		productToUpdate.setCompanyId(String.valueOf(srcProduct.getCompanyId()));
+		productToUpdate.setName(srcProduct.getName());
+		productToUpdate.setDescription(srcProduct.getDescription());
+		productToUpdate.setSummary(String.valueOf(srcProduct.getSummary()));
+		productToUpdate.setDataSourceId(srcProduct.getDataSourceId());		
+		productToUpdate.setExternalProductId(srcProduct.getExternalProductId());	
 		// Product DataSheet
 		ProductDataSheet productDataSheet = new ProductDataSheet();
 		productDataSheet.setProductId(String.valueOf(srcProduct.getID()));
 		productDataSheet
 				.setCompanyId(String.valueOf(srcProduct.getCompanyId()));
-		productDataSheet.setId("0");
+		productDataSheet.setID("0");		
 		if(null!=srcProduct.getProductDataSheet())
 		{
 			productDataSheet.setUrl(srcProduct.getProductDataSheet().getUrl());
 		}		
-		currentProduct.setProductDataSheet(productDataSheet);
-		// Product Category
-		SelectedProductCategories[] productCategoriesLst = new SelectedProductCategories[]{};
-		SelectedProductCategories productCategories = null;
-		String productCategory=srcProduct.getCategory();
-		String[] productCtgrs=productCategory.split(",");
-		int categoryCntr=0;
-		if(null!=productCtgrs && productCtgrs.length>0)
-		{
-			productCategoriesLst=new SelectedProductCategories[productCtgrs.length];
-			for(String crntCategory:productCtgrs)
+		productToUpdate.setProductDataSheet(productDataSheet);
+
+		//Product Categories
+		String sProductCategory=srcProduct.getCategory();
+		
+		if(null!=sProductCategory ||  (!StringUtils.isEmpty(sProductCategory)))
+		{			
+			String[] arrayProductCtgrs=sProductCategory.split(",");
+			if(null!=arrayProductCtgrs && arrayProductCtgrs.length>0)
 			{
-				productCategories = new SelectedProductCategories();
-				crntCategory=lookupsParser.getCategoryCodeByName(crntCategory.trim());
-				if(null!=crntCategory)
+				SelectedProductCategory productCategory = null;
+				for(String crntCategory:arrayProductCtgrs)
 				{
-					productCategories.setCode(crntCategory);
-					productCategories.setProductId(String.valueOf(srcProduct.getID()));
-					productCategories.setIsPrimary("false");
-					productCategories.setAdCategoryFlg("false");
-				}
-				productCategoriesLst[categoryCntr]=productCategories;
-				categoryCntr++;
-			}			
+					productCategory = new SelectedProductCategory();
+					crntCategory=lookupsParser.getCategoryCodeByName(crntCategory.trim());
+					if(null!=crntCategory)
+					{
+						productCategory.setCode(crntCategory);
+						productCategory.setProductId(String.valueOf(srcProduct.getID()));
+						productCategory.setIsPrimary(Boolean.FALSE);
+						productCategory.setAdCategoryFlg(Boolean.FALSE);
+					}
+					productToUpdate.getSelectedProductCategories().add(productCategory);
+				}			
+			}
 		}
-		if(productCategoriesLst.length>0)
-		{
-			currentProduct
-				.setSelectedProductCategories(productCategoriesLst);
-		}
-		else
-		{
-			currentProduct
-			.setSelectedProductCategories(new SelectedProductCategories[] { productCategories });
-		}
+		
+		
 		// Product Keywords
-		currentProduct=lookupsParser.setProductKeyWords(currentProduct,srcProduct);
+		productToUpdate=lookupsParser.setProductKeyWords(productToUpdate,srcProduct);
+
 		// Product Inventory Link
 		ProductInventoryLink productInventoryLink = new ProductInventoryLink();
 		productInventoryLink.setCompanyId(String.valueOf(srcProduct
 				.getCompanyId()));
 		productInventoryLink.setProductId(String.valueOf(srcProduct.getID()));
-		productInventoryLink.setId("0");
+		productInventoryLink.setID("0");
 		if(null!=srcProduct.getProductInventoryLink())
 			productInventoryLink.setUrl(srcProduct.getProductInventoryLink().getUrl());
-		currentProduct.setProductInventoryLink(productInventoryLink);
+		productToUpdate.setProductInventoryLink(productInventoryLink);
 
 		// Price Details
-		PriceGrids[] pricegridList = new PriceGrids[] {};
-		if (srcProduct.getItemPrice().size() == 0) {
-			pricegridList = new PriceGrids[1];
-			PriceGrids priceGrid = getQURPriceGrid(srcProduct);
-			pricegridList[0] = priceGrid;
-			currentProduct.setPriceGrids(pricegridList);
-		}else
+		if (srcProduct.getItemPrice().size() == 0) 
 		{
-			pricegridList=setPriceDetails(srcProduct);
-			if(null!=pricegridList && pricegridList.length!=0)
-			currentProduct.setPriceGrids(pricegridList);
+			PriceGrid priceGrid = getQURPriceGrid(srcProduct);
+			productToUpdate.getPriceGrids().add(priceGrid);
 		}
-		return currentProduct;
+		else
+		{
+			productToUpdate.setPriceGrids(setPriceDetails(srcProduct));
+		}
+		
+		return productToUpdate;
 	}
 
-	private PriceGrids[] setPriceDetails(Product srcProduct) {
-		PriceGrids[] pricegridList = new PriceGrids[srcProduct.getItemPrice().size()];
-		int priceGridCntr=0;
-		PriceGrids crntPriceGrids=null;
-		Currency currency=null;
-		Prices[] pricesList=null;
-		Prices prices=null;
+	private List<PriceGrid> setPriceDetails(Product srcProduct) {
+		
+		List<PriceGrid> pricegridList = new ArrayList<PriceGrid>();
+		PriceGrid crntPriceGrids=null;
+		Price price=null;
 		DiscountRate discount=null;
-		int pricesCntr=0;
 		for(ItemPriceDetail crntItemPrice:srcProduct.getItemPrice())	
 		{
-			crntPriceGrids=new PriceGrids();
-			crntPriceGrids.setId(crntItemPrice.getPriceID());
+			crntPriceGrids=new PriceGrid();
+			crntPriceGrids.setID(crntItemPrice.getPriceID());
 			crntPriceGrids.setProductId(crntItemPrice.getProductID());
 			if(crntItemPrice.getPriceType().toString().equals("REGL"))
 			{
-				crntPriceGrids.setIsBasePrice("true");
+				crntPriceGrids.setIsBasePrice(Boolean.TRUE);
 				crntPriceGrids.setPriceGridSubTypeCode(crntItemPrice.getPriceType().toString());
 			}
 			if(!crntItemPrice.getPriceDetails().isEmpty() && crntItemPrice.getPriceDetails().size()>0)
 			{
-				crntPriceGrids.setIsQUR("false");
+				crntPriceGrids.setIsQUR(Boolean.FALSE);
 			}
 			crntPriceGrids.setUsageLevelCode("NONE");
 			crntPriceGrids.setPriceIncludes(crntItemPrice.getPriceIncludes());
-			currency = new Currency();
-			currency.setCode("USD");
-			currency.setName("US Dollar");
-			currency.setiSODisplaySymbol("$");
-			currency.setIsISO("true");
-			currency.setIsActive("true");
-			crntPriceGrids.setCurrency(currency);
-			pricesList=new Prices[crntItemPrice.getPriceDetails().size()];
+			crntPriceGrids.setCurrency(setCurrency(1,0));
+			
+
 			for(PriceDetail priceDetail:crntItemPrice.getPriceDetails())
 			{
-				prices=new Prices();
-				prices.setPriceGridId(crntItemPrice.getPriceID());
-				prices.setQuantity(String.valueOf(priceDetail.getQuanty()));
-				prices.setListPrice(String.valueOf(priceDetail.getPrice()));
-				prices.setNetCost(String.valueOf(priceDetail.getNetCost()));
-				prices.setItemsPerUnit(String.valueOf(priceDetail.getItemsPerUnit()));
-				prices.setItemsPerUnit(String.valueOf(priceDetail.getItemsPerUnit()));
+				price=new Price();
+				price.setPriceGridId(crntItemPrice.getPriceID());
+				price.setQuantity(priceDetail.getQuanty());
+				price.setListPrice(priceDetail.getPrice());
+				price.setNetCost(priceDetail.getNetCost());
+				price.setItemsPerUnit(priceDetail.getItemsPerUnit());
 				discount=new DiscountRate();
 				discount.setIndustryDiscountCode(priceDetail.getDiscount());
 				discount.setCode(priceDetail.getDiscount().toUpperCase()+priceDetail.getDiscount().toUpperCase()+priceDetail.getDiscount().toUpperCase()+priceDetail.getDiscount().toUpperCase());
-				prices.setDiscountRate(discount);
-				prices.setSequenceNumber(String.valueOf(priceDetail.getSequenceNumber()));
-				pricesList[pricesCntr]=prices;
-				//prices.setd
-				pricesCntr++;
+				price.setDiscountRate(discount);
+				price.setSequenceNumber(priceDetail.getSequenceNumber());
+				crntPriceGrids.getPrices().add(price);
 			}
-			crntPriceGrids.setPrices(pricesList);
-			pricegridList[priceGridCntr]=crntPriceGrids;
+			pricegridList.add(crntPriceGrids);
 		}
 		return pricegridList;
 	}
 
-	private PriceGrids getQURPriceGrid(Product crntProduct) {
-		PriceGrids qurPriceGrid = new PriceGrids();
-		qurPriceGrid.setId("0");
+	private PriceGrid getQURPriceGrid(Product crntProduct) {
+		PriceGrid qurPriceGrid = new PriceGrid();
+		qurPriceGrid.setID("0");
 		qurPriceGrid.setProductId(String.valueOf(crntProduct.getID()));
-		qurPriceGrid.setIsQUR("true");
-		qurPriceGrid.setIsBasePrice("true");
+		qurPriceGrid.setIsQUR(Boolean.TRUE);
+		qurPriceGrid.setIsBasePrice(Boolean.TRUE);
 		qurPriceGrid.setPriceGridSubTypeCode("REGL");
 		qurPriceGrid.setUsageLevelCode("NONE");
-		// qurPriceGrid.setDescription("")
-		qurPriceGrid.setIsRange("false");
-		qurPriceGrid.setIsSpecial("false");
-		// qurPriceGrid.setPriceIncludes": "",
-		qurPriceGrid.setDisplaySequence("1");
-		qurPriceGrid.setIsCopy("false");
+		qurPriceGrid.setIsRange(Boolean.FALSE);
+		qurPriceGrid.setIsSpecial(Boolean.FALSE);
+		qurPriceGrid.setDisplaySequence(1);
+		qurPriceGrid.setIsCopy(Boolean.FALSE);
+		qurPriceGrid.setCurrency(setCurrency(1,0));
+		return qurPriceGrid;
+	}
+	private Currency setCurrency(int displaySequence,int number)
+	{
 		Currency currency = new Currency();
 		currency.setCode("USD");
 		currency.setName("US Dollar");
-		currency.setNumber("0");
-		currency.setaSIDisplaySymbol("$");
-		currency.setiSODisplaySymbol("$");
-		currency.setIsISO("true");
-		currency.setIsActive("true");
-		currency.setDisplaySequence("1");
-		qurPriceGrid.setCurrency(currency);
-		PricingItems[] pricingItems = new PricingItems[] {};
-		Prices[] prices = new Prices[] {};
-		qurPriceGrid.setPricingItems(pricingItems);
-		qurPriceGrid.setPrices(prices);
-		return qurPriceGrid;
+		currency.setNumber(number);
+		currency.setASIDisplaySymbol("$");
+		currency.setISODisplaySymbol("$");
+		currency.setIsISO(Boolean.TRUE);
+		currency.setIsActive(Boolean.TRUE);
+		currency.setDisplaySequence(displaySequence);
+		
+		return currency;
 	}
 
 	/*

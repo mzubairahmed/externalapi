@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
 import com.asi.service.product.client.vo.colors.Color;
@@ -89,7 +90,15 @@ public class LookupValuesClient {
 	public ArrayList<LinkedHashMap<String,String>> getCategoriesFromLookup(String categoryLookupURL)
 	{
 		@SuppressWarnings("unchecked")
-		ArrayList<LinkedHashMap<String,String>> serviceCategory = lookupRestTemplate.getForObject(categoryLookupURL,ArrayList.class);
+		ArrayList<LinkedHashMap<String,String>> serviceCategory=null;
+		try
+		{
+			serviceCategory = lookupRestTemplate.getForObject(categoryLookupURL,ArrayList.class);
+		} catch(RestClientException ex)
+		{
+			
+		}
+		
 		return serviceCategory;
 	}
 	/**

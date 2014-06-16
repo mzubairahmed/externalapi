@@ -1,8 +1,10 @@
+package com.asi.service.product.vo;
 
-package com.asi.service.product.client.vo;
-
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -10,65 +12,59 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+@XmlRootElement(namespace = "http://www.asicentral.com/schema/product")
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonPropertyOrder({
-    "ID",
-    "ProductId",
-    "CompanyId",
-    "Url"
-})
-public class ProductDataSheet {
+public class InventoryLink implements Serializable{
 
-    @JsonProperty("ID")
-    private String iD;
-    @JsonProperty("ProductId")
-    private String productId;
-    @JsonProperty("CompanyId")
-    private String companyId;
-    @JsonProperty("Url")
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	@JsonProperty("ID")
+    private Integer id;
+	@JsonProperty("ProductId")
+    private Integer productId;
+	@JsonProperty("CompanyId")
+    private Integer companyId;
+	@JsonProperty("Url")
     private String url;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("ID")
-    public String getID() {
-        return iD;
+    
+    public Integer getId() {
+        return id;
     }
 
-    @JsonProperty("ID")
-    public void setID(String iD) {
-        this.iD = iD;
+    
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    @JsonProperty("ProductId")
-    public String getProductId() {
+       public Integer getProductId() {
         return productId;
     }
 
-    @JsonProperty("ProductId")
-    public void setProductId(String productId) {
+   
+    public void setProductId(Integer productId) {
         this.productId = productId;
     }
 
-    @JsonProperty("CompanyId")
-    public String getCompanyId() {
+    public Integer getCompanyId() {
         return companyId;
     }
 
-    @JsonProperty("CompanyId")
-    public void setCompanyId(String companyId) {
+  
+    public void setCompanyId(Integer companyId) {
         this.companyId = companyId;
     }
 
-    @JsonProperty("Url")
+    
     public String getUrl() {
         return url;
     }
 
-    @JsonProperty("Url")
+   
     public void setUrl(String url) {
         this.url = url;
     }

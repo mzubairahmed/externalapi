@@ -32,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class Price {
 
     @JsonProperty("PriceGridId")
-    private Integer priceGridId;
+    private String priceGridId;
     @JsonProperty("SequenceNumber")
     private Integer sequenceNumber;
     @JsonProperty("Quantity")
@@ -90,12 +90,12 @@ public class Price {
 	}
 
 	@JsonProperty("PriceGridId")
-    public Integer getPriceGridId() {
+    public String getPriceGridId() {
         return priceGridId;
     }
 
     @JsonProperty("PriceGridId")
-    public void setPriceGridId(Integer priceGridId) {
+    public void setPriceGridId(String priceGridId) {
         this.priceGridId = priceGridId;
     }
 
