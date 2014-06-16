@@ -2,8 +2,9 @@ package com.asi.service.ws.product.vo;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.asi.service.product.vo.Namespaces;
 import com.asi.service.product.vo.Product;
-@XmlRootElement(namespace = "http://www.asicentral.com/schema/product" , name="productSearchRequest")
+@XmlRootElement(namespace = Namespaces.productNamespace)
 public class ProductSearchRequest {
 	private Product product;
 

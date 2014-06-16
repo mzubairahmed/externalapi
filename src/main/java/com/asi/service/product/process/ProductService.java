@@ -91,7 +91,7 @@ public class ProductService {
 	
 	@Secured("ROLE_CUSTOMER")
 	@RequestMapping(value = "{companyid}/pid/{xid}/basePrices",method = RequestMethod.POST, headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
-	public ResponseEntity<Product> getBasePrices(HttpEntity<Product> product) throws Exception {
+	public ResponseEntity<Product> updateBasePrices(HttpEntity<Product> product) throws Exception {
 		if(_LOGGER.isDebugEnabled()) 
 			_LOGGER.debug("calling Base Price Service Updation");
 		Product productResponse = repository.updateProductBasePrices(product.getBody());

@@ -3,8 +3,9 @@ package com.asi.service.ws.product.vo;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.asi.core.exception.ErrorMessage;
+import com.asi.service.product.vo.Namespaces;
 import com.asi.service.product.vo.Product;
-@XmlRootElement(namespace = "http://www.asicentral.com/schema/product" , name="productSearchResponse")
+@XmlRootElement(namespace = Namespaces.productNamespace)
 public class ProductSearchResponse {
 	private ErrorMessage errorInfo;
 	private Product product;
