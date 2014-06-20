@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @XmlRootElement(namespace = "http://www.asicentral.com/schema/product")
 
-public class ProductDataSheet  implements Serializable{
+public class DataSheet  implements Serializable{
 
     /**
 	 * 

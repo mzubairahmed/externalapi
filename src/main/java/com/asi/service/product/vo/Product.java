@@ -151,9 +151,9 @@ public class Product {
     
     private Boolean isShippableInPlainBox;
     
-    private ProductDataSheet productDataSheet;
+    private DataSheet productDataSheet;
     
-    private ProductInventoryLink productInventoryLink;
+    private InventoryLink productInventoryLink;
     
     private Boolean isAvailableUnimprinted;
     
@@ -592,28 +592,28 @@ public class Product {
 	/**
 	 * @return the productDataSheet
 	 */
-	public ProductDataSheet getProductDataSheet() {
+	public DataSheet getProductDataSheet() {
 		return productDataSheet;
 	}
 
 	/**
 	 * @param productDataSheet the productDataSheet to set
 	 */
-	public void setProductDataSheet(ProductDataSheet productDataSheet) {
+	public void setProductDataSheet(DataSheet productDataSheet) {
 		this.productDataSheet = productDataSheet;
 	}
 
 	/**
 	 * @return the productInventoryLink
 	 */
-	public ProductInventoryLink getProductInventoryLink() {
+	public InventoryLink getProductInventoryLink() {
 		return productInventoryLink;
 	}
 
 	/**
 	 * @param productInventoryLink the productInventoryLink to set
 	 */
-	public void setProductInventoryLink(ProductInventoryLink productInventoryLink) {
+	public void setProductInventoryLink(InventoryLink productInventoryLink) {
 		this.productInventoryLink = productInventoryLink;
 	}
 

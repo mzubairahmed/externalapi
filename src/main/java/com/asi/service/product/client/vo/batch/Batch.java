@@ -1,4 +1,4 @@
-package com.asi.velocity.bean;
+package com.asi.service.product.client.vo.batch;
 
 import java.util.ArrayList;
 import java.util.HashSet;

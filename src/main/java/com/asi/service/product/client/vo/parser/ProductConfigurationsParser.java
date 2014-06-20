@@ -1,4 +1,4 @@
-package com.asi.service.product.vo;
+package com.asi.service.product.client.vo.parser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +12,6 @@ import com.asi.service.product.client.vo.PricingItem;
 import com.asi.service.product.client.vo.ProductConfiguration;
 import com.asi.service.product.client.vo.ProductCriteriaSet;
 import com.asi.service.product.client.vo.ProductDetail;
-import com.asi.service.product.client.vo.parser.LookupParser;
 
 public class ProductConfigurationsParser {
 	private final static Logger _LOGGER = Logger
@@ -20,7 +19,7 @@ public class ProductConfigurationsParser {
 	@Autowired LookupParser productLookupParser;
 	
 	private HashMap<String,HashMap<String, String>> criteriaSet=new HashMap<>();
-	public String[] getPriceCriteria(ProductDetail productDetail,Integer priceGridId) {
+	public String[] getPriceCriteria(ProductDetail productDetail,String priceGridId) {
 		String[] priceCrterias=null;
 		String criteriaOne="",criteria1Value="";
 		String criteriaTwo="",criteria2Value="";

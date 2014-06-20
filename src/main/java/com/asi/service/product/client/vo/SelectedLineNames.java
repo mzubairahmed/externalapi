@@ -77,7 +77,6 @@ public class SelectedLineNames {
     public String getMarketSegmentCode() {
         return marketSegmentCode;
     }
-
     /**
      * @param marketSegmentCode the marketSegmentCode to set
      */

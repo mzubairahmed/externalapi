@@ -11,13 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.vo.Price;
 import com.asi.service.product.client.vo.ProductDetail;
+import com.asi.service.product.client.vo.ProductInventoryLink;
+import com.asi.service.product.client.vo.ProductKeywords;
 import com.asi.service.product.client.vo.SelectedProductCategory;
 import com.asi.service.product.vo.ItemPriceDetail;
 import com.asi.service.product.vo.PriceDetail;
 import com.asi.service.product.vo.Product;
-import com.asi.service.product.vo.ProductDataSheet;
-import com.asi.service.product.vo.ProductInventoryLink;
-import com.asi.velocity.bean.ProductKeywords;
+import com.asi.service.product.vo.DataSheet;
+import com.asi.service.product.vo.InventoryLink;
 
 public class LookupParser {
 	
@@ -171,16 +172,13 @@ public class LookupParser {
 		return product;		
 	}
 
-	public com.asi.velocity.bean.Product setProductKeyWords(
-			com.asi.velocity.bean.Product currentProduct, Product srcProduct) {
-		ProductKeywords[] productKeywords=null;
+	public ProductDetail setProductKeyWords(
+			ProductDetail productToUpdate, Product srcProduct) {
 		String keywords=srcProduct.getKeyword();
 		String[] keywordlist=keywords.split(",");
 		ProductKeywords curntProductKeyword=null;
-		int keywordCntr=0;
 		if(null!=keywordlist && keywordlist.length>0)
 		{
-			productKeywords=new ProductKeywords[keywordlist.length];
 			for(String crntKeyword:keywordlist)
 			{
 				curntProductKeyword=new ProductKeywords();
@@ -189,12 +187,10 @@ public class LookupParser {
 				curntProductKeyword.setProductId(String.valueOf(srcProduct.getID()));
 				curntProductKeyword.setTypeCode("HIDD");
 				curntProductKeyword.setValue(crntKeyword);
-				productKeywords[keywordCntr]=curntProductKeyword;
-				keywordCntr++;
+				productToUpdate.getProductKeywords().add(curntProductKeyword);
 			}
-			currentProduct.setProductKeywords(productKeywords);
 		}
-		return currentProduct;
+		return productToUpdate;
 	}
 
 	public Product setProductServiceKeywords(ProductDetail productDetail,
@@ -221,10 +217,10 @@ public class LookupParser {
 			Product product) {
 		com.asi.service.product.client.vo.ProductDataSheet crntDataSheet=productDetail.getProductDataSheet();
 		if(null!=crntDataSheet){
-			ProductDataSheet productDataSheet=new ProductDataSheet();
-			productDataSheet.setProductId(productDetail.getID());
-			productDataSheet.setCompanyId(productDetail.getCompanyId());
-			productDataSheet.setId(crntDataSheet.getID());
+			DataSheet productDataSheet=new DataSheet();
+			productDataSheet.setProductId(Integer.valueOf(productDetail.getID()));
+			productDataSheet.setCompanyId(Integer.valueOf(productDetail.getCompanyId()));
+			productDataSheet.setId(Integer.valueOf(crntDataSheet.getID()));
 			productDataSheet.setUrl(crntDataSheet.getUrl());
 			product.setProductDataSheet(productDataSheet);
 		}
@@ -232,12 +228,12 @@ public class LookupParser {
 	}
 	public Product setProductServiceInventoryLink(ProductDetail productDetail,
 			Product product) {
-		com.asi.service.product.client.vo.ProductInventoryLink crntInventoryLink=productDetail.getProductInventoryLink();
+		ProductInventoryLink crntInventoryLink=productDetail.getProductInventoryLink();
 		{
-			ProductInventoryLink productInventoryLink=new ProductInventoryLink();
-			productInventoryLink.setProductId(productDetail.getID());
-			productInventoryLink.setCompanyId(productDetail.getCompanyId());
-			productInventoryLink.setId(crntInventoryLink.getID());
+			InventoryLink productInventoryLink=new InventoryLink();
+			productInventoryLink.setProductId(Integer.valueOf(productDetail.getID()));
+			productInventoryLink.setCompanyId(Integer.valueOf(productDetail.getCompanyId()));
+			productInventoryLink.setId(Integer.valueOf(crntInventoryLink.getID()));
 			productInventoryLink.setUrl(crntInventoryLink.getUrl());
 			product.setProductInventoryLink(productInventoryLink);
 		}

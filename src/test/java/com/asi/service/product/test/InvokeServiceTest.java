@@ -19,6 +19,8 @@ import org.springframework.web.client.RestTemplate;
 import com.asi.service.product.vo.Product;
 
 
+
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:spring/application-config-test.xml")
 public class InvokeServiceTest {

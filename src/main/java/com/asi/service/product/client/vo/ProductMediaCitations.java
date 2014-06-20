@@ -1,6 +1,5 @@
 package com.asi.service.product.client.vo;
 
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ProductMediaCitations {

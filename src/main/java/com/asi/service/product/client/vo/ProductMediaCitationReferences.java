@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class ProductMediaCitationReferences {
-
     private String                 productId;
     private String                 mediaCitationReferenceId;
     private String                 mediaCitationId;

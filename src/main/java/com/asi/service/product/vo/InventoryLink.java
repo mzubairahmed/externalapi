@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 @XmlRootElement(namespace = "http://www.asicentral.com/schema/product")
 
-public class ProductInventoryLink implements Serializable{
+public class InventoryLink implements Serializable{
 
     /**
 	 * 

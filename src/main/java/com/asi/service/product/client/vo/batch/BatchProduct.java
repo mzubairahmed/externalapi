@@ -1,4 +1,4 @@
-package com.asi.velocity.bean;
+package com.asi.service.product.client.vo.batch;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 

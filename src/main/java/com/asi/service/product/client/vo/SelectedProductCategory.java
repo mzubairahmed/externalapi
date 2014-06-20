@@ -26,7 +26,7 @@ public class SelectedProductCategory {
     @JsonProperty("Code")
     private String code;
     @JsonProperty("ProductId")
-    private Integer productId;
+    private String productId;
     @JsonProperty("IsPrimary")
     private Boolean isPrimary;
     @JsonProperty("AdCategoryFlg")
@@ -44,12 +44,12 @@ public class SelectedProductCategory {
     }
 
     @JsonProperty("ProductId")
-    public Integer getProductId() {
+    public String getProductId() {
         return productId;
     }
 
     @JsonProperty("ProductId")
-    public void setProductId(Integer productId) {
+    public void setProductId(String productId) {
         this.productId = productId;
     }
 

@@ -39,8 +39,7 @@ public class ProductMediaItems {
 	private Media media;
 	@JsonProperty("MediaRank")
 	private String mediaRank;
-	  
- 
+	   
       public String getMediaRank() {
 		return mediaRank;
 	}
