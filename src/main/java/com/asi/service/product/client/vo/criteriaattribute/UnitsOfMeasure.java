@@ -31,7 +31,7 @@ public class UnitsOfMeasure {
     private String format;
     @JsonProperty("ConversionTargetUOMCode")
     private String conversionTargetUOMCode;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    //private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("Code")
     public String getCode() {
@@ -83,7 +83,7 @@ public class UnitsOfMeasure {
         this.conversionTargetUOMCode = conversionTargetUOMCode;
     }
 
-    @JsonAnyGetter
+  /*  @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }
@@ -91,6 +91,6 @@ public class UnitsOfMeasure {
     @JsonAnySetter
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
-    }
+    }*/
 
 }

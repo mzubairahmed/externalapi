@@ -38,7 +38,7 @@ public class CriteriaAttribute {
     private CriteriaItem criteriaItem;
     @JsonProperty("UnitsOfMeasure")
     private List<UnitsOfMeasure> unitsOfMeasure = new ArrayList<UnitsOfMeasure>();
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  //  private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("ID")
     public Integer getID() {
@@ -100,7 +100,7 @@ public class CriteriaAttribute {
         this.unitsOfMeasure = unitsOfMeasure;
     }
 
-    @JsonAnyGetter
+  /*  @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }
@@ -108,6 +108,6 @@ public class CriteriaAttribute {
     @JsonAnySetter
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
-    }
+    }*/
 
 }

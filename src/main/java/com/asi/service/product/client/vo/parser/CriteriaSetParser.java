@@ -47,13 +47,19 @@ public class CriteriaSetParser {
     		criteriaSetValuesList=productCriteriaSet.getCriteriaSetValues();
     		for(CriteriaSetValue currentCriteriaSetValue:criteriaSetValuesList)
     		{
-    			if(currentCriteriaSetValue.getValue() instanceof String)
-    			addReferenceSet(xid, currentCriteriaSetValue.getCriteriaCode(), currentCriteriaSetValue.getID(), currentCriteriaSetValue.getValue().toString());
+    			if(currentCriteriaSetValue.getValue() instanceof String){
+    				if(currentCriteriaSetValue.getCriteriaCode().equalsIgnoreCase("ARTW") && null!=currentCriteriaSetValue.getCriteriaSetCodeValues() && currentCriteriaSetValue.getCriteriaSetCodeValues().size()>0 && null!=currentCriteriaSetValue.getCriteriaSetCodeValues().get(0).getSetCodeValueId()){
+    					addReferenceSet(xid, currentCriteriaSetValue.getCriteriaCode(), currentCriteriaSetValue.getID(), currentCriteriaSetValue.getCriteriaSetCodeValues().get(0).getSetCodeValueId().toString());
+					}else{
+						addReferenceSet(xid, currentCriteriaSetValue.getCriteriaCode(), currentCriteriaSetValue.getID(), currentCriteriaSetValue.getValue().toString());
+					}
+    			}
     			else{
     				if(currentCriteriaSetValue.getValue() instanceof List){
     					valueList=(List<LinkedHashMap<String,String>>)currentCriteriaSetValue.getValue();
     					for(LinkedHashMap<String, String> valueObj:valueList){
     						addReferenceSet(xid, currentCriteriaSetValue.getCriteriaCode(), currentCriteriaSetValue.getID(), productLookupParser.getElementValue(currentCriteriaSetValue.getCriteriaCode(),String.valueOf(valueObj.get("CriteriaAttributeId")),String.valueOf(valueObj.get("UnitValue")),String.valueOf(valueObj.get("UnitOfMeasureCode"))));	
+    							
     					}
     				}
     			}

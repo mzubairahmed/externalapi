@@ -69,7 +69,7 @@ public class ProductCriteriaSet {
     private Boolean isDefaultConfiguration;
     @JsonProperty("CriteriaSetValues")
     private List<CriteriaSetValue> criteriaSetValues = new ArrayList<CriteriaSetValue>();
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+   // private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("ProductId")
     public Integer getProductId() {
@@ -246,7 +246,7 @@ public class ProductCriteriaSet {
         return EqualsBuilder.reflectionEquals(this, other);
     }
 
-    @JsonAnyGetter
+    /*@JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }
@@ -254,6 +254,6 @@ public class ProductCriteriaSet {
     @JsonAnySetter
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
-    }
+    }*/
 
 }

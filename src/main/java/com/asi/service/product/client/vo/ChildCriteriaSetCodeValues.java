@@ -1,105 +1,37 @@
 package com.asi.service.product.client.vo;
 
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class ChildCriteriaSetCodeValues {
+private String criteriaSetValueId="",setCodeValueId="",codeValue="",id="";
 
-    @JsonProperty("ParentCriteriaSetCodeValueId")
-    private String                    parentCriteriaSetCodeValueId = "";
-    @JsonProperty("ChildCriteriaSetCodeValueId")
-    private String                    childCriteriaSetCodeValueId  = "";
-    @JsonProperty("ProductId")
-    private String                    productId                    = "";
-    @JsonProperty("ChildCriteriaSetCodeValue")
-    private ChildCriteriaSetCodeValue childCriteriaSetCodeValue    = null;
+public String getCriteriaSetValueId() {
+	return criteriaSetValueId;
+}
 
-    public ChildCriteriaSetCodeValues() {
-        // Default constructor
-    }
+public void setCriteriaSetValueId(String criteriaSetValueId) {
+	this.criteriaSetValueId = criteriaSetValueId;
+}
 
-    /**
-     * @param parentCriteriaSetCodeValueId
-     * @param childCriteriaSetCodeValueId
-     * @param productId
-     * @param childCriteriaSetCodeValue
-     */
-    public ChildCriteriaSetCodeValues(String parentCriteriaSetCodeValueId, String childCriteriaSetCodeValueId, String productId,
-            ChildCriteriaSetCodeValue childCriteriaSetCodeValue) {
-        this.parentCriteriaSetCodeValueId = parentCriteriaSetCodeValueId;
-        this.childCriteriaSetCodeValueId = childCriteriaSetCodeValueId;
-        this.productId = productId;
-        this.childCriteriaSetCodeValue = childCriteriaSetCodeValue;
-    }
+public String getSetCodeValueId() {
+	return setCodeValueId;
+}
 
+public void setSetCodeValueId(String setCodeValueId) {
+	this.setCodeValueId = setCodeValueId;
+}
 
-    /**
-     * @return the parentCriteriaSetCodeValueId
-     */
-    public String getParentCriteriaSetCodeValueId() {
-        return parentCriteriaSetCodeValueId;
-    }
+public String getCodeValue() {
+	return codeValue;
+}
 
-    /**
-     * @param parentCriteriaSetCodeValueId the parentCriteriaSetCodeValueId to set
-     */
-    public void setParentCriteriaSetCodeValueId(String parentCriteriaSetCodeValueId) {
-        this.parentCriteriaSetCodeValueId = parentCriteriaSetCodeValueId;
-    }
+public void setCodeValue(String codeValue) {
+	this.codeValue = codeValue;
+}
 
-    /**
-     * @return the childCriteriaSetCodeValueId
-     */
-    public String getChildCriteriaSetCodeValueId() {
-        return childCriteriaSetCodeValueId;
-    }
+public String getId() {
+	return id;
+}
 
-    /**
-     * @param childCriteriaSetCodeValueId the childCriteriaSetCodeValueId to set
-     */
-    public void setChildCriteriaSetCodeValueId(String childCriteriaSetCodeValueId) {
-        this.childCriteriaSetCodeValueId = childCriteriaSetCodeValueId;
-    }
-
-    /**
-     * @return the productId
-     */
-    public String getProductId() {
-        return productId;
-    }
-
-    /**
-     * @param productId the productId to set
-     */
-    public void setProductId(String productId) {
-        this.productId = productId;
-    }
-
-    /**
-     * @return the childCriteriaSetCodeValue
-     */
-    public ChildCriteriaSetCodeValue getChildCriteriaSetCodeValue() {
-        return childCriteriaSetCodeValue;
-    }
-
-    /**
-     * @param childCriteriaSetCodeValue the childCriteriaSetCodeValue to set
-     */
-    public void setChildCriteriaSetCodeValue(ChildCriteriaSetCodeValue childCriteriaSetCodeValue) {
-        this.childCriteriaSetCodeValue = childCriteriaSetCodeValue;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return "ChildCriteriaSetCodeValues [parentCriteriaSetCodeValueId=" + parentCriteriaSetCodeValueId
-                + ", childCriteriaSetCodeValueId=" + childCriteriaSetCodeValueId + ", productId=" + productId
-                + ", childCriteriaSetCodeValue=" + childCriteriaSetCodeValue + "]";
-    }
-
-    
-    
-    
+public void setId(String id) {
+	this.id = id;
+}
 }

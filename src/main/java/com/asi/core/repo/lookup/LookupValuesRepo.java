@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.asi.service.lookup.vo.Artwork;
+import com.asi.service.lookup.vo.ArtworksList;
 import com.asi.service.lookup.vo.AsiColor;
 import com.asi.service.lookup.vo.CategoriesList;
 import com.asi.service.lookup.vo.Category;
@@ -240,7 +242,46 @@ public class LookupValuesRepo {
 				category.setIsPrimary(String.valueOf(currentHashMap.get("IsPrimary")));
 			categoryArrayList.add(category);			
 		}
-		categoriesList.setSizes(categoryArrayList);
+		categoriesList.setCategories(categoryArrayList);
 		return categoriesList;
+	}
+	public ArtworksList getAllArtworks() {
+		ArtworksList artworksList = new ArtworksList();
+		Artwork artwork=null;
+		List<Artwork> artworkArrayList= new ArrayList<Artwork>();
+		LinkedHashMap<?,?> currentHashMap=new LinkedHashMap<>();
+		LinkedHashMap<?,?> setcodeValuesMap=new LinkedHashMap<>();
+		ArrayList<LinkedHashMap> artworksFromService = lookupClient.getArtworksFromLookup(lookupClient.getLookupArtworkURL());
+		Iterator artworksIterator=  artworksFromService.iterator();
+		ArrayList setCodeValuesList = null;
+		while(artworksIterator.hasNext())
+		{			
+			currentHashMap=(LinkedHashMap)artworksIterator.next();			
+			
+			if(currentHashMap.containsKey("Code") && currentHashMap.get("Code").toString().equalsIgnoreCase("ARTW"))
+			{
+				ArrayList codeValueGroupsList = (ArrayList<?>) currentHashMap.get("CodeValueGroups");
+						
+				Iterator<?> codeValueGroupsIterator  = (Iterator<?>) codeValueGroupsList.iterator();
+				while(codeValueGroupsIterator.hasNext())
+				{
+					setcodeValuesMap=(LinkedHashMap)codeValueGroupsIterator.next();
+				setCodeValuesList=(ArrayList)setcodeValuesMap.get("SetCodeValues");
+				Iterator setCodeValuesListIterator=setCodeValuesList.iterator();
+				while(setCodeValuesListIterator.hasNext())
+				{
+					artwork=new Artwork();	
+					currentHashMap=(LinkedHashMap)setCodeValuesListIterator.next();
+					if(currentHashMap.containsKey("ID"))
+						artwork.setId(currentHashMap.get("ID").toString());
+						if(currentHashMap.containsKey("CodeValue"))
+							artwork.setCodeValue(currentHashMap.get("CodeValue").toString());
+						artworkArrayList.add(artwork);
+				}
+				}
+			}			
+		}	
+		artworksList.setArtworks(artworkArrayList);
+		return artworksList;
 	}
 }

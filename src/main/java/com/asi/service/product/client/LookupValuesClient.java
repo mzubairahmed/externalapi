@@ -24,7 +24,18 @@ public class LookupValuesClient {
 	private String lookupcriteriaAttributeURL;
 	private String originLookupURL;
 	private String lookupCategoryURL;
+	private String lookupArtworkURL;
 	
+	public String getLookupArtworkURL() {
+		return lookupArtworkURL;
+	}
+
+	public void setLookupArtworkURL(String lookupArtworkURL) {
+		this.lookupArtworkURL = lookupArtworkURL;
+	}
+
+
+
 	public String getOriginLookupURL() {
 		return originLookupURL;
 	}
@@ -100,6 +111,13 @@ public class LookupValuesClient {
 		}
 		
 		return serviceCategory;
+	}
+	@Cacheable(value="lookupCache",key="#artwrokLookupURL")
+	public ArrayList<LinkedHashMap> getArtworksFromLookup(String artwrokLookupURL)
+	{
+		@SuppressWarnings("unchecked")
+		ArrayList<LinkedHashMap> serviceArtwork = lookupRestTemplate.getForObject(artwrokLookupURL,ArrayList.class);
+		return serviceArtwork;
 	}
 	/**
 	 * @return the lookupColorURL

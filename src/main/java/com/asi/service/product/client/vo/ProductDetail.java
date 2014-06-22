@@ -2,16 +2,12 @@
 package com.asi.service.product.client.vo;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -30,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "SameDayRushFlag",
     "AsiProdNo",
     "NewProductFlag",
+    "NewProductExpirationDate",
     "FullColorProcessFlag",
     "VisibleForAllUsersFlag",
     "VirtualProductFlag",
@@ -75,7 +72,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ProductDetail {
 
     @JsonProperty("ID")
-    private String ID;
+    private Integer ID;
     @JsonProperty("ProductTypeCode")
     private String productTypeCode;
     @JsonProperty("OriginalProductId")
@@ -100,7 +97,9 @@ public class ProductDetail {
     private String asiProdNo;
     @JsonProperty("NewProductFlag")
     private String newProductFlag;
-    @JsonProperty("FullColorProcessFlag")
+    @JsonProperty("NewProductExpirationDate")
+    private String newProductExpirationDate;
+	@JsonProperty("FullColorProcessFlag")
     private String fullColorProcessFlag;
     @JsonProperty("VisibleForAllUsersFlag")
     private String visibleForAllUsersFlag;
@@ -160,6 +159,9 @@ public class ProductDetail {
     private String priceConfirmationDate;
 	@JsonProperty("DataSourceId")
 	private String dataSourceId="";
+	public ProductDetail() {
+		// TODO Auto-generated constructor stub
+	}
 	public String getDataSourceId() {
 		return dataSourceId;
 	}
@@ -194,6 +196,13 @@ public class ProductDetail {
     private List<ProductNumber> productNumbers = new ArrayList<ProductNumber>();
     @JsonProperty("Relationships")
     private List<Relationship> relationships = new ArrayList<Relationship>();
+    
+    public String getNewProductExpirationDate() {
+		return newProductExpirationDate;
+	}
+	public void setNewProductExpirationDate(String newProductExpirationDate) {
+		this.newProductExpirationDate = newProductExpirationDate;
+	}
     @JsonProperty("AddtionalShippingInfo")
     public String getAdditionalShippingInfo() {
 		return additionalShippingInfo;
@@ -206,15 +215,15 @@ public class ProductDetail {
     private String additionalShippingInfo;
     
     
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+   // private Map<String, Object> additionalProperties = new HashMap<String, Object>();
     private String processedURL = "";
     @JsonProperty("ID")
-    public String getID() {
+    public Integer getID() {
         return ID;
     }
 
     @JsonProperty("ID")
-    public void setID(String ID) {
+    public void setID(Integer ID) {
         this.ID = ID;
     }
 
@@ -728,7 +737,7 @@ public class ProductDetail {
         this.relationships = relationships;
     }
 
-    @Override
+  /*  @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
@@ -765,7 +774,7 @@ public class ProductDetail {
 				valueforSeprator = seprator;
     		processedURL = processedURL +crntproductMediaItems.getMedia().getUrl()+valueforSeprator;
     	}
-    	/*Iterator<ProductMediaItems> mediaIterator=productMediaItems.iterator();
+    	Iterator<ProductMediaItems> mediaIterator=productMediaItems.iterator();
     	while(mediaIterator.hasNext())
     	{
     		
@@ -776,9 +785,10 @@ public class ProductDetail {
 				valueforSeprator = seprator;
 			
 			processedURL = processedURL + media.get("Url")+valueforSeprator;
-    	}*/
+    	}
     	return processedURL;
     	
     }
-
+	
+*/
 }

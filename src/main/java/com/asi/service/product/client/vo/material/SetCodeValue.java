@@ -34,7 +34,7 @@ public class SetCodeValue {
     private Integer displaySequence;
     @JsonProperty("IsSupplierSpecific")
     private Boolean isSupplierSpecific;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  //  private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("ID")
     public Integer getID() {
@@ -91,7 +91,7 @@ public class SetCodeValue {
         return EqualsBuilder.reflectionEquals(this, other);
     }
 
-    @JsonAnyGetter
+   /* @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }
@@ -99,6 +99,6 @@ public class SetCodeValue {
     @JsonAnySetter
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
-    }
+    }*/
 
 }

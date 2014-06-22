@@ -42,7 +42,7 @@ public class CodeValueGroup {
     private Integer displaySequence;
     @JsonProperty("SetCodeValues")
     private List<SetCodeValue> setCodeValues = new ArrayList<SetCodeValue>();
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+   // private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("Code")
     public String getCode() {
@@ -119,7 +119,7 @@ public class CodeValueGroup {
         return EqualsBuilder.reflectionEquals(this, other);
     }
 
-    @JsonAnyGetter
+   /* @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }
@@ -127,6 +127,6 @@ public class CodeValueGroup {
     @JsonAnySetter
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
-    }
+    }*/
 
 }

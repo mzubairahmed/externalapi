@@ -1,6 +1,5 @@
 package com.asi.service.product.client.vo;
 
-
 import org.codehaus.jackson.annotate.JsonProperty;
 
 public class BatchDataSource {

@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.XmlType;
 		   "workflowStatusStateCode",
 		   "statusCode",
 		   "dataSourceId",
+		   "productConfigurations",
 		   "productTypeCode",
 		   "rushServiceFlag",
 		   "sameDayRushFlag",
@@ -76,7 +77,7 @@ public class Product {
     
     private String externalProductId;
     
-    private Integer companyId;
+    private String companyId;
     
     private String statusCode;
     
@@ -112,7 +113,17 @@ public class Product {
     
     private String sameDayRushFlag;
     
-    private String asiProdNo;
+    private ProductConfigurations[] productConfigurations;
+    
+    public ProductConfigurations[] getProductConfigurations() {
+		return productConfigurations;
+	}
+
+	public void setProductConfigurations(ProductConfigurations[] productConfigurations) {
+		this.productConfigurations = productConfigurations;
+	}
+
+	private String asiProdNo;
     
     private String newProductFlag;
     
@@ -284,14 +295,14 @@ public class Product {
 	/**
 	 * @return the companyId
 	 */
-	public Integer getCompanyId() {
+	public String getCompanyId() {
 		return companyId;
 	}
 
 	/**
 	 * @param companyId the companyId to set
 	 */
-	public void setCompanyId(Integer companyId) {
+	public void setCompanyId(String companyId) {
 		this.companyId = companyId;
 	}
 
