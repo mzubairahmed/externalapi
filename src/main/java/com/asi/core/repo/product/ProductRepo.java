@@ -306,9 +306,11 @@ public class ProductRepo {
 		
 	}
 
-	public Product updateProductBasePrices(Product currentProduct,String requestType)
-			throws Exception {
+	public Product updateProductBasePrices(Product currentProduct,String requestType) throws ProductNotFoundException
+			 {
 	//	ProductDetail velocityBean = new ProductDetail();
+		try{
+			
 		com.asi.service.product.client.vo.Product velocityBean=new com.asi.service.product.client.vo.Product();
 		velocityBean = setProductWithPriceDetails(currentProduct);
 		velocityBean = setProductWithBasicDetails(currentProduct,velocityBean);
@@ -331,21 +333,22 @@ public class ProductRepo {
 		}
 		HttpEntity<com.asi.service.product.client.vo.Product> requestEntity = new HttpEntity<com.asi.service.product.client.vo.Product>(velocityBean, requestHeaders);
 		ResponseEntity<Object> responseEntity=null;
-		if(requestType.equalsIgnoreCase("update")){
 			responseEntity = productRestTemplate.exchange(productImportURL, HttpMethod.POST, requestEntity, Object.class);
-		}else{
-			responseEntity = productRestTemplate.exchange(productImportURL, HttpMethod.PUT, requestEntity, Object.class);
-		}
 		//Client        restClient = Client.create();
-
+			_LOGGER.info("Product Respones Status:" + responseEntity);
 	//	WebResource resource = restClient.resource(productImportURL);
 
       //  String response = resource.type(MediaType.APPLICATION_JSON_TYPE).post(String.class, productJson);
-
+			 }catch(Exception ex)
+			 {
+				 ProductNotFoundException exc = new ProductNotFoundException(String.valueOf(currentProduct.getID()));
+				 exc.setStackTrace(ex.getStackTrace());
+				 throw exc;
+			 }
 		
 		//String responseEntity = productRestTemplate.postForObject(productImportURL, requestEntity, String.class);
 		//String result = String.valueOf(responseEntity.getStatusCode().value());
-		_LOGGER.info("Product Respones Status:" + responseEntity);
+		
 		//currentProduct=prepairProduct(String.valueOf(currentProduct.getCompanyId()),currentProduct.getExternalProductId());
 		return currentProduct;
 	}
