@@ -54,7 +54,7 @@ public class CriteriaItem {
     private Boolean isMediaAssignmentAllowed;
     @JsonProperty("CodeValueGroups")
     private List<CodeValueGroup> codeValueGroups = new ArrayList<CodeValueGroup>();
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+   // private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("Code")
     public String getCode() {
@@ -176,7 +176,7 @@ public class CriteriaItem {
         this.codeValueGroups = codeValueGroups;
     }
 
-    @JsonAnyGetter
+   /* @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }
@@ -184,6 +184,6 @@ public class CriteriaItem {
     @JsonAnySetter
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
-    }
+    }*/
 
 }

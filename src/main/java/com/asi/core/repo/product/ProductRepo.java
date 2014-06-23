@@ -24,20 +24,14 @@ import org.springframework.web.client.RestTemplate;
 
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.ProductClient;
+import com.asi.service.product.client.vo.Batch;
+import com.asi.service.product.client.vo.BatchDataSource;
 import com.asi.service.product.client.vo.CriteriaSetValue;
-import com.asi.service.product.client.vo.Currency;
-import com.asi.service.product.client.vo.DiscountRate;
 import com.asi.service.product.client.vo.Price;
 import com.asi.service.product.client.vo.PriceGrid;
-import com.asi.service.product.client.vo.PricingItem;
 import com.asi.service.product.client.vo.ProductConfiguration;
 import com.asi.service.product.client.vo.ProductCriteriaSet;
-import com.asi.service.product.client.vo.ProductDataSheet;
 import com.asi.service.product.client.vo.ProductDetail;
-import com.asi.service.product.client.vo.ProductInventoryLink;
-import com.asi.service.product.client.vo.SelectedProductCategory;
-import com.asi.service.product.client.vo.batch.Batch;
-import com.asi.service.product.client.vo.batch.BatchDataSource;
 import com.asi.service.product.client.vo.parser.ImprintParser;
 import com.asi.service.product.client.vo.parser.LookupParser;
 import com.asi.service.product.client.vo.parser.ProductConfigurationsParser;
@@ -46,8 +40,12 @@ import com.asi.service.product.vo.ImprintMethod;
 import com.asi.service.product.vo.Imprints;
 import com.asi.service.product.vo.ItemPriceDetail;
 import com.asi.service.product.vo.ItemPriceDetail.PRICE_Type;
+import com.asi.service.product.vo.PriceCriteria;
 import com.asi.service.product.vo.PriceDetail;
 import com.asi.service.product.vo.Product;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+//import javax.ws.rs.core.MediaType;
 
 
 
@@ -139,11 +137,14 @@ public class ProductRepo {
 		productDetail = getProductFromService(companyID, productID);
 		Product product = new Product();
 		BeanUtils.copyProperties(productDetail, product);
+		//product=lookupsParser.setProductConfigurations(productDetail,product);
 		product=lookupsParser.setProductCategory(productDetail,product);
 		product=lookupsParser.setProductServiceKeywords(productDetail,product);
 		product=lookupsParser.setProductServiceDataSheet(productDetail,product);
 		product=lookupsParser.setProductServiceInventoryLink(productDetail, product);
 		product=lookupsParser.setProductServiceBasePriceInfo(productDetail, product);
+		//product.setNewProductExpirationDate(productDetail.getn)
+		
 		return product;
 	}
 
@@ -220,6 +221,7 @@ public class ProductRepo {
         itemPrice.setPriceName(priceGrid.getDescription());
         itemPrice.setPriceIncludes(priceGrid.getPriceIncludes());
         itemPrice.setPriceUponRequest(priceGrid.getIsQUR());
+        itemPrice.setIsBasePrice(String.valueOf(priceGrid.getIsBasePrice()));
 		List<PriceDetail> pricesList = new ArrayList<PriceDetail>();
 
 		for (Price p : priceGrid.getPrices()) {
@@ -238,15 +240,35 @@ public class ProductRepo {
 		}
         itemPrice.setProductID(productDetail.getName());
         itemPrice.setPriceDetails(pricesList);
+        itemPrice.setPriceID(priceGrid.getID().toString());
 		String[] basePriceCriterias = productConfiguration.getPriceCriteria(
 				productDetail, priceGrid.getID());
-		if (null != basePriceCriterias && basePriceCriterias.length > 0) {
+		PriceCriteria[] priceCriterias=new PriceCriteria[basePriceCriterias.length];
+		int criteriaCntr=0;
+		for(String crntBasePriceCriteria:basePriceCriterias)
+		{
+			if(null!=crntBasePriceCriteria && !crntBasePriceCriteria.isEmpty() && !crntBasePriceCriteria.startsWith("null"))
+			{
+				priceCriterias[criteriaCntr]=new PriceCriteria();
+				priceCriterias[criteriaCntr].setCriteriaCode(crntBasePriceCriteria.substring(0,crntBasePriceCriteria.indexOf(":")));
+				priceCriterias[criteriaCntr].setValue(crntBasePriceCriteria.substring(crntBasePriceCriteria.indexOf(":")+1));
+			}else{
+				priceCriterias=Arrays.copyOf(priceCriterias, priceCriterias.length-1);
+			}
+				
+			criteriaCntr++;
+		}
+		if(null!=priceCriterias && priceCriterias.length>0)
+		{
+			itemPrice.setPriceCriteria(priceCriterias);
+		}
+	/*	if (null != basePriceCriterias && basePriceCriterias.length > 0) {
         	itemPrice.setFirstPriceCriteria(basePriceCriterias[0]);
 			if (basePriceCriterias.length > 1) {
         		itemPrice.setSecondPriceCriteria(basePriceCriterias[1]);
         	}
         	itemPrice.setPriceID(priceGrid.getID().toString());
-        }
+        }*/
       return itemPrice;
 
 	}
@@ -284,22 +306,56 @@ public class ProductRepo {
 		
 	}
 
-	public Product updateProductBasePrices(Product currentProduct)
+	public Product updateProductBasePrices(Product currentProduct,String requestType)
 			throws Exception {
-		ProductDetail velocityBean = new ProductDetail();
+	//	ProductDetail velocityBean = new ProductDetail();
+		com.asi.service.product.client.vo.Product velocityBean=new com.asi.service.product.client.vo.Product();
 		velocityBean = setProductWithPriceDetails(currentProduct);
+		velocityBean = setProductWithBasicDetails(currentProduct,velocityBean);
+		velocityBean = setProductWithProductConfigurations(currentProduct,velocityBean);
 		//velocityBean.setDataSourceId("12938");
-		velocityBean.setDataSourceId(getDataSourceId(currentProduct));
+		velocityBean.setDataSourceId(String.valueOf(getDataSourceId(currentProduct)));
 		productRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 		productRestTemplate.getMessageConverters().add(new StringHttpMessageConverter());
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.setContentType(new MediaType("application","json"));
-		HttpEntity<ProductDetail> requestEntity = new HttpEntity<ProductDetail>(velocityBean, requestHeaders);
-		ResponseEntity<String> responseEntity = productRestTemplate.exchange(productImportURL, HttpMethod.POST, requestEntity, String.class);
-		String result = String.valueOf(responseEntity.getStatusCode().value());
-		_LOGGER.info("Product Respones Status:" + result);
-		currentProduct=prepairProduct(String.valueOf(currentProduct.getCompanyId()),currentProduct.getExternalProductId());
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String productJson = null;
+		try {
+			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			productJson = mapper.writeValueAsString(velocityBean);
+			_LOGGER.info("Product Json:"+productJson);
+		} catch (Exception e) {
+			_LOGGER.info(e.getMessage());
+		}
+		HttpEntity<com.asi.service.product.client.vo.Product> requestEntity = new HttpEntity<com.asi.service.product.client.vo.Product>(velocityBean, requestHeaders);
+		ResponseEntity<Object> responseEntity=null;
+		if(requestType.equalsIgnoreCase("update")){
+			responseEntity = productRestTemplate.exchange(productImportURL, HttpMethod.POST, requestEntity, Object.class);
+		}else{
+			responseEntity = productRestTemplate.exchange(productImportURL, HttpMethod.PUT, requestEntity, Object.class);
+		}
+		//Client        restClient = Client.create();
+
+	//	WebResource resource = restClient.resource(productImportURL);
+
+      //  String response = resource.type(MediaType.APPLICATION_JSON_TYPE).post(String.class, productJson);
+
+		
+		//String responseEntity = productRestTemplate.postForObject(productImportURL, requestEntity, String.class);
+		//String result = String.valueOf(responseEntity.getStatusCode().value());
+		_LOGGER.info("Product Respones Status:" + responseEntity);
+		//currentProduct=prepairProduct(String.valueOf(currentProduct.getCompanyId()),currentProduct.getExternalProductId());
 		return currentProduct;
+	}
+
+	private com.asi.service.product.client.vo.Product setProductWithProductConfigurations(
+			Product currentProduct, com.asi.service.product.client.vo.Product velocityBean) {
+		BeanUtils.copyProperties(currentProduct, velocityBean);
+	//	BeanUtils.copyProperties(currentProduct.getProductConfigurations(), velocityBean.getProductConfigurations());
+		//velocityBean.setProductConfigurations(Arrays.asList(currentProduct.getProductConfigurations()));
+		return velocityBean;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -317,7 +373,7 @@ public class ProductRepo {
 		batchDataSources.setDescription("Batch Created by API");
 		batchDataSources.setName("ASIF");
 		batchDataSources.setTypeCode("IMRT");
-		batchData.setBatchDataSources(new ArrayList<BatchDataSource>(Arrays.asList(batchDataSources)));
+		batchData.setBatchDataSources(new ArrayList<com.asi.service.product.client.vo.BatchDataSource>(Arrays.asList(batchDataSources)));
 		productRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 		productRestTemplate.getMessageConverters().add(new StringHttpMessageConverter());
 		LinkedHashMap<String, String> batchDetails=productRestTemplate.postForObject(batchProcessingURL, batchData, LinkedHashMap.class);
@@ -331,11 +387,11 @@ public class ProductRepo {
 		return dataSourceId;
 	}
 
-	private ProductDetail setProductWithPriceDetails(
+	private com.asi.service.product.client.vo.Product setProductWithPriceDetails(
 			Product srcProduct) {
-		
-		ProductDetail productToUpdate = new ProductDetail();
-		productToUpdate.setID(String.valueOf(srcProduct.getID()));
+
+		com.asi.service.product.client.vo.Product productToUpdate = new com.asi.service.product.client.vo.Product();
+		productToUpdate.setId(String.valueOf(srcProduct.getID()));
 		productToUpdate.setCompanyId(String.valueOf(srcProduct.getCompanyId()));
 		productToUpdate.setName(srcProduct.getName());
 		productToUpdate.setDescription(srcProduct.getDescription());
@@ -343,52 +399,53 @@ public class ProductRepo {
 		productToUpdate.setDataSourceId(srcProduct.getDataSourceId());		
 		productToUpdate.setExternalProductId(srcProduct.getExternalProductId());	
 		// Product DataSheet
-		ProductDataSheet productDataSheet = new ProductDataSheet();
+		com.asi.service.product.client.vo.ProductDataSheet productDataSheet = new com.asi.service.product.client.vo.ProductDataSheet();
 		productDataSheet.setProductId(String.valueOf(srcProduct.getID()));
 		productDataSheet
 				.setCompanyId(String.valueOf(srcProduct.getCompanyId()));
-		productDataSheet.setID("0");		
+		productDataSheet.setId("0");		
 		if(null!=srcProduct.getProductDataSheet())
 		{
 			productDataSheet.setUrl(srcProduct.getProductDataSheet().getUrl());
 		}		
 		productToUpdate.setProductDataSheet(productDataSheet);
 
-		//Product Categories
-		String sProductCategory=srcProduct.getCategory();
+		// Product Category
+String sProductCategory=srcProduct.getCategory();
 		
 		if(null!=sProductCategory ||  (!StringUtils.isEmpty(sProductCategory)))
 		{			
 			String[] arrayProductCtgrs=sProductCategory.split(",");
+			int productCtrgyCntr=0;
 			if(null!=arrayProductCtgrs && arrayProductCtgrs.length>0)
 			{
-				SelectedProductCategory productCategory = null;
+				com.asi.service.product.client.vo.SelectedProductCategories productCategory = null;
+				com.asi.service.product.client.vo.SelectedProductCategories[] productCategoryAry = new com.asi.service.product.client.vo.SelectedProductCategories[arrayProductCtgrs.length];
 				for(String crntCategory:arrayProductCtgrs)
 				{
-					productCategory = new SelectedProductCategory();
+					productCategory = new com.asi.service.product.client.vo.SelectedProductCategories();
 					crntCategory=lookupsParser.getCategoryCodeByName(crntCategory.trim());
 					if(null!=crntCategory)
 					{
 						productCategory.setCode(crntCategory);
 						productCategory.setProductId(String.valueOf(srcProduct.getID()));
-						productCategory.setIsPrimary(Boolean.FALSE);
-						productCategory.setAdCategoryFlg(Boolean.FALSE);
+						productCategory.setIsPrimary(String.valueOf(Boolean.FALSE));
+						productCategory.setAdCategoryFlg(String.valueOf(Boolean.FALSE));
 					}
-					productToUpdate.getSelectedProductCategories().add(productCategory);
+					productCategoryAry[productCtrgyCntr]=productCategory;
 				}			
+				productToUpdate.setSelectedProductCategories(productCategoryAry);
 			}
 		}
-		
-		
 		// Product Keywords
 		productToUpdate=lookupsParser.setProductKeyWords(productToUpdate,srcProduct);
 
 		// Product Inventory Link
-		ProductInventoryLink productInventoryLink = new ProductInventoryLink();
+		com.asi.service.product.client.vo.ProductInventoryLink productInventoryLink = new com.asi.service.product.client.vo.ProductInventoryLink();
 		productInventoryLink.setCompanyId(String.valueOf(srcProduct
 				.getCompanyId()));
 		productInventoryLink.setProductId(String.valueOf(srcProduct.getID()));
-		productInventoryLink.setID("0");
+		productInventoryLink.setId("0");
 		if(null!=srcProduct.getProductInventoryLink())
 			productInventoryLink.setUrl(srcProduct.getProductInventoryLink().getUrl());
 		productToUpdate.setProductInventoryLink(productInventoryLink);
@@ -396,8 +453,8 @@ public class ProductRepo {
 		// Price Details
 		if (srcProduct.getItemPrice().size() == 0) 
 		{
-			PriceGrid priceGrid = getQURPriceGrid(srcProduct);
-			productToUpdate.getPriceGrids().add(priceGrid);
+			com.asi.service.product.client.vo.PriceGrids priceGrid = getQURPriceGrid(srcProduct);
+			productToUpdate.setPriceGrids(new com.asi.service.product.client.vo.PriceGrids[]{priceGrid});
 		}
 		else
 		{
@@ -406,78 +463,146 @@ public class ProductRepo {
 		
 		return productToUpdate;
 	}
-
-	private List<PriceGrid> setPriceDetails(Product srcProduct) {
+	private com.asi.service.product.client.vo.Product setProductWithBasicDetails(
+			Product srcProduct,com.asi.service.product.client.vo.Product currentProduct) {
+		BeanUtils.copyProperties(srcProduct, currentProduct);
+		// Product DataSheet
+		com.asi.service.product.client.vo.ProductDataSheet productDataSheet = new com.asi.service.product.client.vo.ProductDataSheet();
+		productDataSheet.setProductId(String.valueOf(srcProduct.getID()));
+		productDataSheet
+				.setCompanyId(String.valueOf(srcProduct.getCompanyId()));
+		productDataSheet.setId("0");
+		if(null!=srcProduct.getProductDataSheet())
+		{
+			productDataSheet.setUrl(srcProduct.getProductDataSheet().getUrl());
+		}		
+		currentProduct.setProductDataSheet(productDataSheet);
+		// Product Category
+		com.asi.service.product.client.vo.SelectedProductCategories[] productCategoriesLst = null;
+		com.asi.service.product.client.vo.SelectedProductCategories productCategories = null;
+		String productCategory=srcProduct.getCategory();
+		String[] productCtgrs=productCategory.split(",");
+		int productCategoryCntr=0;
+		if(null!=productCtgrs && productCtgrs.length>0)
+		{
+			productCategoriesLst=new com.asi.service.product.client.vo.SelectedProductCategories[productCtgrs.length];
+			for(String crntCategory:productCtgrs)
+			{
+				productCategories = new com.asi.service.product.client.vo.SelectedProductCategories();
+				crntCategory=lookupsParser.getCategoryCodeByName(crntCategory.trim());
+				if(null!=crntCategory)
+				{
+					productCategories.setCode(crntCategory);
+					productCategories.setProductId(String.valueOf(srcProduct.getID()));
+					productCategories.setIsPrimary("false");
+					productCategories.setAdCategoryFlg("false");
+				}
+				productCategoriesLst[productCategoryCntr]=productCategories;
+				productCategoryCntr++;
+			}			
+		}
 		
-		List<PriceGrid> pricegridList = new ArrayList<PriceGrid>();
-		PriceGrid crntPriceGrids=null;
-		Price price=null;
-		DiscountRate discount=null;
+			currentProduct
+			.setSelectedProductCategories(productCategoriesLst);
+		// Product Keywords
+		currentProduct=lookupsParser.setProductKeyWords(currentProduct,srcProduct);
+		// Product Inventory Link
+		com.asi.service.product.client.vo.ProductInventoryLink productInventoryLink = new com.asi.service.product.client.vo.ProductInventoryLink();
+		productInventoryLink.setCompanyId(String.valueOf(srcProduct
+				.getCompanyId()));
+		productInventoryLink.setProductId(String.valueOf(srcProduct.getID()));
+		productInventoryLink.setId("0");
+		if(null!=srcProduct.getProductInventoryLink())
+			productInventoryLink.setUrl(srcProduct.getProductInventoryLink().getUrl());
+		currentProduct.setProductInventoryLink(productInventoryLink);
+		return currentProduct;
+	}
+	private com.asi.service.product.client.vo.PriceGrids[] setPriceDetails(Product srcProduct) {
+		com.asi.service.product.client.vo.PriceGrids[] pricegridList ={};
+		com.asi.service.product.client.vo.PriceGrids crntPriceGrids=null;
+		com.asi.service.product.client.vo.Currency currency=null;
+		com.asi.service.product.client.vo.Prices[] pricesList={};
+		com.asi.service.product.client.vo.Prices prices=null;
+		com.asi.service.product.client.vo.DiscountRate discount=null;
+		int priceGridCntr=0;
+		if(null!=srcProduct.getItemPrice() && srcProduct.getItemPrice().size()>0)
+		{
+		pricegridList=new com.asi.service.product.client.vo.PriceGrids[srcProduct.getItemPrice().size()];
 		for(ItemPriceDetail crntItemPrice:srcProduct.getItemPrice())	
 		{
-			crntPriceGrids=new PriceGrid();
-			crntPriceGrids.setID(crntItemPrice.getPriceID());
-			crntPriceGrids.setProductId(crntItemPrice.getProductID());
+			crntPriceGrids=new com.asi.service.product.client.vo.PriceGrids();
+			crntPriceGrids.setId(crntItemPrice.getPriceID());
+			crntPriceGrids.setProductId(String.valueOf(srcProduct.getID()));
+			crntPriceGrids.setDescription(crntItemPrice.getPriceName());
 			if(crntItemPrice.getPriceType().toString().equals("REGL"))
 			{
-				crntPriceGrids.setIsBasePrice(Boolean.TRUE);
+				crntPriceGrids.setIsBasePrice("true");
 				crntPriceGrids.setPriceGridSubTypeCode(crntItemPrice.getPriceType().toString());
 			}
 			if(!crntItemPrice.getPriceDetails().isEmpty() && crntItemPrice.getPriceDetails().size()>0)
 			{
-				crntPriceGrids.setIsQUR(Boolean.FALSE);
+				crntPriceGrids.setIsQUR("false");
 			}
 			crntPriceGrids.setUsageLevelCode("NONE");
 			crntPriceGrids.setPriceIncludes(crntItemPrice.getPriceIncludes());
-			crntPriceGrids.setCurrency(setCurrency(1,0));
-			
-
+			currency = new com.asi.service.product.client.vo.Currency();
+			currency.setCode("USD");
+			currency.setName("US Dollar");
+			currency.setiSODisplaySymbol("$");
+			currency.setIsISO("true");
+			currency.setIsActive("true");
+			crntPriceGrids.setCurrency(currency);
+			int pricesCntr=0;
+			pricesList=new com.asi.service.product.client.vo.Prices[crntItemPrice.getPriceDetails().size()];
 			for(PriceDetail priceDetail:crntItemPrice.getPriceDetails())
 			{
-				price=new Price();
-				price.setPriceGridId(crntItemPrice.getPriceID());
-				price.setQuantity(priceDetail.getQuanty());
-				price.setListPrice(priceDetail.getPrice());
-				price.setNetCost(priceDetail.getNetCost());
-				price.setItemsPerUnit(priceDetail.getItemsPerUnit());
-				discount=new DiscountRate();
+				prices=new com.asi.service.product.client.vo.Prices();
+				prices.setPriceGridId(crntItemPrice.getPriceID());
+				prices.setQuantity(String.valueOf(priceDetail.getQuanty()));
+				prices.setListPrice(String.valueOf(priceDetail.getPrice()));
+				prices.setNetCost(String.valueOf(priceDetail.getNetCost()));
+				prices.setItemsPerUnit(String.valueOf(priceDetail.getItemsPerUnit()));
+				prices.setItemsPerUnit(String.valueOf(priceDetail.getItemsPerUnit()));
+				discount=new com.asi.service.product.client.vo.DiscountRate();
 				discount.setIndustryDiscountCode(priceDetail.getDiscount());
 				discount.setCode(priceDetail.getDiscount().toUpperCase()+priceDetail.getDiscount().toUpperCase()+priceDetail.getDiscount().toUpperCase()+priceDetail.getDiscount().toUpperCase());
-				price.setDiscountRate(discount);
-				price.setSequenceNumber(priceDetail.getSequenceNumber());
-				crntPriceGrids.getPrices().add(price);
+				prices.setDiscountRate(discount);
+				prices.setSequenceNumber(String.valueOf(priceDetail.getSequenceNumber()));
+				pricesList[pricesCntr++]=prices;
 			}
-			pricegridList.add(crntPriceGrids);
+			crntPriceGrids.setPrices(pricesList);
+			pricegridList[priceGridCntr++]=crntPriceGrids;
+		}
 		}
 		return pricegridList;
 	}
 
-	private PriceGrid getQURPriceGrid(Product crntProduct) {
-		PriceGrid qurPriceGrid = new PriceGrid();
-		qurPriceGrid.setID("0");
+	private com.asi.service.product.client.vo.PriceGrids getQURPriceGrid(Product crntProduct) {
+		com.asi.service.product.client.vo.PriceGrids qurPriceGrid = new com.asi.service.product.client.vo.PriceGrids();
+		qurPriceGrid.setId("0");
 		qurPriceGrid.setProductId(String.valueOf(crntProduct.getID()));
-		qurPriceGrid.setIsQUR(Boolean.TRUE);
-		qurPriceGrid.setIsBasePrice(Boolean.TRUE);
+		qurPriceGrid.setIsQUR(String.valueOf(Boolean.TRUE));
+		qurPriceGrid.setIsBasePrice(String.valueOf(Boolean.TRUE));
 		qurPriceGrid.setPriceGridSubTypeCode("REGL");
 		qurPriceGrid.setUsageLevelCode("NONE");
-		qurPriceGrid.setIsRange(Boolean.FALSE);
-		qurPriceGrid.setIsSpecial(Boolean.FALSE);
-		qurPriceGrid.setDisplaySequence(1);
-		qurPriceGrid.setIsCopy(Boolean.FALSE);
+		qurPriceGrid.setIsRange(String.valueOf(Boolean.FALSE));
+		qurPriceGrid.setIsSpecial(String.valueOf(Boolean.FALSE));
+		qurPriceGrid.setDisplaySequence("1");
+		qurPriceGrid.setIsCopy(String.valueOf(Boolean.FALSE));
 		qurPriceGrid.setCurrency(setCurrency(1,0));
 		return qurPriceGrid;
 	}
-	private Currency setCurrency(int displaySequence,int number)
+	private com.asi.service.product.client.vo.Currency setCurrency(int displaySequence,int number)
 	{
-		Currency currency = new Currency();
+		com.asi.service.product.client.vo.Currency currency = new com.asi.service.product.client.vo.Currency();
 		currency.setCode("USD");
 		currency.setName("US Dollar");
-		currency.setNumber(number);
-		currency.setASIDisplaySymbol("$");
-		currency.setISODisplaySymbol("$");
-		currency.setIsISO(Boolean.TRUE);
-		currency.setIsActive(Boolean.TRUE);
-		currency.setDisplaySequence(displaySequence);
+		currency.setNumber(String.valueOf(number));
+		currency.setaSIDisplaySymbol("$");
+		currency.setaSIDisplaySymbol("$");
+		currency.setIsISO(String.valueOf(Boolean.TRUE));
+		currency.setIsActive(String.valueOf(Boolean.TRUE));
+		currency.setDisplaySequence(String.valueOf(displaySequence));
 		
 		return currency;
 	}

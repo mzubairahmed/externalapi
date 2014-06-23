@@ -1,9 +1,10 @@
 package com.asi.service.product.client.vo;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 public class ProductKeywords {
-	//@JsonProperty("ID")
+	@JsonProperty("ID")
 	private String id="0";
 	public String getId() {
 		return id;
@@ -35,8 +36,12 @@ public class ProductKeywords {
 	public void setValue(String value) {
 		this.value = value;
 	}
+	@JsonProperty("MarketSegmentCode")
 	private String marketSegmentCode="";
+	@JsonProperty("ProductId")
 	private String productId="";
+	@JsonProperty("TypeCode")
 	private String typeCode="";
+	@JsonProperty("Value")
 	private String value="";
 }

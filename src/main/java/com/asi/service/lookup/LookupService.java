@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.asi.core.repo.lookup.LookupValuesRepo;
+import com.asi.service.lookup.vo.ArtworksList;
 import com.asi.service.lookup.vo.AsiColor;
 import com.asi.service.lookup.vo.AsiColorsList;
 import com.asi.service.lookup.vo.CategoriesList;
@@ -52,4 +53,11 @@ public class LookupService {
 		return new ResponseEntity<CategoriesList> (categoriesList, null, HttpStatus.OK);
 		
 	}	
+	@RequestMapping(value = "artworksList", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<ArtworksList> getArtworksList()
+	{
+		ArtworksList artworkList = lookupValueRepository.getAllArtworks();
+		return new ResponseEntity<ArtworksList> (artworkList, null, HttpStatus.OK);
+		
+	}
 }

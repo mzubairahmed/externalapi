@@ -34,7 +34,7 @@ public class SelectedComplianceCert {
     private String description;
     @JsonProperty("CompanyId")
     private Integer companyId;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+   // private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("ID")
     public Integer getID() {
@@ -101,7 +101,7 @@ public class SelectedComplianceCert {
         return EqualsBuilder.reflectionEquals(this, other);
     }
 
-    @JsonAnyGetter
+  /*  @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }
@@ -109,6 +109,6 @@ public class SelectedComplianceCert {
     @JsonAnySetter
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
-    }
+    }*/
 
 }

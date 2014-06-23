@@ -39,7 +39,7 @@ public class Material {
     private String superCodeValueGroupCode;
     @JsonProperty("CodeValueGroups")
     private List<CodeValueGroup> codeValueGroups = new ArrayList<CodeValueGroup>();
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  //  private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("Code")
     public String getCode() {
@@ -106,7 +106,7 @@ public class Material {
         return EqualsBuilder.reflectionEquals(this, other);
     }
 
-    @JsonAnyGetter
+   /* @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }
@@ -114,6 +114,6 @@ public class Material {
     @JsonAnySetter
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
-    }
+    }*/
 
 }

@@ -10,15 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.vo.Price;
+import com.asi.service.product.client.vo.ProductConfiguration;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductInventoryLink;
 import com.asi.service.product.client.vo.ProductKeywords;
 import com.asi.service.product.client.vo.SelectedProductCategory;
+import com.asi.service.product.vo.DataSheet;
+import com.asi.service.product.vo.InventoryLink;
 import com.asi.service.product.vo.ItemPriceDetail;
 import com.asi.service.product.vo.PriceDetail;
 import com.asi.service.product.vo.Product;
-import com.asi.service.product.vo.DataSheet;
-import com.asi.service.product.vo.InventoryLink;
+import com.asi.service.product.vo.ProductConfigurations;
 
 public class LookupParser {
 	
@@ -153,6 +155,32 @@ public class LookupParser {
 		}
 		return categoryStr;
 	}
+	public String getArtworkNameByCode(String artworkCode) {
+		ArrayList<LinkedHashMap> artworkList = lookupClient.getArtworksFromLookup(lookupClient.getLookupArtworkURL());
+		String artworkStr=null;
+		ArrayList<LinkedHashMap> codeValueGrps =null;
+		ArrayList<LinkedHashMap> setCodeValueGrps =null;
+		for(LinkedHashMap currentArtwork:artworkList)
+		{
+			if(null!=currentArtwork.get("Code") && currentArtwork.get("Code").equals("ARTW")){
+			codeValueGrps = (ArrayList<LinkedHashMap>) currentArtwork.get("CodeValueGroups");
+			if(null!=codeValueGrps){
+				for(LinkedHashMap codeValueGroup:codeValueGrps){
+				setCodeValueGrps=(ArrayList<LinkedHashMap>) codeValueGroup.get("SetCodeValues");
+				if(null!=setCodeValueGrps){
+					for(LinkedHashMap setCodeValue:setCodeValueGrps){
+						if(null!=setCodeValue.get("ID") && setCodeValue.get("ID").toString().equalsIgnoreCase(artworkCode))
+						{
+							artworkStr=String.valueOf(setCodeValue.get("CodeValue"));
+							break;					
+						}
+					}
+				}				
+			}}
+			}
+		}
+		return artworkStr;
+	}
 	public Product setProductCategory(ProductDetail productDetail, Product product) {
 		List<SelectedProductCategory> productCategoriesList=productDetail.getSelectedProductCategories();
 		String finalCategory="";
@@ -172,23 +200,28 @@ public class LookupParser {
 		return product;		
 	}
 
-	public ProductDetail setProductKeyWords(
-			ProductDetail productToUpdate, Product srcProduct) {
+	public com.asi.service.product.client.vo.Product setProductKeyWords(
+			com.asi.service.product.client.vo.Product productToUpdate, Product srcProduct) {
 		String keywords=srcProduct.getKeyword();
 		String[] keywordlist=keywords.split(",");
-		ProductKeywords curntProductKeyword=null;
+		com.asi.service.product.client.vo.ProductKeywords curntProductKeyword=null;
+		int keyworkCntr=0;
+		com.asi.service.product.client.vo.ProductKeywords[] productKeywordsAry={};
 		if(null!=keywordlist && keywordlist.length>0)
 		{
+			productKeywordsAry=new com.asi.service.product.client.vo.ProductKeywords[keywordlist.length];
 			for(String crntKeyword:keywordlist)
 			{
-				curntProductKeyword=new ProductKeywords();
+				curntProductKeyword=new com.asi.service.product.client.vo.ProductKeywords();
 				curntProductKeyword.setId("0");
 				curntProductKeyword.setMarketSegmentCode("USAALL");
 				curntProductKeyword.setProductId(String.valueOf(srcProduct.getID()));
 				curntProductKeyword.setTypeCode("HIDD");
 				curntProductKeyword.setValue(crntKeyword);
-				productToUpdate.getProductKeywords().add(curntProductKeyword);
+				productKeywordsAry[keyworkCntr++]=curntProductKeyword;
+				//productToUpdate.getProductKeywords().add(curntProductKeyword);
 			}
+			productToUpdate.setProductKeywords(productKeywordsAry);
 		}
 		return productToUpdate;
 	}
@@ -220,7 +253,7 @@ public class LookupParser {
 			DataSheet productDataSheet=new DataSheet();
 			productDataSheet.setProductId(Integer.valueOf(productDetail.getID()));
 			productDataSheet.setCompanyId(Integer.valueOf(productDetail.getCompanyId()));
-			productDataSheet.setId(Integer.valueOf(crntDataSheet.getID()));
+			productDataSheet.setId(Integer.valueOf(crntDataSheet.getId()));
 			productDataSheet.setUrl(crntDataSheet.getUrl());
 			product.setProductDataSheet(productDataSheet);
 		}
@@ -233,7 +266,7 @@ public class LookupParser {
 			InventoryLink productInventoryLink=new InventoryLink();
 			productInventoryLink.setProductId(Integer.valueOf(productDetail.getID()));
 			productInventoryLink.setCompanyId(Integer.valueOf(productDetail.getCompanyId()));
-			productInventoryLink.setId(Integer.valueOf(crntInventoryLink.getID()));
+			productInventoryLink.setId(Integer.valueOf(crntInventoryLink.getId()));
 			productInventoryLink.setUrl(crntInventoryLink.getUrl());
 			product.setProductInventoryLink(productInventoryLink);
 		}
@@ -281,6 +314,15 @@ public class LookupParser {
 			}
 			product.setItemPrice(priceDetails);
 		}
+		return product;
+	}
+
+	public Product setProductConfigurations(ProductDetail productDetail,
+			Product product) {
+	/*	List<ProductConfiguration> srcProductConfigList=productDetail.getProductConfigurations();
+		if(null!=srcProductConfigList){
+			ProductConfigurations[] targetProductConfigList=new ProductConfigurations[srcProductConfigList.size()];
+		}		*/
 		return product;
 	}
 	

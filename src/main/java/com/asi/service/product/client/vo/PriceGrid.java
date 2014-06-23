@@ -65,7 +65,7 @@ public class PriceGrid {
     private List<Price> prices = new ArrayList<Price>();
     @JsonProperty("PricingItems")
     private List<PricingItem> pricingItems = new ArrayList<PricingItem>();
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+   // private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("ID")
     public String getID() {
@@ -232,7 +232,7 @@ public class PriceGrid {
         return EqualsBuilder.reflectionEquals(this, other);
     }
 
-    @JsonAnyGetter
+  /*  @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }
@@ -240,6 +240,6 @@ public class PriceGrid {
     @JsonAnySetter
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
-    }
+    }*/
 
 }

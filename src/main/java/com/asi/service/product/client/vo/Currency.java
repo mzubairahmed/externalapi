@@ -1,153 +1,87 @@
-
 package com.asi.service.product.client.vo;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonPropertyOrder({
-    "Code",
-    "Name",
-    "Number",
-    "ASIDisplaySymbol",
-    "ISODisplaySymbol",
-    "IsISO",
-    "IsActive",
-    "DisplaySequence"
-})
+
 public class Currency {
-
-    @JsonProperty("Code")
-    private String code;
-    @JsonProperty("Name")
-    private String name;
-    @JsonProperty("Number")
-    private Integer number;
-    @JsonProperty("ASIDisplaySymbol")
-    private String aSIDisplaySymbol;
-    @JsonProperty("ISODisplaySymbol")
-    private String iSODisplaySymbol;
-    @JsonProperty("IsISO")
-    private Boolean isISO;
-    @JsonProperty("IsActive")
-    private Boolean isActive;
-    @JsonProperty("DisplaySequence")
-    private Integer displaySequence;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
-    @JsonProperty("Code")
-    public String getCode() {
-        return code;
-    }
-
-    @JsonProperty("Code")
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    @JsonProperty("Name")
-    public String getName() {
-        return name;
-    }
-
-    @JsonProperty("Name")
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @JsonProperty("Number")
-    public Integer getNumber() {
-        return number;
-    }
-
-    @JsonProperty("Number")
-    public void setNumber(Integer number) {
-        this.number = number;
-    }
-
-    @JsonProperty("ASIDisplaySymbol")
-    public String getASIDisplaySymbol() {
-        return aSIDisplaySymbol;
-    }
-
-    @JsonProperty("ASIDisplaySymbol")
-    public void setASIDisplaySymbol(String aSIDisplaySymbol) {
-        this.aSIDisplaySymbol = aSIDisplaySymbol;
-    }
-
-    @JsonProperty("ISODisplaySymbol")
-    public String getISODisplaySymbol() {
-        return iSODisplaySymbol;
-    }
-
-    @JsonProperty("ISODisplaySymbol")
-    public void setISODisplaySymbol(String iSODisplaySymbol) {
-        this.iSODisplaySymbol = iSODisplaySymbol;
-    }
-
-    @JsonProperty("IsISO")
-    public Boolean getIsISO() {
-        return isISO;
-    }
-
-    @JsonProperty("IsISO")
-    public void setIsISO(Boolean isISO) {
-        this.isISO = isISO;
-    }
-
-    @JsonProperty("IsActive")
-    public Boolean getIsActive() {
-        return isActive;
-    }
-
-    @JsonProperty("IsActive")
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
-    }
-
-    @JsonProperty("DisplaySequence")
-    public Integer getDisplaySequence() {
-        return displaySequence;
-    }
-
-    @JsonProperty("DisplaySequence")
-    public void setDisplaySequence(Integer displaySequence) {
-        this.displaySequence = displaySequence;
-    }
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        return EqualsBuilder.reflectionEquals(this, other);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
-
+@JsonProperty("Code")
+private String code="NON";
+public String getCode() {
+	return code;
+}
+public void setCode(String code) {
+	this.code = code;
+}
+public String getName() {
+	return name;
+}
+public void setName(String name) {
+	this.name = name;
+}
+public Object getAsiSymbol() {
+	return asiSymbol;
+}
+public void setAsiSymbol(Object asiSymbol) {
+	this.asiSymbol = asiSymbol;
+}
+public String getIsActive() {
+	return isActive;
+}
+public void setIsActive(String isActive) {
+	this.isActive = isActive;
+}
+public String getIsNullo() {
+	return isNullo;
+}
+public void setIsNullo(String isNullo) {
+	this.isNullo = isNullo;
+}
+@JsonProperty("Name")
+private String name="";
+@JsonProperty("AsiSymbol")
+private Object asiSymbol;
+@JsonProperty("IsActive")
+private String isActive="true";
+@JsonProperty("IsNullo")
+private String isNullo="false";
+@JsonProperty("Number")
+private String number;
+public String getNumber() {
+	return number;
+}
+public void setNumber(String number) {
+	this.number = number;
+}
+public String getIsISO() {
+	return isISO;
+}
+public void setIsISO(String isISO) {
+	this.isISO = isISO;
+}
+public String getDisplaySequence() {
+	return displaySequence;
+}
+public void setDisplaySequence(String displaySequence) {
+	this.displaySequence = displaySequence;
+}
+public String getaSIDisplaySymbol() {
+	return aSIDisplaySymbol;
+}
+public void setaSIDisplaySymbol(String aSIDisplaySymbol) {
+	this.aSIDisplaySymbol = aSIDisplaySymbol;
+}
+public String getiSODisplaySymbol() {
+	return iSODisplaySymbol;
+}
+public void setiSODisplaySymbol(String iSODisplaySymbol) {
+	this.iSODisplaySymbol = iSODisplaySymbol;
+}
+@JsonProperty("IsISO")
+private String isISO;
+@JsonProperty("DisplaySequence")
+private String displaySequence;
+@JsonProperty("ASIDisplaySymbol")
+private String aSIDisplaySymbol;
+@JsonProperty("ISODisplaySymbol")
+private String iSODisplaySymbol;
 }

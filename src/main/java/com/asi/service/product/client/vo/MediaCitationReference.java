@@ -1,12 +1,9 @@
-/**
- * 
- */
 package com.asi.service.product.client.vo;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
- * @author Rahul K
+ * @author Shravan B
  * 
  */
 public class MediaCitationReference {
@@ -97,3 +94,4 @@ public class MediaCitationReference {
     }
 
 }
+

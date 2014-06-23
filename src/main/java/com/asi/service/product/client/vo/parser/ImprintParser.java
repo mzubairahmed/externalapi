@@ -14,6 +14,7 @@ import com.asi.service.product.vo.ImprintMethod;
 
 public class ImprintParser {
 	@Autowired CriteriaSetParser criteriaLookupParser;
+	@Autowired LookupParser lookupsParser;
 	public static ConcurrentHashMap<String, String> imprintRelationMap = null;
 	 /**
      * Find a criteriaSet from the productCriteria set array based on the criteria code
@@ -69,9 +70,9 @@ public class ImprintParser {
 							}else{
 								critieraValue=crntRelation.substring(crntRelation.indexOf("__")+2);
 								if(null!=imprintMethod.getArtworkName() && !imprintMethod.getArtworkName().isEmpty())
-									imprintMethod.setArtworkName(imprintMethod.getArtworkName()+","+critieraValue);
+									imprintMethod.setArtworkName(imprintMethod.getArtworkName()+","+lookupsParser.getArtworkNameByCode(critieraValue));
 								else
-										imprintMethod.setArtworkName(critieraValue);
+										imprintMethod.setArtworkName(lookupsParser.getArtworkNameByCode(critieraValue));
 							}
 						}
 						imprintMethodList.add(imprintMethod);
@@ -110,5 +111,11 @@ public class ImprintParser {
 	public void setCriteriaLookupParser(CriteriaSetParser criteriaLookupParser) {
 		this.criteriaLookupParser = criteriaLookupParser;
 	}
-   
+	public LookupParser getLookupsParser() {
+		return lookupsParser;
+	}
+
+	public void setLookupsParser(LookupParser lookupsParser) {
+		this.lookupsParser = lookupsParser;
+	}
 }
