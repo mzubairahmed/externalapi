@@ -9,7 +9,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.asi.service.product.client.vo.ProductDetail;
-import com.asi.service.product.vo.ProductConfigurationsParser;
+import com.asi.service.product.client.vo.parser.ProductConfigurationsParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -41,12 +41,12 @@ public class ProductConfigurationsParserTest {
 	@Test
 	public void testGetPriceCriteriaInvalidPriceGridId()
 	{
-		Assert.assertArrayEquals(new String[]{"",""}, productConfigurationsParser.getPriceCriteria(testProduct, 801456944));
+		Assert.assertArrayEquals(new String[]{"",""}, productConfigurationsParser.getPriceCriteria(testProduct, "801456944"));
 	}
 	@Test
 	public void testGetPriceCriteriaValidPriceGridId()
 	{
-		Assert.assertArrayEquals(new String[]{"MTRL:Other Fabric,Blend","IMMD:Unimprinted,Personalization"}, productConfigurationsParser.getPriceCriteria(testProduct, 801456966));
+		Assert.assertArrayEquals(new String[]{"MTRL:Other Fabric,Blend","IMMD:Unimprinted,Personalization"}, productConfigurationsParser.getPriceCriteria(testProduct, "801456966"));
 	}
 
 	

@@ -1,101 +1,45 @@
-
 package com.asi.service.product.client.vo;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonPropertyOrder({
-    "ID",
-    "ProductId",
-    "CompanyId",
-    "Url"
-})
 public class ProductDataSheet {
+@JsonProperty("ID")
+private String id;
+@JsonProperty("ProductId")
+private String productId="0";
+@JsonProperty("CompanyId")
+private String companyId="";
+@JsonProperty("Url")
+private String url="";
 
-    @JsonProperty("ID")
-    private Integer iD;
-    @JsonProperty("ProductId")
-    private Integer productId;
-    @JsonProperty("CompanyId")
-    private Integer companyId;
-    @JsonProperty("Url")
-    private String url;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+public String getId() {
+	return id;
+}
 
-    @JsonProperty("ID")
-    public Integer getID() {
-        return iD;
-    }
+public void setId(String id) {
+	this.id = id;
+}
 
-    @JsonProperty("ID")
-    public void setID(Integer iD) {
-        this.iD = iD;
-    }
+public String getProductId() {
+	return productId;
+}
 
-    @JsonProperty("ProductId")
-    public Integer getProductId() {
-        return productId;
-    }
+public void setProductId(String productId) {
+	this.productId = productId;
+}
 
-    @JsonProperty("ProductId")
-    public void setProductId(Integer productId) {
-        this.productId = productId;
-    }
+public String getCompanyId() {
+	return companyId;
+}
 
-    @JsonProperty("CompanyId")
-    public Integer getCompanyId() {
-        return companyId;
-    }
+public void setCompanyId(String companyId) {
+	this.companyId = companyId;
+}
 
-    @JsonProperty("CompanyId")
-    public void setCompanyId(Integer companyId) {
-        this.companyId = companyId;
-    }
+public String getUrl() {
+	return url;
+}
 
-    @JsonProperty("Url")
-    public String getUrl() {
-        return url;
-    }
-
-    @JsonProperty("Url")
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        return EqualsBuilder.reflectionEquals(this, other);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
-
+public void setUrl(String url) {
+	this.url = url;
+}
 }

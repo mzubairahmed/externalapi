@@ -31,7 +31,7 @@ public class Origin {
     private String codeValue;
     @JsonProperty("StandardValueFlag")
     private String standardValueFlag;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    //private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("ID")
     public Integer getID() {
@@ -78,7 +78,7 @@ public class Origin {
         return EqualsBuilder.reflectionEquals(this, other);
     }
 
-    @JsonAnyGetter
+   /* @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }
@@ -86,6 +86,6 @@ public class Origin {
     @JsonAnySetter
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
-    }
+    }*/
 
 }

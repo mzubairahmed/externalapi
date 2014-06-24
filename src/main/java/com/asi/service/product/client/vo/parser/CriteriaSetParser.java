@@ -1,6 +1,7 @@
 package com.asi.service.product.client.vo.parser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -9,7 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.asi.service.product.client.vo.CriteriaSetValue;
-import com.asi.service.product.client.vo.ProductCriteriaSet;
+import com.asi.service.product.client.vo.CriteriaSetValues;
+import com.asi.service.product.client.vo.ProductCriteriaSets;
 
 public class CriteriaSetParser {
 	@Autowired LookupParser productLookupParser;
@@ -38,22 +40,28 @@ public class CriteriaSetParser {
 		this.productLookupParser = productLookupParser;
 	}
 	@SuppressWarnings({ "unchecked" })
-	public ConcurrentHashMap<String, HashMap<String, String>> getCriteriaSetDetailsByExternalId(String xid,List<ProductCriteriaSet> productCriteriaSetsAry)
+	public ConcurrentHashMap<String, HashMap<String, String>> getCriteriaSetDetailsByExternalId(String xid,List<ProductCriteriaSets> productCriteriaSetsAry)
     {
-    	List<CriteriaSetValue> criteriaSetValuesList=null;
+    	List<CriteriaSetValues> criteriaSetValuesList=null;
     	List<LinkedHashMap<String,String>> valueList=new ArrayList<>();
-    	for(ProductCriteriaSet productCriteriaSet:productCriteriaSetsAry)
+    	for(ProductCriteriaSets productCriteriaSet:productCriteriaSetsAry)
     	{
-    		criteriaSetValuesList=productCriteriaSet.getCriteriaSetValues();
-    		for(CriteriaSetValue currentCriteriaSetValue:criteriaSetValuesList)
+    		criteriaSetValuesList=Arrays.asList(productCriteriaSet.getCriteriaSetValues());
+    		for(CriteriaSetValues currentCriteriaSetValue:criteriaSetValuesList)
     		{
-    			if(currentCriteriaSetValue.getValue() instanceof String)
-    			addReferenceSet(xid, currentCriteriaSetValue.getCriteriaCode(), currentCriteriaSetValue.getID(), currentCriteriaSetValue.getValue().toString());
+    			if(currentCriteriaSetValue.getValue() instanceof String){
+    				if(currentCriteriaSetValue.getCriteriaCode().equalsIgnoreCase("ARTW") && null!=currentCriteriaSetValue.getCriteriaSetCodeValues() && currentCriteriaSetValue.getCriteriaSetCodeValues().length>0 && null!=currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId()){
+    					addReferenceSet(xid, currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId().toString());
+					}else{
+						addReferenceSet(xid, currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), currentCriteriaSetValue.getValue().toString());
+					}
+    			}
     			else{
     				if(currentCriteriaSetValue.getValue() instanceof List){
     					valueList=(List<LinkedHashMap<String,String>>)currentCriteriaSetValue.getValue();
     					for(LinkedHashMap<String, String> valueObj:valueList){
-    						addReferenceSet(xid, currentCriteriaSetValue.getCriteriaCode(), currentCriteriaSetValue.getID(), productLookupParser.getElementValue(currentCriteriaSetValue.getCriteriaCode(),String.valueOf(valueObj.get("CriteriaAttributeId")),String.valueOf(valueObj.get("UnitValue")),String.valueOf(valueObj.get("UnitOfMeasureCode"))));	
+    						addReferenceSet(xid, currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), productLookupParser.getElementValue(currentCriteriaSetValue.getCriteriaCode(),String.valueOf(valueObj.get("CriteriaAttributeId")),String.valueOf(valueObj.get("UnitValue")),String.valueOf(valueObj.get("UnitOfMeasureCode"))));	
+    							
     					}
     				}
     			}

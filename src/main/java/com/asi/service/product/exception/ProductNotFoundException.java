@@ -7,7 +7,6 @@ public class ProductNotFoundException extends BaseException {
 		super(productID);
 		this.errorCode = "error.no.priduct.id";
 	}
-
 	/**
 	 * 
 	 */

@@ -9,11 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.asi.service.product.client.vo.CriteriaSetValuePath;
 import com.asi.service.product.client.vo.ProductCriteriaSet;
+import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.Relationship;
 import com.asi.service.product.vo.ImprintMethod;
 
 public class ImprintParser {
 	@Autowired CriteriaSetParser criteriaLookupParser;
+	@Autowired LookupParser lookupsParser;
 	public static ConcurrentHashMap<String, String> imprintRelationMap = null;
 	 /**
      * Find a criteriaSet from the productCriteria set array based on the criteria code
@@ -24,8 +26,8 @@ public class ImprintParser {
      *            is the criteria code of the criteriaSet to find
      * @return the matched {@linkplain ProductCriteriaSets } or null
      */
-    public ProductCriteriaSet getCriteriaSetBasedOnCriteriaCode(List<ProductCriteriaSet> productCriteriaSetsAry, String criteriaCode) {
-        for (ProductCriteriaSet currentProductCriteriaSet: productCriteriaSetsAry)
+    public ProductCriteriaSets getCriteriaSetBasedOnCriteriaCode(List<ProductCriteriaSets> productCriteriaSetsAry, String criteriaCode) {
+        for (ProductCriteriaSets currentProductCriteriaSet: productCriteriaSetsAry)
         	{
         		if (null != currentProductCriteriaSet && currentProductCriteriaSet.getCriteriaCode().equalsIgnoreCase(criteriaCode.trim()))
         			return currentProductCriteriaSet;
@@ -34,7 +36,7 @@ public class ImprintParser {
     }
 
 	public List<ImprintMethod> getImprintMethodRelations(String xid,Integer imprintCriteriaSetId,
-			List<ProductCriteriaSet> productCriteriaSets, List<Relationship> relationshipList) {
+			List<ProductCriteriaSets> productCriteriaSets, List<Relationship> relationshipList) {
 		List<ImprintMethod> imprintMethodList=new ArrayList<>();
 		ImprintMethod imprintMethod=null;
 	/*	String currentCriteriaSet=null;
@@ -69,9 +71,9 @@ public class ImprintParser {
 							}else{
 								critieraValue=crntRelation.substring(crntRelation.indexOf("__")+2);
 								if(null!=imprintMethod.getArtworkName() && !imprintMethod.getArtworkName().isEmpty())
-									imprintMethod.setArtworkName(imprintMethod.getArtworkName()+","+critieraValue);
+									imprintMethod.setArtworkName(imprintMethod.getArtworkName()+","+lookupsParser.getArtworkNameByCode(critieraValue));
 								else
-										imprintMethod.setArtworkName(critieraValue);
+										imprintMethod.setArtworkName(lookupsParser.getArtworkNameByCode(critieraValue));
 							}
 						}
 						imprintMethodList.add(imprintMethod);
@@ -110,5 +112,11 @@ public class ImprintParser {
 	public void setCriteriaLookupParser(CriteriaSetParser criteriaLookupParser) {
 		this.criteriaLookupParser = criteriaLookupParser;
 	}
-   
+	public LookupParser getLookupsParser() {
+		return lookupsParser;
+	}
+
+	public void setLookupsParser(LookupParser lookupsParser) {
+		this.lookupsParser = lookupsParser;
+	}
 }

@@ -1,4 +1,4 @@
-package com.asi.service.product.vo;
+package com.asi.service.product.client.vo.parser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,13 +6,12 @@ import java.util.HashMap;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.asi.service.product.client.vo.CriteriaSetValue;
+import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.PriceGrid;
 import com.asi.service.product.client.vo.PricingItem;
 import com.asi.service.product.client.vo.ProductConfiguration;
-import com.asi.service.product.client.vo.ProductCriteriaSet;
+import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
-import com.asi.service.product.client.vo.parser.LookupParser;
 
 public class ProductConfigurationsParser {
 	private final static Logger _LOGGER = Logger
@@ -20,7 +19,7 @@ public class ProductConfigurationsParser {
 	@Autowired LookupParser productLookupParser;
 	
 	private HashMap<String,HashMap<String, String>> criteriaSet=new HashMap<>();
-	public String[] getPriceCriteria(ProductDetail productDetail,Integer priceGridId) {
+	public String[] getPriceCriteria(ProductDetail productDetail,String priceGridId) {
 		String[] priceCrterias=null;
 		String criteriaOne="",criteria1Value="";
 		String criteriaTwo="",criteria2Value="";
@@ -78,13 +77,13 @@ public class ProductConfigurationsParser {
 		HashMap<String, String> productCriteriSets=new HashMap<>();
 		ArrayList<ProductConfiguration> productConfigurationList=(ArrayList<ProductConfiguration>) productDetails.getProductConfigurations();
 		for(ProductConfiguration currentProductConfiguration: productConfigurationList){
-			for(ProductCriteriaSet currentProductCriteriSet:currentProductConfiguration.getProductCriteriaSets()){
-				for(CriteriaSetValue currentCriteria:currentProductCriteriSet.getCriteriaSetValues()){
+			for(ProductCriteriaSets currentProductCriteriSet:currentProductConfiguration.getProductCriteriaSets()){
+				for(CriteriaSetValues currentCriteria:currentProductCriteriSet.getCriteriaSetValues()){
 					if(currentCriteria.getValue() instanceof String){
-						productCriteriSets.put(currentCriteria.getID().toString(), currentCriteria.getCriteriaCode()+":"+currentCriteria.getValue().toString());
+						productCriteriSets.put(currentCriteria.getId().toString(), currentCriteria.getCriteriaCode()+":"+currentCriteria.getValue().toString());
 					}
 					else if(currentCriteria.getValue() instanceof ArrayList){
-						productCriteriSets.put(currentCriteria.getID().toString(), currentCriteria.getCriteriaCode()+":"+productLookupParser.getValueString((ArrayList<?>)currentCriteria.getValue(),currentCriteria.getCriteriaCode()));
+						productCriteriSets.put(currentCriteria.getId().toString(), currentCriteria.getCriteriaCode()+":"+productLookupParser.getValueString((ArrayList<?>)currentCriteria.getValue(),currentCriteria.getCriteriaCode()));
 					}
 				}
 			}

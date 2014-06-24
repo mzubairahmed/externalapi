@@ -36,7 +36,7 @@ public class Color {
     private String displayName;
     @JsonProperty("CodeValueGroups")
     private List<CodeValueGroup> codeValueGroups = new ArrayList<CodeValueGroup>();
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  //  private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("Code")
     public String getCode() {
@@ -93,7 +93,7 @@ public class Color {
         return EqualsBuilder.reflectionEquals(this, other);
     }
 
-    @JsonAnyGetter
+  /*  @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }
@@ -101,6 +101,6 @@ public class Color {
     @JsonAnySetter
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
-    }
+    }*/
 
 }

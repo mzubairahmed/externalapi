@@ -12,16 +12,22 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@XmlRootElement(name = "itemPrice")
+@XmlRootElement(namespace = "http://www.asicentral.com/schema/product", name = "itemPrice")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name="ItemPrice", propOrder={"productID","priceID","priceName","priceType","priceIncludes","priceUponRequest","productNumber","firstPriceCriteria","secondPriceCriteria","isMultiPriceGrid","priceDetails"})
+@XmlType(name="ItemPrice", propOrder={"productID","priceID","priceName","priceType","isBasePrice","priceIncludes","priceUponRequest","productNumber","priceCriteria","isMultiPriceGrid","priceDetails"})
 
-@JsonPropertyOrder({"productID","priceID","priceName","priceType","priceIncludes","priceUponRequest","productNumber","firstPriceCriteria","secondPriceCriteria","isMultiPriceGrid","priceDetails"})
+@JsonPropertyOrder({"productID","priceID","priceName","priceType","isBasePrice","priceIncludes","priceUponRequest","productNumber","priceCriteria","isMultiPriceGrid","priceDetails"})
 public class ItemPriceDetail {
 	@XmlEnum(String.class)
     public static enum PRICE_Type { REGL }
 	@XmlElement(name="productID",required=true)
     private String productID= "";
+	public PriceCriteria[] getPriceCriteria() {
+		return priceCriteria;
+	}
+	public void setPriceCriteria(PriceCriteria[] priceCriteria) {
+		this.priceCriteria = priceCriteria;
+	}
 	@XmlElement(name="priceID")
     private String priceID= "";
 	@XmlElement(name="priceName")
@@ -34,10 +40,15 @@ public class ItemPriceDetail {
     private Boolean priceUponRequest =Boolean.FALSE;
 	@XmlElement(name="productNumber")
     private String productNumber= "";
-	@XmlElement(name="firstPriceCriteria")
+	@XmlElement(name="priceCriteria")
+    private PriceCriteria[] priceCriteria;
+	/*@XmlElement(name="firstPriceCriteria")
     private String firstPriceCriteria= "";
 	@XmlElement(name="secondPriceCriteria")
-    private String secondPriceCriteria= "";	
+    private String secondPriceCriteria= "";	*/
+	@XmlElement(name="isBasePrice")
+    private String isBasePrice= "";	
+	
 	@XmlElement(name="isMultiPriceGrid")
     private Boolean isMultiPriceGrid= Boolean.FALSE;
 	@XmlElement(name="priceDetail")
@@ -55,7 +66,7 @@ public class ItemPriceDetail {
 	public void setPriceID(String priceID) {
 		this.priceID = priceID;
 	}
-	public String getFirstPriceCriteria() {
+	/*public String getFirstPriceCriteria() {
 		return firstPriceCriteria;
 	}
 	public void setFirstPriceCriteria(String firstPriceCriteria) {
@@ -66,12 +77,18 @@ public class ItemPriceDetail {
 	}
 	public void setSecondPriceCriteria(String secondPriceCriteria) {
 		this.secondPriceCriteria = secondPriceCriteria;
-	}
+	}*/
 	/**
 	 * @return the priceType
 	 */
 	public PRICE_Type getPriceType() {
 		return priceType;
+	}
+	public String getIsBasePrice() {
+		return isBasePrice;
+	}
+	public void setIsBasePrice(String isBasePrice) {
+		this.isBasePrice = isBasePrice;
 	}
 	/**
 	 * @param priceType the priceType to set

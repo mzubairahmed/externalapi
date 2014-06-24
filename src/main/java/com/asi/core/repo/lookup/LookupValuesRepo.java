@@ -12,7 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.asi.service.lookup.vo.Artwork;
+import com.asi.service.lookup.vo.ArtworksList;
 import com.asi.service.lookup.vo.AsiColor;
+import com.asi.service.lookup.vo.CategoriesList;
+import com.asi.service.lookup.vo.Category;
 import com.asi.service.lookup.vo.ColorHue;
 import com.asi.service.lookup.vo.Colors;
 import com.asi.service.lookup.vo.Size;
@@ -203,5 +207,81 @@ public class LookupValuesRepo {
 			constrain.setFlag((Boolean)sizeMap.get("IsFlag"));
 		size.setConstrains(constrain);
 		return size;
+	}
+	@SuppressWarnings({ "unchecked" })
+	public CategoriesList getAllCategories() {
+		CategoriesList categoriesList = new CategoriesList();
+		Category category=null;
+		List<Category> categoryArrayList= new ArrayList<Category>();
+		LinkedHashMap<String,String> currentHashMap=new LinkedHashMap<>();
+		ArrayList<LinkedHashMap<String,String>> categoriesFromService = lookupClient.getCategoriesFromLookup(lookupClient.getLookupCategoryURL());
+		Iterator<?> categoriesIterator=  categoriesFromService.iterator();
+		while(categoriesIterator.hasNext())
+		{
+			currentHashMap=(LinkedHashMap)categoriesIterator.next();
+			category=new Category();
+			if(currentHashMap.containsKey("Code"))
+				category.setCode(currentHashMap.get("Code"));
+			if(currentHashMap.containsKey("Description"))
+				category.setDescription(currentHashMap.get("Description"));
+			if(currentHashMap.containsKey("Name"))
+				category.setName(currentHashMap.get("Name"));
+			if(currentHashMap.containsKey("DisplayName"))
+				category.setDisplayName(currentHashMap.get("DisplayName"));
+			if(currentHashMap.containsKey("ParentCategoryCode"))
+				category.setParentCategoryCode(currentHashMap.get("ParentCategoryCode"));
+			if(currentHashMap.containsKey("ProductTypeCode"))
+				category.setProductTypeCode(currentHashMap.get("ProductTypeCode"));
+			if(currentHashMap.containsKey("IsProductTypeSpecific"))
+				category.setIsProductTypeSpecific(String.valueOf(currentHashMap.get("IsProductTypeSpecific")));
+			if(currentHashMap.containsKey("IsAllowsAssign"))
+				category.setIsAllowsAssign(String.valueOf(currentHashMap.get("IsAllowsAssign")));
+			if(currentHashMap.containsKey("IsParent"))
+				category.setIsParent(String.valueOf(currentHashMap.get("IsParent")));
+			if(currentHashMap.containsKey("IsPrimary"))
+				category.setIsPrimary(String.valueOf(currentHashMap.get("IsPrimary")));
+			categoryArrayList.add(category);			
+		}
+		categoriesList.setCategories(categoryArrayList);
+		return categoriesList;
+	}
+	public ArtworksList getAllArtworks() {
+		ArtworksList artworksList = new ArtworksList();
+		Artwork artwork=null;
+		List<Artwork> artworkArrayList= new ArrayList<Artwork>();
+		LinkedHashMap<?,?> currentHashMap=new LinkedHashMap<>();
+		LinkedHashMap<?,?> setcodeValuesMap=new LinkedHashMap<>();
+		ArrayList<LinkedHashMap> artworksFromService = lookupClient.getArtworksFromLookup(lookupClient.getLookupArtworkURL());
+		Iterator artworksIterator=  artworksFromService.iterator();
+		ArrayList setCodeValuesList = null;
+		while(artworksIterator.hasNext())
+		{			
+			currentHashMap=(LinkedHashMap)artworksIterator.next();			
+			
+			if(currentHashMap.containsKey("Code") && currentHashMap.get("Code").toString().equalsIgnoreCase("ARTW"))
+			{
+				ArrayList codeValueGroupsList = (ArrayList<?>) currentHashMap.get("CodeValueGroups");
+						
+				Iterator<?> codeValueGroupsIterator  = (Iterator<?>) codeValueGroupsList.iterator();
+				while(codeValueGroupsIterator.hasNext())
+				{
+					setcodeValuesMap=(LinkedHashMap)codeValueGroupsIterator.next();
+				setCodeValuesList=(ArrayList)setcodeValuesMap.get("SetCodeValues");
+				Iterator setCodeValuesListIterator=setCodeValuesList.iterator();
+				while(setCodeValuesListIterator.hasNext())
+				{
+					artwork=new Artwork();	
+					currentHashMap=(LinkedHashMap)setCodeValuesListIterator.next();
+					if(currentHashMap.containsKey("ID"))
+						artwork.setId(currentHashMap.get("ID").toString());
+						if(currentHashMap.containsKey("CodeValue"))
+							artwork.setCodeValue(currentHashMap.get("CodeValue").toString());
+						artworkArrayList.add(artwork);
+				}
+				}
+			}			
+		}	
+		artworksList.setArtworks(artworkArrayList);
+		return artworksList;
 	}
 }

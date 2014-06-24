@@ -36,9 +36,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class PriceGrid {
 
     @JsonProperty("ID")
-    private Integer iD;
+    private String iD;
     @JsonProperty("ProductId")
-    private Integer productId;
+    private String productId;
     @JsonProperty("IsBasePrice")
     private Boolean isBasePrice;
     @JsonProperty("IsQUR")
@@ -65,25 +65,25 @@ public class PriceGrid {
     private List<Price> prices = new ArrayList<Price>();
     @JsonProperty("PricingItems")
     private List<PricingItem> pricingItems = new ArrayList<PricingItem>();
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+   // private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("ID")
-    public Integer getID() {
+    public String getID() {
         return iD;
     }
 
     @JsonProperty("ID")
-    public void setID(Integer iD) {
+    public void setID(String iD) {
         this.iD = iD;
     }
 
     @JsonProperty("ProductId")
-    public Integer getProductId() {
+    public String getProductId() {
         return productId;
     }
 
     @JsonProperty("ProductId")
-    public void setProductId(Integer productId) {
+    public void setProductId(String productId) {
         this.productId = productId;
     }
 
@@ -232,7 +232,7 @@ public class PriceGrid {
         return EqualsBuilder.reflectionEquals(this, other);
     }
 
-    @JsonAnyGetter
+  /*  @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }
@@ -240,6 +240,6 @@ public class PriceGrid {
     @JsonAnySetter
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
-    }
+    }*/
 
 }

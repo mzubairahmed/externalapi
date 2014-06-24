@@ -1,8 +1,7 @@
 package com.asi.service.product.client.vo;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-@JsonIgnoreProperties(ignoreUnknown = true)
+
 public class SelectedSafetyWarnings {
 @JsonProperty("Code")
 private String code="";
@@ -29,3 +28,4 @@ private String productId="";
 @JsonProperty("MarketSegmentCode")
 private String marketSegmentCode="";
 }
+

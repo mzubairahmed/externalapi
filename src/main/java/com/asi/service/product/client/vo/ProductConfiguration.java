@@ -32,8 +32,8 @@ public class ProductConfiguration {
     @JsonProperty("IsDefault")
     private Boolean isDefault;
     @JsonProperty("ProductCriteriaSets")
-    private List<ProductCriteriaSet> productCriteriaSets = new ArrayList<ProductCriteriaSet>();
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private List<ProductCriteriaSets> productCriteriaSets = new ArrayList<ProductCriteriaSets>();
+  //  private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("ID")
     public Integer getID() {
@@ -66,12 +66,12 @@ public class ProductConfiguration {
     }
 
     @JsonProperty("ProductCriteriaSets")
-    public List<ProductCriteriaSet> getProductCriteriaSets() {
+    public List<ProductCriteriaSets> getProductCriteriaSets() {
         return productCriteriaSets;
     }
 
     @JsonProperty("ProductCriteriaSets")
-    public void setProductCriteriaSets(List<ProductCriteriaSet> productCriteriaSets) {
+    public void setProductCriteriaSets(List<ProductCriteriaSets> productCriteriaSets) {
         this.productCriteriaSets = productCriteriaSets;
     }
 
@@ -90,7 +90,7 @@ public class ProductConfiguration {
         return EqualsBuilder.reflectionEquals(this, other);
     }
 
-    @JsonAnyGetter
+ /*   @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }
@@ -99,5 +99,5 @@ public class ProductConfiguration {
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
     }
-
+*/
 }

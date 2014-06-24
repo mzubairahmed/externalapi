@@ -1,5 +1,4 @@
 package com.asi.service.product.vo;
-
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -17,6 +16,8 @@ import javax.xml.bind.annotation.XmlType;
 		   "name",
 		   "description",
 		   "summary",
+		   "category",
+		   "keyword",
 		   "itemPrice",
 		   "imprints",
 		   "workflowStatusCode",
@@ -24,6 +25,7 @@ import javax.xml.bind.annotation.XmlType;
 		   "workflowStatusStateCode",
 		   "statusCode",
 		   "dataSourceId",
+		   "productConfigurations",
 		   "productTypeCode",
 		   "rushServiceFlag",
 		   "sameDayRushFlag",
@@ -75,7 +77,7 @@ public class Product {
     
     private String externalProductId;
     
-    private Integer companyId;
+    private String companyId;
     
     private String statusCode;
     
@@ -87,11 +89,41 @@ public class Product {
     
     private String summary;
     
-    private String rushServiceFlag;
+    private String category;
+    
+    private String keyword;
+    
+    public String getKeyword() {
+		return keyword;
+	}
+
+	public void setKeyword(String keyword) {
+		this.keyword = keyword;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	private String rushServiceFlag;
     
     private String sameDayRushFlag;
     
-    private String asiProdNo;
+    private ProductConfigurations[] productConfigurations;
+    
+    public ProductConfigurations[] getProductConfigurations() {
+		return productConfigurations;
+	}
+
+	public void setProductConfigurations(ProductConfigurations[] productConfigurations) {
+		this.productConfigurations = productConfigurations;
+	}
+
+	private String asiProdNo;
     
     private String newProductFlag;
     
@@ -130,9 +162,9 @@ public class Product {
     
     private Boolean isShippableInPlainBox;
     
-    private ProductDataSheet productDataSheet;
+    private DataSheet productDataSheet;
     
-    private ProductInventoryLink productInventoryLink;
+    private InventoryLink productInventoryLink;
     
     private Boolean isAvailableUnimprinted;
     
@@ -263,14 +295,14 @@ public class Product {
 	/**
 	 * @return the companyId
 	 */
-	public Integer getCompanyId() {
+	public String getCompanyId() {
 		return companyId;
 	}
 
 	/**
 	 * @param companyId the companyId to set
 	 */
-	public void setCompanyId(Integer companyId) {
+	public void setCompanyId(String companyId) {
 		this.companyId = companyId;
 	}
 
@@ -571,28 +603,28 @@ public class Product {
 	/**
 	 * @return the productDataSheet
 	 */
-	public ProductDataSheet getProductDataSheet() {
+	public DataSheet getProductDataSheet() {
 		return productDataSheet;
 	}
 
 	/**
 	 * @param productDataSheet the productDataSheet to set
 	 */
-	public void setProductDataSheet(ProductDataSheet productDataSheet) {
+	public void setProductDataSheet(DataSheet productDataSheet) {
 		this.productDataSheet = productDataSheet;
 	}
 
 	/**
 	 * @return the productInventoryLink
 	 */
-	public ProductInventoryLink getProductInventoryLink() {
+	public InventoryLink getProductInventoryLink() {
 		return productInventoryLink;
 	}
 
 	/**
 	 * @param productInventoryLink the productInventoryLink to set
 	 */
-	public void setProductInventoryLink(ProductInventoryLink productInventoryLink) {
+	public void setProductInventoryLink(InventoryLink productInventoryLink) {
 		this.productInventoryLink = productInventoryLink;
 	}
 

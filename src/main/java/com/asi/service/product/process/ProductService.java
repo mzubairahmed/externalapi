@@ -23,8 +23,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.asi.core.exception.ErrorMessage;
+import com.asi.core.exception.ExistingProductException;
 import com.asi.core.repo.product.ProductRepo;
-import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.exception.ProductNotFoundException;
 import com.asi.service.product.vo.Imprints;
 import com.asi.service.product.vo.ItemPriceDetail;
@@ -33,7 +33,6 @@ import com.asi.service.product.vo.Product;
 @RestController
 @RequestMapping("api")
 public class ProductService {
-	@Autowired ProductDetail serviceResponse; 
 	@Autowired ProductRepo repository;
 	private static Logger _LOGGER = LoggerFactory.getLogger(ProductService.class);
 	@Autowired
@@ -41,12 +40,23 @@ public class ProductService {
 
 	@Secured("ROLE_CUSTOMER")
 	@RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.PUT,headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
-	public ResponseEntity<Product> createProduct(HttpEntity<Product> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws UnsupportedEncodingException, ProductNotFoundException {
+	public ResponseEntity<Product> createProduct(HttpEntity<Product> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws ProductNotFoundException, ExistingProductException  {
+		Product productResponse=null;
+		Product currentProduct=null;
+		
 		if(_LOGGER.isDebugEnabled()) 
 			_LOGGER.debug("calling service");
-		Product productResponse = requestEntity.getBody();
+			_LOGGER.info("Product Already Exist");	
+				currentProduct=repository.getProductPrices(companyId,xid);
+				if(null!=currentProduct){
+					throw new ExistingProductException(String.valueOf(currentProduct.getID()));
+				}
+			currentProduct=requestEntity.getBody();
+			productResponse = repository.updateProductBasePrices(currentProduct,"update");
+		
 		return new ResponseEntity<Product>(productResponse, null, HttpStatus.CREATED);
 	}
+	
 	@Secured("ROLE_CUSTOMER")
 	@RequestMapping(value = "{companyid}/pid/{xid}/price/{priceGridId}", method = RequestMethod.POST,headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
 	public ResponseEntity<ItemPriceDetail> createProductPrice(HttpEntity<ItemPriceDetail> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid,@PathVariable("priceGridId") Integer priceGridId) throws UnsupportedEncodingException, ProductNotFoundException {
@@ -67,10 +77,10 @@ public class ProductService {
 	
 	@Secured("ROLE_CUSTOMER")
 	@RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.POST,headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
-	public ResponseEntity<Product> updateProduct(HttpEntity<Product> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws UnsupportedEncodingException, ProductNotFoundException {
+	public ResponseEntity<Product> updateProduct(HttpEntity<Product> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws Exception {
 		if(_LOGGER.isDebugEnabled()) 
 			_LOGGER.debug("calling service");
-		Product productResponse = requestEntity.getBody();
+		Product productResponse = repository.updateProductBasePrices(requestEntity.getBody(),"update");
 		return new ResponseEntity<Product>(productResponse, null, HttpStatus.OK);
 	}
 	
@@ -80,6 +90,7 @@ public class ProductService {
 		if(_LOGGER.isDebugEnabled()) 
 			_LOGGER.debug("calling service");
 		ItemPriceDetail productResponse = requestEntity.getBody();
+		
 		return new ResponseEntity<ItemPriceDetail>(productResponse, null, HttpStatus.OK);
 	}
 		
@@ -93,12 +104,13 @@ public class ProductService {
 	
 	@Secured("ROLE_CUSTOMER")
 	@RequestMapping(value = "{companyid}/pid/{xid}/basePrices",method = RequestMethod.POST, headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
-	public ResponseEntity<Product> getBasePrices(HttpEntity<Product> product) throws Exception {
+	public ResponseEntity<Product> updateBasePrices(HttpEntity<Product> product) throws Exception {
 		if(_LOGGER.isDebugEnabled()) 
 			_LOGGER.debug("calling Base Price Service Updation");
-		Product productResponse = repository.updateProductBasePrices(product.getBody());
+		Product productResponse = repository.updateProductBasePrices(product.getBody(),"update");
 	    return new ResponseEntity<Product>(productResponse, null, HttpStatus.OK);
 	  	}
+	
 	
 	@ExceptionHandler(ProductNotFoundException.class)
 	 public ResponseEntity<ErrorMessage> handleUnsupportedEncodingException(ProductNotFoundException ex, HttpServletRequest request) {
@@ -115,5 +127,21 @@ public class ProductService {
 		errorInfo.setErrors(errorsList);
 		_LOGGER.error(errorMessage + errorURL);
 		return new ResponseEntity<ErrorMessage>(errorInfo, null, HttpStatus.NOT_FOUND);
+	}	
+	@ExceptionHandler(ExistingProductException.class)
+	 public ResponseEntity<ErrorMessage> handleUnsupportedEncodingException(ExistingProductException ex, HttpServletRequest request) {
+		Locale locale = LocaleContextHolder.getLocale();
+		String errorMessage = messageSource.getMessage("error.existing.priduct.id", null, locale);
+  	errorMessage += " " + ex.getProductID();
+      String errorURL = request.getRequestURL().toString();
+      ErrorMessage errorInfo = new ErrorMessage();
+		errorInfo.setErrorMessage(errorMessage);
+		errorInfo.setErrorURL(errorURL);
+		errorInfo.setStatusCode(HttpStatus.BAD_REQUEST);
+		List<String> errorsList = new ArrayList<String>();
+		errorsList.add(ex.getMessage());
+		errorInfo.setErrors(errorsList);
+		_LOGGER.error(errorMessage + errorURL);
+		return new ResponseEntity<ErrorMessage>(errorInfo, null, HttpStatus.BAD_REQUEST);
 	}	
 }

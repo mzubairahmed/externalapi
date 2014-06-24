@@ -10,60 +10,64 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-@XmlRootElement
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ProductInventoryLink implements Serializable{
+
+@XmlRootElement(namespace = "http://www.asicentral.com/schema/product")
+
+public class DataSheet  implements Serializable{
 
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-    private Integer iD;
-    
+
+	@JsonProperty("ID")
+    private Integer id;
+	@JsonProperty("ProductId")
     private Integer productId;
-    
+	@JsonProperty("CompanyId")
     private Integer companyId;
-   
+	@JsonProperty("Url")
     private String url;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  //  private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    
-    public Integer getID() {
-        return iD;
+
+    public Integer getId() {
+        return id;
     }
 
-    
-    public void setID(Integer iD) {
-        this.iD = iD;
+ 
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-       public Integer getProductId() {
+  
+    public Integer getProductId() {
         return productId;
     }
 
-   
+
     public void setProductId(Integer productId) {
         this.productId = productId;
     }
 
+ 
     public Integer getCompanyId() {
         return companyId;
     }
 
-  
+ 
     public void setCompanyId(Integer companyId) {
         this.companyId = companyId;
     }
 
-    
+ 
     public String getUrl() {
         return url;
     }
 
-   
+
     public void setUrl(String url) {
         this.url = url;
     }
@@ -83,14 +87,13 @@ public class ProductInventoryLink implements Serializable{
         return EqualsBuilder.reflectionEquals(this, other);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
+
+   /* public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }
 
-    @JsonAnySetter
+
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
-    }
-
+    }*/
 }

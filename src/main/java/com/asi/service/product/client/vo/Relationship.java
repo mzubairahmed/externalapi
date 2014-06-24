@@ -38,7 +38,7 @@ public class Relationship {
     private List<CriteriaSetRelationship> criteriaSetRelationships = new ArrayList<CriteriaSetRelationship>();
     @JsonProperty("CriteriaSetValuePaths")
     private List<CriteriaSetValuePath> criteriaSetValuePaths = new ArrayList<CriteriaSetValuePath>();
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+   // private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("ID")
     public Integer getID() {
@@ -115,7 +115,7 @@ public class Relationship {
         return EqualsBuilder.reflectionEquals(this, other);
     }
 
-    @JsonAnyGetter
+   /* @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }
@@ -123,6 +123,6 @@ public class Relationship {
     @JsonAnySetter
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
-    }
+    }*/
 
 }

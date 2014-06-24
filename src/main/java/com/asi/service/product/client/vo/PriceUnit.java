@@ -1,101 +1,57 @@
-
 package com.asi.service.product.client.vo;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonPropertyOrder({
-    "ID",
-    "Description",
-    "DisplayName",
-    "ItemsPerUnit"
-})
+
 public class PriceUnit {
+	@JsonProperty("ID")
+private String id="3162";
+	@JsonProperty("Description")
+private String description="";
+	@JsonProperty("DisplayName")
+private String displayName="";
+	@JsonProperty("ItemsPerUnit")
+private String itemsPerUnit="0";
+	@JsonProperty("IsNullo")
+private String isNullo="false";
 
-    @JsonProperty("ID")
-    private Integer iD;
-    @JsonProperty("Description")
-    private String description;
-    @JsonProperty("DisplayName")
-    private String displayName;
-    @JsonProperty("ItemsPerUnit")
-    private Integer itemsPerUnit;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+public String getId() {
+	return id;
+}
 
-    @JsonProperty("ID")
-    public Integer getID() {
-        return iD;
-    }
+public void setId(String id) {
+	this.id = id;
+}
 
-    @JsonProperty("ID")
-    public void setID(Integer iD) {
-        this.iD = iD;
-    }
+public String getDescription() {
+	return description;
+}
 
-    @JsonProperty("Description")
-    public String getDescription() {
-        return description;
-    }
+public void setDescription(String description) {
+	this.description = description;
+}
 
-    @JsonProperty("Description")
-    public void setDescription(String description) {
-        this.description = description;
-    }
+public String getDisplayName() {
+	return displayName;
+}
 
-    @JsonProperty("DisplayName")
-    public String getDisplayName() {
-        return displayName;
-    }
+public void setDisplayName(String displayName) {
+	this.displayName = displayName;
+}
 
-    @JsonProperty("DisplayName")
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
+public String getItemsPerUnit() {
+	return itemsPerUnit;
+}
 
-    @JsonProperty("ItemsPerUnit")
-    public Integer getItemsPerUnit() {
-        return itemsPerUnit;
-    }
+public void setItemsPerUnit(String itemsPerUnit) {
+	this.itemsPerUnit = itemsPerUnit;
+}
 
-    @JsonProperty("ItemsPerUnit")
-    public void setItemsPerUnit(Integer itemsPerUnit) {
-        this.itemsPerUnit = itemsPerUnit;
-    }
+public String getIsNullo() {
+	return isNullo;
+}
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        return EqualsBuilder.reflectionEquals(this, other);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
-
+public void setIsNullo(String isNullo) {
+	this.isNullo = isNullo;
+}
 }

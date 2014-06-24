@@ -2,18 +2,12 @@
 package com.asi.service.product.client.vo;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -32,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "SameDayRushFlag",
     "AsiProdNo",
     "NewProductFlag",
+    "NewProductExpirationDate",
     "FullColorProcessFlag",
     "VisibleForAllUsersFlag",
     "VirtualProductFlag",
@@ -85,7 +80,7 @@ public class ProductDetail {
     @JsonProperty("ExternalProductId")
     private String externalProductId;
     @JsonProperty("CompanyId")
-    private Integer companyId;
+    private String companyId;
     @JsonProperty("StatusCode")
     private String statusCode;
     @JsonProperty("Name")
@@ -102,7 +97,9 @@ public class ProductDetail {
     private String asiProdNo;
     @JsonProperty("NewProductFlag")
     private String newProductFlag;
-    @JsonProperty("FullColorProcessFlag")
+    @JsonProperty("NewProductExpirationDate")
+    private String newProductExpirationDate;
+	@JsonProperty("FullColorProcessFlag")
     private String fullColorProcessFlag;
     @JsonProperty("VisibleForAllUsersFlag")
     private String visibleForAllUsersFlag;
@@ -160,6 +157,17 @@ public class ProductDetail {
     private String includeAppOfferList;
     @JsonProperty("PriceConfirmationDate")
     private String priceConfirmationDate;
+	@JsonProperty("DataSourceId")
+	private String dataSourceId="";
+	public ProductDetail() {
+		// TODO Auto-generated constructor stub
+	}
+	public String getDataSourceId() {
+		return dataSourceId;
+	}
+	public void setDataSourceId(String dataSourceId) {
+		this.dataSourceId = dataSourceId;
+	}    
     public String getPriceConfirmationDate() {
 		return priceConfirmationDate;
 	}
@@ -169,25 +177,32 @@ public class ProductDetail {
 	@JsonProperty("ProductConfigurations")
     private List<ProductConfiguration> productConfigurations = new ArrayList<ProductConfiguration>();
     @JsonProperty("ProductKeywords")
-    private List<Object> productKeywords = new ArrayList<Object>();
+    private List<ProductKeywords> productKeywords = new ArrayList<ProductKeywords>();
     @JsonProperty("SelectedProductCategories")
     private List<SelectedProductCategory> selectedProductCategories = new ArrayList<SelectedProductCategory>();
     @JsonProperty("SelectedLineNames")
-    private List<Object> selectedLineNames = new ArrayList<Object>();
+    private List<SelectedLineNames> selectedLineNames = new ArrayList<SelectedLineNames>();
     @JsonProperty("SelectedComplianceCerts")
     private List<SelectedComplianceCert> selectedComplianceCerts = new ArrayList<SelectedComplianceCert>();
     @JsonProperty("SelectedSafetyWarnings")
     private List<SelectedSafetyWarnings> selectedSafetyWarnings = new ArrayList<SelectedSafetyWarnings>();
     @JsonProperty("ProductMediaItems")
-    private List<Object> productMediaItems = new ArrayList<Object>();
+    private List<ProductMediaItems> productMediaItems = new ArrayList<ProductMediaItems>();
     @JsonProperty("ProductMediaCitations")
-    private List<Object> productMediaCitations = new ArrayList<Object>();
+    private List<ProductMediaCitations> productMediaCitations = new ArrayList<ProductMediaCitations>();
     @JsonProperty("PriceGrids")
     private List<PriceGrid> priceGrids = new ArrayList<PriceGrid>();
     @JsonProperty("ProductNumbers")
     private List<ProductNumber> productNumbers = new ArrayList<ProductNumber>();
     @JsonProperty("Relationships")
     private List<Relationship> relationships = new ArrayList<Relationship>();
+    
+    public String getNewProductExpirationDate() {
+		return newProductExpirationDate;
+	}
+	public void setNewProductExpirationDate(String newProductExpirationDate) {
+		this.newProductExpirationDate = newProductExpirationDate;
+	}
     @JsonProperty("AddtionalShippingInfo")
     public String getAdditionalShippingInfo() {
 		return additionalShippingInfo;
@@ -200,7 +215,7 @@ public class ProductDetail {
     private String additionalShippingInfo;
     
     
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+   // private Map<String, Object> additionalProperties = new HashMap<String, Object>();
     private String processedURL = "";
     @JsonProperty("ID")
     public Integer getID() {
@@ -243,12 +258,12 @@ public class ProductDetail {
     }
 
     @JsonProperty("CompanyId")
-    public Integer getCompanyId() {
+    public String getCompanyId() {
         return companyId;
     }
 
     @JsonProperty("CompanyId")
-    public void setCompanyId(Integer companyId) {
+    public void setCompanyId(String companyId) {
         this.companyId = companyId;
     }
 
@@ -623,12 +638,12 @@ public class ProductDetail {
     }
 
     @JsonProperty("ProductKeywords")
-    public List<Object> getProductKeywords() {
+    public List<ProductKeywords> getProductKeywords() {
         return productKeywords;
     }
 
     @JsonProperty("ProductKeywords")
-    public void setProductKeywords(List<Object> productKeywords) {
+    public void setProductKeywords(List<ProductKeywords> productKeywords) {
         this.productKeywords = productKeywords;
     }
 
@@ -643,12 +658,12 @@ public class ProductDetail {
     }
 
     @JsonProperty("SelectedLineNames")
-    public List<Object> getSelectedLineNames() {
+    public List<SelectedLineNames> getSelectedLineNames() {
         return selectedLineNames;
     }
 
     @JsonProperty("SelectedLineNames")
-    public void setSelectedLineNames(List<Object> selectedLineNames) {
+    public void setSelectedLineNames(List<SelectedLineNames> selectedLineNames) {
         this.selectedLineNames = selectedLineNames;
     }
 
@@ -673,22 +688,22 @@ public class ProductDetail {
     }
 
     @JsonProperty("ProductMediaItems")
-    public List<Object> getProductMediaItems() {
+    public List<ProductMediaItems> getProductMediaItems() {
         return productMediaItems;
     }
 
     @JsonProperty("ProductMediaItems")
-    public void setProductMediaItems(List<Object> productMediaItems) {
+    public void setProductMediaItems(List<ProductMediaItems> productMediaItems) {
         this.productMediaItems = productMediaItems;
     }
 
     @JsonProperty("ProductMediaCitations")
-    public List<Object> getProductMediaCitations() {
+    public List<ProductMediaCitations> getProductMediaCitations() {
         return productMediaCitations;
     }
 
     @JsonProperty("ProductMediaCitations")
-    public void setProductMediaCitations(List<Object> productMediaCitations) {
+    public void setProductMediaCitations(List<ProductMediaCitations> productMediaCitations) {
         this.productMediaCitations = productMediaCitations;
     }
 
@@ -722,7 +737,7 @@ public class ProductDetail {
         this.relationships = relationships;
     }
 
-    @Override
+  /*  @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
@@ -746,18 +761,24 @@ public class ProductDetail {
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
     }
-    @SuppressWarnings({  "unchecked" })
     public String getProcessedURL()
     {
     	
     	String seprator = ",";
     	String valueforSeprator="";
-    	ArrayList<Object> productMediaItems = (ArrayList<Object>) getProductMediaItems();
-    	Iterator<Object> mediaIterator=productMediaItems.iterator();
+    	ArrayList<ProductMediaItems> productMediaItems = (ArrayList<ProductMediaItems>) getProductMediaItems();
+    	int mediaCntr=0;
+    	for(ProductMediaItems crntproductMediaItems:productMediaItems)
+    	{
+    		if(mediaCntr!=0)
+				valueforSeprator = seprator;
+    		processedURL = processedURL +crntproductMediaItems.getMedia().getUrl()+valueforSeprator;
+    	}
+    	Iterator<ProductMediaItems> mediaIterator=productMediaItems.iterator();
     	while(mediaIterator.hasNext())
     	{
     		
-			LinkedHashMap<String, Object> indexMediaItem = (LinkedHashMap<String, Object>) mediaIterator.next();
+			LinkedHashMap<String, ProductMediaItems> indexMediaItem = (LinkedHashMap<String, ProductMediaItems>) mediaIterator.next();
 			LinkedHashMap<String, Object> media = (LinkedHashMap<String, Object>) indexMediaItem.get("Media");
 			valueforSeprator="";
 			if(mediaIterator.hasNext())
@@ -768,5 +789,6 @@ public class ProductDetail {
     	return processedURL;
     	
     }
-
+	
+*/
 }

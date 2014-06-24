@@ -39,7 +39,7 @@ public class CriteriaSetCodeValue {
     private String codeValueDetail;
     @JsonProperty("ChildCriteriaSetCodeValues")
     private List<Object> childCriteriaSetCodeValues = new ArrayList<Object>();
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+   // private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("ID")
     public Integer getID() {
@@ -116,7 +116,7 @@ public class CriteriaSetCodeValue {
         return EqualsBuilder.reflectionEquals(this, other);
     }
 
-    @JsonAnyGetter
+    /*@JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }
@@ -124,6 +124,6 @@ public class CriteriaSetCodeValue {
     @JsonAnySetter
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
-    }
+    }*/
 
 }
