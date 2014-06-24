@@ -1,11 +1,18 @@
 package com.asi.service.product.client.vo;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 public class CriteriaSetCodeValues {
-	private String criteriaSetValueId="",setCodeValueId="",codeValue="";
+	@JsonProperty("CriteriaSetValueId")
+	private String criteriaSetValueId="";
+	@JsonProperty("SetCodeValueId")
+	private String setCodeValueId="";
+	@JsonProperty("CodeValue")
+	private String codeValue="";
 	@JsonProperty("ID")
 	private String id="0";
+	@JsonProperty("CodeValueDetail")
 	private String codeValueDetail="";
 	public CriteriaSetCodeValues()
 	{
@@ -50,6 +57,7 @@ public class CriteriaSetCodeValues {
 	public void setId(String id) {
 		this.id = id;
 	}
+	
 	public ChildCriteriaSetCodeValues[] getChildCriteriaSetCodeValues() {
 		return childCriteriaSetCodeValues;
 	}
@@ -57,6 +65,7 @@ public class CriteriaSetCodeValues {
 			ChildCriteriaSetCodeValues[] childCriteriaSetCodeValues) {
 		this.childCriteriaSetCodeValues = childCriteriaSetCodeValues;
 	}
+	@JsonProperty("ChildCriteriaSetCodeValues")
 	private ChildCriteriaSetCodeValues[] childCriteriaSetCodeValues={};
 
 }

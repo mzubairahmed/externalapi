@@ -1,19 +1,22 @@
 package com.asi.service.product.client.vo.parser;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.asi.service.product.client.LookupValuesClient;
+import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.Price;
 import com.asi.service.product.client.vo.ProductConfiguration;
+import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductInventoryLink;
-import com.asi.service.product.client.vo.ProductKeywords;
 import com.asi.service.product.client.vo.SelectedProductCategory;
 import com.asi.service.product.vo.DataSheet;
 import com.asi.service.product.vo.InventoryLink;
@@ -203,6 +206,7 @@ public class LookupParser {
 	public com.asi.service.product.client.vo.Product setProductKeyWords(
 			com.asi.service.product.client.vo.Product productToUpdate, Product srcProduct) {
 		String keywords=srcProduct.getKeyword();
+		if(null!=keywords){
 		String[] keywordlist=keywords.split(",");
 		com.asi.service.product.client.vo.ProductKeywords curntProductKeyword=null;
 		int keyworkCntr=0;
@@ -222,6 +226,7 @@ public class LookupParser {
 				//productToUpdate.getProductKeywords().add(curntProductKeyword);
 			}
 			productToUpdate.setProductKeywords(productKeywordsAry);
+		}
 		}
 		return productToUpdate;
 	}
@@ -319,11 +324,87 @@ public class LookupParser {
 
 	public Product setProductConfigurations(ProductDetail productDetail,
 			Product product) {
-	/*	List<ProductConfiguration> srcProductConfigList=productDetail.getProductConfigurations();
+		List<ProductConfiguration> srcProductConfigList=productDetail.getProductConfigurations();
+		ProductConfigurations[] targetProductConfigList={};
+		ProductConfigurations currentProductConfig=null;
+		com.asi.service.product.vo.ProductCriteriaSets[] productCriteriaSetsAry=null;
+		com.asi.service.product.vo.ProductCriteriaSets currentProductCriteriaSets=null;
+		com.asi.service.product.vo.CriteriaSetValues currentCriteriaSetValues=null;
+		com.asi.service.product.vo.CriteriaSetValues[] currentCriteriaSetValuesAry=null;
+		CriteriaSetValues[] clientCriteriaSetValuesAry=null;
+		ArrayList<ProductCriteriaSets> productCriteriaSetsList=null;
 		if(null!=srcProductConfigList){
-			ProductConfigurations[] targetProductConfigList=new ProductConfigurations[srcProductConfigList.size()];
-		}		*/
+			int productConfigCntr=0;
+			int productCriteriaSetCntr=0;
+			targetProductConfigList=new ProductConfigurations[srcProductConfigList.size()];
+			for(ProductConfiguration crntProductConfiguration:srcProductConfigList)
+			{
+				currentProductConfig=new ProductConfigurations();
+				productCriteriaSetsAry=new com.asi.service.product.vo.ProductCriteriaSets[crntProductConfiguration.getProductCriteriaSets().size()];
+				productCriteriaSetsList=new ArrayList<>();
+				currentProductConfig.setId(String.valueOf(crntProductConfiguration.getID()));
+				currentProductConfig.setIsDefault(String.valueOf(crntProductConfiguration.getIsDefault()));
+				currentProductConfig.setProductId(String.valueOf(crntProductConfiguration.getProductId()));
+				productCriteriaSetsList=(ArrayList<ProductCriteriaSets>) crntProductConfiguration.getProductCriteriaSets();
+				//productCriteriaSetsList=new ArrayList(Arrays.asList(crntProductConfiguration.getProductCriteriaSets()));
+				for(com.asi.service.product.client.vo.ProductCriteriaSets crntProductCriteriaSet:productCriteriaSetsList){
+					currentProductCriteriaSets=new com.asi.service.product.vo.ProductCriteriaSets();
+						currentProductCriteriaSets.setCompanyId(crntProductCriteriaSet.getCompanyId());
+						currentProductCriteriaSets.setProductId(crntProductCriteriaSet.getProductId());
+						currentProductCriteriaSets.setConfigId(crntProductCriteriaSet.getConfigId());
+						currentProductCriteriaSets.setCriteriaCode(crntProductCriteriaSet.getCriteriaCode());
+						currentProductCriteriaSets.setCriteriaDetail(crntProductCriteriaSet.getCriteriaDetail());
+						currentProductCriteriaSets.setCriteriaSetId(crntProductCriteriaSet.getCriteriaSetId());
+						currentProductCriteriaSets.setParentCriteriaSetId(crntProductCriteriaSet.getParentCriteriaSetId());
+						currentProductCriteriaSets.setDescription(crntProductCriteriaSet.getDescription());
+						currentProductCriteriaSets.setIsBase(crntProductCriteriaSet.getIsBase());
+						currentProductCriteriaSets.setIsRequiredForOrder(crntProductCriteriaSet.getIsRequiredForOrder());
+						currentProductCriteriaSets.setIsMultipleChoiceAllowed(crntProductCriteriaSet.getIsMultipleChoiceAllowed());
+						currentProductCriteriaSets.setIsTemplate(crntProductCriteriaSet.getIsTemplate());
+						currentProductCriteriaSets.setOrderDetail(crntProductCriteriaSet.getOrderDetail());
+						currentProductCriteriaSets.setIsDefaultConfiguration(crntProductCriteriaSet.getIsDefaultConfiguration());
+						currentProductCriteriaSets.setDisplayProductNumber(crntProductCriteriaSet.getDisplayProductNumber());
+						currentProductCriteriaSets.setDisplayOptionName(crntProductCriteriaSet.getDisplayOptionName());
+						currentProductCriteriaSets.setIsBrokenOutOn(crntProductCriteriaSet.getIsBrokenOutOn());
+						clientCriteriaSetValuesAry=crntProductCriteriaSet.getCriteriaSetValues();						
+						currentCriteriaSetValuesAry=getCurrentCriteriaSetValues(clientCriteriaSetValuesAry);
+						currentProductCriteriaSets.setCriteriaSetValues(currentCriteriaSetValuesAry);
+					productCriteriaSetsAry[productCriteriaSetCntr++]=currentProductCriteriaSets;
+				}
+				currentProductConfig.setProductCriteriaSets(productCriteriaSetsAry);
+				targetProductConfigList[productConfigCntr++]=currentProductConfig;
+				//BeanUtils.copyProperties(targetProductConfigList[productConfigCntr++], crntProductConfiguration);
+			}
+			
+		}	
+		product.setProductConfigurations(targetProductConfigList);
 		return product;
+	}
+
+	private com.asi.service.product.vo.CriteriaSetValues[] getCurrentCriteriaSetValues(
+			CriteriaSetValues[] clientCriteriaSetValuesAry) {
+		com.asi.service.product.vo.CriteriaSetValues currentCriteriaSetValues=null;
+		com.asi.service.product.vo.CriteriaSetValues[] currentCriteriaSetValuesAry=null;
+		int childCriteriaCodesCntr=0;
+		currentCriteriaSetValuesAry=new com.asi.service.product.vo.CriteriaSetValues[clientCriteriaSetValuesAry.length];
+		for(CriteriaSetValues crntclientCriteriaSetValues:clientCriteriaSetValuesAry){
+			currentCriteriaSetValues=new com.asi.service.product.vo.CriteriaSetValues();
+			currentCriteriaSetValues.setId(crntclientCriteriaSetValues.getId());
+			currentCriteriaSetValues.setBaseLookupValue(crntclientCriteriaSetValues.getBaseLookupValue());
+			currentCriteriaSetValues.setCriteriaCode(crntclientCriteriaSetValues.getCriteriaCode());
+			currentCriteriaSetValues.setCriteriaSetId(crntclientCriteriaSetValues.getCriteriaSetId());
+			currentCriteriaSetValues.setValueTypeCode(crntclientCriteriaSetValues.getValueTypeCode());
+			currentCriteriaSetValues.setCriteriaValueDetail(crntclientCriteriaSetValues.getCriteriaValueDetail());
+			currentCriteriaSetValues.setIsSubset(crntclientCriteriaSetValues.getIsSubset());
+			currentCriteriaSetValues.setIsSetValueMeasurement(crntclientCriteriaSetValues.getIsSetValueMeasurement());
+			currentCriteriaSetValues.setProductNumber(crntclientCriteriaSetValues.getProductNumber());
+			currentCriteriaSetValues.setValue(crntclientCriteriaSetValues.getValue());
+			currentCriteriaSetValues.setSubSets(crntclientCriteriaSetValues.getSubSets());
+			currentCriteriaSetValues.setDisplaySequence(crntclientCriteriaSetValues.getDisplaySequence());
+			currentCriteriaSetValues.setCriteriaSetCodeValues(crntclientCriteriaSetValues.getCriteriaSetCodeValues());
+			currentCriteriaSetValuesAry[childCriteriaCodesCntr++]=currentCriteriaSetValues;
+		}
+		return currentCriteriaSetValuesAry;
 	}
 	
 	

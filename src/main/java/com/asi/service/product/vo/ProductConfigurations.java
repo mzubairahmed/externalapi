@@ -1,19 +1,20 @@
 package com.asi.service.product.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+
 
 public class ProductConfigurations {
 @JsonProperty("ID")
 private String id="0";
 private String productId="";
 private String isDefault="";
-private ProductCriteriaSets productCriteriaSets;
+private ProductCriteriaSets[] productCriteriaSets;
 
-public ProductCriteriaSets getProductCriteriaSets() {
+public ProductCriteriaSets[] getProductCriteriaSets() {
 	return productCriteriaSets;
 }
-public void setProductCriteriaSets(ProductCriteriaSets productCriteriaSets) {
+public void setProductCriteriaSets(ProductCriteriaSets[] productCriteriaSets) {
 	this.productCriteriaSets = productCriteriaSets;
 }
 public String getId() {

@@ -27,10 +27,11 @@ import com.asi.service.product.client.ProductClient;
 import com.asi.service.product.client.vo.Batch;
 import com.asi.service.product.client.vo.BatchDataSource;
 import com.asi.service.product.client.vo.CriteriaSetValue;
+import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.Price;
 import com.asi.service.product.client.vo.PriceGrid;
 import com.asi.service.product.client.vo.ProductConfiguration;
-import com.asi.service.product.client.vo.ProductCriteriaSet;
+import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.parser.ImprintParser;
 import com.asi.service.product.client.vo.parser.LookupParser;
@@ -137,7 +138,7 @@ public class ProductRepo {
 		productDetail = getProductFromService(companyID, productID);
 		Product product = new Product();
 		BeanUtils.copyProperties(productDetail, product);
-		//product=lookupsParser.setProductConfigurations(productDetail,product);
+		product=lookupsParser.setProductConfigurations(productDetail,product);
 		product=lookupsParser.setProductCategory(productDetail,product);
 		product=lookupsParser.setProductServiceKeywords(productDetail,product);
 		product=lookupsParser.setProductServiceDataSheet(productDetail,product);
@@ -286,16 +287,16 @@ public class ProductRepo {
 		List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
 		ProductConfiguration productConfiguration = productDetail
 				.getProductConfigurations().get(0);
-		ProductCriteriaSet imprintCriteriaSet = imprintParser
+		ProductCriteriaSets imprintCriteriaSet = imprintParser
 				.getCriteriaSetBasedOnCriteriaCode(
 						productConfiguration.getProductCriteriaSets(), "IMMD");
 		if(null!=imprintCriteriaSet){
-			List<CriteriaSetValue> criteriaSetValues = imprintCriteriaSet
-					.getCriteriaSetValues();
-			for (CriteriaSetValue criteriaSetValue : criteriaSetValues) {
+			List<CriteriaSetValues> criteriaSetValues = Arrays.asList(imprintCriteriaSet
+					.getCriteriaSetValues());
+			for (CriteriaSetValues criteriaSetValue : criteriaSetValues) {
 				imprintMethodsList = imprintParser.getImprintMethodRelations(
 						productDetail.getExternalProductId(),
-						criteriaSetValue.getCriteriaSetId(),
+						Integer.parseInt(criteriaSetValue.getCriteriaSetId()),
 						productConfiguration.getProductCriteriaSets(),
 						productDetail.getRelationships());
 			}
@@ -310,7 +311,7 @@ public class ProductRepo {
 			 {
 	//	ProductDetail velocityBean = new ProductDetail();
 		try{
-			
+			//Product checkProductExistance=null;	
 		com.asi.service.product.client.vo.Product velocityBean=new com.asi.service.product.client.vo.Product();
 		velocityBean = setProductWithPriceDetails(currentProduct);
 		velocityBean = setProductWithBasicDetails(currentProduct,velocityBean);
@@ -333,7 +334,9 @@ public class ProductRepo {
 		}
 		HttpEntity<com.asi.service.product.client.vo.Product> requestEntity = new HttpEntity<com.asi.service.product.client.vo.Product>(velocityBean, requestHeaders);
 		ResponseEntity<Object> responseEntity=null;
-			responseEntity = productRestTemplate.exchange(productImportURL, HttpMethod.POST, requestEntity, Object.class);
+		//checkProductExistance=prepairProduct(String.valueOf(currentProduct.getCompanyId()),currentProduct.getExternalProductId());
+		
+		responseEntity = productRestTemplate.exchange(productImportURL, HttpMethod.POST, requestEntity, Object.class);
 		//Client        restClient = Client.create();
 			_LOGGER.info("Product Respones Status:" + responseEntity);
 	//	WebResource resource = restClient.resource(productImportURL);
@@ -349,7 +352,7 @@ public class ProductRepo {
 		//String responseEntity = productRestTemplate.postForObject(productImportURL, requestEntity, String.class);
 		//String result = String.valueOf(responseEntity.getStatusCode().value());
 		
-		//currentProduct=prepairProduct(String.valueOf(currentProduct.getCompanyId()),currentProduct.getExternalProductId());
+		currentProduct=prepairProduct(String.valueOf(currentProduct.getCompanyId()),currentProduct.getExternalProductId());
 		return currentProduct;
 	}
 
