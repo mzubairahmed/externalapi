@@ -32,7 +32,7 @@ public class ProductConfiguration {
     @JsonProperty("IsDefault")
     private Boolean isDefault;
     @JsonProperty("ProductCriteriaSets")
-    private List<ProductCriteriaSet> productCriteriaSets = new ArrayList<ProductCriteriaSet>();
+    private List<ProductCriteriaSets> productCriteriaSets = new ArrayList<ProductCriteriaSets>();
   //  private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("ID")
@@ -66,12 +66,12 @@ public class ProductConfiguration {
     }
 
     @JsonProperty("ProductCriteriaSets")
-    public List<ProductCriteriaSet> getProductCriteriaSets() {
+    public List<ProductCriteriaSets> getProductCriteriaSets() {
         return productCriteriaSets;
     }
 
     @JsonProperty("ProductCriteriaSets")
-    public void setProductCriteriaSets(List<ProductCriteriaSet> productCriteriaSets) {
+    public void setProductCriteriaSets(List<ProductCriteriaSets> productCriteriaSets) {
         this.productCriteriaSets = productCriteriaSets;
     }
 

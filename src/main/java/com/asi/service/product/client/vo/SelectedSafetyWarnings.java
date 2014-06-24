@@ -1,6 +1,6 @@
 package com.asi.service.product.client.vo;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SelectedSafetyWarnings {
 @JsonProperty("Code")

@@ -1,7 +1,16 @@
 package com.asi.service.product.client.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ChildCriteriaSetCodeValues {
-private String criteriaSetValueId="",setCodeValueId="",codeValue="",id="";
+	@JsonProperty("CriteriaSetValueId")
+private String criteriaSetValueId="";
+	@JsonProperty("SetCodeValueId")
+private String setCodeValueId="";
+	@JsonProperty("CodeValue")
+private String codeValue="";
+	@JsonProperty("ID")
+private String id="";
 
 public String getCriteriaSetValueId() {
 	return criteriaSetValueId;

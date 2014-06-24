@@ -2,10 +2,18 @@ package com.asi.service.product.client.vo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 public class Media {
-  @JsonProperty("id")
+  @JsonProperty("ID")
   private String id="0";
   public String getId() {
 	return id;
+}
+  @JsonProperty("IsProcessedFlg")
+  private String isProcessedFlg;
+public String getIsProcessedFlg() {
+	return isProcessedFlg;
+}
+public void setIsProcessedFlg(String isProcessedFlg) {
+	this.isProcessedFlg = isProcessedFlg;
 }
 public void setId(String id) {
 	this.id = id;
@@ -35,13 +43,16 @@ public String getCompanyID() {
 public void setCompanyID(String companyID) {
     this.companyID = companyID;
 }
+@JsonProperty("MediaTypeCode")
 private String mediaTypeCode="";
+@JsonProperty("ImageQualityCode")
 	private String imageQualityCode="";
+@JsonProperty("Url")
 	private String url;
+@JsonProperty("Description")
 	private String description;
-
+@JsonProperty("CompanyID")
     private String companyID;
-    
 	public String getDescription() {
 		return description;
 	}
@@ -54,6 +65,7 @@ private String mediaTypeCode="";
 	public void setMediaCriteriaMatches(MediaCriteriaMatches[] mediaCriteriaMatches) {
 		this.mediaCriteriaMatches = mediaCriteriaMatches;
 	}
+	@JsonProperty("MediaCriteriaMatches")
 	private MediaCriteriaMatches[] mediaCriteriaMatches;
    
 }

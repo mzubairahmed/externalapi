@@ -1,8 +1,11 @@
 package com.asi.service.product.client.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 
 public class ProductMediaItems {
+	@JsonProperty("ProductId")
 	private String productId;
 	public String getProductId() {
 		return productId;
@@ -28,9 +31,13 @@ public class ProductMediaItems {
 	public void setMedia(Media media) {
 		this.media = media;
 	}
+	@JsonProperty("MediaId")
 	private String mediaId;
+	@JsonProperty("IsPrimary")
 	private String isPrimary;
+	@JsonProperty("Media")
 	private Media media;
+	@JsonProperty("MediaRank")
 	private String mediaRank;
 	  
  
