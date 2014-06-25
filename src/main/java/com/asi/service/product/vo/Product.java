@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.asi.service.product.client.vo.ProductMediaItems;
 import com.asi.service.product.client.vo.Relationships;
+import com.asi.service.product.client.vo.SelectedLineNames;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @XmlRootElement(namespace = "http://www.asicentral.com/schema/product" , name="productDetail")
@@ -46,6 +47,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 		   "isShippableInPlainBox",
 		   "productDataSheet",
 		   "productMediaItems",
+		   "selectedLineNames",
 		   "productInventoryLink",
 		   "isAvailableUnimprinted",
 		   "isPersonalizationAvailable",
@@ -128,7 +130,7 @@ public class Product {
 	private String fullColorProcessFlag;
     private String visibleForAllUsersFlag;
     private String virtualProductFlag;
-    @JsonProperty("NLevelConnectFlag")
+   // @JsonProperty("NLevelConnectFlag")
     private String nLevelConnectFlag;
     private String productLockedFlag;
     private List<Relationships> relationships;
@@ -149,8 +151,15 @@ public class Product {
     private String shipperBillsByCode;
     
     private Boolean isShippableInPlainBox;
-    
-    private DataSheet productDataSheet;
+    private List<SelectedLineNames> selectedLineNames;
+    public List<SelectedLineNames> getSelectedLineNames() {
+		return selectedLineNames;
+	}
+
+	public void setSelecttedLineNames(List<SelectedLineNames> selectedLineNames) {
+		this.selectedLineNames = selectedLineNames;
+	}
+	private DataSheet productDataSheet;
     private List<ProductMediaItems> productMediaItems;
     
     public List<ProductMediaItems> getProductMediaItems() {

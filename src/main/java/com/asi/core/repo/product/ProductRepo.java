@@ -20,8 +20,10 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.asi.core.exception.ResponseNotValidException;
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.ProductClient;
 import com.asi.service.product.client.vo.Batch;
@@ -30,7 +32,6 @@ import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.Price;
 import com.asi.service.product.client.vo.PriceGrid;
 import com.asi.service.product.client.vo.ProductConfiguration;
-import com.asi.service.product.client.vo.ProductConfigurations;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.parser.ImprintParser;
@@ -223,6 +224,7 @@ public class ProductRepo {
         itemPrice.setPriceIncludes(priceGrid.getPriceIncludes());
         itemPrice.setPriceUponRequest(priceGrid.getIsQUR());
         itemPrice.setIsBasePrice(String.valueOf(priceGrid.getIsBasePrice()));
+       // itemPrice.setProductNumber(priceGrid.getp);
 		List<PriceDetail> pricesList = new ArrayList<PriceDetail>();
 
 		for (Price p : priceGrid.getPrices()) {
@@ -239,7 +241,7 @@ public class ProductRepo {
 			priceDetail.setItemsPerUnitBy(p.getPriceUnit().getDisplayName());
 			pricesList.add(priceDetail);
 		}
-        itemPrice.setProductID(productDetail.getName());
+        itemPrice.setProductID(String.valueOf(productDetail.getID()));
         itemPrice.setPriceDetails(pricesList);
         itemPrice.setPriceID(priceGrid.getID().toString());
 		String[] basePriceCriterias = productConfiguration.getPriceCriteria(
@@ -307,7 +309,7 @@ public class ProductRepo {
 		
 	}
 
-	public Product updateProductBasePrices(Product currentProduct,String requestType) throws ProductNotFoundException
+	public Product updateProductBasePrices(Product currentProduct,String requestType) throws ProductNotFoundException, ResponseNotValidException
 			 {
 	//	ProductDetail velocityBean = new ProductDetail();
 		try{
@@ -342,13 +344,16 @@ public class ProductRepo {
 		ResponseEntity<Object> responseEntity=null;
 		responseEntity = productRestTemplate.exchange(productImportURL, HttpMethod.POST, requestEntity, Object.class);
 			_LOGGER.info("Product Respones Status:" + responseEntity);
-			 }catch(Exception ex)
+			 }catch(HttpClientErrorException hcerror){
+				 throw new ResponseNotValidException(String.valueOf(currentProduct.getID()));
+			 }
+		catch(Exception ex)
 			 {
 				 ProductNotFoundException exc = new ProductNotFoundException(String.valueOf(currentProduct.getID()));
 				 exc.setStackTrace(ex.getStackTrace());
 				 throw exc;
 			 }
-		currentProduct=prepairProduct(String.valueOf(currentProduct.getCompanyId()),currentProduct.getExternalProductId());
+		//currentProduct=prepairProduct(String.valueOf(currentProduct.getCompanyId()),currentProduct.getExternalProductId());
 		return currentProduct;
 	}
 
@@ -401,6 +406,7 @@ public class ProductRepo {
 		productToUpdate.setSummary(String.valueOf(srcProduct.getSummary()));
 		productToUpdate.setDataSourceId(srcProduct.getDataSourceId());		
 		productToUpdate.setExternalProductId(srcProduct.getExternalProductId());	
+		
 		// Product DataSheet
 		com.asi.service.product.client.vo.ProductDataSheet productDataSheet = new com.asi.service.product.client.vo.ProductDataSheet();
 		productDataSheet.setProductId(String.valueOf(srcProduct.getID()));
@@ -537,15 +543,16 @@ String sProductCategory=srcProduct.getCategory();
 			crntPriceGrids.setId(crntItemPrice.getPriceID());
 			crntPriceGrids.setProductId(String.valueOf(srcProduct.getID()));
 			crntPriceGrids.setDescription(crntItemPrice.getPriceName());
-			if(crntItemPrice.getPriceType().toString().equals("REGL"))
+			if(null!=crntItemPrice.getPriceType() && crntItemPrice.getPriceType().toString().equals("REGL"))
 			{
 				crntPriceGrids.setIsBasePrice("true");
 				crntPriceGrids.setPriceGridSubTypeCode(crntItemPrice.getPriceType().toString());
 			}
-			if(!crntItemPrice.getPriceDetails().isEmpty() && crntItemPrice.getPriceDetails().size()>0)
+			/*if(!crntItemPrice.getPriceDetails().isEmpty() && crntItemPrice.getPriceDetails().size()>0)
 			{
 				crntPriceGrids.setIsQUR("false");
-			}
+			}*/
+			crntPriceGrids.setIsQUR(String.valueOf(crntItemPrice.getPriceUponRequest()));
 			crntPriceGrids.setUsageLevelCode("NONE");
 			crntPriceGrids.setPriceIncludes(crntItemPrice.getPriceIncludes());
 			currency = new com.asi.service.product.client.vo.Currency();

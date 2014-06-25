@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.asi.core.exception.ErrorMessage;
 import com.asi.core.exception.ExistingProductException;
+import com.asi.core.exception.ResponseNotValidException;
 import com.asi.core.repo.product.ProductRepo;
 import com.asi.service.product.exception.ProductNotFoundException;
 import com.asi.service.product.vo.Imprints;
@@ -37,23 +38,28 @@ public class ProductService {
 	private static Logger _LOGGER = LoggerFactory.getLogger(ProductService.class);
 	@Autowired
 	private MessageSource messageSource;
+	public ProductService() {
+		System.out.println("");
+	}
 
 	@Secured("ROLE_CUSTOMER")
 	@RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.PUT,headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
-	public ResponseEntity<Product> createProduct(HttpEntity<Product> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws ProductNotFoundException, ExistingProductException  {
+	public ResponseEntity<Product> createProduct(HttpEntity<Product> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws ProductNotFoundException, ExistingProductException, ResponseNotValidException  {
 		Product productResponse=null;
 		Product currentProduct=null;
 		
 		if(_LOGGER.isDebugEnabled()) 
 			_LOGGER.debug("calling service");
-			_LOGGER.info("Product Already Exist");	
+			//_LOGGER.info("Product Already Exist");	
+		try{
 				currentProduct=repository.getProductPrices(companyId,xid);
 				if(null!=currentProduct){
 					throw new ExistingProductException(String.valueOf(currentProduct.getID()));
 				}
+		}catch(ProductNotFoundException pnf){
 			currentProduct=requestEntity.getBody();
 			productResponse = repository.updateProductBasePrices(currentProduct,"update");
-		
+		}		
 		return new ResponseEntity<Product>(productResponse, null, HttpStatus.CREATED);
 	}
 	
@@ -144,4 +150,20 @@ public class ProductService {
 		_LOGGER.error(errorMessage + errorURL);
 		return new ResponseEntity<ErrorMessage>(errorInfo, null, HttpStatus.BAD_REQUEST);
 	}	
+	@ExceptionHandler(ResponseNotValidException.class)
+	 public ResponseEntity<ErrorMessage> handleUnsupportedEncodingException(ResponseNotValidException ex, HttpServletRequest request) {
+		Locale locale = LocaleContextHolder.getLocale();
+		String errorMessage = messageSource.getMessage("error.notvalid.response.id", null, locale);
+ 	errorMessage += " " + ex.getProductID();
+     String errorURL = request.getRequestURL().toString();
+     ErrorMessage errorInfo = new ErrorMessage();
+		errorInfo.setErrorMessage(errorMessage);
+		errorInfo.setErrorURL(errorURL);
+		errorInfo.setStatusCode(HttpStatus.BAD_REQUEST);
+		List<String> errorsList = new ArrayList<String>();
+		errorsList.add(ex.getMessage());
+		errorInfo.setErrors(errorsList);
+		_LOGGER.error(errorMessage + errorURL);
+		return new ResponseEntity<ErrorMessage>(errorInfo, null, HttpStatus.BAD_REQUEST);
+	}
 }

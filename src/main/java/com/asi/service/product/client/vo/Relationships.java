@@ -42,9 +42,14 @@ public class Relationships {
 			CriteriaSetValuePaths[] criteriaSetValuePaths) {
 		this.criteriaSetValuePaths = criteriaSetValuePaths;
 	}
+	@JsonProperty("Name")
 	private String Name;
+	@JsonProperty("ProductId")
       private String ProductId;
+	@JsonProperty("ParentCriteriaSetId")
       private String ParentCriteriaSetId;
+	@JsonProperty("CriteriaSetRelationships")
 	private CriteriaSetRelationships[] criteriaSetRelationships;
+	@JsonProperty("CriteriaSetValuePaths")
 	private CriteriaSetValuePaths[] criteriaSetValuePaths;
 }
