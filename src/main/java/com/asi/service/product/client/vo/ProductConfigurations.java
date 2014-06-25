@@ -4,11 +4,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ProductConfigurations {
 @JsonProperty("ID")
 private String id="0";
+@JsonProperty("ProductId")
 private String productId="";
+@JsonProperty("IsDefault")
 private String isDefault="";
+@JsonProperty("ConfigId")
 private String configId="";
+@JsonProperty("DisplayProductNumber")
 private String displayProductNumber="";
+@JsonProperty("TotalVariations")
 private String totalVariations="";
+@JsonProperty("PricingConfigurations")
 private PricingConfigurations[] pricingConfigurations={};
 public PricingConfigurations[] getPricingConfigurations() {
 	return pricingConfigurations;
@@ -59,5 +65,6 @@ public ProductCriteriaSets[] getProductCriteriaSets() {
 public void setProductCriteriaSets(ProductCriteriaSets[] productCriteriaSets) {
 	this.productCriteriaSets = productCriteriaSets;
 }
+@JsonProperty("ProductCriteriaSets")
 private ProductCriteriaSets[] productCriteriaSets={};
 }

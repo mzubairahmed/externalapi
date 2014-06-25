@@ -1,17 +1,28 @@
 package com.asi.service.product.client.vo.parser;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
+import com.asi.service.product.client.vo.Batch;
+import com.asi.service.product.client.vo.BatchDataSource;
 import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.PriceGrid;
 import com.asi.service.product.client.vo.PricingItem;
 import com.asi.service.product.client.vo.ProductConfiguration;
+import com.asi.service.product.client.vo.ProductConfigurations;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
+import com.asi.service.product.vo.Product;
 
 public class ProductConfigurationsParser {
 	private final static Logger _LOGGER = Logger
@@ -97,4 +108,54 @@ public class ProductConfigurationsParser {
 	public void setProductLookupParser(LookupParser productLookupParser) {
 		this.productLookupParser = productLookupParser;
 	}
+	public ProductConfigurations[] transformProductConfiguration(
+			com.asi.service.product.vo.ProductConfigurations[] productConfigurations) {
+		ProductConfigurations[] productConfigAry={};
+		ProductConfigurations serviceProductConfig=null;
+		if(null!=productConfigurations && productConfigurations.length>0){
+			int productConfigCntr=0;
+			productConfigAry=new ProductConfigurations[productConfigurations.length];
+			for(com.asi.service.product.vo.ProductConfigurations crntProductConfig:productConfigurations){
+				serviceProductConfig=new ProductConfigurations();
+				BeanUtils.copyProperties(crntProductConfig, serviceProductConfig);		
+				serviceProductConfig.setProductCriteriaSets(transformProductCriteriaSets(crntProductConfig.getProductCriteriaSets()));
+				productConfigAry[productConfigCntr++]=serviceProductConfig;
+			}			
+		}
+		return productConfigAry;
+	}
+
+	private ProductCriteriaSets[] transformProductCriteriaSets(
+			com.asi.service.product.vo.ProductCriteriaSets[] productCriteriaSets) {
+		ProductCriteriaSets[] productCriteriaSetsAry={};
+		ProductCriteriaSets clientProductCriteriaSets=null;
+		if(null!=productCriteriaSets && productCriteriaSets.length>0){
+			int criteriaSetCntr=0;
+			productCriteriaSetsAry=new ProductCriteriaSets[productCriteriaSets.length];
+			for(com.asi.service.product.vo.ProductCriteriaSets currentProductCriteriaSets:productCriteriaSets){
+				clientProductCriteriaSets=new ProductCriteriaSets();
+				BeanUtils.copyProperties(currentProductCriteriaSets, clientProductCriteriaSets);
+				clientProductCriteriaSets.setCriteriaSetValues(transformCriteriaSetValues(currentProductCriteriaSets.getCriteriaSetValues()));
+				productCriteriaSetsAry[criteriaSetCntr++]=clientProductCriteriaSets;
+			}			
+		}			
+		return productCriteriaSetsAry;
+	}
+	private CriteriaSetValues[] transformCriteriaSetValues(
+			com.asi.service.product.vo.CriteriaSetValues[] criteriaSetValues) {
+		CriteriaSetValues[] criteriaSetValuesAry={};
+		CriteriaSetValues clientCriteriaSetValues=null;
+		if(null!=criteriaSetValues && criteriaSetValues.length>0){
+			int criteriaSetValuesCntr=0;
+			criteriaSetValuesAry=new CriteriaSetValues[criteriaSetValues.length];
+			for(com.asi.service.product.vo.CriteriaSetValues currentCriteriaSetValues:criteriaSetValues){
+				clientCriteriaSetValues=new CriteriaSetValues();
+				BeanUtils.copyProperties(currentCriteriaSetValues, clientCriteriaSetValues);
+				criteriaSetValuesAry[criteriaSetValuesCntr++]=clientCriteriaSetValues;
+			}
+		}
+		return criteriaSetValuesAry;
+	}
+
+	
 }

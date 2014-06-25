@@ -16,8 +16,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.json.JSONObject;
 
-import com.asi.velocity.bean.Batch;
-import com.asi.velocity.bean.BatchDataSource;
+import com.asi.service.product.client.vo.Batch;
+import com.asi.service.product.client.vo.BatchDataSource;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;

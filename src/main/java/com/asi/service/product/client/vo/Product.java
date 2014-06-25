@@ -357,7 +357,7 @@ public class Product {
 	private String IsOrderLessThanMinimumAllowed;	
 	private String PublishDate;			
 	private String LocationCode;		
-	private String IsWIP;
+	private String IsWIP="0";
 	private Relationships[] relationships;
 	public Relationships[] getRelationships() {
 		return relationships;

@@ -26,11 +26,11 @@ import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.ProductClient;
 import com.asi.service.product.client.vo.Batch;
 import com.asi.service.product.client.vo.BatchDataSource;
-import com.asi.service.product.client.vo.CriteriaSetValue;
 import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.Price;
 import com.asi.service.product.client.vo.PriceGrid;
 import com.asi.service.product.client.vo.ProductConfiguration;
+import com.asi.service.product.client.vo.ProductConfigurations;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.parser.ImprintParser;
@@ -318,6 +318,12 @@ public class ProductRepo {
 		velocityBean = setProductWithProductConfigurations(currentProduct,velocityBean);
 		//velocityBean.setDataSourceId("12938");
 		velocityBean.setDataSourceId(String.valueOf(getDataSourceId(currentProduct)));
+				
+		//Set Hidden Variables
+		velocityBean.setIsWIP("true");
+		velocityBean.setShow1MediaIdIm("0");
+		velocityBean.setShow1MediaIdVd("0");
+		
 		productRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 		productRestTemplate.getMessageConverters().add(new StringHttpMessageConverter());
 		HttpHeaders requestHeaders = new HttpHeaders();
@@ -334,24 +340,14 @@ public class ProductRepo {
 		}
 		HttpEntity<com.asi.service.product.client.vo.Product> requestEntity = new HttpEntity<com.asi.service.product.client.vo.Product>(velocityBean, requestHeaders);
 		ResponseEntity<Object> responseEntity=null;
-		//checkProductExistance=prepairProduct(String.valueOf(currentProduct.getCompanyId()),currentProduct.getExternalProductId());
-		
 		responseEntity = productRestTemplate.exchange(productImportURL, HttpMethod.POST, requestEntity, Object.class);
-		//Client        restClient = Client.create();
 			_LOGGER.info("Product Respones Status:" + responseEntity);
-	//	WebResource resource = restClient.resource(productImportURL);
-
-      //  String response = resource.type(MediaType.APPLICATION_JSON_TYPE).post(String.class, productJson);
 			 }catch(Exception ex)
 			 {
 				 ProductNotFoundException exc = new ProductNotFoundException(String.valueOf(currentProduct.getID()));
 				 exc.setStackTrace(ex.getStackTrace());
 				 throw exc;
 			 }
-		
-		//String responseEntity = productRestTemplate.postForObject(productImportURL, requestEntity, String.class);
-		//String result = String.valueOf(responseEntity.getStatusCode().value());
-		
 		currentProduct=prepairProduct(String.valueOf(currentProduct.getCompanyId()),currentProduct.getExternalProductId());
 		return currentProduct;
 	}
@@ -360,7 +356,8 @@ public class ProductRepo {
 			Product currentProduct, com.asi.service.product.client.vo.Product velocityBean) {
 		BeanUtils.copyProperties(currentProduct, velocityBean);
 	//	BeanUtils.copyProperties(currentProduct.getProductConfigurations(), velocityBean.getProductConfigurations());
-		//velocityBean.setProductConfigurations(Arrays.asList(currentProduct.getProductConfigurations()));
+		
+		velocityBean.setProductConfigurations(productConfiguration.transformProductConfiguration(currentProduct.getProductConfigurations()));
 		return velocityBean;
 	}
 
