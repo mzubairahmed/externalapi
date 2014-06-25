@@ -1,6 +1,7 @@
 package com.asi.service.product.client.vo;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 public class CriteriaSetValuePaths {
 	@JsonProperty("ID") 
@@ -35,9 +36,13 @@ public class CriteriaSetValuePaths {
 	public void setIsParent(String isParent) {
 		IsParent = isParent;
 	}
+	@JsonProperty("CriteriaSetValueId")
 	private String CriteriaSetValueId="0";
+	@JsonProperty("RelationshipId")
      private String RelationshipId="0";
+	@JsonProperty("ProductId")
      private String ProductId="0";
+	@JsonProperty("IsParent")
      private String IsParent="false";
      
     @Override

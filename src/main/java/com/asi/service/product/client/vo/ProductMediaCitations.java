@@ -1,6 +1,7 @@
 package com.asi.service.product.client.vo;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 
 public class ProductMediaCitations {
@@ -44,6 +45,15 @@ public void setProductMediaCitationReferences(
 private String mediaCitationId;
 @JsonProperty("IsInitMediaCitation")
 private String isInitMediaCitation;
+@JsonProperty("InitMediaCitationId")
+private String initMediaCitationId;
+public String getInitMediaCitationId() {
+	return initMediaCitationId;
+}
+
+public void setInitMediaCitationId(String initMediaCitationId) {
+	this.initMediaCitationId = initMediaCitationId;
+}
 @JsonProperty("ProductMediaCitationReferences")
 private ProductMediaCitationReferences[] productMediaCitationReferences;
 public String getId() {

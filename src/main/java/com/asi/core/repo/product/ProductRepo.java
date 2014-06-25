@@ -20,13 +20,14 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.asi.core.exception.ResponseNotValidException;
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.ProductClient;
 import com.asi.service.product.client.vo.Batch;
 import com.asi.service.product.client.vo.BatchDataSource;
-import com.asi.service.product.client.vo.CriteriaSetValue;
 import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.Price;
 import com.asi.service.product.client.vo.PriceGrid;
@@ -223,6 +224,7 @@ public class ProductRepo {
         itemPrice.setPriceIncludes(priceGrid.getPriceIncludes());
         itemPrice.setPriceUponRequest(priceGrid.getIsQUR());
         itemPrice.setIsBasePrice(String.valueOf(priceGrid.getIsBasePrice()));
+       // itemPrice.setProductNumber(priceGrid.getp);
 		List<PriceDetail> pricesList = new ArrayList<PriceDetail>();
 
 		for (Price p : priceGrid.getPrices()) {
@@ -239,7 +241,7 @@ public class ProductRepo {
 			priceDetail.setItemsPerUnitBy(p.getPriceUnit().getDisplayName());
 			pricesList.add(priceDetail);
 		}
-        itemPrice.setProductID(productDetail.getName());
+        itemPrice.setProductID(String.valueOf(productDetail.getID()));
         itemPrice.setPriceDetails(pricesList);
         itemPrice.setPriceID(priceGrid.getID().toString());
 		String[] basePriceCriterias = productConfiguration.getPriceCriteria(
@@ -307,7 +309,7 @@ public class ProductRepo {
 		
 	}
 
-	public Product updateProductBasePrices(Product currentProduct,String requestType) throws ProductNotFoundException
+	public Product updateProductBasePrices(Product currentProduct,String requestType) throws ProductNotFoundException, ResponseNotValidException
 			 {
 	//	ProductDetail velocityBean = new ProductDetail();
 		try{
@@ -318,6 +320,12 @@ public class ProductRepo {
 		velocityBean = setProductWithProductConfigurations(currentProduct,velocityBean);
 		//velocityBean.setDataSourceId("12938");
 		velocityBean.setDataSourceId(String.valueOf(getDataSourceId(currentProduct)));
+				
+		//Set Hidden Variables
+		velocityBean.setIsWIP("true");
+		velocityBean.setShow1MediaIdIm("0");
+		velocityBean.setShow1MediaIdVd("0");
+		
 		productRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 		productRestTemplate.getMessageConverters().add(new StringHttpMessageConverter());
 		HttpHeaders requestHeaders = new HttpHeaders();
@@ -334,25 +342,18 @@ public class ProductRepo {
 		}
 		HttpEntity<com.asi.service.product.client.vo.Product> requestEntity = new HttpEntity<com.asi.service.product.client.vo.Product>(velocityBean, requestHeaders);
 		ResponseEntity<Object> responseEntity=null;
-		//checkProductExistance=prepairProduct(String.valueOf(currentProduct.getCompanyId()),currentProduct.getExternalProductId());
-		
 		responseEntity = productRestTemplate.exchange(productImportURL, HttpMethod.POST, requestEntity, Object.class);
-		//Client        restClient = Client.create();
 			_LOGGER.info("Product Respones Status:" + responseEntity);
-	//	WebResource resource = restClient.resource(productImportURL);
-
-      //  String response = resource.type(MediaType.APPLICATION_JSON_TYPE).post(String.class, productJson);
-			 }catch(Exception ex)
+			 }catch(HttpClientErrorException hcerror){
+				 throw new ResponseNotValidException(String.valueOf(currentProduct.getID()));
+			 }
+		catch(Exception ex)
 			 {
 				 ProductNotFoundException exc = new ProductNotFoundException(String.valueOf(currentProduct.getID()));
 				 exc.setStackTrace(ex.getStackTrace());
 				 throw exc;
 			 }
-		
-		//String responseEntity = productRestTemplate.postForObject(productImportURL, requestEntity, String.class);
-		//String result = String.valueOf(responseEntity.getStatusCode().value());
-		
-		currentProduct=prepairProduct(String.valueOf(currentProduct.getCompanyId()),currentProduct.getExternalProductId());
+		//currentProduct=prepairProduct(String.valueOf(currentProduct.getCompanyId()),currentProduct.getExternalProductId());
 		return currentProduct;
 	}
 
@@ -360,7 +361,8 @@ public class ProductRepo {
 			Product currentProduct, com.asi.service.product.client.vo.Product velocityBean) {
 		BeanUtils.copyProperties(currentProduct, velocityBean);
 	//	BeanUtils.copyProperties(currentProduct.getProductConfigurations(), velocityBean.getProductConfigurations());
-		//velocityBean.setProductConfigurations(Arrays.asList(currentProduct.getProductConfigurations()));
+		
+		velocityBean.setProductConfigurations(productConfiguration.transformProductConfiguration(currentProduct.getProductConfigurations()));
 		return velocityBean;
 	}
 
@@ -404,6 +406,7 @@ public class ProductRepo {
 		productToUpdate.setSummary(String.valueOf(srcProduct.getSummary()));
 		productToUpdate.setDataSourceId(srcProduct.getDataSourceId());		
 		productToUpdate.setExternalProductId(srcProduct.getExternalProductId());	
+		
 		// Product DataSheet
 		com.asi.service.product.client.vo.ProductDataSheet productDataSheet = new com.asi.service.product.client.vo.ProductDataSheet();
 		productDataSheet.setProductId(String.valueOf(srcProduct.getID()));
@@ -540,15 +543,16 @@ String sProductCategory=srcProduct.getCategory();
 			crntPriceGrids.setId(crntItemPrice.getPriceID());
 			crntPriceGrids.setProductId(String.valueOf(srcProduct.getID()));
 			crntPriceGrids.setDescription(crntItemPrice.getPriceName());
-			if(crntItemPrice.getPriceType().toString().equals("REGL"))
+			if(null!=crntItemPrice.getPriceType() && crntItemPrice.getPriceType().toString().equals("REGL"))
 			{
 				crntPriceGrids.setIsBasePrice("true");
 				crntPriceGrids.setPriceGridSubTypeCode(crntItemPrice.getPriceType().toString());
 			}
-			if(!crntItemPrice.getPriceDetails().isEmpty() && crntItemPrice.getPriceDetails().size()>0)
+			/*if(!crntItemPrice.getPriceDetails().isEmpty() && crntItemPrice.getPriceDetails().size()>0)
 			{
 				crntPriceGrids.setIsQUR("false");
-			}
+			}*/
+			crntPriceGrids.setIsQUR(String.valueOf(crntItemPrice.getPriceUponRequest()));
 			crntPriceGrids.setUsageLevelCode("NONE");
 			crntPriceGrids.setPriceIncludes(crntItemPrice.getPriceIncludes());
 			currency = new com.asi.service.product.client.vo.Currency();
