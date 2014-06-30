@@ -87,7 +87,7 @@ public class ImprintParser {
 		List<CriteriaSetValuePath> relationCriteriaSetValuePaths=criteriaSetValuePaths;
 		for(CriteriaSetValuePath criteriaSetValuePath: criteriaSetValuePaths)
 		{
-			if(criteriaSetValuePath.getIsParent().toString().equals("true"))
+			if(null!=criteriaSetValuePath.getIsParent() && criteriaSetValuePath.getIsParent().toString().equals("true"))
 			{
 				for(CriteriaSetValuePath relationCriteria:relationCriteriaSetValuePaths)
 				{

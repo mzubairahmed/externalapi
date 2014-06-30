@@ -1,5 +1,6 @@
 package com.asi.service.product.vo;
 
+import com.asi.service.product.client.vo.PricingConfigurations;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
@@ -7,10 +8,45 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ProductConfigurations {
 @JsonProperty("ID")
 private String id="0";
+@JsonProperty("ProductId")
 private String productId="";
+@JsonProperty("IsDefault")
 private String isDefault="";
+@JsonProperty("ConfigId")
+private String configId="";
+@JsonProperty("DisplayProductNumber")
+private String displayProductNumber="";
+@JsonProperty("TotalVariations")
+private String totalVariations="";
+public String getTotalVariations() {
+	return totalVariations;
+}
+public void setTotalVariations(String totalVariations) {
+	this.totalVariations = totalVariations;
+}
+public String getDisplayProductNumber() {
+	return displayProductNumber;
+}
+public void setDisplayProductNumber(String displayProductNumber) {
+	this.displayProductNumber = displayProductNumber;
+}
+public String getConfigId() {
+	return configId;
+}
+public void setConfigId(String configId) {
+	this.configId = configId;
+}
+@JsonProperty("ProductCriteriaSets")
 private ProductCriteriaSets[] productCriteriaSets;
-
+@JsonProperty("PricingConfigurations")
+private PricingConfigurations[] pricingConfigurations={};
+public PricingConfigurations[] getPricingConfigurations() {
+	return pricingConfigurations;
+}
+public void setPricingConfigurations(
+		PricingConfigurations[] pricingConfigurations) {
+	this.pricingConfigurations = pricingConfigurations;
+}
 public ProductCriteriaSets[] getProductCriteriaSets() {
 	return productCriteriaSets;
 }

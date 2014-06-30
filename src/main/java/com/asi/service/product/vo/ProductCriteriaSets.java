@@ -1,11 +1,17 @@
 package com.asi.service.product.vo;
 
 import java.io.Serializable;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 
 public class ProductCriteriaSets implements Serializable {
-	
+	@JsonProperty("DisplayProductNumber")
+	private String displayProductNumber;
+	@JsonProperty("DisplayOptionName")
+	private String displayOptionName;
 	public ProductCriteriaSets()
 	{
 		
@@ -114,14 +120,14 @@ public String getCriteriaSetId() {
 	public void setIsBrokenOutOn(String isBrokenOutOn) {
 		this.isBrokenOutOn = isBrokenOutOn;
 	}
-	public CriteriaSetValues[] getCriteriaSetValues() {
+	public List<CriteriaSetValues> getCriteriaSetValues() {
 		return criteriaSetValues;
 	}
-	public void setCriteriaSetValues(CriteriaSetValues[] criteriaSetValues) {
+	public void setCriteriaSetValues(List<CriteriaSetValues> criteriaSetValues) {
 		this.criteriaSetValues = criteriaSetValues;
 	}
 	
-	public ProductCriteriaSets(String criteriaSetId,String productId,String companyId,String configId,String parentCriteriaSetId,String description,String criteriaCode,String isBase,String isRequiredForOrder,String isMultipleChoiceAllowed,String isTemplate,String orderDetail,String criteriaDetail,String isDefaultConfiguration,String displayProductNumber,String displayOptionName,String isBrokenOutOn,CriteriaSetValues[] criteriaSetValues)
+/*	public ProductCriteriaSets(String criteriaSetId,String productId,String companyId,String configId,String parentCriteriaSetId,String description,String criteriaCode,String isBase,String isRequiredForOrder,String isMultipleChoiceAllowed,String isTemplate,String orderDetail,String criteriaDetail,String isDefaultConfiguration,String displayProductNumber,String displayOptionName,String isBrokenOutOn,CriteriaSetValues[] criteriaSetValues)
 	{
 		this.criteriaSetId=criteriaSetId;
 		this.criteriaSetId=criteriaSetId;
@@ -165,9 +171,37 @@ public String getCriteriaSetId() {
 		finalObj.isBrokenOutOn=this.isBrokenOutOn;
 		finalObj.criteriaSetValues=this.criteriaSetValues;
 		return finalObj;
-	}
-private String criteriaSetId="",productId="",companyId="",configId="",parentCriteriaSetId="0",description="",criteriaCode="SHAP",isBase="false",isRequiredForOrder="false";
-private String isMultipleChoiceAllowed="false",isTemplate="false",orderDetail="",criteriaDetail="",isDefaultConfiguration="true";
-private String displayProductNumber="",displayOptionName="",isBrokenOutOn="false";
-private CriteriaSetValues[] criteriaSetValues={};
+	}*/
+    @JsonProperty("ProductId")
+    private String productId;
+    @JsonProperty("CompanyId")
+    private String companyId;
+    @JsonProperty("ParentCriteriaSetId")
+    private String parentCriteriaSetId;
+    @JsonProperty("CriteriaSetId")
+    private String criteriaSetId;
+    @JsonProperty("ConfigId")
+    private String configId;
+    @JsonProperty("CriteriaCode")
+    private String criteriaCode;
+    @JsonProperty("Description")
+    private String description;
+    @JsonProperty("OrderDetail")
+    private String orderDetail;
+    @JsonProperty("CriteriaDetail")
+    private String criteriaDetail;
+    @JsonProperty("IsBase")
+    private String isBase;
+    @JsonProperty("IsRequiredForOrder")
+    private String isRequiredForOrder;
+    @JsonProperty("IsMultipleChoiceAllowed")
+    private String isMultipleChoiceAllowed;
+    @JsonProperty("IsBrokenOutOn")
+    private String isBrokenOutOn;
+    @JsonProperty("IsTemplate")
+    private String isTemplate;
+    @JsonProperty("IsDefaultConfiguration")
+    private String isDefaultConfiguration;
+    @JsonProperty("CriteriaSetValues")
+    private List<CriteriaSetValues> criteriaSetValues;
 }

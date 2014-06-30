@@ -11,6 +11,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.asi.service.product.client.LookupValuesClient;
+import com.asi.service.product.client.vo.CriteriaSetCodeValues;
 import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.Price;
 import com.asi.service.product.client.vo.ProductConfiguration;
@@ -18,6 +19,7 @@ import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductInventoryLink;
 import com.asi.service.product.client.vo.SelectedProductCategory;
+import com.asi.service.product.client.vo.colors.Color;
 import com.asi.service.product.vo.DataSheet;
 import com.asi.service.product.vo.InventoryLink;
 import com.asi.service.product.vo.ItemPriceDetail;
@@ -59,6 +61,22 @@ public class LookupParser {
 		}
 		return returnValue;
 	}
+	@SuppressWarnings("rawtypes")
+	public String getCriteriaAttributeId(String DimensionType) {
+		DimensionType=DimensionType.trim();
+		String returnValue = null;
+		ArrayList<LinkedHashMap> criteriaAttributeList=lookupClient.getCriteriaAttributesFromLookup(lookupClient.getLookupcriteriaAttributeURL().toString());
+		for(LinkedHashMap currentCriteriaAttribute: criteriaAttributeList)
+		{
+			//LinkedHashMap sizesData = (LinkedHashMap) iter.next();
+			if (DimensionType.equalsIgnoreCase(currentCriteriaAttribute
+							.get("CriteriaCode").toString())) {
+				returnValue = currentCriteriaAttribute.get("ID").toString();
+				break;
+			}
+		}
+		return returnValue;
+	}
 
 	private String getSizesElementValue(String criteriaCode,
 			String criteriaAttributeId, String unitValue,
@@ -82,6 +100,26 @@ public class LookupParser {
 		}
 		elementValue=!elementName.isEmpty()?elementName+":"+unitValue+":"+elementUnit:"";
 		return elementValue;
+	}
+	public String getUnitsOfMeasureCode(String criteriaCode,
+			String criteriaAttributeId, String units) {
+		String elementUnit="";
+		@SuppressWarnings("rawtypes")
+		HashMap sourceMap=getSizesResponse(criteriaCode, criteriaAttributeId);
+		if(null!=sourceMap && null!=sourceMap.get("UnitsOfMeasure") && !sourceMap.get("UnitsOfMeasure").toString().isEmpty())
+		{
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		ArrayList<LinkedHashMap> unitOfMeasures = (ArrayList<LinkedHashMap>) sourceMap.get("UnitsOfMeasure");
+		for(@SuppressWarnings("rawtypes") Map codeValueGrpsMap :unitOfMeasures) {
+			// LOGGER.info(codeValueGrpsMap.toString());
+			if (codeValueGrpsMap.get("Code").toString().equalsIgnoreCase(units)) {
+				elementUnit = (String) codeValueGrpsMap.get("Format");
+				break;
+			}
+		}
+		}
+	//	elementValue=!elementName.isEmpty()?elementName+":"+unitValue+":"+elementUnit:"";
+		return elementUnit;
 	}
 
 	public LookupValuesClient getLookupClient() {
@@ -182,6 +220,107 @@ public class LookupParser {
 			}}
 			}
 		}
+		return artworkStr;
+	}
+	public String getColorCodeByName(String colorName) {
+		ArrayList<LinkedHashMap> colorsList = lookupClient.getColorFromLookup(lookupClient.getLookupColorURL());
+		String colorCode=null;
+		if(!colorName.trim().contains(" "))
+		{
+			colorName=colorName.trim();
+			colorName="Medium "+colorName;
+		}
+		String colorCodeOther=null;
+		ArrayList<LinkedHashMap> codeValueGrps =null;
+		ArrayList<LinkedHashMap> setCodeValueGrps =null;
+		for(LinkedHashMap currentArtwork:colorsList)
+		{
+			codeValueGrps = (ArrayList<LinkedHashMap>) currentArtwork.get("CodeValueGroups");
+			if(null!=codeValueGrps){
+				for(LinkedHashMap codeValueGroup:codeValueGrps){
+				setCodeValueGrps=(ArrayList<LinkedHashMap>) codeValueGroup.get("SetCodeValues");
+				if(null!=setCodeValueGrps){
+					for(LinkedHashMap setCodeValue:setCodeValueGrps){
+						if(null!=setCodeValue.get("CodeValue") && setCodeValue.get("CodeValue").toString().equalsIgnoreCase(colorName))
+						{
+							colorCode=String.valueOf(setCodeValue.get("ID"));
+							break;
+						}
+						if(null!=setCodeValue.get("CodeValue") && setCodeValue.get("CodeValue").toString().equalsIgnoreCase("Unclassified/Other"))
+						{
+							colorCodeOther=String.valueOf(setCodeValue.get("ID"));
+						}
+					}
+					}
+				}
+			}
+		/*for(LinkedHashMap currentColor:colorsList){
+		 	if(currentColor.get("DisplayName").toString().equalsIgnoreCase(colorName)){
+				colorCode=currentColor.get("Code").toString();				
+			}*/
+		}
+				if(null!=colorCode) colorCode=colorCodeOther;
+		return colorCode;
+	}
+	public String getColorNameByCode(String colorCode) {
+		ArrayList<LinkedHashMap> colorsList = lookupClient.getColorFromLookup(lookupClient.getLookupColorURL());
+		String colorName=null;
+		for(LinkedHashMap currentColor:colorsList){
+			if(currentColor.get("Code").toString().equalsIgnoreCase(colorCode)){
+				colorName=currentColor.get("DisplayName").toString();				
+			}
+		}
+		return colorName;
+	}
+	public String getArtworkCodeByName(String artworkCode) {
+		ArrayList<LinkedHashMap> artworkList = lookupClient.getArtworksFromLookup(lookupClient.getLookupArtworkURL());
+		String artworkStr=null;
+		String otherArtwk=null;
+		ArrayList<LinkedHashMap> codeValueGrps =null;
+		ArrayList<LinkedHashMap> setCodeValueGrps =null;
+		for(LinkedHashMap currentArtwork:artworkList)
+		{
+			if(null!=currentArtwork.get("Code") && currentArtwork.get("Code").equals("ARTW")){
+			codeValueGrps = (ArrayList<LinkedHashMap>) currentArtwork.get("CodeValueGroups");
+			if(null!=codeValueGrps){
+				for(LinkedHashMap codeValueGroup:codeValueGrps){
+				setCodeValueGrps=(ArrayList<LinkedHashMap>) codeValueGroup.get("SetCodeValues");
+				if(null!=setCodeValueGrps){
+					for(LinkedHashMap setCodeValue:setCodeValueGrps){
+						if(null!=setCodeValue.get("CodeValue") && setCodeValue.get("CodeValue").toString().equalsIgnoreCase("Other"))
+						{
+							otherArtwk=String.valueOf(setCodeValue.get("ID"));
+						}
+						if(null!=setCodeValue.get("CodeValue") && setCodeValue.get("CodeValue").toString().equalsIgnoreCase(artworkCode))
+						{
+							artworkStr=String.valueOf(setCodeValue.get("ID"));
+							break;					
+						}
+					}
+				}				
+			}}
+			}
+		}
+		if(null==artworkStr && null!=otherArtwk) artworkStr=otherArtwk;
+		return artworkStr;
+	}
+	public String getImprintCodeByName(String imprintName) {
+		ArrayList<LinkedHashMap> artworkList = lookupClient.getImprintFromLookup(lookupClient.getLookupImprintURL());
+		String artworkStr=null;
+		String otherArtwk=null;
+		ArrayList<LinkedHashMap> codeValueGrps =null;
+		ArrayList<LinkedHashMap> setCodeValueGrps =null;
+		for(LinkedHashMap currentArtwork:artworkList)
+		{
+			if(null!=currentArtwork.get("CodeValue") && currentArtwork.get("CodeValue").toString().equalsIgnoreCase("Other"))
+			{
+				otherArtwk=String.valueOf(currentArtwork.get("ID"));
+			}
+			if(null!=currentArtwork.get("CodeValue") && currentArtwork.get("CodeValue").toString().equalsIgnoreCase(imprintName)){
+				artworkStr=String.valueOf(currentArtwork.get("ID"));
+			}
+		}
+		if(null==artworkStr && null!=otherArtwk) artworkStr=otherArtwk;
 		return artworkStr;
 	}
 	public Product setProductCategory(ProductDetail productDetail, Product product) {
@@ -330,8 +469,8 @@ public class LookupParser {
 		com.asi.service.product.vo.ProductCriteriaSets[] productCriteriaSetsAry=null;
 		com.asi.service.product.vo.ProductCriteriaSets currentProductCriteriaSets=null;
 		com.asi.service.product.vo.CriteriaSetValues currentCriteriaSetValues=null;
-		com.asi.service.product.vo.CriteriaSetValues[] currentCriteriaSetValuesAry=null;
-		CriteriaSetValues[] clientCriteriaSetValuesAry=null;
+		List<com.asi.service.product.vo.CriteriaSetValues> currentCriteriaSetValuesAry=null;
+		List<CriteriaSetValues> clientCriteriaSetValuesAry=null;
 		ArrayList<ProductCriteriaSets> productCriteriaSetsList=null;
 		if(null!=srcProductConfigList){
 			int productConfigCntr=0;
@@ -381,12 +520,12 @@ public class LookupParser {
 		return product;
 	}
 
-	private com.asi.service.product.vo.CriteriaSetValues[] getCurrentCriteriaSetValues(
-			CriteriaSetValues[] clientCriteriaSetValuesAry) {
+	private List<com.asi.service.product.vo.CriteriaSetValues> getCurrentCriteriaSetValues(
+			List<CriteriaSetValues> clientCriteriaSetValuesAry) {
 		com.asi.service.product.vo.CriteriaSetValues currentCriteriaSetValues=null;
-		com.asi.service.product.vo.CriteriaSetValues[] currentCriteriaSetValuesAry=null;
+		List<com.asi.service.product.vo.CriteriaSetValues> currentCriteriaSetValuesAry=new ArrayList<>();
 		int childCriteriaCodesCntr=0;
-		currentCriteriaSetValuesAry=new com.asi.service.product.vo.CriteriaSetValues[clientCriteriaSetValuesAry.length];
+		//currentCriteriaSetValuesAry=new com.asi.service.product.vo.CriteriaSetValues[clientCriteriaSetValuesAry.length];
 		for(CriteriaSetValues crntclientCriteriaSetValues:clientCriteriaSetValuesAry){
 			currentCriteriaSetValues=new com.asi.service.product.vo.CriteriaSetValues();
 			currentCriteriaSetValues.setId(crntclientCriteriaSetValues.getId());
@@ -402,9 +541,52 @@ public class LookupParser {
 			currentCriteriaSetValues.setSubSets(crntclientCriteriaSetValues.getSubSets());
 			currentCriteriaSetValues.setDisplaySequence(crntclientCriteriaSetValues.getDisplaySequence());
 			currentCriteriaSetValues.setCriteriaSetCodeValues(crntclientCriteriaSetValues.getCriteriaSetCodeValues());
-			currentCriteriaSetValuesAry[childCriteriaCodesCntr++]=currentCriteriaSetValues;
+			currentCriteriaSetValuesAry.add(currentCriteriaSetValues);
 		}
 		return currentCriteriaSetValuesAry;
+	}
+
+	public String getImprintNameByCode(String setCodeValueId) {
+		ArrayList<LinkedHashMap> artworkList = lookupClient.getImprintFromLookup(lookupClient.getLookupImprintURL());
+		String artworkStr=null;
+		String otherArtwk=null;
+		ArrayList<LinkedHashMap> codeValueGrps =null;
+		ArrayList<LinkedHashMap> setCodeValueGrps =null;
+		for(LinkedHashMap currentArtwork:artworkList)
+		{
+			if(null!=currentArtwork.get("ID") && currentArtwork.get("ID").toString().equalsIgnoreCase(setCodeValueId)){
+				artworkStr=String.valueOf(currentArtwork.get("CodeValue"));
+				break;
+			}
+		}
+		if(null==artworkStr && null!=otherArtwk) artworkStr=otherArtwk;
+		return artworkStr;
+	}
+
+	public String getMinOrderCodeByName(String methodName) {
+		// TODO Auto-generated method stub
+		return "750000013";
+	}
+	public Product setProductServiceColor(ProductDetail productDetail,
+			Product product) {
+		String productColor="";
+		int colorCntr=0;
+		List<ProductCriteriaSets> currentProductCriteriaSets=productDetail.getProductConfigurations().get(0).getProductCriteriaSets();
+		for(ProductCriteriaSets currentProductCritieriaSet:currentProductCriteriaSets){
+			if(currentProductCritieriaSet.getCriteriaCode().equalsIgnoreCase("PRCL")){
+				for(CriteriaSetValues currentCriteriaSetValue:currentProductCritieriaSet.getCriteriaSetValues()){
+					if(currentCriteriaSetValue.getValue() instanceof String && !currentCriteriaSetValue.getValue().toString().isEmpty()){
+						productColor=(colorCntr==0)?currentCriteriaSetValue.getValue().toString():productColor+", "+currentCriteriaSetValue.getValue().toString();
+						colorCntr++;
+					}else{
+						productColor=(colorCntr==0)?getColorNameByCode(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId()):productColor+", "+getColorNameByCode(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId());
+						colorCntr++;
+					}
+				}
+			}
+		}
+		product.setColor(productColor);
+		return product;
 	}
 	
 	

@@ -12,40 +12,40 @@ public class CriteriaSetValuePaths {
 	public void setId(String id) {
 		this.id = id;
 	}
+	@JsonProperty("CriteriaSetValueId")
+	private String criteriaSetValueId="0";
+	@JsonProperty("RelationshipId")
+     private String relationshipId="0";
+	@JsonProperty("ProductId")
+     private String productId="0";
+	@JsonProperty("IsParent")
+     private String isParent="false";
 	public String getCriteriaSetValueId() {
-		return CriteriaSetValueId;
+		return criteriaSetValueId;
 	}
 	public void setCriteriaSetValueId(String criteriaSetValueId) {
-		CriteriaSetValueId = criteriaSetValueId;
+		this.criteriaSetValueId = criteriaSetValueId;
 	}
 	public String getRelationshipId() {
-		return RelationshipId;
+		return relationshipId;
 	}
 	public void setRelationshipId(String relationshipId) {
-		RelationshipId = relationshipId;
+		this.relationshipId = relationshipId;
 	}
 	public String getProductId() {
-		return ProductId;
+		return productId;
 	}
 	public void setProductId(String productId) {
-		ProductId = productId;
+		this.productId = productId;
 	}
 	public String getIsParent() {
-		return IsParent;
+		return isParent;
 	}
 	public void setIsParent(String isParent) {
-		IsParent = isParent;
+		this.isParent = isParent;
 	}
-	@JsonProperty("CriteriaSetValueId")
-	private String CriteriaSetValueId="0";
-	@JsonProperty("RelationshipId")
-     private String RelationshipId="0";
-	@JsonProperty("ProductId")
-     private String ProductId="0";
-	@JsonProperty("IsParent")
-     private String IsParent="false";
      
-    @Override
+    /*@Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -78,6 +78,6 @@ public class CriteriaSetValuePaths {
             if (other.id != null) return false;
         } else if (!id.equals(other.id)) return false;
         return true;
-    } 
+    }*/ 
      
 }

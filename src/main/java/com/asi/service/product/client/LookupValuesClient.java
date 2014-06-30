@@ -25,7 +25,15 @@ public class LookupValuesClient {
 	private String originLookupURL;
 	private String lookupCategoryURL;
 	private String lookupArtworkURL;
-	
+	private String lookupImprintURL;
+	public String getLookupImprintURL() {
+		return lookupImprintURL;
+	}
+
+	public void setLookupImprintURL(String lookupImprintURL) {
+		this.lookupImprintURL = lookupImprintURL;
+	}
+
 	public String getLookupArtworkURL() {
 		return lookupArtworkURL;
 	}
@@ -46,7 +54,7 @@ public class LookupValuesClient {
 		this.originLookupURL = originLookupURL;
 	}
 
-	public ArrayList<Color> getColor()
+	public ArrayList<LinkedHashMap> getColor()
 	 {
 		return getColorFromLookup(lookupColorURL);
 		
@@ -68,10 +76,10 @@ public class LookupValuesClient {
 		return criteriaAttribute;
 	}
 	@Cacheable(value="lookupCache",key="#colorLookupURL")
-	public ArrayList<Color> getColorFromLookup(String colorLookupURL)
+	public ArrayList<LinkedHashMap> getColorFromLookup(String colorLookupURL)
 	{
 		@SuppressWarnings("unchecked")
-		ArrayList<Color> color = lookupRestTemplate.getForObject(colorLookupURL,ArrayList.class);
+		ArrayList<LinkedHashMap> color = lookupRestTemplate.getForObject(colorLookupURL,ArrayList.class);
 		_LOGGER.debug(colorLookupURL + "  " +  color.toString());
 		return color;
 	}
@@ -117,6 +125,13 @@ public class LookupValuesClient {
 	{
 		@SuppressWarnings("unchecked")
 		ArrayList<LinkedHashMap> serviceArtwork = lookupRestTemplate.getForObject(artwrokLookupURL,ArrayList.class);
+		return serviceArtwork;
+	}
+	@Cacheable(value="lookupCache",key="#imprintLookupURL")
+	public ArrayList<LinkedHashMap> getImprintFromLookup(
+			String imprintLookupURL) {
+		@SuppressWarnings("unchecked")
+		ArrayList<LinkedHashMap> serviceArtwork = lookupRestTemplate.getForObject(imprintLookupURL,ArrayList.class);
 		return serviceArtwork;
 	}
 	/**
@@ -189,6 +204,10 @@ public class LookupValuesClient {
 	public void setLookupCategoryURL(String lookupCategoryURL) {
 		this.lookupCategoryURL = lookupCategoryURL;
 	}
+
+	
+
+
 
 
 
