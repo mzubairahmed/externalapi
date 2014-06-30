@@ -46,7 +46,7 @@ public class CriteriaSetParser {
     	List<LinkedHashMap<String,String>> valueList=new ArrayList<>();
     	for(ProductCriteriaSets productCriteriaSet:productCriteriaSetsAry)
     	{
-    		criteriaSetValuesList=Arrays.asList(productCriteriaSet.getCriteriaSetValues());
+    		criteriaSetValuesList=productCriteriaSet.getCriteriaSetValues();
     		for(CriteriaSetValues currentCriteriaSetValue:criteriaSetValuesList)
     		{
     			if(currentCriteriaSetValue.getValue() instanceof String){

@@ -34,6 +34,7 @@ import com.asi.service.product.client.vo.PriceGrid;
 import com.asi.service.product.client.vo.ProductConfiguration;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
+import com.asi.service.product.client.vo.Relationships;
 import com.asi.service.product.client.vo.parser.ImprintParser;
 import com.asi.service.product.client.vo.parser.LookupParser;
 import com.asi.service.product.client.vo.parser.ProductConfigurationsParser;
@@ -45,6 +46,7 @@ import com.asi.service.product.vo.ItemPriceDetail.PRICE_Type;
 import com.asi.service.product.vo.PriceCriteria;
 import com.asi.service.product.vo.PriceDetail;
 import com.asi.service.product.vo.Product;
+import com.asi.service.product.vo.ProductConfigurations;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 //import javax.ws.rs.core.MediaType;
@@ -145,6 +147,7 @@ public class ProductRepo {
 		product=lookupsParser.setProductServiceDataSheet(productDetail,product);
 		product=lookupsParser.setProductServiceInventoryLink(productDetail, product);
 		product=lookupsParser.setProductServiceBasePriceInfo(productDetail, product);
+		product=lookupsParser.setProductServiceColor(productDetail, product);
 		//product.setNewProductExpirationDate(productDetail.getn)
 		
 		return product;
@@ -293,8 +296,8 @@ public class ProductRepo {
 				.getCriteriaSetBasedOnCriteriaCode(
 						productConfiguration.getProductCriteriaSets(), "IMMD");
 		if(null!=imprintCriteriaSet){
-			List<CriteriaSetValues> criteriaSetValues = Arrays.asList(imprintCriteriaSet
-					.getCriteriaSetValues());
+			List<CriteriaSetValues> criteriaSetValues = imprintCriteriaSet
+					.getCriteriaSetValues();
 			for (CriteriaSetValues criteriaSetValue : criteriaSetValues) {
 				imprintMethodsList = imprintParser.getImprintMethodRelations(
 						productDetail.getExternalProductId(),
@@ -317,8 +320,9 @@ public class ProductRepo {
 		com.asi.service.product.client.vo.Product velocityBean=new com.asi.service.product.client.vo.Product();
 		velocityBean = setProductWithPriceDetails(currentProduct);
 		velocityBean = setProductWithBasicDetails(currentProduct,velocityBean);
-		velocityBean = setProductWithProductConfigurations(currentProduct,velocityBean);
+	//	velocityBean = setProductWithProductConfigurations(currentProduct,velocityBean);
 		//velocityBean.setDataSourceId("12938");
+	//	velocityBean = productConfiguration.setProductWithImprintDetails(currentProduct,velocityBean,lookupsParser,"IMMD");
 		velocityBean.setDataSourceId(String.valueOf(getDataSourceId(currentProduct)));
 				
 		//Set Hidden Variables
@@ -349,13 +353,16 @@ public class ProductRepo {
 			 }
 		catch(Exception ex)
 			 {
-				 ProductNotFoundException exc = new ProductNotFoundException(String.valueOf(currentProduct.getID()));
+			//ex.printStackTrace();
+			ProductNotFoundException exc = new ProductNotFoundException(String.valueOf(currentProduct.getID()));
 				 exc.setStackTrace(ex.getStackTrace());
 				 throw exc;
 			 }
 		//currentProduct=prepairProduct(String.valueOf(currentProduct.getCompanyId()),currentProduct.getExternalProductId());
 		return currentProduct;
 	}
+
+	
 
 	private com.asi.service.product.client.vo.Product setProductWithProductConfigurations(
 			Product currentProduct, com.asi.service.product.client.vo.Product velocityBean) {
@@ -418,7 +425,12 @@ public class ProductRepo {
 			productDataSheet.setUrl(srcProduct.getProductDataSheet().getUrl());
 		}		
 		productToUpdate.setProductDataSheet(productDataSheet);
-
+		// Product Color
+		if(null!=srcProduct.getColor() && !srcProduct.getColor().isEmpty()){
+		String productColor=srcProduct.getColor();
+			//productToUpdate=productConfiguration.transformProductColors(productColor);
+		//productToUpdate=productConfiguration.setProductWithProductConfigurations(srcProduct,productToUpdate,lookupsParser,"PRCL",productColor);
+		}		
 		// Product Category
 String sProductCategory=srcProduct.getCategory();
 		
@@ -448,7 +460,10 @@ String sProductCategory=srcProduct.getCategory();
 		}
 		// Product Keywords
 		productToUpdate=lookupsParser.setProductKeyWords(productToUpdate,srcProduct);
-
+		if(null==productToUpdate.getRelationships())
+		{
+			productToUpdate.setRelationships(new Relationships[]{});
+		}
 		// Product Inventory Link
 		com.asi.service.product.client.vo.ProductInventoryLink productInventoryLink = new com.asi.service.product.client.vo.ProductInventoryLink();
 		productInventoryLink.setCompanyId(String.valueOf(srcProduct

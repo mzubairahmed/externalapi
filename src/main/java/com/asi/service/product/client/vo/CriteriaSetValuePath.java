@@ -1,15 +1,10 @@
 
 package com.asi.service.product.client.vo;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -24,64 +19,64 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 })
 public class CriteriaSetValuePath {
 
-    @JsonProperty("ID")
-    private Integer iD;
+   @JsonProperty("ID")
+    private Integer id;
     @JsonProperty("CriteriaSetValueId")
     private Integer criteriaSetValueId;
     @JsonProperty("RelationshipId")
     private Integer relationshipId;
     @JsonProperty("ProductId")
     private Integer productId;
-    @JsonProperty("IsParent")
+  @JsonProperty("IsParent")
     private Boolean isParent;
    // private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("ID")
+   // @JsonProperty("ID")
     public Integer getID() {
-        return iD;
+        return id;
     }
 
-    @JsonProperty("ID")
+  //  @JsonProperty("ID")
     public void setID(Integer iD) {
-        this.iD = iD;
+        this.id = iD;
     }
 
-    @JsonProperty("CriteriaSetValueId")
+   // @JsonProperty("CriteriaSetValueId")
     public Integer getCriteriaSetValueId() {
         return criteriaSetValueId;
     }
 
-    @JsonProperty("CriteriaSetValueId")
+  //  @JsonProperty("CriteriaSetValueId")
     public void setCriteriaSetValueId(Integer criteriaSetValueId) {
         this.criteriaSetValueId = criteriaSetValueId;
     }
 
-    @JsonProperty("RelationshipId")
+   // @JsonProperty("RelationshipId")
     public Integer getRelationshipId() {
         return relationshipId;
     }
 
-    @JsonProperty("RelationshipId")
+   // @JsonProperty("RelationshipId")
     public void setRelationshipId(Integer relationshipId) {
         this.relationshipId = relationshipId;
     }
 
-    @JsonProperty("ProductId")
+  //  @JsonProperty("ProductId")
     public Integer getProductId() {
         return productId;
     }
 
-    @JsonProperty("ProductId")
+  //  @JsonProperty("ProductId")
     public void setProductId(Integer productId) {
         this.productId = productId;
     }
 
-    @JsonProperty("IsParent")
+  //  @JsonProperty("IsParent")
     public Boolean getIsParent() {
         return isParent;
     }
 
-    @JsonProperty("IsParent")
+   // @JsonProperty("IsParent")
     public void setIsParent(Boolean isParent) {
         this.isParent = isParent;
     }

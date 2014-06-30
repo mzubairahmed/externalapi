@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
     "ID",
     "ProductId",
+    "ConfigId",
     "IsDefault",
     "ProductCriteriaSets"
 })
@@ -31,7 +32,18 @@ public class ProductConfiguration {
     private Integer productId;
     @JsonProperty("IsDefault")
     private Boolean isDefault;
-    @JsonProperty("ProductCriteriaSets")
+    @JsonProperty("ConfigId")
+    private String configId="";
+    
+    public String getConfigId() {
+		return configId;
+	}
+
+	public void setConfigId(String configId) {
+		this.configId = configId;
+	}
+
+	@JsonProperty("ProductCriteriaSets")
     private List<ProductCriteriaSets> productCriteriaSets = new ArrayList<ProductCriteriaSets>();
   //  private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 

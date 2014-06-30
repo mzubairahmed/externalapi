@@ -4,29 +4,29 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Relationships {
 	@JsonProperty("ID") 
 	  private String id;
-	  public String getId() {
+	  public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getProductId() {
+		return productId;
+	}
+	public void setProductId(String productId) {
+		this.productId = productId;
+	}
+	public String getParentCriteriaSetId() {
+		return parentCriteriaSetId;
+	}
+	public void setParentCriteriaSetId(String parentCriteriaSetId) {
+		this.parentCriteriaSetId = parentCriteriaSetId;
+	}
+	public String getId() {
 		return id;
 	}
 	public void setId(String id) {
 		this.id = id;
-	}
-	public String getName() {
-		return Name;
-	}
-	public void setName(String name) {
-		Name = name;
-	}
-	public String getProductId() {
-		return ProductId;
-	}
-	public void setProductId(String productId) {
-		ProductId = productId;
-	}
-	public String getParentCriteriaSetId() {
-		return ParentCriteriaSetId;
-	}
-	public void setParentCriteriaSetId(String parentCriteriaSetId) {
-		ParentCriteriaSetId = parentCriteriaSetId;
 	}
 	public CriteriaSetRelationships[] getCriteriaSetRelationships() {
 		return criteriaSetRelationships;
@@ -43,11 +43,11 @@ public class Relationships {
 		this.criteriaSetValuePaths = criteriaSetValuePaths;
 	}
 	@JsonProperty("Name")
-	private String Name;
+	private String name;
 	@JsonProperty("ProductId")
-      private String ProductId;
+      private String productId;
 	@JsonProperty("ParentCriteriaSetId")
-      private String ParentCriteriaSetId;
+      private String parentCriteriaSetId;
 	@JsonProperty("CriteriaSetRelationships")
 	private CriteriaSetRelationships[] criteriaSetRelationships;
 	@JsonProperty("CriteriaSetValuePaths")

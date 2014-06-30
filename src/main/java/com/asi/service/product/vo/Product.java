@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 		   "summary",
 		   "category",
 		   "keyword",
+		   "color",
 		   "itemPrice",
 		   "imprints",
 		   "workflowStatusCode",
@@ -88,8 +89,16 @@ public class Product {
     private String category;
     
     private String keyword;
-    
-    public String getKeyword() {
+    private String color;
+    public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
+	}
+
+	public String getKeyword() {
 		return keyword;
 	}
 
@@ -130,7 +139,7 @@ public class Product {
 	private String fullColorProcessFlag;
     private String visibleForAllUsersFlag;
     private String virtualProductFlag;
-   // @JsonProperty("NLevelConnectFlag")
+    @JsonProperty("NLevelConnectFlag")
     private String nLevelConnectFlag;
     private String productLockedFlag;
     private List<Relationships> relationships;

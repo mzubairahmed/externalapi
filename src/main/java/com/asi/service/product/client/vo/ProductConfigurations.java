@@ -1,5 +1,8 @@
 package com.asi.service.product.client.vo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 public class ProductConfigurations {
 @JsonProperty("ID")
@@ -59,12 +62,12 @@ public String getTotalVariations() {
 public void setTotalVariations(String totalVariations) {
 	this.totalVariations = totalVariations;
 }
-public ProductCriteriaSets[] getProductCriteriaSets() {
+public List<ProductCriteriaSets> getProductCriteriaSets() {
 	return productCriteriaSets;
 }
-public void setProductCriteriaSets(ProductCriteriaSets[] productCriteriaSets) {
+public void setProductCriteriaSets(List<ProductCriteriaSets> productCriteriaSets) {
 	this.productCriteriaSets = productCriteriaSets;
 }
 @JsonProperty("ProductCriteriaSets")
-private ProductCriteriaSets[] productCriteriaSets={};
+private List<ProductCriteriaSets> productCriteriaSets=new ArrayList<>();
 }
