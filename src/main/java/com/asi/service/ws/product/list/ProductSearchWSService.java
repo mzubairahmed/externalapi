@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.asi.core.exception.ErrorMessage;
 import com.asi.core.exception.ErrorMessageHandler;
 import com.asi.core.repo.product.ProductRepo;
+import com.asi.service.product.client.ProductClient;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.exception.ProductNotFoundException;
 import com.asi.service.product.vo.Product;
@@ -20,6 +21,7 @@ public class ProductSearchWSService implements ProductService{
 	private static Logger _LOGGER = LoggerFactory.getLogger(ProductSearchWSService.class);
 	@Autowired ProductDetail serviceResponse; 
 	@Autowired ProductRepo repository;
+	@Autowired ProductClient productClient;
 	@Autowired ErrorMessageHandler errorMessageHandler;
 
 	@Override

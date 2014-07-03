@@ -1,31 +1,25 @@
 package com.asi.service.product.client.vo.parser;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.asi.service.product.client.LookupValuesClient;
-import com.asi.service.product.client.vo.CriteriaSetCodeValues;
 import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.Price;
-import com.asi.service.product.client.vo.ProductConfiguration;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductInventoryLink;
 import com.asi.service.product.client.vo.SelectedProductCategory;
-import com.asi.service.product.client.vo.colors.Color;
 import com.asi.service.product.vo.DataSheet;
 import com.asi.service.product.vo.InventoryLink;
 import com.asi.service.product.vo.ItemPriceDetail;
 import com.asi.service.product.vo.PriceDetail;
 import com.asi.service.product.vo.Product;
-import com.asi.service.product.vo.ProductConfigurations;
 
 public class LookupParser {
 	
@@ -252,22 +246,46 @@ public class LookupParser {
 						}
 					}
 					}
+				if(null!=colorCode) break;
 				}
 			}
+			if(null!=colorCode) break;
 		/*for(LinkedHashMap currentColor:colorsList){
 		 	if(currentColor.get("DisplayName").toString().equalsIgnoreCase(colorName)){
 				colorCode=currentColor.get("Code").toString();				
 			}*/
 		}
-				if(null!=colorCode) colorCode=colorCodeOther;
+				if(null==colorCode) colorCode=colorCodeOther;
 		return colorCode;
 	}
 	public String getColorNameByCode(String colorCode) {
 		ArrayList<LinkedHashMap> colorsList = lookupClient.getColorFromLookup(lookupClient.getLookupColorURL());
 		String colorName=null;
-		for(LinkedHashMap currentColor:colorsList){
-			if(currentColor.get("Code").toString().equalsIgnoreCase(colorCode)){
-				colorName=currentColor.get("DisplayName").toString();				
+		
+		String colorCodeOther=null;
+		ArrayList<LinkedHashMap> codeValueGrps =null;
+		ArrayList<LinkedHashMap> setCodeValueGrps =null;
+		for(LinkedHashMap currentArtwork:colorsList)
+		{
+			codeValueGrps = (ArrayList<LinkedHashMap>) currentArtwork.get("CodeValueGroups");
+			if(null!=codeValueGrps){
+				for(LinkedHashMap codeValueGroup:codeValueGrps){
+				setCodeValueGrps=(ArrayList<LinkedHashMap>) codeValueGroup.get("SetCodeValues");
+				if(null!=setCodeValueGrps){
+					for(LinkedHashMap setCodeValue:setCodeValueGrps){
+						if(null!=setCodeValue.get("ID") && setCodeValue.get("ID").toString().equalsIgnoreCase(colorCode))
+						{
+							colorName=String.valueOf(setCodeValue.get("CodeValue"));
+							if(!colorName.trim().contains(" "))
+							{
+								colorName=colorName.trim();
+								colorName="Medium "+colorName;
+							}
+							break;
+						}
+					}
+					}
+				}
 			}
 		}
 		return colorName;
@@ -395,9 +413,9 @@ public class LookupParser {
 		com.asi.service.product.client.vo.ProductDataSheet crntDataSheet=productDetail.getProductDataSheet();
 		if(null!=crntDataSheet){
 			DataSheet productDataSheet=new DataSheet();
-			productDataSheet.setProductId(Integer.valueOf(productDetail.getID()));
+/*			productDataSheet.setProductId(Integer.valueOf(productDetail.getID()));
 			productDataSheet.setCompanyId(Integer.valueOf(productDetail.getCompanyId()));
-			productDataSheet.setId(Integer.valueOf(crntDataSheet.getId()));
+			productDataSheet.setId(Integer.valueOf(productDetail.getID()));*/
 			productDataSheet.setUrl(crntDataSheet.getUrl());
 			product.setProductDataSheet(productDataSheet);
 		}
@@ -463,9 +481,9 @@ public class LookupParser {
 
 	public Product setProductConfigurations(ProductDetail productDetail,
 			Product product) {
-		List<ProductConfiguration> srcProductConfigList=productDetail.getProductConfigurations();
-		ProductConfigurations[] targetProductConfigList={};
-		ProductConfigurations currentProductConfig=null;
+	/*	List<ProductConfiguration> srcProductConfigList=productDetail.getProductConfigurations();
+		Configurations[] targetProductConfigList={};
+		Configurations currentProductConfig=null;
 		com.asi.service.product.vo.ProductCriteriaSets[] productCriteriaSetsAry=null;
 		com.asi.service.product.vo.ProductCriteriaSets currentProductCriteriaSets=null;
 		com.asi.service.product.vo.CriteriaSetValues currentCriteriaSetValues=null;
@@ -475,10 +493,10 @@ public class LookupParser {
 		if(null!=srcProductConfigList){
 			int productConfigCntr=0;
 			int productCriteriaSetCntr=0;
-			targetProductConfigList=new ProductConfigurations[srcProductConfigList.size()];
+			targetProductConfigList=new Configurations[srcProductConfigList.size()];
 			for(ProductConfiguration crntProductConfiguration:srcProductConfigList)
 			{
-				currentProductConfig=new ProductConfigurations();
+				currentProductConfig=new Configurations();
 				productCriteriaSetsAry=new com.asi.service.product.vo.ProductCriteriaSets[crntProductConfiguration.getProductCriteriaSets().size()];
 				productCriteriaSetsList=new ArrayList<>();
 				currentProductConfig.setId(String.valueOf(crntProductConfiguration.getID()));
@@ -517,7 +535,7 @@ public class LookupParser {
 			
 		}	
 		product.setProductConfigurations(targetProductConfigList);
-		return product;
+*/		return product;
 	}
 
 	private List<com.asi.service.product.vo.CriteriaSetValues> getCurrentCriteriaSetValues(
@@ -587,6 +605,13 @@ public class LookupParser {
 		}
 		product.setColor(productColor);
 		return product;
+	}
+	public String getSetValueNameByCode(String setCodeValueId,
+			String criteriaCode) {
+		switch (criteriaCode){
+		case "PRCL":return getColorNameByCode(setCodeValueId);
+		default: return null;
+		}	
 	}
 	
 	
