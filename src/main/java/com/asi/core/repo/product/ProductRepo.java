@@ -35,6 +35,7 @@ import com.asi.service.product.client.vo.ProductConfiguration;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.Relationships;
+import com.asi.service.product.client.vo.parser.ConfigurationsParser;
 import com.asi.service.product.client.vo.parser.ImprintParser;
 import com.asi.service.product.client.vo.parser.LookupParser;
 import com.asi.service.product.client.vo.parser.ProductConfigurationsParser;
@@ -46,7 +47,6 @@ import com.asi.service.product.vo.ItemPriceDetail.PRICE_Type;
 import com.asi.service.product.vo.PriceCriteria;
 import com.asi.service.product.vo.PriceDetail;
 import com.asi.service.product.vo.Product;
-import com.asi.service.product.vo.ProductConfigurations;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 //import javax.ws.rs.core.MediaType;
@@ -110,9 +110,17 @@ public class ProductRepo {
 	@Autowired
 	LookupValuesClient lookupColor;
 	@Autowired
-	ProductConfigurationsParser productConfiguration;
+	ConfigurationsParser configurationParser;
 	@Autowired
 	ImprintParser imprintParser;
+	public ConfigurationsParser getConfigurationParser() {
+		return configurationParser;
+	}
+
+	public void setConfigurationParser(ConfigurationsParser configurationParser) {
+		this.configurationParser = configurationParser;
+	}
+
 	@Autowired RestTemplate productRestTemplate;
 	public ImprintParser getImprintParser() {
 		return imprintParser;
@@ -121,9 +129,7 @@ public class ProductRepo {
 	public void setImprintParser(ImprintParser imprintParser) {
 		this.imprintParser = imprintParser;
 	}
-	public ProductConfigurationsParser getProductConfiguration() {
-		return productConfiguration;
-	}
+	
 	public RestTemplate getProductRestTemplate() {
 		return productRestTemplate;
 	}
@@ -131,17 +137,14 @@ public class ProductRepo {
 	public void setProductRestTemplate(RestTemplate productRestTemplate) {
 		this.productRestTemplate = productRestTemplate;
 	}
-	public void setProductConfiguration(
-			ProductConfigurationsParser productConfiguration) {
-		this.productConfiguration = productConfiguration;
-	}
+
 	
 	private Product prepairProduct(String companyID, String productID)
 			throws ProductNotFoundException {
 		productDetail = getProductFromService(companyID, productID);
 		Product product = new Product();
 		BeanUtils.copyProperties(productDetail, product);
-		product=lookupsParser.setProductConfigurations(productDetail,product);
+	//	product=lookupsParser.setProductConfigurations(productDetail,product);
 		product=lookupsParser.setProductCategory(productDetail,product);
 		product=lookupsParser.setProductServiceKeywords(productDetail,product);
 		product=lookupsParser.setProductServiceDataSheet(productDetail,product);
@@ -153,7 +156,7 @@ public class ProductRepo {
 		return product;
 	}
 
-	private ProductDetail getProductFromService(String companyID,
+	public ProductDetail getProductFromService(String companyID,
 			String productID) throws ProductNotFoundException {
 		if(null !=productDetail)
 			productDetail = productClient.doIt(companyID,productID);
@@ -247,7 +250,7 @@ public class ProductRepo {
         itemPrice.setProductID(String.valueOf(productDetail.getID()));
         itemPrice.setPriceDetails(pricesList);
         itemPrice.setPriceID(priceGrid.getID().toString());
-		String[] basePriceCriterias = productConfiguration.getPriceCriteria(
+		String[] basePriceCriterias = configurationParser.getPriceCriteria(
 				productDetail, priceGrid.getID());
 		PriceCriteria[] priceCriterias=new PriceCriteria[basePriceCriterias.length];
 		int criteriaCntr=0;
@@ -312,18 +315,18 @@ public class ProductRepo {
 		
 	}
 
-	public Product updateProductBasePrices(Product currentProduct,String requestType) throws ProductNotFoundException, ResponseNotValidException
+	public Product updateProductBasePrices(Product currentProduct,String process) throws ProductNotFoundException, ResponseNotValidException
 			 {
-	//	ProductDetail velocityBean = new ProductDetail();
+		ProductDetail currentProductDetails = productClient.doIt(currentProduct.getCompanyId(),currentProduct.getExternalProductId());
 		try{
 			//Product checkProductExistance=null;	
 		com.asi.service.product.client.vo.Product velocityBean=new com.asi.service.product.client.vo.Product();
-		velocityBean = setProductWithPriceDetails(currentProduct);
-		velocityBean = setProductWithBasicDetails(currentProduct,velocityBean);
+		velocityBean = setProductWithPriceDetails(currentProduct,currentProductDetails);
+		velocityBean = setProductWithBasicDetails(currentProduct,currentProductDetails,velocityBean);
 	//	velocityBean = setProductWithProductConfigurations(currentProduct,velocityBean);
 		//velocityBean.setDataSourceId("12938");
-	//	velocityBean = productConfiguration.setProductWithImprintDetails(currentProduct,velocityBean,lookupsParser,"IMMD");
-		velocityBean.setDataSourceId(String.valueOf(getDataSourceId(currentProduct)));
+		//velocityBean = productConfiguration.setProductWithImprintDetails(currentProduct,velocityBean,lookupsParser,"IMMD");
+		velocityBean.setDataSourceId(String.valueOf(getDataSourceId(currentProductDetails)));
 				
 		//Set Hidden Variables
 		velocityBean.setIsWIP("true");
@@ -353,12 +356,12 @@ public class ProductRepo {
 			 }
 		catch(Exception ex)
 			 {
-			//ex.printStackTrace();
+			ex.printStackTrace();
 			ProductNotFoundException exc = new ProductNotFoundException(String.valueOf(currentProduct.getID()));
 				 exc.setStackTrace(ex.getStackTrace());
 				 throw exc;
 			 }
-		//currentProduct=prepairProduct(String.valueOf(currentProduct.getCompanyId()),currentProduct.getExternalProductId());
+		currentProduct=prepairProduct(String.valueOf(currentProduct.getCompanyId()),currentProduct.getExternalProductId());
 		return currentProduct;
 	}
 
@@ -369,12 +372,12 @@ public class ProductRepo {
 		BeanUtils.copyProperties(currentProduct, velocityBean);
 	//	BeanUtils.copyProperties(currentProduct.getProductConfigurations(), velocityBean.getProductConfigurations());
 		
-		velocityBean.setProductConfigurations(productConfiguration.transformProductConfiguration(currentProduct.getProductConfigurations()));
+		//velocityBean.setProductConfigurations(productConfiguration.transformProductConfiguration(currentProduct.getProductConfigurations()));
 		return velocityBean;
 	}
 
 	@SuppressWarnings("unchecked")
-	private String getDataSourceId(Product currentProduct) throws Exception {
+	private String getDataSourceId(ProductDetail currentProduct) throws Exception {
 		String dataSourceId = "0";
 		Batch batchData = new Batch();
 		batchData.setBatchId(0);
@@ -403,7 +406,7 @@ public class ProductRepo {
 	}
 
 	private com.asi.service.product.client.vo.Product setProductWithPriceDetails(
-			Product srcProduct) {
+			Product srcProduct,ProductDetail currentProductDetails) {
 
 		com.asi.service.product.client.vo.Product productToUpdate = new com.asi.service.product.client.vo.Product();
 		productToUpdate.setId(String.valueOf(srcProduct.getID()));
@@ -416,10 +419,10 @@ public class ProductRepo {
 		
 		// Product DataSheet
 		com.asi.service.product.client.vo.ProductDataSheet productDataSheet = new com.asi.service.product.client.vo.ProductDataSheet();
-		productDataSheet.setProductId(String.valueOf(srcProduct.getID()));
+	/*	productDataSheet.setProductId(String.valueOf(srcProduct.getID()));
 		productDataSheet
 				.setCompanyId(String.valueOf(srcProduct.getCompanyId()));
-		productDataSheet.setId("0");		
+		productDataSheet.setId("0");*/		
 		if(null!=srcProduct.getProductDataSheet())
 		{
 			productDataSheet.setUrl(srcProduct.getProductDataSheet().getUrl());
@@ -429,8 +432,10 @@ public class ProductRepo {
 		if(null!=srcProduct.getColor() && !srcProduct.getColor().isEmpty()){
 		String productColor=srcProduct.getColor();
 			//productToUpdate=productConfiguration.transformProductColors(productColor);
-		//productToUpdate=productConfiguration.setProductWithProductConfigurations(srcProduct,productToUpdate,lookupsParser,"PRCL",productColor);
-		}		
+		productToUpdate=configurationParser.setProductWithProductConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,"PRCL",productColor);
+		}
+		
+		
 		// Product Category
 String sProductCategory=srcProduct.getCategory();
 		
@@ -488,14 +493,14 @@ String sProductCategory=srcProduct.getCategory();
 		return productToUpdate;
 	}
 	private com.asi.service.product.client.vo.Product setProductWithBasicDetails(
-			Product srcProduct,com.asi.service.product.client.vo.Product currentProduct) {
+			Product srcProduct,ProductDetail currentProductDetails,com.asi.service.product.client.vo.Product currentProduct) {
 		BeanUtils.copyProperties(srcProduct, currentProduct);
 		// Product DataSheet
 		com.asi.service.product.client.vo.ProductDataSheet productDataSheet = new com.asi.service.product.client.vo.ProductDataSheet();
-		productDataSheet.setProductId(String.valueOf(srcProduct.getID()));
+	/*	productDataSheet.setProductId(String.valueOf(srcProduct.getID()));
 		productDataSheet
 				.setCompanyId(String.valueOf(srcProduct.getCompanyId()));
-		productDataSheet.setId("0");
+		productDataSheet.setId("0");*/
 		if(null!=srcProduct.getProductDataSheet())
 		{
 			productDataSheet.setUrl(srcProduct.getProductDataSheet().getUrl());

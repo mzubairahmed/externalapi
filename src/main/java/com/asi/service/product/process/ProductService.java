@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpEntity;
@@ -26,6 +27,8 @@ import com.asi.core.exception.ErrorMessage;
 import com.asi.core.exception.ExistingProductException;
 import com.asi.core.exception.ResponseNotValidException;
 import com.asi.core.repo.product.ProductRepo;
+import com.asi.service.product.client.ProductClient;
+import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.exception.ProductNotFoundException;
 import com.asi.service.product.vo.Imprints;
 import com.asi.service.product.vo.ItemPriceDetail;
@@ -35,13 +38,11 @@ import com.asi.service.product.vo.Product;
 @RequestMapping("api")
 public class ProductService {
 	@Autowired ProductRepo repository;
+
 	private static Logger _LOGGER = LoggerFactory.getLogger(ProductService.class);
 	@Autowired
 	private MessageSource messageSource;
-	public ProductService() {
-		System.out.println("");
-	}
-
+	
 	@Secured("ROLE_CUSTOMER")
 	@RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.PUT,headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
 	public ResponseEntity<Product> createProduct(HttpEntity<Product> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws ProductNotFoundException, ExistingProductException, ResponseNotValidException  {
@@ -86,6 +87,7 @@ public class ProductService {
 	public ResponseEntity<Product> updateProduct(HttpEntity<Product> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws Exception {
 		if(_LOGGER.isDebugEnabled()) 
 			_LOGGER.debug("calling service");
+		//ProductDetail currentProduct=productClient.doIt(companyId, xid);
 		Product productResponse = repository.updateProductBasePrices(requestEntity.getBody(),"update");
 		return new ResponseEntity<Product>(productResponse, null, HttpStatus.OK);
 	}

@@ -183,6 +183,7 @@ public class LookupValuesRepo {
 	}
 	private Size makeSize(Map<?,?> sizeMap,Size size)
 	{
+		if(null!=sizeMap){
 		if(sizeMap.containsKey("ID"))
 			size.setId((String) sizeMap.get("ID"));
 		if(sizeMap.containsKey("Code"))
@@ -206,6 +207,7 @@ public class LookupValuesRepo {
 		if(sizeMap.containsKey("IsFlag"))
 			constrain.setFlag((Boolean)sizeMap.get("IsFlag"));
 		size.setConstrains(constrain);
+		}
 		return size;
 	}
 	@SuppressWarnings({ "unchecked" })

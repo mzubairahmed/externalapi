@@ -117,13 +117,13 @@ public class Product {
 	private String rushServiceFlag;
     
     private String sameDayRushFlag;
-    private ProductConfigurations[] productConfigurations;
+    private List<Configurations> productConfigurations;
     
-    public ProductConfigurations[] getProductConfigurations() {
+    public List<Configurations> getConfigurations() {
 		return productConfigurations;
 	}
 
-	public void setProductConfigurations(ProductConfigurations[] productConfigurations) {
+	public void setConfigurations(List<Configurations> productConfigurations) {
 		this.productConfigurations = productConfigurations;
 	}
 	private String asiProdNo;
