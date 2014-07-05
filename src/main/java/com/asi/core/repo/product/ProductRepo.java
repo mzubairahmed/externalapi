@@ -38,7 +38,6 @@ import com.asi.service.product.client.vo.Relationships;
 import com.asi.service.product.client.vo.parser.ConfigurationsParser;
 import com.asi.service.product.client.vo.parser.ImprintParser;
 import com.asi.service.product.client.vo.parser.LookupParser;
-import com.asi.service.product.client.vo.parser.ProductConfigurationsParser;
 import com.asi.service.product.exception.ProductNotFoundException;
 import com.asi.service.product.vo.ImprintMethod;
 import com.asi.service.product.vo.Imprints;
@@ -150,7 +149,8 @@ public class ProductRepo {
 		product=lookupsParser.setProductServiceDataSheet(productDetail,product);
 		product=lookupsParser.setProductServiceInventoryLink(productDetail, product);
 		product=lookupsParser.setProductServiceBasePriceInfo(productDetail, product);
-		product=lookupsParser.setProductServiceColor(productDetail, product);
+		product=lookupsParser.setProductServiceWithConfigurations(productDetail,product);
+		
 		//product.setNewProductExpirationDate(productDetail.getn)
 		
 		return product;
@@ -367,14 +367,14 @@ public class ProductRepo {
 
 	
 
-	private com.asi.service.product.client.vo.Product setProductWithProductConfigurations(
+/*	private com.asi.service.product.client.vo.Product setProductWithProductConfigurations(
 			Product currentProduct, com.asi.service.product.client.vo.Product velocityBean) {
 		BeanUtils.copyProperties(currentProduct, velocityBean);
 	//	BeanUtils.copyProperties(currentProduct.getProductConfigurations(), velocityBean.getProductConfigurations());
 		
 		//velocityBean.setProductConfigurations(productConfiguration.transformProductConfiguration(currentProduct.getProductConfigurations()));
 		return velocityBean;
-	}
+	}*/
 
 	@SuppressWarnings("unchecked")
 	private String getDataSourceId(ProductDetail currentProduct) throws Exception {
@@ -434,11 +434,30 @@ public class ProductRepo {
 			//productToUpdate=productConfiguration.transformProductColors(productColor);
 		productToUpdate=configurationParser.setProductWithProductConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,"PRCL",productColor);
 		}
-		
-		
+		// Product Material
+		if(null!=srcProduct.getMaterial() && !srcProduct.getMaterial().isEmpty()){
+			productToUpdate=configurationParser.setProductWithProductConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,"MTRL",srcProduct.getMaterial());
+		}
+		// Product Origin
+		if(null!=srcProduct.getOrigin() && !srcProduct.getOrigin().isEmpty()){
+			productToUpdate=configurationParser.setProductWithProductConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,"ORGN",srcProduct.getOrigin());
+		}
+		// Product Packaging
+		if(null!=srcProduct.getPackages() && !srcProduct.getPackages().isEmpty()){
+			productToUpdate=configurationParser.setProductWithProductConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,"PCKG",srcProduct.getPackages());
+		}
+		// Product Shapes
+		if(null!=srcProduct.getShape() && !srcProduct.getShape().isEmpty()){
+			productToUpdate=configurationParser.setProductWithProductConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,"SHAP",srcProduct.getShape());
+		}
+				
+		// Product TradeName
+		if(null!=srcProduct.getTradeName() && !srcProduct.getTradeName().isEmpty()){
+			productToUpdate=configurationParser.setProductWithProductConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,"TDNM",srcProduct.getTradeName());
+		}
+				
 		// Product Category
 String sProductCategory=srcProduct.getCategory();
-		
 		if(null!=sProductCategory ||  (!StringUtils.isEmpty(sProductCategory)))
 		{			
 			String[] arrayProductCtgrs=sProductCategory.split(",");

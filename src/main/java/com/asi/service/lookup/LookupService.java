@@ -16,6 +16,7 @@ import com.asi.service.lookup.vo.AsiColor;
 import com.asi.service.lookup.vo.AsiColorsList;
 import com.asi.service.lookup.vo.CategoriesList;
 import com.asi.service.lookup.vo.SizeInfo;
+import com.asi.service.product.client.vo.material.Materials;
 import com.asi.service.product.vo.OriginOfCountries;
 
 @RestController
@@ -37,6 +38,13 @@ public class LookupService {
 	{
 		OriginOfCountries countires = lookupValueRepository.getOrigin();
 		return new ResponseEntity<OriginOfCountries> (countires, null, HttpStatus.OK);
+		
+	}
+	@RequestMapping(value = "materials", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<Materials> getMaterials()
+	{
+		Materials materialsList = lookupValueRepository.getAllMaterials();
+		return new ResponseEntity<Materials> (materialsList, null, HttpStatus.OK);
 		
 	}
 	@RequestMapping(value = "sizeInfo", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )

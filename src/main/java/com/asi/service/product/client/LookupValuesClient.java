@@ -10,8 +10,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
-import com.asi.service.product.client.vo.colors.Color;
-import com.asi.service.product.client.vo.material.Material;
 import com.asi.service.product.client.vo.origin.Origin;
 
 
@@ -26,6 +24,34 @@ public class LookupValuesClient {
 	private String lookupCategoryURL;
 	private String lookupArtworkURL;
 	private String lookupImprintURL;
+	private String lookupTradeNameURL;
+	private String lookupShapeURL;
+	private String lookupPackageURL;
+	
+	public String getLookupPackageURL() {
+		return lookupPackageURL;
+	}
+
+	public void setLookupPackageURL(String lookupPackageURL) {
+		this.lookupPackageURL = lookupPackageURL;
+	}
+
+	public String getLookupTradeNameURL() {
+		return lookupTradeNameURL;
+	}
+
+	public void setLookupTradeNameURL(String lookupTradeNameURL) {
+		this.lookupTradeNameURL = lookupTradeNameURL;
+	}
+
+	public String getLookupShapeURL() {
+		return lookupShapeURL;
+	}
+
+	public void setLookupShapeURL(String lookupShapeURL) {
+		this.lookupShapeURL = lookupShapeURL;
+	}
+
 	public String getLookupImprintURL() {
 		return lookupImprintURL;
 	}
@@ -60,7 +86,7 @@ public class LookupValuesClient {
 		
 	 }
 
-	public ArrayList<Origin> getOrigin()
+	public ArrayList<LinkedHashMap> getOrigin()
 	{
 		return getOriginFromLookup(originLookupURL);
 	}
@@ -92,19 +118,33 @@ public class LookupValuesClient {
 		return sizes;
 	}
 	@Cacheable(value="lookupCache",key="#materialLookupURL")
-	public ArrayList<Material> getMaterialFromLookup(String materialLookupURL)
+	public ArrayList<LinkedHashMap> getMaterialFromLookup(String materialLookupURL)
 	{
 		@SuppressWarnings("unchecked")
-		ArrayList<Material> material = lookupRestTemplate.getForObject(materialLookupURL,ArrayList.class);
+		ArrayList<LinkedHashMap> material = lookupRestTemplate.getForObject(materialLookupURL,ArrayList.class);
 		return material;
 	}
 	@Cacheable(value="lookupCache",key="#originLookupURL")
-	public ArrayList<Origin> getOriginFromLookup(String originLookupURL)
+	public ArrayList<LinkedHashMap> getOriginFromLookup(String originLookupURL)
 	{
 		@SuppressWarnings("unchecked")
-		ArrayList<Origin> serviceOrigin = lookupRestTemplate.getForObject(originLookupURL,ArrayList.class);
+		ArrayList<LinkedHashMap> serviceOrigin = lookupRestTemplate.getForObject(originLookupURL,ArrayList.class);
 		return serviceOrigin;
 	}	
+	@Cacheable(value="lookupCache",key="#shapeLookupURL")
+	public ArrayList<LinkedHashMap> getShapesFromLookup(String shapeLookupURL)
+	{
+		@SuppressWarnings("unchecked")
+		ArrayList<LinkedHashMap> serviceShapes = lookupRestTemplate.getForObject(lookupShapeURL,ArrayList.class);
+		return serviceShapes;
+	}
+	@Cacheable(value="lookupCache",key="#packagingLookupURL")
+	public ArrayList<LinkedHashMap> getPackagesFromLookup(String packagingLookupURL)
+	{
+		@SuppressWarnings("unchecked")
+		ArrayList<LinkedHashMap> servicePackages = lookupRestTemplate.getForObject(lookupPackageURL,ArrayList.class);
+		return servicePackages;
+	}
 	@Cacheable(value="lookupCache",key="#categoryLookupURL")
 	public ArrayList<LinkedHashMap<String,String>> getCategoriesFromLookup(String categoryLookupURL)
 	{
@@ -127,6 +167,17 @@ public class LookupValuesClient {
 		ArrayList<LinkedHashMap> serviceArtwork = lookupRestTemplate.getForObject(artwrokLookupURL,ArrayList.class);
 		return serviceArtwork;
 	}
+	public ArrayList<LinkedHashMap> getTradeNameFromLookup(
+			String lookupTradeNameURL,Object srchkey) {
+		ArrayList<LinkedHashMap> serviceTradeName = new ArrayList<>();
+		if(null!=srchkey && !srchkey.toString().isEmpty() && !srchkey.toString().equalsIgnoreCase("null")){
+			 serviceTradeName = lookupRestTemplate.getForObject(lookupTradeNameURL+srchkey,ArrayList.class);
+		}else{
+			 serviceTradeName = lookupRestTemplate.getForObject(lookupTradeNameURL.substring(0,lookupTradeNameURL.indexOf("?")),ArrayList.class);
+		}
+		return serviceTradeName;
+	}
+
 	@Cacheable(value="lookupCache",key="#imprintLookupURL")
 	public ArrayList<LinkedHashMap> getImprintFromLookup(
 			String imprintLookupURL) {
@@ -205,6 +256,7 @@ public class LookupValuesClient {
 		this.lookupCategoryURL = lookupCategoryURL;
 	}
 
+	
 	
 
 
