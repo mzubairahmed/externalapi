@@ -24,6 +24,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 		   "category",
 		   "keyword",
 		   "color",
+		   "material",
+		    "shape",
+		   "tradeName",
+		    "packages",
+		    "origin",
 		   "itemPrice",
 		   "imprints",
 		   "workflowStatusCode",
@@ -87,15 +92,67 @@ public class Product {
     private String description;
     private String summary;
     private String category;
-    
-    private String keyword;
+    private SizeDetails size;
+    public SizeDetails getSize() {
+		return size;
+	}
+
+	public void setSize(SizeDetails size) {
+		this.size = size;
+	}
+	private String keyword;
     private String color;
-    public String getColor() {
+    private String material;
+    private String shape;
+    private String tradeName;
+    private String packages;
+    private String origin;
+    public String getShape() {
+		return shape;
+	}
+
+	public void setShape(String shape) {
+		this.shape = shape;
+	}
+
+	public String getTradeName() {
+		return tradeName;
+	}
+
+	public void setTradeName(String tradeName) {
+		this.tradeName = tradeName;
+	}
+
+	public String getPackages() {
+		return packages;
+	}
+
+	public void setPackages(String packages) {
+		this.packages = packages;
+	}
+
+	public String getOrigin() {
+		return origin;
+	}
+
+	public void setOrigin(String origin) {
+		this.origin = origin;
+	}
+
+	public String getColor() {
 		return color;
 	}
 
 	public void setColor(String color) {
 		this.color = color;
+	}
+
+	public String getMaterial() {
+		return material;
+	}
+
+	public void setMaterial(String material) {
+		this.material = material;
 	}
 
 	public String getKeyword() {

@@ -62,7 +62,11 @@
 	         <property name="originLookupURL" value="${lookup.orgin.url}"></property> 
 	         <property name="lookupCategoryURL" value="${lookup.product.categories.url}"></property>
 	         <property name="lookupArtworkURL" value="${lookup.imprint.artwork.url}"></property>
-	         <property name="lookupImprintURL" value="${lookup.imprint.url}"></property> 	                   
+	         <property name="lookupImprintURL" value="${lookup.imprint.url}"></property> 	    
+	         <property name="lookupTradeNameURL" value="${lookup.product.trade.names.url}"></property>    
+	         <property name="lookupShapeURL" value="${lookup.product.shapes.url}"></property>  
+	          <property name="lookupPackageURL" value="${lookup.packaging.url}"></property>  
+	                  
 	    </bean>
 	    
 	     <bean id="lookupParser" class="com.asi.service.product.client.vo.parser.LookupParser">

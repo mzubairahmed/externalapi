@@ -1,7 +1,9 @@
 package com.asi.service.product.client.vo.parser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,11 +17,15 @@ import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductInventoryLink;
 import com.asi.service.product.client.vo.SelectedProductCategory;
+import com.asi.service.product.client.vo.material.Material;
+import com.asi.service.product.client.vo.material.Materials;
+import com.asi.service.product.client.vo.origin.Origin;
 import com.asi.service.product.vo.DataSheet;
 import com.asi.service.product.vo.InventoryLink;
 import com.asi.service.product.vo.ItemPriceDetail;
 import com.asi.service.product.vo.PriceDetail;
 import com.asi.service.product.vo.Product;
+import com.asi.service.product.vo.SizeDetails;
 
 public class LookupParser {
 	
@@ -260,7 +266,7 @@ public class LookupParser {
 	}
 	public String getColorNameByCode(String colorCode) {
 		ArrayList<LinkedHashMap> colorsList = lookupClient.getColorFromLookup(lookupClient.getLookupColorURL());
-		String colorName=null;
+		String colorName="";
 		
 		String colorCodeOther=null;
 		ArrayList<LinkedHashMap> codeValueGrps =null;
@@ -289,6 +295,43 @@ public class LookupParser {
 			}
 		}
 		return colorName;
+	}
+	private String getMaterialNameByCode(String setCodeValueId) {
+		String materialName="";
+		List<Material> materialList= new ArrayList<Material>();
+		LinkedHashMap<?,?> currentHashMap=new LinkedHashMap<>();
+		LinkedHashMap<?,?> setcodeValuesMap=new LinkedHashMap<>();
+		ArrayList<LinkedHashMap> materialsFromService = lookupClient.getMaterialFromLookup(lookupClient.getLookupMaterialURL());
+		Iterator materialsIterator=  materialsFromService.iterator();
+		ArrayList setCodeValuesList = null;
+		while(materialsIterator.hasNext())
+		{			
+			currentHashMap=(LinkedHashMap)materialsIterator.next();			
+			ArrayList codeValueGroupsList = (ArrayList<?>) currentHashMap.get("CodeValueGroups");
+						
+				Iterator<?> codeValueGroupsIterator  = (Iterator<?>) codeValueGroupsList.iterator();
+				while(codeValueGroupsIterator.hasNext())
+				{
+					setcodeValuesMap=(LinkedHashMap)codeValueGroupsIterator.next();
+				setCodeValuesList=(ArrayList)setcodeValuesMap.get("SetCodeValues");
+				Iterator setCodeValuesListIterator=setCodeValuesList.iterator();
+				while(setCodeValuesListIterator.hasNext())
+				{
+					currentHashMap=(LinkedHashMap)setCodeValuesListIterator.next();
+					if(currentHashMap.containsKey("ID") && currentHashMap.get("ID").toString().equalsIgnoreCase(setCodeValueId)){
+						if(currentHashMap.containsKey("CodeValue")){
+							materialName=currentHashMap.get("CodeValue").toString();
+							break;
+						}						
+					}						
+				}
+				if(null!=materialName)
+					break;
+				}
+				if(null!=materialName)
+					break;
+		}	
+		return materialName;
 	}
 	public String getArtworkCodeByName(String artworkCode) {
 		ArrayList<LinkedHashMap> artworkList = lookupClient.getArtworksFromLookup(lookupClient.getLookupArtworkURL());
@@ -606,13 +649,131 @@ public class LookupParser {
 		product.setColor(productColor);
 		return product;
 	}
+	private String setProductServiceConfiguration(ProductDetail productDetail,
+			Product product,String criteriaCode) {
+		String productColor="";
+		int colorCntr=0;
+		List<ProductCriteriaSets> currentProductCriteriaSets=productDetail.getProductConfigurations().get(0).getProductCriteriaSets();
+		for(ProductCriteriaSets currentProductCritieriaSet:currentProductCriteriaSets){
+			if(currentProductCritieriaSet.getCriteriaCode().equalsIgnoreCase(criteriaCode)){
+				for(CriteriaSetValues currentCriteriaSetValue:currentProductCritieriaSet.getCriteriaSetValues()){
+					if(currentCriteriaSetValue.getValue() instanceof String && !currentCriteriaSetValue.getValue().toString().isEmpty()){
+						productColor=(colorCntr==0)?currentCriteriaSetValue.getValue().toString():productColor+", "+currentCriteriaSetValue.getValue().toString();
+						colorCntr++;
+					}else{
+						if(currentCriteriaSetValue.getValue() instanceof String){
+							if(criteriaCode.equalsIgnoreCase("TDNM")){
+								productColor=(colorCntr==0)?getSetValueNameByCode(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),criteriaCode,currentCriteriaSetValue.getBaseLookupValue().toString()):productColor+", "+getSetValueNameByCode((currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId()),criteriaCode,currentCriteriaSetValue.getBaseLookupValue().toString());
+							}else{
+								productColor=(colorCntr==0)?getSetValueNameByCode(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),criteriaCode,currentCriteriaSetValue.getValue().toString()):productColor+", "+getSetValueNameByCode((currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId()),criteriaCode,currentCriteriaSetValue.getValue().toString());
+							}
+						}else{
+							productColor=(colorCntr==0)?getSetValueNameByCode(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),criteriaCode,""):productColor+", "+getSetValueNameByCode((currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId()),criteriaCode,"");	
+						}
+						colorCntr++;
+					}
+				}
+			}
+			/*switch(criteriaCode){
+			case "MTRL":product.setMaterial(productColor);
+			case "TDNM":product.setTradeName(productColor);
+			case "SHAP":product.setShape(productColor);
+			case "ORGN":product.setOrigin(productColor);*/
+		//}
+		
+		}
+		return productColor;
+	}
 	public String getSetValueNameByCode(String setCodeValueId,
-			String criteriaCode) {
+			String criteriaCode,Object searchKey) {
 		switch (criteriaCode){
 		case "PRCL":return getColorNameByCode(setCodeValueId);
+		case "MTRL":return getMaterialNameByCode(setCodeValueId);
+		case "TDNM":return getTradeNameByCode(setCodeValueId,searchKey);
+		case "SHAP":return getShapeByCode(setCodeValueId);
+		case "ORGN":return getOriginNameByCode(setCodeValueId);
+		case "PCKG":return getPackageNameByCode(setCodeValueId);
 		default: return null;
 		}	
 	}
+	private String getPackageNameByCode(String setCodeValueId) {
+		ArrayList<LinkedHashMap> packagesList = lookupClient.getPackagesFromLookup(lookupClient.getLookupPackageURL());
+		for(LinkedHashMap currentPackage:packagesList){
+			if(currentPackage.get("Key").toString().equalsIgnoreCase(setCodeValueId)){
+				return currentPackage.get("Value").toString();
+			}
+		}
+		return "";
+	}
+	private String getOriginNameByCode(String setCodeValueId) {
+		ArrayList<LinkedHashMap> originsList = lookupClient.getOriginFromLookup(lookupClient.getOriginLookupURL());
+		for(LinkedHashMap currentOrigin:originsList){
+			if(currentOrigin.get("ID").toString().equalsIgnoreCase(setCodeValueId)){
+				return currentOrigin.get("CodeValue").toString();
+			}
+		}
+		return "";
+	}
+	private String getShapeByCode(String setCodeValueId) {
+		ArrayList<LinkedHashMap> shapesList = lookupClient.getShapesFromLookup(lookupClient.getLookupShapeURL());
+		for(LinkedHashMap currentShape:shapesList){
+			if(currentShape.get("Key").toString().equalsIgnoreCase(setCodeValueId)){
+				return currentShape.get("Value").toString();
+			}
+		}
+		return "";
+	}
+	private String getTradeNameByCode(String setCodeValueId,Object srchkey) {
+		ArrayList<LinkedHashMap> tradeNameList = lookupClient.getTradeNameFromLookup(lookupClient.getLookupTradeNameURL(),srchkey);
+		String tradeName="";
+		for(LinkedHashMap currentTrade:tradeNameList){
+			if(currentTrade.get("Key").toString().equalsIgnoreCase(setCodeValueId)){
+				tradeName=currentTrade.get("Value").toString();
+				break;
+			}
+		}
+		return tradeName;
+	}
+	public Product setProductServiceWithConfigurations(
+			ProductDetail productDetail, Product product) {
+		product=setProductServiceColor(productDetail, product);
+		product.setMaterial(setProductServiceConfiguration(productDetail, product, "MTRL"));
+		//origin,package,tradename,shape
+		product.setOrigin(setProductServiceConfiguration(productDetail, product, "ORGN"));
+		product.setPackages(setProductServiceConfiguration(productDetail, product, "PCKG"));
+		product.setTradeName(setProductServiceConfiguration(productDetail, product, "TDNM"));
+		product.setShape(setProductServiceConfiguration(productDetail, product, "SHAP"));
+		product.setSize(setProductServiceSizeDetails(productDetail,product));
+		return product;
+	}
+	private SizeDetails setProductServiceSizeDetails(
+			ProductDetail productDetail, Product product) {
+		SizeDetails sizeDetails=new SizeDetails();
+		String sizeValue="";
+	/*	List<String> sizecodes=new ArrayList<>();
+		String[] sizeCriteriaAry={"DIMS","CAPS","SABR","SAHU","SAIT","SANS","SAWI","SSNM","SVWT","SOTH"};
+		sizecodes.addAll(Arrays.asList(sizeCriteriaAry));
+		List<ProductCriteriaSets> currentProductCriteriaSets=productDetail.getProductConfigurations().get(0).getProductCriteriaSets();
+		for(ProductCriteriaSets currentProductCritieriaSet:currentProductCriteriaSets){
+			if(sizecodes.contains(currentProductCritieriaSet.getCriteriaCode())){
+				for(CriteriaSetValues currentCriteriaSetValue:currentProductCritieriaSet.getCriteriaSetValues()){
+					if(currentCriteriaSetValue.getValue() instanceof String && !currentCriteriaSetValue.getValue().toString().isEmpty()){
+						sizeValue=(colorCntr==0)?currentCriteriaSetValue.getValue().toString():sizeValue+", "+currentCriteriaSetValue.getValue().toString();
+						colorCntr++;
+					}else{
+						if(currentCriteriaSetValue.getValue() instanceof String){
+								sizeValue=(sizeCntr==0)?getSetValueNameByCode(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),criteriaCode,currentCriteriaSetValue.getValue().toString()):sizeValue+", "+getSetValueNameByCode((currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId()),criteriaCode,currentCriteriaSetValue.getValue().toString());
+						}else{
+							sizeValue=(colorCntr==0)?getSetValueNameByCode(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),criteriaCode,""):sizeValue+", "+getSetValueNameByCode((currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId()),criteriaCode,"");	
+						}
+						colorCntr++;
+					}
+				}
+			}			
+		}*/
+		return sizeDetails;
+	}
+	
 	
 	
 	
