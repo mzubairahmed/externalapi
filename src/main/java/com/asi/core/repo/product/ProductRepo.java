@@ -46,6 +46,7 @@ import com.asi.service.product.vo.ItemPriceDetail.PRICE_Type;
 import com.asi.service.product.vo.PriceCriteria;
 import com.asi.service.product.vo.PriceDetail;
 import com.asi.service.product.vo.Product;
+import com.asi.service.product.vo.SizeDetails;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 //import javax.ws.rs.core.MediaType;
@@ -455,7 +456,12 @@ public class ProductRepo {
 		if(null!=srcProduct.getTradeName() && !srcProduct.getTradeName().isEmpty()){
 			productToUpdate=configurationParser.setProductWithProductConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,"TDNM",srcProduct.getTradeName());
 		}
-				
+			
+		// Size Processing
+		SizeDetails sizeDetails=srcProduct.getSize();
+		if(null!=sizeDetails && null!=sizeDetails.getGroupName()){
+			productToUpdate=configurationParser.setProductWithSizeConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,sizeDetails.getGroupName(),sizeDetails.getSizeValue());
+		}
 		// Product Category
 String sProductCategory=srcProduct.getCategory();
 		if(null!=sProductCategory ||  (!StringUtils.isEmpty(sProductCategory)))
