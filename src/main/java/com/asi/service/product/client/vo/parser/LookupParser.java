@@ -20,6 +20,8 @@ import com.asi.service.product.client.vo.ProductInventoryLink;
 import com.asi.service.product.client.vo.SelectedProductCategory;
 import com.asi.service.product.client.vo.material.Material;
 import com.asi.service.product.vo.DataSheet;
+import com.asi.service.product.vo.ImprintMethod;
+import com.asi.service.product.vo.Imprints;
 import com.asi.service.product.vo.InventoryLink;
 import com.asi.service.product.vo.ItemPriceDetail;
 import com.asi.service.product.vo.PriceDetail;
@@ -204,7 +206,16 @@ public class LookupParser {
 		}
 		}
 		if(elementUnit.equals("\"")) elementUnit="in";
-		elementValue=(!unitValue.isEmpty() && !elementUnit.isEmpty())?unitValue+":"+elementUnit:"";
+		if(!elementUnit.isEmpty()){
+			if(criteriaCode.equalsIgnoreCase("SAIT")){
+				elementValue=(!unitValue.isEmpty() && !elementUnit.isEmpty())?unitValue+" "+elementUnit:"";
+			}else{
+				elementValue=(!unitValue.isEmpty() && !elementUnit.isEmpty())?unitValue+":"+elementUnit:"";
+			}
+		}else{
+			elementValue=(!unitValue.isEmpty())?unitValue:"";
+		}
+			
 		return elementValue;
 	}
 
@@ -733,6 +744,7 @@ public class LookupParser {
 		case "SHAP":return getShapeByCode(setCodeValueId);
 		case "ORGN":return getOriginNameByCode(setCodeValueId);
 		case "PCKG":return getPackageNameByCode(setCodeValueId);
+		case "IMMD":return getImprintNameByCode(setCodeValueId);
 		default: return null;
 		}	
 		}else if(sizecodes.contains(criteriaCode)){
@@ -740,10 +752,47 @@ public class LookupParser {
 		}
 		return null;
 	}
-	private String getSizeValueDetails(String setCodeValueId,
-			String criteriaCode, String string) {
-		// TODO Auto-generated method stub
-		return null;
+	public String getSetCodeByName(String criteriaCode,String setCodeId) { 
+		switch (criteriaCode){
+		case "PRCL":return getColorCodeByName(setCodeId);
+		case "IMMD":return getImprintCodeByName(setCodeId);
+		default: return getColorCodeByName(setCodeId);
+		}
+	}
+		private String getSizeValueDetails(String setCodeValueId,
+		                             		String criteriaCode, String customValue) {
+	                                             	String returnValue=null;
+	                                              	//if(criteriaCode.equalsIgnoreCase("SABR")){
+			returnValue=getSizeValueById(criteriaCode,setCodeValueId,customValue);
+		//}			
+		return returnValue;
+	}
+	private String getSizeValueById(String criteriaCode, String setCodeValueId,
+			String customValue) {
+		ArrayList<LinkedHashMap> criteriaAttributeList=lookupClient.getSizesFromLookup(lookupClient.getLookupSizeURL().toString());
+		ArrayList<LinkedHashMap> codeValueGroups=new ArrayList<>();
+		ArrayList<LinkedHashMap> setCodeValueSet=new ArrayList<>();
+		String returnValue=null;
+		for(LinkedHashMap currentCriteriaAttribute: criteriaAttributeList)
+		{
+			//LinkedHashMap sizesData = (LinkedHashMap) iter.next();
+			if (criteriaCode.equalsIgnoreCase(currentCriteriaAttribute
+							.get("Code").toString())) {
+				codeValueGroups=(ArrayList<LinkedHashMap>) currentCriteriaAttribute.get("CodeValueGroups");
+				for(LinkedHashMap curretCodevalueGroup:codeValueGroups){
+					setCodeValueSet=(ArrayList<LinkedHashMap>) curretCodevalueGroup.get("SetCodeValues");
+					for(LinkedHashMap currentSetcodeValue:setCodeValueSet){
+						if(currentSetcodeValue.get("ID").toString().equalsIgnoreCase(setCodeValueId)){
+							returnValue=currentSetcodeValue.get("CodeValue").toString();
+							break;
+						}
+					}
+					if(null!=returnValue) break;
+				}
+			}
+			if(null!=returnValue) break;
+		}
+		return returnValue;
 	}
 	public String getSizesSetCodeValueId(String criteriaCode) {
 		ArrayList<LinkedHashMap> criteriaAttributeList=lookupClient.getSizesFromLookup(lookupClient.getLookupSizeURL().toString());
@@ -818,13 +867,32 @@ public class LookupParser {
 		product.setPackages(setProductServiceConfiguration(productDetail, product, "PCKG"));
 		product.setTradeName(setProductServiceConfiguration(productDetail, product, "TDNM"));
 		product.setShape(setProductServiceConfiguration(productDetail, product, "SHAP"));
+		product.setImprints(setProductServiceImprints(productDetail, product));
 		product.setSize(setProductServiceSizeDetails(productDetail,product));
 		return product;
+	}
+	private Imprints setProductServiceImprints(ProductDetail productDetail,
+			Product product) {
+		Imprints imprints=new Imprints();
+		List<ImprintMethod> imprintMethodList=new ArrayList<>();
+		
+		String imprintMethodNames=setProductServiceConfiguration(productDetail, product, "IMMD");
+		//String imprintArtworkNames=setProductServiceConfiguration(productDetail, product, "ARTW");
+		//String imprintMino=setProductServiceConfiguration(productDetail, product, "MINO");
+		String[] imprintMethods=imprintMethodNames.split(",");
+		for(String currentImprintMethodName: imprintMethods){
+			ImprintMethod currentImprintMethod=new ImprintMethod();
+			currentImprintMethod.setMethodName(currentImprintMethodName);
+			imprintMethodList.add(currentImprintMethod);
+		}
+		imprints.setImprintMethod(imprintMethodList);
+		return imprints;
 	}
 	private SizeDetails setProductServiceSizeDetails(
 			ProductDetail productDetail, Product product) {
 		SizeDetails sizeDetails=new SizeDetails();
 		String sizeValue="";
+		String sawiSize="";
 		sizecodes.addAll(Arrays.asList(sizeCriteriaAry));
 		int sizeCntr=0,sizeItemCntr=0;	
 		List<LinkedHashMap<String,String>> valueList=new ArrayList<>();
@@ -836,10 +904,15 @@ public class LookupParser {
 				sizeDetails.setGroupName(getSizeGroupNameByCode(currentProductCritieriaSet.getCriteriaCode()));
 				criteriaCode=currentProductCritieriaSet.getCriteriaCode();
 				for(CriteriaSetValues currentCriteriaSetValue:currentProductCritieriaSet.getCriteriaSetValues()){
-					if(currentCriteriaSetValue.getValue() instanceof String && !currentCriteriaSetValue.getValue().toString().isEmpty()){
-						sizeValue=(sizeCntr==0)?currentCriteriaSetValue.getValue().toString():sizeValue+", "+currentCriteriaSetValue.getValue().toString();
+					if(currentCriteriaSetValue.getValue() instanceof String){
+						if(!currentCriteriaSetValue.getValue().toString().isEmpty()){
+								sizeValue=(sizeCntr==0)?currentCriteriaSetValue.getValue().toString():sizeValue+", "+currentCriteriaSetValue.getValue().toString();
 						sizeCntr++;
-					}else if(currentCriteriaSetValue.getValue() instanceof List){	
+					}else {
+							sizeValue=(sizeCntr==0)?getSetValueNameByCode(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),criteriaCode,""):sizeValue+", "+getSetValueNameByCode(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),criteriaCode,"");	
+						sizeCntr++;
+					}
+				} else if(currentCriteriaSetValue.getValue() instanceof List){	
 						valueList=(List<LinkedHashMap<String,String>>)currentCriteriaSetValue.getValue();
     					for(LinkedHashMap<String, String> valueObj:valueList){
     						
@@ -847,12 +920,23 @@ public class LookupParser {
     						if(criteriaCode.toString().equals("DIMS")){
     								sizeValueItem=getSizesResponse(criteriaCode,String.valueOf(valueObj.get("CriteriaAttributeId"))).get("DisplayName")+":"+sizeValueItem;
     						}
-    						sizeValue=(sizeItemCntr==0)?sizeValueItem:sizeValue+","+sizeValueItem;
+    						if(criteriaCode.toString().equalsIgnoreCase("SAWI")){
+    							sawiSize=(sizeItemCntr==0)?sizeValueItem:sawiSize+"x"+sizeValueItem;
+    						}else if(criteriaCode.toString().equalsIgnoreCase("SANS")){
+    							sizeValue=(sizeItemCntr==0)?sizeValueItem:sizeValue+"("+sizeValueItem+")";
+    						}else{
+    							sizeValue=(sizeItemCntr==0)?sizeValueItem:sizeValue+","+sizeValueItem;
+    						}
     								sizeItemCntr++;
     					}
 						//sizeValue=(sizeCntr==0)?getSetValueNameByCode(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),criteriaCode,currentCriteriaSetValue.getValue()):sizeValue+", "+getSetValueNameByCode((currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId()),criteriaCode,currentCriteriaSetValue.getValue());
 						sizeCntr++;
-					}
+						if(criteriaCode.equalsIgnoreCase("SAWI")){
+							if(null!=sawiSize && !sawiSize.trim().isEmpty())
+							sizeValue=(sizeCntr==0)?sawiSize:sizeValue+","+sawiSize;
+						}	
+				}
+					
 				}
 				sizeDetails.setSizeValue(sizeValue);
 			}			
@@ -914,5 +998,35 @@ int sizeGroupCntr=0;
 		}
 		return returnValue;
 	}
+	public String getSizesApperalSetCodeValueId(String groupName,String criteriaCode) {
+		ArrayList<LinkedHashMap> criteriaAttributeList=lookupClient.getSizesFromLookup(lookupClient.getLookupSizeURL().toString());
+		ArrayList<LinkedHashMap> codeValueGroups=new ArrayList<>();
+		ArrayList<LinkedHashMap> setCodeValueSet=new ArrayList<>();
+		String returnValue=null;
+		for(LinkedHashMap currentCriteriaAttribute: criteriaAttributeList)
+		{
+			//LinkedHashMap sizesData = (LinkedHashMap) iter.next();
+			if (criteriaCode.equalsIgnoreCase(currentCriteriaAttribute
+							.get("Code").toString())) {
+				codeValueGroups=(ArrayList<LinkedHashMap>) currentCriteriaAttribute.get("CodeValueGroups");
+				for(LinkedHashMap curretCodevalueGroup:codeValueGroups){
+					setCodeValueSet=(ArrayList<LinkedHashMap>) curretCodevalueGroup.get("SetCodeValues");
+					for(LinkedHashMap currentSetcodeValue:setCodeValueSet){
+						if(currentSetcodeValue.get("CodeValue").toString().equalsIgnoreCase(groupName)){
+							returnValue = currentSetcodeValue.get("ID").toString();
+							break;	
+						}
+					}
+					if(null!=returnValue) break;
+				}
+			}
+			if(null!=returnValue) break;
+		}	
+		return returnValue;
+	}
+	
+	
+	
+	
 	
 }
