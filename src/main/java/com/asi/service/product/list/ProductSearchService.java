@@ -41,7 +41,7 @@ public class ProductSearchService {
 		if(_LOGGER.isDebugEnabled()) 
 			_LOGGER.debug("calling service");
 		Product productResponse = repository.getProductPrices(companyId, xid);
-		productResponse.setImprints(repository.getProductImprintMethods(companyId, xid));
+//		productResponse.setImprints(repository.getProductImprintMethods(companyId, xid));
 		return new ResponseEntity<Product>(productResponse, null, HttpStatus.OK);
 	}
 	@Secured("ROLE_CUSTOMER")

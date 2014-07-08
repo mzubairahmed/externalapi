@@ -456,11 +456,23 @@ public class ProductRepo {
 		if(null!=srcProduct.getTradeName() && !srcProduct.getTradeName().isEmpty()){
 			productToUpdate=configurationParser.setProductWithProductConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,"TDNM",srcProduct.getTradeName());
 		}
-			
+		// Imprint Processing
+		if(null!=srcProduct.getImprints() && srcProduct.getImprints().getImprintMethod().size()>0){
+			int imprintCntr=0;
+			String finalImprintMethod="";
+			for(ImprintMethod currentImprintMethod:srcProduct.getImprints().getImprintMethod()){
+				finalImprintMethod=(imprintCntr==0)?currentImprintMethod.getMethodName():finalImprintMethod+","+currentImprintMethod.getMethodName();
+			}
+			productToUpdate=configurationParser.setProductWithProductConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,"IMMD",finalImprintMethod);
+		}	
 		// Size Processing
 		SizeDetails sizeDetails=srcProduct.getSize();
 		if(null!=sizeDetails && null!=sizeDetails.getGroupName()){
-			productToUpdate=configurationParser.setProductWithSizeConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,sizeDetails.getGroupName(),sizeDetails.getSizeValue());
+			if(sizeDetails.getGroupName().contains("Apparel")){
+				productToUpdate=configurationParser.setProductWithSizeApperalConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,sizeDetails.getGroupName(),sizeDetails.getSizeValue());
+			}else{
+				productToUpdate=configurationParser.setProductWithSizeConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,sizeDetails.getGroupName(),sizeDetails.getSizeValue());
+			}
 		}
 		// Product Category
 String sProductCategory=srcProduct.getCategory();
