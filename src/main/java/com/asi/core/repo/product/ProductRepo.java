@@ -468,7 +468,7 @@ public class ProductRepo {
 		// Size Processing
 		SizeDetails sizeDetails=srcProduct.getSize();
 		if(null!=sizeDetails && null!=sizeDetails.getGroupName()){
-			if(sizeDetails.getGroupName().contains("Apparel")){
+			if(sizeDetails.getGroupName().contains("Apparel") || sizeDetails.getGroupName().contains("Other")){
 				productToUpdate=configurationParser.setProductWithSizeApperalConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,sizeDetails.getGroupName(),sizeDetails.getSizeValue());
 			}else{
 				productToUpdate=configurationParser.setProductWithSizeConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,sizeDetails.getGroupName(),sizeDetails.getSizeValue());
