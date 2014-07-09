@@ -48,10 +48,11 @@ public class LookupParser {
      */
 	@SuppressWarnings("rawtypes")
 	public HashMap getSizesResponse(String DimensionType,String attribute) {
+		HashMap returnValue = null;
+		if(null!=DimensionType && null!=attribute){
+		ArrayList<LinkedHashMap> criteriaAttributeList=lookupClient.getCriteriaAttributesFromLookup(lookupClient.getLookupcriteriaAttributeURL().toString());
 		DimensionType=DimensionType.trim();
 		attribute=attribute.trim();
-		HashMap returnValue = null;
-		ArrayList<LinkedHashMap> criteriaAttributeList=lookupClient.getCriteriaAttributesFromLookup(lookupClient.getLookupcriteriaAttributeURL().toString());
 		for(LinkedHashMap currentCriteriaAttribute: criteriaAttributeList)
 		{
 			//LinkedHashMap sizesData = (LinkedHashMap) iter.next();
@@ -62,6 +63,7 @@ public class LookupParser {
 				returnValue = currentCriteriaAttribute;
 				break;
 			}
+		}
 		}
 		return returnValue;
 	}
@@ -516,11 +518,12 @@ public class LookupParser {
 	public Product setProductServiceInventoryLink(ProductDetail productDetail,
 			Product product) {
 		ProductInventoryLink crntInventoryLink=productDetail.getProductInventoryLink();
-		{
+		if(null!=crntInventoryLink){
+			
 			InventoryLink productInventoryLink=new InventoryLink();
 			productInventoryLink.setProductId(Integer.valueOf(productDetail.getID()));
 			productInventoryLink.setCompanyId(Integer.valueOf(productDetail.getCompanyId()));
-			productInventoryLink.setId(Integer.valueOf(crntInventoryLink.getId()));
+			productInventoryLink.setId((null!=crntInventoryLink.getId())?0:Integer.valueOf(crntInventoryLink.getId()));
 			productInventoryLink.setUrl(crntInventoryLink.getUrl());
 			product.setProductInventoryLink(productInventoryLink);
 		}
@@ -921,25 +924,36 @@ public class LookupParser {
     								sizeValueItem=getSizesResponse(criteriaCode,String.valueOf(valueObj.get("CriteriaAttributeId"))).get("DisplayName")+":"+sizeValueItem;
     						}
     						if(criteriaCode.toString().equalsIgnoreCase("SAWI")){
-    							sawiSize=(sizeItemCntr==0)?sizeValueItem:sawiSize+"x"+sizeValueItem;
+    							sawiSize=(sizeItemCntr==0 && sawiSize.trim().isEmpty())?sizeValueItem:sawiSize+"x"+sizeValueItem;
     						}else if(criteriaCode.toString().equalsIgnoreCase("SANS")){
-    							sizeValue=(sizeItemCntr==0)?sizeValueItem:sizeValue+"("+sizeValueItem+")";
+    							sawiSize=(sizeItemCntr==0 && sawiSize.trim().isEmpty())?sizeValueItem:sawiSize+"("+sizeValueItem+")";
+    							//sizeValue=(sizeItemCntr==0 && sizeValue.trim().isEmpty())?sizeValueItem:sizeValue+"("+sizeValueItem+")";
     						}else{
-    							sizeValue=(sizeItemCntr==0)?sizeValueItem:sizeValue+","+sizeValueItem;
+    							sizeValue=(sizeItemCntr==0 && sizeValue.trim().isEmpty())?sizeValueItem:sizeValue+","+sizeValueItem;
     						}
     								sizeItemCntr++;
     					}
 						//sizeValue=(sizeCntr==0)?getSetValueNameByCode(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),criteriaCode,currentCriteriaSetValue.getValue()):sizeValue+", "+getSetValueNameByCode((currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId()),criteriaCode,currentCriteriaSetValue.getValue());
 						sizeCntr++;
-						if(criteriaCode.equalsIgnoreCase("SAWI")){
-							if(null!=sawiSize && !sawiSize.trim().isEmpty())
-							sizeValue=(sizeCntr==0)?sawiSize:sizeValue+","+sawiSize;
+						if(criteriaCode.equalsIgnoreCase("SAWI") || criteriaCode.equalsIgnoreCase("SANS")){
+							if(null!=sawiSize && !sawiSize.trim().isEmpty()){
+								if(!sizeValue.trim().isEmpty()){
+									sizeValue=(sizeCntr==0)?sawiSize:sizeValue+","+sawiSize;
+								}else{
+									sizeValue=sawiSize;
+								}
+								sawiSize="";
+							}
 						}	
 				}
 					
 				}
 				sizeDetails.setSizeValue(sizeValue);
 			}			
+		}
+		if(sizeDetails.getGroupName()==null){
+			sizeDetails.setGroupName("No Size Group is set to this product");
+			sizeDetails.setSizeValue("");
 		}
 		return sizeDetails;
 	}
@@ -1003,6 +1017,7 @@ int sizeGroupCntr=0;
 		ArrayList<LinkedHashMap> codeValueGroups=new ArrayList<>();
 		ArrayList<LinkedHashMap> setCodeValueSet=new ArrayList<>();
 		String returnValue=null;
+		String otherSetCodeValue="";
 		for(LinkedHashMap currentCriteriaAttribute: criteriaAttributeList)
 		{
 			//LinkedHashMap sizesData = (LinkedHashMap) iter.next();
@@ -1012,7 +1027,9 @@ int sizeGroupCntr=0;
 				for(LinkedHashMap curretCodevalueGroup:codeValueGroups){
 					setCodeValueSet=(ArrayList<LinkedHashMap>) curretCodevalueGroup.get("SetCodeValues");
 					for(LinkedHashMap currentSetcodeValue:setCodeValueSet){
-						if(currentSetcodeValue.get("CodeValue").toString().equalsIgnoreCase(groupName)){
+						if(currentSetcodeValue.get("CodeValue").toString().contains("Other")){
+							otherSetCodeValue = currentSetcodeValue.get("ID").toString();
+						}else if(currentSetcodeValue.get("CodeValue").toString().equalsIgnoreCase(groupName)){
 							returnValue = currentSetcodeValue.get("ID").toString();
 							break;	
 						}
@@ -1021,7 +1038,8 @@ int sizeGroupCntr=0;
 				}
 			}
 			if(null!=returnValue) break;
-		}	
+		}
+		if(criteriaCode.equalsIgnoreCase("SOTH") && null==returnValue) returnValue=otherSetCodeValue;
 		return returnValue;
 	}
 	
