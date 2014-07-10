@@ -1,5 +1,6 @@
 package com.asi.core.repo.product;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +22,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.asi.core.exception.ResponseNotValidException;
@@ -140,7 +142,7 @@ public class ProductRepo {
 
 	
 	private Product prepairProduct(String companyID, String productID)
-			throws ProductNotFoundException {
+			throws ProductNotFoundException, RestClientException, UnsupportedEncodingException {
 		productDetail = getProductFromService(companyID, productID);
 		Product product = new Product();
 		BeanUtils.copyProperties(productDetail, product);
@@ -169,7 +171,13 @@ public class ProductRepo {
 	public Product getProductPrices(String companyID, String productID)
 			throws ProductNotFoundException {
 
-		Product product = prepairProduct(companyID, productID);
+		Product product=null;
+		try {
+			product = prepairProduct(companyID, productID);
+		} catch (RestClientException | UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		List<PriceGrid> priceGrids = productDetail.getPriceGrids();
 		List<ItemPriceDetail> pricesInfo = new ArrayList<ItemPriceDetail>();
@@ -192,7 +200,7 @@ public class ProductRepo {
 	}
 
 	public Product getProductPrices(String companyID, String productID,
-			Integer priceGridID) throws ProductNotFoundException {
+			Integer priceGridID) throws ProductNotFoundException, RestClientException, UnsupportedEncodingException {
 	    
 		productDetail = getProductFromService(companyID,productID);
 		
@@ -285,7 +293,13 @@ public class ProductRepo {
 
 	public Product getProductImprintMethodDetails(String companyId, String xid)
 			throws ProductNotFoundException {
-		Product product = prepairProduct(companyId, xid);
+		Product product=null;
+		try {
+			product = prepairProduct(companyId, xid);
+		} catch (RestClientException | UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		product.setImprints(getProductImprintMethods(companyId, xid));
 		return product;
 	}
@@ -316,7 +330,7 @@ public class ProductRepo {
 		
 	}
 
-	public Product updateProductBasePrices(Product currentProduct,String process) throws ProductNotFoundException, ResponseNotValidException
+	public Product updateProductBasePrices(Product currentProduct,String process) throws ProductNotFoundException, ResponseNotValidException, RestClientException, UnsupportedEncodingException
 			 {
 		ProductDetail currentProductDetails = productClient.doIt(currentProduct.getCompanyId(),currentProduct.getExternalProductId());
 		try{
@@ -407,7 +421,7 @@ public class ProductRepo {
 	}
 
 	private com.asi.service.product.client.vo.Product setProductWithPriceDetails(
-			Product srcProduct,ProductDetail currentProductDetails) {
+			Product srcProduct,ProductDetail currentProductDetails) throws RestClientException, UnsupportedEncodingException {
 
 		com.asi.service.product.client.vo.Product productToUpdate = new com.asi.service.product.client.vo.Product();
 		productToUpdate.setId(String.valueOf(srcProduct.getID()));
@@ -468,7 +482,7 @@ public class ProductRepo {
 		// Size Processing
 		SizeDetails sizeDetails=srcProduct.getSize();
 		if(null!=sizeDetails && null!=sizeDetails.getGroupName()){
-			if(sizeDetails.getGroupName().contains("Apparel") || sizeDetails.getGroupName().contains("Other")){
+			if(sizeDetails.getGroupName().contains("Apparel") || sizeDetails.getGroupName().contains("Other") || sizeDetails.getGroupName().contains("Standard") || sizeDetails.getGroupName().contains("Volume")){
 				productToUpdate=configurationParser.setProductWithSizeApperalConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,sizeDetails.getGroupName(),sizeDetails.getSizeValue());
 			}else{
 				productToUpdate=configurationParser.setProductWithSizeConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,sizeDetails.getGroupName(),sizeDetails.getSizeValue());

@@ -7,7 +7,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import com.asi.service.product.client.vo.ProductMediaItems;
-import com.asi.service.product.client.vo.Relationships;
 import com.asi.service.product.client.vo.SelectedLineNames;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -47,7 +46,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 		   "virtualProductFlag",
 		   "nLevelConnectFlag",
 		   "productLockedFlag",
-		   "relationships",
 		   "isCustomProduct",
 		   "shipperBillsByCode",
 		   "isShippableInPlainBox",
@@ -199,14 +197,7 @@ public class Product {
     @JsonProperty("NLevelConnectFlag")
     private String nLevelConnectFlag;
     private String productLockedFlag;
-    private List<Relationships> relationships;
-    public List<Relationships> getRelationships() {
-		return relationships;
-	}
-
-	public void setRelationships(List<Relationships> relationships) {
-		this.relationships = relationships;
-	}
+   
 	private String workflowStatusCode;
     private String changeProductReasonCode;
     

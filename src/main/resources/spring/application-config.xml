@@ -70,7 +70,8 @@
 	    </bean>
 	    
 	     <bean id="lookupParser" class="com.asi.service.product.client.vo.parser.LookupParser">
-	       <property name="lookupClient" ref="lookupValuesClient"/>        
+	       <property name="lookupClient" ref="lookupValuesClient"/> 
+	       <property name="imprintParser" ref="imprintMethodParser"/>        
 	    </bean> 
 	     <bean id="criteriasParser" class="com.asi.service.product.client.vo.parser.CriteriaSetParser">
 	     	 <property name="productLookupParser" ref="lookupParser"/>   

@@ -1,5 +1,7 @@
 package com.asi.service.product.client;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -9,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
-
-import com.asi.service.product.client.vo.origin.Origin;
 
 
 public class LookupValuesClient {
@@ -168,10 +168,10 @@ public class LookupValuesClient {
 		return serviceArtwork;
 	}
 	public ArrayList<LinkedHashMap> getTradeNameFromLookup(
-			String lookupTradeNameURL,Object srchkey) {
+			String lookupTradeNameURL,Object srchkey) throws RestClientException, UnsupportedEncodingException {
 		ArrayList<LinkedHashMap> serviceTradeName = new ArrayList<>();
 		if(null!=srchkey && !srchkey.toString().isEmpty() && !srchkey.toString().equalsIgnoreCase("null")){
-			 serviceTradeName = lookupRestTemplate.getForObject(lookupTradeNameURL+srchkey,ArrayList.class);
+			 serviceTradeName = lookupRestTemplate.getForObject(lookupTradeNameURL+URLEncoder.encode(srchkey.toString(), "UTF-8"),ArrayList.class);
 		}else{
 			 serviceTradeName = lookupRestTemplate.getForObject(lookupTradeNameURL.substring(0,lookupTradeNameURL.indexOf("?")),ArrayList.class);
 		}
