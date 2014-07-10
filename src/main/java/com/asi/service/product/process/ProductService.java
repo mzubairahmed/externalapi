@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestClientException;
 
 import com.asi.core.exception.ErrorMessage;
 import com.asi.core.exception.ExistingProductException;
@@ -45,7 +46,7 @@ public class ProductService {
 	
 	@Secured("ROLE_CUSTOMER")
 	@RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.PUT,headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
-	public ResponseEntity<Product> createProduct(HttpEntity<Product> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws ProductNotFoundException, ExistingProductException, ResponseNotValidException  {
+	public ResponseEntity<Product> createProduct(HttpEntity<Product> requestEntity,@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws ProductNotFoundException, ExistingProductException, ResponseNotValidException, RestClientException, UnsupportedEncodingException  {
 		Product productResponse=null;
 		Product currentProduct=null;
 		

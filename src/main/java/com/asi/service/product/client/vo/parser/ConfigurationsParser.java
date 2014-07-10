@@ -1,11 +1,13 @@
 package com.asi.service.product.client.vo.parser;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.client.RestClientException;
 
 import com.asi.service.product.client.vo.CriteriaSetCodeValues;
 import com.asi.service.product.client.vo.CriteriaSetValues;
@@ -165,7 +167,7 @@ public class ConfigurationsParser {
 			Product srcProduct, ProductDetail currentProductDetails,
 			com.asi.service.product.client.vo.Product productToUpdate,
 			LookupParser lookupsParser, String criteriaCode,
-			String criteriaValue) {
+			String criteriaValue) throws RestClientException, UnsupportedEncodingException {
 		if (null != criteriaValue && !criteriaValue.isEmpty()) {
 			com.asi.service.product.client.vo.ProductCriteriaSets existingProductCriteriaSet = getProductCriteriaSetByCodeIfExist(
 					currentProductDetails.getProductConfigurations().get(0),
@@ -202,6 +204,7 @@ public class ConfigurationsParser {
 			}
 			// CriteriaSetValues
 			String[] criteriaItems = criteriaValue.split(",");
+			String customColorName="";
 			boolean criteriaSetValueExist = false;
 			List<CriteriaSetValues> clientCriteriaSetValuesList = new ArrayList<>();
 			CriteriaSetCodeValues tempCriteriaSetCodeValues = null;
@@ -209,6 +212,10 @@ public class ConfigurationsParser {
 			CriteriaSetCodeValues[] tempCriteriaSetCodeValuesList = new CriteriaSetCodeValues[1];
 			com.asi.service.product.client.vo.CriteriaSetValues clientCurrentCriteriaSetValues = null;
 			for (String critieriaItem : criteriaItems) {
+				if(criteriaCode.equalsIgnoreCase("PRCL") && critieriaItem.contains("=")){
+					customColorName=critieriaItem.substring(critieriaItem.indexOf("=")+1).trim();
+					critieriaItem=critieriaItem.substring(0,critieriaItem.indexOf("=")).trim();
+				}
 				// if(null!=clientColorsProductCriteriaSet.getCriteriaSetValues()
 				// &&
 				// clientColorsProductCriteriaSet.getCriteriaSetValues().size()>0){
@@ -219,6 +226,7 @@ public class ConfigurationsParser {
 								.size() > 0) {
 					for (com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValues : existingProductCriteriaSet
 							.getCriteriaSetValues()) {
+						
 						currentCriteriaSetValue = productLookupParser
 								.getSetValueNameByCode(currentCriteriaSetValues
 										.getCriteriaSetCodeValues()[0]
@@ -266,8 +274,11 @@ public class ConfigurationsParser {
 									.getCriteriaSetId());
 					clientCurrentCriteriaSetValues
 							.setCriteriaCode(criteriaCode);
-					clientCurrentCriteriaSetValues.setValue(critieriaItem
-							.trim());
+					if(criteriaCode.equals("PRCL") && !customColorName.trim().isEmpty()){
+						clientCurrentCriteriaSetValues.setValue(customColorName);
+					}else{				
+						clientCurrentCriteriaSetValues.setValue(critieriaItem.trim());
+					}
 					clientCurrentCriteriaSetValues.setValueTypeCode("LOOK");
 					clientCurrentCriteriaSetValues.setIsSubset("false");
 					clientCurrentCriteriaSetValues.setFormatValue(critieriaItem
@@ -630,7 +641,7 @@ public class ConfigurationsParser {
 	private List<Value> setSizeValueItem(String critieriaItem,
 			String criteriaCode) {
 		List<Value> valueList = new ArrayList<>();
-		int valueItemCntr = 0,valueSizeCntr=0;
+		int valueItemCntr = 0, valueSizeCntr = 0;
 		String dimensionName = "", valueNumber = "0", valueUnits = "";
 		String[] valueSizeItems = critieriaItem.split(",");
 		for (String valueSizeItem : valueSizeItems) {
@@ -645,15 +656,21 @@ public class ConfigurationsParser {
 				} else {
 					critieriaItem = critieriaItem.replace("months", ":months");
 				}
-			}else if(criteriaCode.equalsIgnoreCase("SANS")){
-				if(valueSizeCntr==0) dimensionName="Neck";
+			} else if (criteriaCode.equalsIgnoreCase("SANS")) {
+				if (valueSizeCntr == 0)
+					dimensionName = "Neck";
 				else
-					dimensionName="Sleeve";
+					dimensionName = "Sleeve";
 				valueSizeCntr++;
-			}else if(criteriaCode.equalsIgnoreCase("SAWI")){
-				if(valueSizeCntr==0) dimensionName="Waist";
+			} else if (criteriaCode.equalsIgnoreCase("SAWI")) {
+				if (valueSizeCntr == 0)
+					dimensionName = "Waist";
 				else
-					dimensionName="Inseam";
+					dimensionName = "Inseam";
+				valueSizeCntr++;
+			} else if (criteriaCode.equalsIgnoreCase("SVWT")) {
+				if (valueSizeCntr == 0)
+					dimensionName = "Volume";
 				valueSizeCntr++;
 			}
 			String[] valueItems = critieriaItem.split(":");
@@ -694,6 +711,14 @@ public class ConfigurationsParser {
 			valueObj.setUnitOfMeasureCode(productLookupParser
 					.getUnitsOfMeasureCodeByFormat(criteriaCode,
 							valueObj.getCriteriaAttributeId(), valueUnits));
+			if (valueObj.getUnitOfMeasureCode().trim().isEmpty()
+					&& criteriaCode.equals("SVWT")) {
+				valueObj.setCriteriaAttributeId(productLookupParser
+						.getSpecificCriteriaAttributeId("Weight", criteriaCode));
+				valueObj.setUnitOfMeasureCode(productLookupParser
+						.getUnitsOfMeasureCodeByFormat(criteriaCode,
+								valueObj.getCriteriaAttributeId(), valueUnits));
+			}
 			valueObj.setUnitValue(valueNumber);
 			valueList.add(valueObj);
 			valueSizeCntr++;
@@ -754,105 +779,110 @@ public class ConfigurationsParser {
 					&& null != existingProductCriteriaSet
 							.getCriteriaSetValues()
 					&& existingProductCriteriaSet.getCriteriaSetValues().size() > 0) {
-				// for(com.asi.service.product.client.vo.CriteriaSetValues
-				// currentCriteriaSetValues:
-				// existingProductCriteriaSet.getCriteriaSetValues()){
-				for (String critieriaItem : criteriaItems) {
-					critieriaItem = critieriaItem.trim();
-					com.asi.service.product.client.vo.CriteriaSetValues clientCurrentCriteriaSetValues = new CriteriaSetValues();
+				for (com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValues : existingProductCriteriaSet
+						.getCriteriaSetValues()) {
+					for (String critieriaItem : criteriaItems) {
+						critieriaItem = critieriaItem.trim();
+						com.asi.service.product.client.vo.CriteriaSetValues clientCurrentCriteriaSetValues = new CriteriaSetValues();
 
-					/*
-					 * if(currentCriteriaSetValues.getValue().toString().trim().
-					 * equalsIgnoreCase(critieriaItem.trim())){
-					 * clientCurrentCriteriaSetValues=new CriteriaSetValues();
-					 * //
-					 * clientCurrentCriteriaSetValues=transformCriteriaSetValues
-					 * (currentCriteriaSetValues);
-					 * //BeanUtils.copyProperties(currentCriteriaSetValues,
-					 * clientCurrentCriteriaSetValues);
-					 * currentCriteriaSetValues.
-					 * getCriteriaSetCodeValues()[0].setId
-					 * (String.valueOf(newCriteriaSetCodeValueCntr));
-					 * clientCriteriaSetValuesList
-					 * .add(currentCriteriaSetValues);
-					 * //currentCriteriaSetValues=null;
-					 * criteriaSetValueExist=true; break; }else
-					 * if(productLookupParser
-					 * .getSetValueNameByCode(currentCriteriaSetValues
-					 * .getCriteriaSetCodeValues
-					 * ()[0].getSetCodeValueId(),groupName
-					 * ,currentCriteriaSetValues
-					 * .getValue()).equalsIgnoreCase(critieriaItem.trim())){
-					 * clientCurrentCriteriaSetValues=new CriteriaSetValues();
-					 * //
-					 * clientCurrentCriteriaSetValues=transformCriteriaSetValues
-					 * (currentCriteriaSetValues);
-					 * //BeanUtils.copyProperties(currentCriteriaSetValues,
-					 * clientCurrentCriteriaSetValues);
-					 * currentCriteriaSetValues.
-					 * getCriteriaSetCodeValues()[0].setId
-					 * (String.valueOf(newCriteriaSetCodeValueCntr));
-					 * clientCriteriaSetValuesList
-					 * .add(currentCriteriaSetValues);
-					 * //currentCriteriaSetValues=null;
-					 * criteriaSetValueExist=true; break; }
-					 */
-					if (!criteriaSetValueExist) {
-
-						clientCurrentCriteriaSetValues.setId(String
-								.valueOf(newCriteriaSetValuesCntr));
-						//
-						clientCurrentCriteriaSetValues
-								.setCriteriaSetId(clientProductCriteriaSet
-										.getCriteriaSetId());
-						clientCurrentCriteriaSetValues
-								.setCriteriaCode(groupName);
-						setCodeValueId = productLookupParser
-								.getSizesApperalSetCodeValueId(critieriaItem,
-										groupName);
-						if (null == setCodeValueId) {
-							setCodeValueId = productLookupParser
-									.getSizesSetCodeValueId(groupName);
-							clientCurrentCriteriaSetValues
-									.setValueTypeCode("CUST");
-							if(groupName.equalsIgnoreCase("SANS")){
-								critieriaItem=critieriaItem.replace(")","");
-								critieriaItem=critieriaItem.replace("(",",");								
-							}else if(groupName.equalsIgnoreCase("SAWI")){
-								critieriaItem=critieriaItem.replace("x",",");
-							}
-							List<Value> valueList = setSizeValueItem(
-									critieriaItem, groupName);
-							clientCurrentCriteriaSetValues.setValue(valueList);
-						} else {
-							clientCurrentCriteriaSetValues
-									.setValueTypeCode("LOOK");
-							clientCurrentCriteriaSetValues.setValue("");
+						if (currentCriteriaSetValues.getValue().toString()
+								.trim().equalsIgnoreCase(critieriaItem.trim())) {
+							clientCurrentCriteriaSetValues = new CriteriaSetValues();
+							//
+							clientCurrentCriteriaSetValues = currentCriteriaSetValues;
+							// BeanUtils.copyProperties(currentCriteriaSetValues,
+							// clientCurrentCriteriaSetValues);
+							currentCriteriaSetValues.getCriteriaSetCodeValues()[0]
+									.setId(String
+											.valueOf(newCriteriaSetCodeValueCntr));
+							clientCriteriaSetValuesList
+									.add(currentCriteriaSetValues);
+							// currentCriteriaSetValues=null;
+							criteriaSetValueExist = true;
+							break;
+						} else if (currentCriteriaSetValues.getValue() instanceof ArrayList) {
+												 productLookupParser.getValueString((ArrayList<Value>)currentCriteriaSetValues.getValue(),
+														groupName);
+							clientCurrentCriteriaSetValues = new CriteriaSetValues();
+							//
+							clientCurrentCriteriaSetValues = currentCriteriaSetValues;
+							// BeanUtils.copyProperties(currentCriteriaSetValues,
+							// clientCurrentCriteriaSetValues);
+							currentCriteriaSetValues.getCriteriaSetCodeValues()[0]
+									.setId(String
+											.valueOf(newCriteriaSetCodeValueCntr));
+							clientCriteriaSetValuesList
+									.add(currentCriteriaSetValues);
+							// currentCriteriaSetValues=null;
+							criteriaSetValueExist = true;
+							break;
 						}
-						clientCurrentCriteriaSetValues.setIsSubset("false");
-						// clientCurrentCriteriaSetValues.setFormatValue(sizeValue.trim());
-						clientCurrentCriteriaSetValues
-								.setIsSetValueMeasurement("false");
-						CriteriaSetCodeValues[] tempCriteriaSetCodeValuesList = new CriteriaSetCodeValues[1];
-						CriteriaSetCodeValues tempCriteriaSetCodeValues = new CriteriaSetCodeValues();
-						tempCriteriaSetCodeValues.setId(String
-								.valueOf(newCriteriaSetCodeValueCntr));
-						tempCriteriaSetCodeValues
-								.setCriteriaSetValueId(clientCurrentCriteriaSetValues
-										.getId());
-						tempCriteriaSetCodeValues
-								.setSetCodeValueId(setCodeValueId);
-						tempCriteriaSetCodeValuesList[0] = tempCriteriaSetCodeValues;
-						clientCurrentCriteriaSetValues
-								.setCriteriaSetCodeValues(tempCriteriaSetCodeValuesList);
-						clientCriteriaSetValuesList
-								.add(clientCurrentCriteriaSetValues);
+
+						if (!criteriaSetValueExist) {
+
+							clientCurrentCriteriaSetValues.setId(String
+									.valueOf(newCriteriaSetValuesCntr));
+							//
+							clientCurrentCriteriaSetValues
+									.setCriteriaSetId(clientProductCriteriaSet
+											.getCriteriaSetId());
+							clientCurrentCriteriaSetValues
+									.setCriteriaCode(groupName);
+							setCodeValueId = productLookupParser
+									.getSizesApperalSetCodeValueId(
+											critieriaItem, groupName);
+							if (null == setCodeValueId) {
+								setCodeValueId = productLookupParser
+										.getSizesSetCodeValueId(groupName);
+								clientCurrentCriteriaSetValues
+										.setValueTypeCode("CUST");
+								if (groupName.equalsIgnoreCase("SANS")) {
+									critieriaItem = critieriaItem.replace(")",
+											"");
+									critieriaItem = critieriaItem.replace("(",
+											",");
+								} else if (groupName.equalsIgnoreCase("SAWI")) {
+									critieriaItem = critieriaItem.replace("x",
+											",");
+								} else if (groupName.equalsIgnoreCase("SOTH")
+										|| groupName.equalsIgnoreCase("SSNM")) {
+									clientCurrentCriteriaSetValues
+											.setValue(critieriaItem);
+								} else {
+									List<Value> valueList = setSizeValueItem(
+											critieriaItem, groupName);
+									clientCurrentCriteriaSetValues
+											.setValue(valueList);
+								}
+							} else {
+								clientCurrentCriteriaSetValues
+										.setValueTypeCode("LOOK");
+								clientCurrentCriteriaSetValues.setValue("");
+							}
+							clientCurrentCriteriaSetValues.setIsSubset("false");
+							// clientCurrentCriteriaSetValues.setFormatValue(sizeValue.trim());
+							clientCurrentCriteriaSetValues
+									.setIsSetValueMeasurement("false");
+							CriteriaSetCodeValues[] tempCriteriaSetCodeValuesList = new CriteriaSetCodeValues[1];
+							CriteriaSetCodeValues tempCriteriaSetCodeValues = new CriteriaSetCodeValues();
+							tempCriteriaSetCodeValues.setId(String
+									.valueOf(newCriteriaSetCodeValueCntr));
+							tempCriteriaSetCodeValues
+									.setCriteriaSetValueId(clientCurrentCriteriaSetValues
+											.getId());
+							tempCriteriaSetCodeValues
+									.setSetCodeValueId(setCodeValueId);
+							tempCriteriaSetCodeValuesList[0] = tempCriteriaSetCodeValues;
+							clientCurrentCriteriaSetValues
+									.setCriteriaSetCodeValues(tempCriteriaSetCodeValuesList);
+							clientCriteriaSetValuesList
+									.add(clientCurrentCriteriaSetValues);
+						}
+						criteriaSetValueExist = false;
+						newCriteriaSetValuesCntr--;
+						newCriteriaSetCodeValueCntr--;
 					}
-					criteriaSetValueExist = false;
-					newCriteriaSetValuesCntr--;
-					newCriteriaSetCodeValueCntr--;
 				}
-				// }
 			}
 			clientProductCriteriaSet
 					.setCriteriaSetValues(clientCriteriaSetValuesList);
@@ -885,5 +915,4 @@ public class ConfigurationsParser {
 		}
 		return productToUpdate;
 	}
-
 }

@@ -1,5 +1,6 @@
 package com.asi.service.product.client.vo.parser;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,10 +11,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.client.RestClientException;
 
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.Price;
+import com.asi.service.product.client.vo.ProductConfiguration;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductInventoryLink;
@@ -32,7 +35,7 @@ public class LookupParser {
 	
 
 	@Autowired LookupValuesClient lookupClient;
-	
+	@Autowired	ImprintParser imprintParser;
 	private String[] sizeCriteriaAry={"DIMS","CAPS","SABR","SAHU","SAIT","SANS","SAWI","SSNM","SVWT","SOTH"};
 	LinkedHashMap<String, String> sizeGroupDetails;
 	
@@ -683,16 +686,29 @@ public class LookupParser {
 	public Product setProductServiceColor(ProductDetail productDetail,
 			Product product) {
 		String productColor="";
+		String actualColor="";
+		String customColor="";
 		int colorCntr=0;
 		List<ProductCriteriaSets> currentProductCriteriaSets=productDetail.getProductConfigurations().get(0).getProductCriteriaSets();
 		for(ProductCriteriaSets currentProductCritieriaSet:currentProductCriteriaSets){
 			if(currentProductCritieriaSet.getCriteriaCode().equalsIgnoreCase("PRCL")){
 				for(CriteriaSetValues currentCriteriaSetValue:currentProductCritieriaSet.getCriteriaSetValues()){
+					actualColor=currentCriteriaSetValue.getBaseLookupValue();
+					customColor=currentCriteriaSetValue.getValue().toString();							
+					if(null!=actualColor && !actualColor.isEmpty()) actualColor=actualColor.replace("Medium", "").trim();
 					if(currentCriteriaSetValue.getValue() instanceof String && !currentCriteriaSetValue.getValue().toString().isEmpty()){
-						productColor=(colorCntr==0)?currentCriteriaSetValue.getValue().toString():productColor+", "+currentCriteriaSetValue.getValue().toString();
+						if(actualColor.equals(customColor)){
+							productColor=(colorCntr==0)?currentCriteriaSetValue.getValue().toString():productColor+", "+currentCriteriaSetValue.getValue().toString();
+						}else{
+							productColor=(colorCntr==0)?actualColor+"="+currentCriteriaSetValue.getValue().toString():productColor+", "+actualColor+"="+currentCriteriaSetValue.getValue().toString();
+						}
 						colorCntr++;
 					}else{
-						productColor=(colorCntr==0)?getColorNameByCode(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId()):productColor+", "+getColorNameByCode(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId());
+						if(actualColor.equals(customColor)){
+							productColor=(colorCntr==0)?getColorNameByCode(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId()):productColor+", "+getColorNameByCode(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId());
+						}else{
+							productColor=(colorCntr==0)?getColorNameByCode(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId())+"="+customColor:productColor+", "+getColorNameByCode(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId()+"="+customColor);
+						}
 						colorCntr++;
 					}
 				}
@@ -702,7 +718,7 @@ public class LookupParser {
 		return product;
 	}
 	private String setProductServiceConfiguration(ProductDetail productDetail,
-			Product product,String criteriaCode) {
+			Product product,String criteriaCode) throws RestClientException, UnsupportedEncodingException {
 		String productColor="";
 		int colorCntr=0;
 		List<ProductCriteriaSets> currentProductCriteriaSets=productDetail.getProductConfigurations().get(0).getProductCriteriaSets();
@@ -737,7 +753,7 @@ public class LookupParser {
 		return productColor;
 	}
 	public String getSetValueNameByCode(String setCodeValueId,
-			String criteriaCode,Object searchKey) {
+			String criteriaCode,Object searchKey) throws RestClientException, UnsupportedEncodingException {
 		sizecodes.addAll(Arrays.asList(sizeCriteriaAry));
 		if(null!=criteriaCode && !sizecodes.contains(criteriaCode)){
 		switch (criteriaCode){
@@ -850,7 +866,7 @@ public class LookupParser {
 		}
 		return "";
 	}
-	private String getTradeNameByCode(String setCodeValueId,Object srchkey) {
+	private String getTradeNameByCode(String setCodeValueId,Object srchkey) throws RestClientException, UnsupportedEncodingException {
 		ArrayList<LinkedHashMap> tradeNameList = lookupClient.getTradeNameFromLookup(lookupClient.getLookupTradeNameURL(),srchkey);
 		String tradeName="";
 		for(LinkedHashMap currentTrade:tradeNameList){
@@ -862,7 +878,7 @@ public class LookupParser {
 		return tradeName;
 	}
 	public Product setProductServiceWithConfigurations(
-			ProductDetail productDetail, Product product) {
+			ProductDetail productDetail, Product product) throws RestClientException, UnsupportedEncodingException {
 		product=setProductServiceColor(productDetail, product);
 		product.setMaterial(setProductServiceConfiguration(productDetail, product, "MTRL"));
 		//origin,package,tradename,shape
@@ -879,7 +895,7 @@ public class LookupParser {
 		Imprints imprints=new Imprints();
 		List<ImprintMethod> imprintMethodList=new ArrayList<>();
 		
-		String imprintMethodNames=setProductServiceConfiguration(productDetail, product, "IMMD");
+/*		String imprintMethodNames=setProductServiceConfiguration(productDetail, product, "IMMD");
 		//String imprintArtworkNames=setProductServiceConfiguration(productDetail, product, "ARTW");
 		//String imprintMino=setProductServiceConfiguration(productDetail, product, "MINO");
 		String[] imprintMethods=imprintMethodNames.split(",");
@@ -887,12 +903,43 @@ public class LookupParser {
 			ImprintMethod currentImprintMethod=new ImprintMethod();
 			currentImprintMethod.setMethodName(currentImprintMethodName);
 			imprintMethodList.add(currentImprintMethod);
+		}*/
+		
+		ProductConfiguration productConfiguration = productDetail
+				.getProductConfigurations().get(0);
+		ProductCriteriaSets imprintCriteriaSet = imprintParser
+				.getCriteriaSetBasedOnCriteriaCode(
+						productConfiguration.getProductCriteriaSets(), "IMMD");
+		if(null!=imprintCriteriaSet){
+			List<CriteriaSetValues> criteriaSetValues = imprintCriteriaSet
+					.getCriteriaSetValues();
+			for (CriteriaSetValues criteriaSetValue : criteriaSetValues) {
+				imprintMethodList = imprintParser.getImprintMethodRelations(
+						productDetail.getExternalProductId(),
+						Integer.parseInt(criteriaSetValue.getCriteriaSetId()),
+						productConfiguration.getProductCriteriaSets(),
+						productDetail.getRelationships());
+			}
 		}
+		imprints.setImprintMethod(imprintMethodList);	
+		
+		
+		
+		
+		
+		
+		
 		imprints.setImprintMethod(imprintMethodList);
 		return imprints;
 	}
+	public ImprintParser getImprintParser() {
+		return imprintParser;
+	}
+	public void setImprintParser(ImprintParser imprintParser) {
+		this.imprintParser = imprintParser;
+	}
 	private SizeDetails setProductServiceSizeDetails(
-			ProductDetail productDetail, Product product) {
+			ProductDetail productDetail, Product product) throws RestClientException, UnsupportedEncodingException {
 		SizeDetails sizeDetails=new SizeDetails();
 		String sizeValue="";
 		String sawiSize="";
@@ -1039,7 +1086,7 @@ int sizeGroupCntr=0;
 			}
 			if(null!=returnValue) break;
 		}
-		if(criteriaCode.equalsIgnoreCase("SOTH") && null==returnValue) returnValue=otherSetCodeValue;
+		//if(criteriaCode.equalsIgnoreCase("SOTH") && null==returnValue) returnValue=otherSetCodeValue;
 		return returnValue;
 	}
 	
