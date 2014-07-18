@@ -907,8 +907,7 @@ public class LookupParser {
 		
 		ProductConfiguration productConfiguration = productDetail
 				.getProductConfigurations().get(0);
-		ProductCriteriaSets imprintCriteriaSet = imprintParser
-				.getCriteriaSetBasedOnCriteriaCode(
+		ProductCriteriaSets imprintCriteriaSet = getCriteriaSetBasedOnCriteriaCode(
 						productConfiguration.getProductCriteriaSets(), "IMMD");
 		if(null!=imprintCriteriaSet){
 			List<CriteriaSetValues> criteriaSetValues = imprintCriteriaSet
@@ -1089,9 +1088,22 @@ int sizeGroupCntr=0;
 		//if(criteriaCode.equalsIgnoreCase("SOTH") && null==returnValue) returnValue=otherSetCodeValue;
 		return returnValue;
 	}
-	
-	
-	
-	
+	 /**
+     * Find a criteriaSet from the productCriteria set array based on the criteria code
+     * 
+     * @param productCriteriaSetsAry
+     *            is the array contains all criteria set of the product
+     * @param criteriaCode
+     *            is the criteria code of the criteriaSet to find
+     * @return the matched {@linkplain ProductCriteriaSets } or null
+     */
+	 public ProductCriteriaSets getCriteriaSetBasedOnCriteriaCode(List<ProductCriteriaSets> productCriteriaSetsAry, String criteriaCode) {
+	        for (ProductCriteriaSets currentProductCriteriaSet: productCriteriaSetsAry)
+	        	{
+	        		if (null != currentProductCriteriaSet && currentProductCriteriaSet.getCriteriaCode().equalsIgnoreCase(criteriaCode.trim()))
+	        			return currentProductCriteriaSet;
+	        	}
+	        return null;
+	    }
 	
 }

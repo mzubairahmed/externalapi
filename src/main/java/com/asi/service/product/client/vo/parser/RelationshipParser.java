@@ -55,7 +55,7 @@ public class RelationshipParser {
 		 return finalCriteriaSetValuePaths;
 	 }
 	 
-	 public CriteriaSetRelationships[] getCriteriaSetRelationships(String productId, String parentId, String childId, String relationId) {
+	 public List<CriteriaSetRelationships> getCriteriaSetRelationships(String productId, String parentId, String childId, String relationId) {
 		List<CriteriaSetRelationships> finalCriteriaSetRelationships = new ArrayList<CriteriaSetRelationships>();
 		if (parentId != null && !parentId.isEmpty() 
 				&& childId != null && !childId.isEmpty()) {
@@ -74,7 +74,7 @@ public class RelationshipParser {
 			
 			finalCriteriaSetRelationships.add(childCriteria);
 		}
-		return finalCriteriaSetRelationships.toArray(new CriteriaSetRelationships[0]);
+		return finalCriteriaSetRelationships;
 	}
 	 
 	 public Relationships[] createImprintArtworkRelationShip(List<ImprintMethod> imprintMethods, String productId, String immdCriteriaSetId, String artworkCriteriaId, String minQtyCriteriaId) {
@@ -107,23 +107,23 @@ public class RelationshipParser {
 		 }
 		 
 		 if (artworkCriteriaSetValuePaths != null && !artworkCriteriaSetValuePaths.isEmpty()) {
-			 imprintArtworkRelationship.setCriteriaSetValuePaths(artworkCriteriaSetValuePaths.toArray(new CriteriaSetValuePaths[0]));
+			 imprintArtworkRelationship.setCriteriaSetValuePaths(artworkCriteriaSetValuePaths);
 		 } else if (minQtyCriteriaSetValuePaths != null && !minQtyCriteriaSetValuePaths.isEmpty()) { 
-			 imprintMinQtyRelationship.setCriteriaSetValuePaths(minQtyCriteriaSetValuePaths.toArray(new CriteriaSetValuePaths[0]));
+			 imprintMinQtyRelationship.setCriteriaSetValuePaths(minQtyCriteriaSetValuePaths);
 		 }
 		 
 		 List<Relationships> finalRelationships = new ArrayList<Relationships>();
 		 if (imprintArtworkRelationship.getCriteriaSetValuePaths() != null 
-				 && imprintArtworkRelationship.getCriteriaSetValuePaths().length > 0
+				 && imprintArtworkRelationship.getCriteriaSetValuePaths().size() > 0
 				 && imprintArtworkRelationship.getCriteriaSetRelationships() != null
-				 && imprintArtworkRelationship.getCriteriaSetRelationships().length > 0) {
+				 && imprintArtworkRelationship.getCriteriaSetRelationships().size() > 0) {
 			 finalRelationships.add(imprintArtworkRelationship);
 		 }
 		 
 		 if (imprintMinQtyRelationship.getCriteriaSetValuePaths() != null 
-				 && imprintMinQtyRelationship.getCriteriaSetValuePaths().length > 0
+				 && imprintMinQtyRelationship.getCriteriaSetValuePaths().size() > 0
 				 && imprintMinQtyRelationship.getCriteriaSetRelationships() != null
-				 && imprintMinQtyRelationship.getCriteriaSetRelationships().length > 0) {
+				 && imprintMinQtyRelationship.getCriteriaSetRelationships().size() > 0) {
 			 finalRelationships.add(imprintMinQtyRelationship);
 		 }
 		 	return finalRelationships.toArray(new Relationships[0]);

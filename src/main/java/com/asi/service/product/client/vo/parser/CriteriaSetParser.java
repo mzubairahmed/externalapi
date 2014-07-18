@@ -80,6 +80,7 @@ public class CriteriaSetParser {
         }
         return tempMap.get(criteriaSetValueId);
     }
+    
     public HashMap<String, String> findCriteriaSetMapValueById(String extPrdId) {
         if (criteriaSetReference == null || criteriaSetReference.isEmpty()) {
             return null;
@@ -99,4 +100,16 @@ public class CriteriaSetParser {
     	if(null!=criteriaSetReference)
     	 criteriaSetReference.remove(externalId);
     }
+	public String getCriteriaSetId(String externalProductId,List<ProductCriteriaSets> productCriteriaSetsAry,String criteriaCode, String criteriaValue) {
+		if(criteriaSetReference.isEmpty()){
+			criteriaSetReference=getCriteriaSetDetailsByExternalId(externalProductId,productCriteriaSetsAry);
+		}
+		HashMap<String,String> criteriaSetsList=criteriaSetReference.get(externalProductId);
+		for (String key: criteriaSetsList.keySet()) {
+			if(criteriaSetsList.get(key).equalsIgnoreCase(criteriaCode+"__"+criteriaValue)){
+				return key;
+			}
+			}
+		return null;
+	}
 }

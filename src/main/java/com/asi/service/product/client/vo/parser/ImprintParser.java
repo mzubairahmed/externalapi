@@ -7,33 +7,22 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.asi.service.product.client.vo.CriteriaSetRelationships;
 import com.asi.service.product.client.vo.CriteriaSetValuePath;
-import com.asi.service.product.client.vo.ProductCriteriaSet;
+import com.asi.service.product.client.vo.CriteriaSetValuePaths;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
+import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.Relationship;
+import com.asi.service.product.client.vo.Relationships;
 import com.asi.service.product.vo.ImprintMethod;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ImprintParser {
 	@Autowired CriteriaSetParser criteriaLookupParser;
 	@Autowired LookupParser lookupsParser;
 	public static ConcurrentHashMap<String, String> imprintRelationMap = null;
-	 /**
-     * Find a criteriaSet from the productCriteria set array based on the criteria code
-     * 
-     * @param productCriteriaSetsAry
-     *            is the array contains all criteria set of the product
-     * @param criteriaCode
-     *            is the criteria code of the criteriaSet to find
-     * @return the matched {@linkplain ProductCriteriaSets } or null
-     */
-    public ProductCriteriaSets getCriteriaSetBasedOnCriteriaCode(List<ProductCriteriaSets> productCriteriaSetsAry, String criteriaCode) {
-        for (ProductCriteriaSets currentProductCriteriaSet: productCriteriaSetsAry)
-        	{
-        		if (null != currentProductCriteriaSet && currentProductCriteriaSet.getCriteriaCode().equalsIgnoreCase(criteriaCode.trim()))
-        			return currentProductCriteriaSet;
-        	}
-        return null;
-    }
+	private int criteriaSetValuePathId=-1;
+   
 
 	public List<ImprintMethod> getImprintMethodRelations(String xid,Integer imprintCriteriaSetId,
 			List<ProductCriteriaSets> productCriteriaSets, List<Relationship> relationshipList) {
@@ -119,4 +108,78 @@ public class ImprintParser {
 	public void setLookupsParser(LookupParser lookupsParser) {
 		this.lookupsParser = lookupsParser;
 	}
+	public com.asi.service.product.client.vo.Product setImprintRelations(
+			List<ImprintMethod> imprintMethodList,
+			ProductDetail currentProductDetails,
+			com.asi.service.product.client.vo.Product productToUpdate) {
+		List<Relationships> relationshipsList=new ArrayList<>();
+		//ConcurrentHashMap<String, HashMap<String, String>> currentCriteriaSetIds=criteriaLookupParser.getCriteriaSetDetailsByExternalId();
+		ProductCriteriaSets imprintCriteriaSet=lookupsParser.getCriteriaSetBasedOnCriteriaCode(productToUpdate.getProductConfigurations()[0].getProductCriteriaSets(), "IMMD");
+		ProductCriteriaSets artworkCriteriaSet=lookupsParser.getCriteriaSetBasedOnCriteriaCode(productToUpdate.getProductConfigurations()[0].getProductCriteriaSets(), "ARTW");
+		ProductCriteriaSets minOrderCriteriaSet=lookupsParser.getCriteriaSetBasedOnCriteriaCode(productToUpdate.getProductConfigurations()[0].getProductCriteriaSets(), "MINO");
+		String imprintCriteriaSetId="",artworkCriteriaSetId="",minOrderSetId="";
+		boolean isArtwork=false;
+		int relationshipId=-1;
+		criteriaSetValuePathId--;
+		for(ImprintMethod currentImprintMethod:imprintMethodList){
+			Relationships individualRelationShip = new Relationships();
+			individualRelationShip.setId(String.valueOf(relationshipId));
+	        if (isArtwork) {
+	        	individualRelationShip.setName("Imprint Method x Artwork");
+	        } else {
+	        	individualRelationShip.setName("Imprint Method x Min Order");
+	        }
+	        individualRelationShip.setProductId(String.valueOf(currentProductDetails.getID()));
+		// Iterate through all user given imprint Methods
+		// Check its related artwork and Min order existence with current product details, if not exist then add
+			imprintCriteriaSetId=criteriaLookupParser.getCriteriaSetId(productToUpdate.getExternalProductId(), productToUpdate.getProductConfigurations()[0].getProductCriteriaSets(),"IMMD",currentImprintMethod.getMethodName());
+			//artworkCriteriaSetId=criteriaLookupParser.getCriteriaSetId(productToUpdate.getExternalProductId(), productToUpdate.getProductConfigurations()[0].getProductCriteriaSets(),"ARTW",currentImprintMethod.getMethodName());
+			minOrderSetId=criteriaLookupParser.getCriteriaSetId(productToUpdate.getExternalProductId(), productToUpdate.getProductConfigurations()[0].getProductCriteriaSets(),"MINO",currentImprintMethod.getMinimumOrder());
+			individualRelationShip=createImprintRelationShip(individualRelationShip,imprintCriteriaSet.getCriteriaSetId(),minOrderCriteriaSet.getCriteriaSetId(),imprintCriteriaSetId,minOrderSetId,relationshipId,isArtwork,String.valueOf(currentProductDetails.getID()));
+			relationshipsList.add(individualRelationShip);
+			relationshipId--;
+		}
+		productToUpdate.setRelationships(relationshipsList);
+		return productToUpdate;
+	}
+	private Relationships createImprintRelationShip(Relationships relationships,String relationshipImprintId,String relationshipSetId,String imprintCriteriaSetValueId,String relationCriteriaSetValueId,int relationshipId,boolean isArtwork,String productId)
+	{
+		
+		List<CriteriaSetRelationships> criteriaSetRelationshipsList=new ArrayList<>();
+		CriteriaSetRelationships imprintCriteriaSetRelationship=new CriteriaSetRelationships();
+		CriteriaSetRelationships relationCriteriaSetRelationship=new CriteriaSetRelationships();
+		List<CriteriaSetValuePaths> criteriaSetValuePaths=new ArrayList<>();
+		CriteriaSetValuePaths imprintCriteriaSetValuePaths=new CriteriaSetValuePaths();
+		CriteriaSetValuePaths relationCriteriaSetValuePaths=new CriteriaSetValuePaths();
+	    relationships.setParentCriteriaSetId(relationshipImprintId);
+	    imprintCriteriaSetRelationship.setIsParent("true");
+	    imprintCriteriaSetRelationship.setRelationshipId(String.valueOf(relationshipId));
+	    imprintCriteriaSetRelationship.setProductId(productId);
+	    imprintCriteriaSetRelationship.setCriteriaSetId(relationshipImprintId);
+        criteriaSetRelationshipsList.add(imprintCriteriaSetRelationship);
+        relationCriteriaSetRelationship = new CriteriaSetRelationships();
+        relationCriteriaSetRelationship.setProductId(productId);
+        relationCriteriaSetRelationship.setRelationshipId(String.valueOf(relationshipId));
+        relationCriteriaSetRelationship.setCriteriaSetId(relationshipSetId);
+        relationCriteriaSetRelationship.setIsParent("false");
+        criteriaSetRelationshipsList.add(relationCriteriaSetRelationship);
+        relationships.setCriteriaSetRelationships(criteriaSetRelationshipsList);
+        
+        imprintCriteriaSetValuePaths.setRelationshipId(String.valueOf(relationshipId));
+        imprintCriteriaSetValuePaths.setIsParent("true");
+        imprintCriteriaSetValuePaths.setProductId(productId);
+        imprintCriteriaSetValuePaths.setCriteriaSetValueId(imprintCriteriaSetValueId);
+        imprintCriteriaSetValuePaths.setId(String.valueOf(criteriaSetValuePathId));
+
+        criteriaSetValuePaths.add(imprintCriteriaSetValuePaths);   
+        
+        relationCriteriaSetValuePaths.setRelationshipId(String.valueOf(relationshipId));
+        relationCriteriaSetValuePaths.setIsParent("false");
+        relationCriteriaSetValuePaths.setProductId(productId);
+        relationCriteriaSetValuePaths.setCriteriaSetValueId(relationCriteriaSetValueId);
+        relationCriteriaSetValuePaths.setId(String.valueOf(criteriaSetValuePathId));
+        criteriaSetValuePaths.add(relationCriteriaSetValuePaths); 
+        relationships.setCriteriaSetValuePaths(criteriaSetValuePaths);
+		return relationships;
+	}	
 }

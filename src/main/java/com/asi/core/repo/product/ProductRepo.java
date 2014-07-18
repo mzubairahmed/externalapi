@@ -310,7 +310,7 @@ public class ProductRepo {
 		List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
 		ProductConfiguration productConfiguration = productDetail
 				.getProductConfigurations().get(0);
-		ProductCriteriaSets imprintCriteriaSet = imprintParser
+		ProductCriteriaSets imprintCriteriaSet = lookupsParser
 				.getCriteriaSetBasedOnCriteriaCode(
 						productConfiguration.getProductCriteriaSets(), "IMMD");
 		if(null!=imprintCriteriaSet){
@@ -472,12 +472,34 @@ public class ProductRepo {
 		}
 		// Imprint Processing
 		if(null!=srcProduct.getImprints() && srcProduct.getImprints().getImprintMethod().size()>0){
-			int imprintCntr=0;
+			int imprintCntr=0,artworkCntr=0,minCntr=0;
 			String finalImprintMethod="";
+			String finalArtworks="";
+			String finalMinOrders="";
 			for(ImprintMethod currentImprintMethod:srcProduct.getImprints().getImprintMethod()){
 				finalImprintMethod=(imprintCntr==0)?currentImprintMethod.getMethodName():finalImprintMethod+","+currentImprintMethod.getMethodName();
+				if(null!=currentImprintMethod.getArtworkName() && !currentImprintMethod.getArtworkName().isEmpty()){
+				if(artworkCntr==0){
+					finalArtworks=currentImprintMethod.getArtworkName();
+					artworkCntr++;
+				}else{
+					finalArtworks=finalArtworks+","+currentImprintMethod.getArtworkName();
+				}
+				}
+				if(null!=currentImprintMethod.getMinimumOrder() && !currentImprintMethod.getMinimumOrder().isEmpty()){
+					if(minCntr==0){
+						finalMinOrders=currentImprintMethod.getMinimumOrder();
+						minCntr++;
+					}else{
+						finalMinOrders=finalMinOrders+","+currentImprintMethod.getMinimumOrder();
+					}
+					}					
+				imprintCntr++;				
 			}
 			productToUpdate=configurationParser.setProductWithProductConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,"IMMD",finalImprintMethod);
+			productToUpdate=configurationParser.setProductWithProductConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,"ARTW",finalArtworks);
+			productToUpdate=configurationParser.setProductWithProductConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,"MINO",finalMinOrders);
+			productToUpdate=imprintParser.setImprintRelations(srcProduct.getImprints().getImprintMethod(),currentProductDetails,productToUpdate);
 		}	
 		// Size Processing
 		SizeDetails sizeDetails=srcProduct.getSize();
@@ -518,7 +540,7 @@ String sProductCategory=srcProduct.getCategory();
 		productToUpdate=lookupsParser.setProductKeyWords(productToUpdate,srcProduct);
 		if(null==productToUpdate.getRelationships())
 		{
-			productToUpdate.setRelationships(new Relationships[]{});
+			productToUpdate.setRelationships(new ArrayList<Relationships>());
 		}
 		// Product Inventory Link
 		com.asi.service.product.client.vo.ProductInventoryLink productInventoryLink = new com.asi.service.product.client.vo.ProductInventoryLink();
@@ -561,6 +583,7 @@ String sProductCategory=srcProduct.getCategory();
 		com.asi.service.product.client.vo.SelectedProductCategories[] productCategoriesLst = null;
 		com.asi.service.product.client.vo.SelectedProductCategories productCategories = null;
 		String productCategory=srcProduct.getCategory();
+		if(null!=productCategory && !productCategory.isEmpty()){
 		String[] productCtgrs=productCategory.split(",");
 		int productCategoryCntr=0;
 		if(null!=productCtgrs && productCtgrs.length>0)
@@ -581,9 +604,10 @@ String sProductCategory=srcProduct.getCategory();
 				productCategoryCntr++;
 			}			
 		}
-		
-			currentProduct
-			.setSelectedProductCategories(productCategoriesLst);
+		currentProduct
+		.setSelectedProductCategories(productCategoriesLst);
+		}
+			
 		// Product Keywords
 		currentProduct=lookupsParser.setProductKeyWords(currentProduct,srcProduct);
 		// Product Inventory Link
