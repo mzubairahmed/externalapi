@@ -712,6 +712,25 @@ String sProductCategory=srcProduct.getCategory();
 		return currency;
 	}
 
+	public com.asi.ext.api.service.model.Product getServiceProduct(
+			String companyId, String xid) {
+		com.asi.ext.api.service.model.Product serviceProduct=null;
+		try {
+			ProductDetail currentProductDetails = getProductFromService(companyId, xid);
+			//serviceProduct=prepairServiceProduct();
+			if(null!=currentProductDetails){
+				serviceProduct=new com.asi.ext.api.service.model.Product();
+				serviceProduct.setName(currentProductDetails.getName());
+			}
+			
+		} catch (ProductNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return serviceProduct;
+	}
+
 	/*
 	 * private String getDataSourceId(Integer companyId) {
 	 * 

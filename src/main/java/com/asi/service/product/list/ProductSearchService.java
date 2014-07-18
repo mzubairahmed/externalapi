@@ -20,11 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.asi.core.exception.ErrorMessage;
 import com.asi.core.exception.ErrorMessageHandler;
 import com.asi.core.repo.product.ProductRepo;
+import com.asi.ext.api.service.model.Product;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.exception.ProductNotFoundException;
 import com.asi.service.product.vo.Imprints;
 import com.asi.service.product.vo.ItemPriceDetail;
-import com.asi.service.product.vo.Product;
 
 @RestController
 @RequestMapping("api")
@@ -40,7 +40,8 @@ public class ProductSearchService {
 	public ResponseEntity<Product> getProduct(@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws UnsupportedEncodingException, ProductNotFoundException {
 		if(_LOGGER.isDebugEnabled()) 
 			_LOGGER.debug("calling service");
-		Product productResponse = repository.getProductPrices(companyId, xid);
+	//	Product productResponse = repository.getProductPrices(companyId, xid);
+		Product productResponse = repository.getServiceProduct(companyId, xid);
 //		productResponse.setImprints(repository.getProductImprintMethods(companyId, xid));
 		return new ResponseEntity<Product>(productResponse, null, HttpStatus.OK);
 	}
