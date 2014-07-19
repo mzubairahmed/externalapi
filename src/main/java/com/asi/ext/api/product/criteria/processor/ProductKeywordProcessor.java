@@ -7,10 +7,13 @@ import java.util.List;
 import com.asi.ext.api.radar.model.Product;
 import com.asi.ext.api.radar.model.ProductKeywords;
 import com.asi.ext.api.util.ApplicationConstants;
+import com.asi.ext.api.util.CommonUtilities;
 
 public class ProductKeywordProcessor {
 
-    public ProductKeywords[] getProductKeywords(String[] productKeywords, Product extProduct, boolean updateNeeded) {
+    public ProductKeywords[] getProductKeywords(List<String> keywordList, Product extProduct, boolean updateNeeded) {
+        String[] productKeywords = keywordList != null ? CommonUtilities.filterDuplicates(keywordList) : null;
+
         HashMap<String, ProductKeywords> prdKeywordMap = new HashMap<String, ProductKeywords>();
         List<ProductKeywords> finalKeywordList = new ArrayList<ProductKeywords>();
 
@@ -27,14 +30,16 @@ public class ProductKeywordProcessor {
             return new ProductKeywords[0];
         }
         // Compare and update each keywords
-        for (String keyword : productKeywords) {
-            ProductKeywords tempKeyword = prdKeywordMap.get(keyword.trim().toUpperCase());
-            if (tempKeyword != null) {
-                finalKeywordList.add(tempKeyword);
-            } else {
-                finalKeywordList.add(createProductKeyword(keyword, extProduct));
-            }
+        if (productKeywords != null && productKeywords.length > 0) {
+            for (String keyword : productKeywords) {
+                ProductKeywords tempKeyword = prdKeywordMap.get(keyword.trim().toUpperCase());
+                if (tempKeyword != null) {
+                    finalKeywordList.add(tempKeyword);
+                } else {
+                    finalKeywordList.add(createProductKeyword(keyword, extProduct));
+                }
 
+            }
         }
         return finalKeywordList.toArray(new ProductKeywords[0]);
     }

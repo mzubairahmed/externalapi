@@ -14,9 +14,17 @@ import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 
 public class ProductSelectedSafetyWarningProcessor {
+
     private final static Logger LOGGER = Logger.getLogger(ProductSelectedSafetyWarningProcessor.class.getName());
 
-    public SelectedSafetyWarnings[] getSelectedSafetyWarnings(String safetyWarnings, String externalProductId, String productId,
+    public SelectedSafetyWarnings[] getSafetyWarnings(List<String> safetyWarnings, String xid, String productId,
+            Product existingProduct) {
+        String finalSafetyWarning = CommonUtilities.convertStringListToCSV(safetyWarnings);
+
+        return getSelectedSafetyWarnings(finalSafetyWarning, xid, productId, existingProduct);
+    }
+
+    private SelectedSafetyWarnings[] getSelectedSafetyWarnings(String safetyWarnings, String externalProductId, String productId,
             Product existingProduct) {
 
         LOGGER.info("Started ProductSelectedSafetyWarningProcessor.getSelectedSafetyWarnings(), SFW " + safetyWarnings);

@@ -1,90 +1,93 @@
 package com.asi.ext.api.radar.model;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SelectedLineNames {
 
-    @JsonProperty("ID")
-    private String id;
-    @JsonProperty("Name")
-    private String name;
-    @JsonProperty("ProductId")
-    private String productId;
-    @JsonProperty("MarketSegmentCode")
-    private String marketSegmentCode;
+	@JsonProperty("ID")
+	private String id;
+	@JsonProperty("Name")
+	private String name;
+	@JsonProperty("ProductId")
+	private String productId;
+	@JsonProperty("MarketSegmentCode")
+	private String marketSegmentCode;
 
-    public SelectedLineNames() {
-    }
-    /**
-     * @param id
-     * @param name
-     * @param productId
-     * @param marketSegmentCode
-     */
-    public SelectedLineNames(String id, String name, String productId, String marketSegmentCode) {
-        this.id = id;
-        this.name = name;
-        this.productId = productId;
-        this.marketSegmentCode = marketSegmentCode;
-    }
+	public SelectedLineNames() {
+	}
 
-    /**
-     * @return the id
-     */
-    public String getId() {
-        return id;
-    }
+	/**
+	 * @param id
+	 * @param name
+	 * @param productId
+	 * @param marketSegmentCode
+	 */
+	public SelectedLineNames(String id, String name, String productId,
+			String marketSegmentCode) {
+		this.id = id;
+		this.name = name;
+		this.productId = productId;
+		this.marketSegmentCode = marketSegmentCode;
+	}
 
-    /**
-     * @param id the id to set
-     */
-    public void setId(String id) {
-        this.id = id;
-    }
+	/**
+	 * @return the id
+	 */
+	public String getId() {
+		return id;
+	}
 
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
+	/**
+	 * @param id
+	 *            the id to set
+	 */
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * @return the productId
-     */
-    public String getProductId() {
-        return productId;
-    }
+	/**
+	 * @param name
+	 *            the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    /**
-     * @param productId the productId to set
-     */
-    public void setProductId(String productId) {
-        this.productId = productId;
-    }
+	/**
+	 * @return the productId
+	 */
+	public String getProductId() {
+		return productId;
+	}
 
-    /**
-     * @return the marketSegmentCode
-     */
-    public String getMarketSegmentCode() {
-        return marketSegmentCode;
-    }
+	/**
+	 * @param productId
+	 *            the productId to set
+	 */
+	public void setProductId(String productId) {
+		this.productId = productId;
+	}
 
-    /**
-     * @param marketSegmentCode the marketSegmentCode to set
-     */
-    public void setMarketSegmentCode(String marketSegmentCode) {
-        this.marketSegmentCode = marketSegmentCode;
-    }
+	/**
+	 * @return the marketSegmentCode
+	 */
+	public String getMarketSegmentCode() {
+		return marketSegmentCode;
+	}
 
-
-    
+	/**
+	 * @param marketSegmentCode
+	 *            the marketSegmentCode to set
+	 */
+	public void setMarketSegmentCode(String marketSegmentCode) {
+		this.marketSegmentCode = marketSegmentCode;
+	}
 
 }

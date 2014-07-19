@@ -12,20 +12,24 @@ import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
-/*import org.mule.api.MuleMessage;
-import org.mule.api.transformer.TransformerException;
-import org.mule.api.transport.PropertyScope;
-import org.mule.transformer.AbstractMessageTransformer;*/
+/*
+ * import org.mule.api.MuleMessage;
+ * import org.mule.api.transformer.TransformerException;
+ * import org.mule.api.transport.PropertyScope;
+ * import org.mule.transformer.AbstractMessageTransformer;
+ */
 
 import com.asi.ext.api.exception.AmbiguousPriceCriteriaException;
 import com.asi.ext.api.exception.VelocityException;
 import com.asi.ext.api.exception.VelocityImportExceptionCodes;
 import com.asi.ext.api.product.criteria.processor.AdditionalColorProcessor;
 import com.asi.ext.api.product.criteria.processor.AdditionalLocationProcessor;
+import com.asi.ext.api.product.criteria.processor.ProductCategoriesProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductColorProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductImprintColorProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductImprintMethodProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductImprintSizeAndLocationProcessor;
+import com.asi.ext.api.product.criteria.processor.ProductKeywordProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductMateriaProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductMediaItemProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductOptionProcessor;
@@ -56,6 +60,7 @@ import com.asi.ext.api.rest.JersyClientGet;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.PriceGridUtil;
+import com.asi.ext.api.util.ProductParserUtil;
 import com.asi.ext.api.util.RestAPIProperties;
 
 /**
@@ -88,30 +93,73 @@ public class ImportTransformer {
     private ProductImprintMethodProcessor          productImprintMethodProcessor   = new ProductImprintMethodProcessor();
     private ProductOptionProcessor                 productOptionProcessor          = new ProductOptionProcessor();
 
+    private ProductKeywordProcessor                keywordProcessor                = new ProductKeywordProcessor();
+    private ProductCategoriesProcessor             categoryProcessor               = new ProductCategoriesProcessor();
+
     private final static Logger                    LOGGER                          = Logger.getLogger(ImportTransformer.class
                                                                                            .getName());
 
-    /**
-     * Transform message will called by mule for each individual product which
-     * we parsed in {@linkplain com.mule.velocity.transformer.SplitterTransformer } transformMessage reads payload from muleMessage
-     * and process it based on the
-     * criteria specified for each elements in each individual product.
-     * 
-     * @param muleMuessage
-     *            which contains the product details in JSON format.
-     * @param arg1
-     *            is the outputEncoding.
-     * 
-     */
+    public Product generateRadarProduct(com.asi.ext.api.service.model.Product serviceProduct, Product existingRadarModel,
+            String dataSourceId) {
+        boolean isNewProduct = existingRadarModel == null;
+        Product productToSave = null;
+
+        String configId = "0";
+        String productId = "0";
+        String companyId = "0";
+        String xid = serviceProduct.getExternalProductId();
+
+        if (!isNewProduct) {
+            productId = existingRadarModel.getId();
+            companyId = existingRadarModel.getCompanyId();
+            configId = ProductParserUtil.getConfigId(existingRadarModel.getProductConfigurations());
+            productToSave = existingRadarModel;
+        } else {
+            productToSave = new Product();
+            productToSave.setId(productId);
+            productToSave.setCompanyId(companyId);
+        }
+        // DataSourceId
+        productToSave.setDataSourceId(dataSourceId);
+        // Direct Elements
+        productToSave.setName(serviceProduct.getName());
+        productToSave.setExternalProductId(serviceProduct.getExternalProductId());
+        productToSave.setAsiProdNo(serviceProduct.getAsiProdNo());
+        productToSave.setDescription(serviceProduct.getDescription());
+        productToSave.setSummary(serviceProduct.getSummary());
+        productToSave.setShipperBillsByCode(serviceProduct.getShipperBillsBy());
+        // Object Type Elements
+        productToSave.setProductInventoryLink(ProductParserUtil.getInventoryLink(serviceProduct.getProductInventoryLink(),
+                existingRadarModel, companyId));
+        productToSave.setProductDataSheet(ProductParserUtil.getDataSheet(serviceProduct.getProductDataSheet(), existingRadarModel,
+                companyId));
+
+        // Basic Collections
+        // Process Keyword
+        productToSave.setProductKeywords(keywordProcessor.getProductKeywords(serviceProduct.getProductKeywords(),
+                existingRadarModel, true));
+
+        productToSave.setSelectedProductCategories(categoryProcessor.getCategories(serviceProduct.getCategories(), productId, xid,
+                existingRadarModel));
+
+        // Safety Warning Start Here
+        productToSave.setSelectedSafetyWarnings(safetyWarningProcessor.getSafetyWarnings(serviceProduct.getSafetyWarnings(), xid,
+                productId, existingRadarModel));
+
+        return productToSave;
+    }
+
     public Object transformMessage(Object muleMessage, String arg1) {
 
-        boolean isSimplifiedTemplate = false;//CommonUtilities.isSimplifiedTemplate(String.valueOf(muleMessage.getProperty("TemplateType", PropertyScope.SESSION)));
+        boolean isSimplifiedTemplate = false;
+        // CommonUtilities.isSimplifiedTemplate(String.valueOf(muleMessage.getProperty("TemplateType",
+        // PropertyScope.SESSION)));
         boolean isNewProduct = true;
 
         ProductDataStore productDataStore = new ProductDataStore();
         ProductSizeGroupProcessor productSizeGroupProcessor = null;
 
-        String batchErrorLogs = "";//muleMessage.getProperty("batchErrorLog", PropertyScope.SESSION);
+        String batchErrorLogs = "";// muleMessage.getProperty("batchErrorLog", PropertyScope.SESSION);
 
         Product product = null;
         try {
@@ -121,14 +169,14 @@ public class ImportTransformer {
             String configId = "0";
             String productId = "0";
             String companyId = "0";
-            
-            String currentMsg = "";//muleMessage.getPayloadAsString();
+
+            String currentMsg = "";// muleMessage.getPayloadAsString();
             // Convert JSON String Product Model
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             mapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
             // mapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
-            
+
             product = mapper.readValue(currentMsg, Product.class);
             // Updating Product
             if (null != product.getExternalProductId() && !product.getExternalProductId().equals("") && null != product.getName()
@@ -145,11 +193,11 @@ public class ImportTransformer {
                     batchErrorLogs += "$Ext-" + product.getExternalProductId() + ":"
                             + ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD + ":Product Description is a required field";
                 }
-    
 
                 LOGGER.info(product.getName() + " is satisfied minimum requirements");
 
-                Product existingProduct = jerseyClient.getExistingProductDetails(product.getExternalProductId(), product.getCompanyId());
+                Product existingProduct = jerseyClient.getExistingProductDetails(product.getExternalProductId(),
+                        product.getCompanyId());
 
                 if (null != existingProduct) {
                     existingProduct.setDataSourceId(product.getDataSourceId());
@@ -173,8 +221,7 @@ public class ImportTransformer {
                                         .getProductConfigurations()[0].getProductCriteriaSets());
                             }
                         }
-                        existingProduct.setName(CommonUtilities.checkAndUpdate(product.getName(),
-                                existingProduct.getName()));
+                        existingProduct.setName(CommonUtilities.checkAndUpdate(product.getName(), existingProduct.getName()));
                         existingProduct.setDescription(CommonUtilities.checkAndUpdate(product.getDescription(),
                                 existingProduct.getDescription()));
                         existingProduct.setSummary(CommonUtilities.checkAndUpdate(product.getSummary(),
@@ -187,10 +234,8 @@ public class ImportTransformer {
                                 existingProduct.getAsiProdNo()));
                         existingProduct.setAdditionalInfo(CommonUtilities.checkAndUpdate(product.getAdditionalInfo(),
                                 existingProduct.getAdditionalInfo()));
-                        
-                        
+
                         existingProduct.setDataSourceId(product.getDataSourceId());
-                        
 
                         /*
                          * product.setIsOrderLessThanMinimumAllowed(commonUtils.parseBooleanValue(product.
@@ -247,7 +292,7 @@ public class ImportTransformer {
                     productDataStore.addErrorToBatchLogCollection(product.getExternalProductId(),
                             ApplicationConstants.CONST_BATCH_ERR_GENERIC_PLHDR,
                             "Internal server exception while fetching existing product info");
-                    //muleMessage.setPayload(null);
+                    // muleMessage.setPayload(null);
                 } else {
 
                     String currentOrigin = "";
@@ -330,16 +375,16 @@ public class ImportTransformer {
                     if (!CommonUtilities.isValueNull(product.getStatusCode())) {
                         if (CommonUtilities.isUpdateNeeded(product.getStatusCode())
                                 && CommonUtilities.getBooleanValueFromYesOrNo(product.getStatusCode())) {
-                           // muleMessage.setProperty("publishNeeded", false, PropertyScope.SESSION);
+                            // muleMessage.setProperty("publishNeeded", false, PropertyScope.SESSION);
                             product.setStatusCode("");
                         } else {
                             product.setStatusCode("");
-                            //muleMessage.setProperty("publishNeeded", true, PropertyScope.SESSION);
+                            // muleMessage.setProperty("publishNeeded", true, PropertyScope.SESSION);
                         }
                         product.setStatusCode("");
                     } else {
                         product.setStatusCode("");
-                      //  muleMessage.setProperty("publishNeeded", true, PropertyScope.SESSION);
+                        // muleMessage.setProperty("publishNeeded", true, PropertyScope.SESSION);
                     }
 
                     criteriasCount = criteriaCodesAry.length;
@@ -515,9 +560,9 @@ public class ImportTransformer {
                             if (CommonUtilities.isUpdateNeeded(rushTime)) {
                                 LOGGER.info("Rush Time Transformation Starts :" + rushTime);
 
-                                rushTimeCriteriaSet = rushTimeProcessor.getCriteriaSet(rushTime,
-                                        !isNewProduct ? existingProduct : product,
-                                        existingCriteriaSetMap.get(ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE), 0);
+                                rushTimeCriteriaSet = rushTimeProcessor.getCriteriaSet(rushTime, !isNewProduct ? existingProduct
+                                        : product, existingCriteriaSetMap.get(ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE),
+                                        0);
                                 existingCriteriaSetMap.put(ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE, rushTimeCriteriaSet);
                             } else {
                                 rushTimeProcessor.registerExistingValuesForReference(
@@ -672,7 +717,7 @@ public class ImportTransformer {
                                                     new ArrayList<ProductCriteriaSets>());
                                         }
                                         newOptionsCriteriaSets.get(prdCriteriaSets.getCriteriaCode()).add(prdCriteriaSets);
-                                        //productCriteriaSetsAry[cntr] = prdCriteriaSets;
+                                        // productCriteriaSetsAry[cntr] = prdCriteriaSets;
                                         cntr++;
                                     } else {
                                         // productCriteriaSetsAry = Arrays.copyOf(productCriteriaSetsAry,
@@ -736,68 +781,71 @@ public class ImportTransformer {
 
                     // Dimensions Parsing Starts Here
                     try {
-                    if (!CommonUtilities.isUpdateNeeded(sizeGroups) || !CommonUtilities.isUpdateNeeded(sizeValues)) {
-                        // No need to change anything
-                        // Get size group related CriteriaSet
-                        ProductCriteriaSets sizeCriteriaSet = productSizeGroupProcessor.getSizeRelatedCriteriaSetFromExisting(existingCriteriaSetMap);
-                        if (sizeCriteriaSet != null) {
-                            productSizeGroupProcessor.registerExistingValuesForReference(sizeCriteriaSet, product.getExternalProductId());
-                        }
-                    } else if (CommonUtilities.isValueNull(sizeGroups) || CommonUtilities.isValueNull(sizeValues)) {
-                        // Remove from existing collection
-                        existingCriteriaSetMap = productSizeGroupProcessor
-                                .removeSizeRelatedCriteriaSetFromExisting(existingCriteriaSetMap);
-                    } else if (null != sizeGroups && !sizeGroups.trim().equals("")
-                            && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_NULL_SMALL)) {
-                        LOGGER.info("SizeGroups Transformation Starts :" + sizeGroups);
-                        ProductCriteriaSets sizeCriteriaSets = null;
-                        if (!sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_DIMENSION)
-                                && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_CAPACITY)
-                                && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_VOLUME_WEIGHT)) {
-                            if (!sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_HOSIERY_UNIFORM)
-                                    && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_INFANT_TODDLER)
-                                    && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_DRESS_SHIRT_SIZES)
-                                    && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_PANTS_SIZES)
-                                    && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_BRA_SIZES)
-                                    && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_STANDARD_NUMBERED))
-                                sizeGroups = ApplicationConstants.CONST_SIZE_OTHER_CODE;
-                            if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_HOSIERY_UNIFORM))
-                                sizeValues = sizeValues.toUpperCase();
-                            if (null != sizeValues && !sizeValues.trim().equals("")) {
-                                // cntr = productCriteriaSetsAry.length + 1;
-                                sizeCriteriaSets = productParser.addCriteriaSetForCriteriaCode(existingProduct, product,
-                                        sizeGroups, sizeValues, emptyDescription);
+                        if (!CommonUtilities.isUpdateNeeded(sizeGroups) || !CommonUtilities.isUpdateNeeded(sizeValues)) {
+                            // No need to change anything
+                            // Get size group related CriteriaSet
+                            ProductCriteriaSets sizeCriteriaSet = productSizeGroupProcessor
+                                    .getSizeRelatedCriteriaSetFromExisting(existingCriteriaSetMap);
+                            if (sizeCriteriaSet != null) {
+                                productSizeGroupProcessor.registerExistingValuesForReference(sizeCriteriaSet,
+                                        product.getExternalProductId());
                             }
-                        } else if (!sizeGroups.equals("")) {
-                            String[] tmpSizeValuesAry = sizeValues.split(":");
-                            if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_DIMENSION)
-                                    && tmpSizeValuesAry.length > 3) {
-                                sizeCriteriaSets = productParser.addCriteriaSetForSizes(sizeValues, existingProduct, product,
-                                        sizeGroups, productCriteriaSetsAry);
-                            } else if (tmpSizeValuesAry.length > 1) {
-                                sizeCriteriaSets = productParser.addCriteriaSetForSizes(sizeValues, existingProduct, product,
-                                        sizeGroups, productCriteriaSetsAry);
-                            }
+                        } else if (CommonUtilities.isValueNull(sizeGroups) || CommonUtilities.isValueNull(sizeValues)) {
+                            // Remove from existing collection
+                            existingCriteriaSetMap = productSizeGroupProcessor
+                                    .removeSizeRelatedCriteriaSetFromExisting(existingCriteriaSetMap);
+                        } else if (null != sizeGroups && !sizeGroups.trim().equals("")
+                                && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_NULL_SMALL)) {
+                            LOGGER.info("SizeGroups Transformation Starts :" + sizeGroups);
+                            ProductCriteriaSets sizeCriteriaSets = null;
+                            if (!sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_DIMENSION)
+                                    && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_CAPACITY)
+                                    && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_VOLUME_WEIGHT)) {
+                                if (!sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_HOSIERY_UNIFORM)
+                                        && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_INFANT_TODDLER)
+                                        && !sizeGroups
+                                                .equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_DRESS_SHIRT_SIZES)
+                                        && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_PANTS_SIZES)
+                                        && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_BRA_SIZES)
+                                        && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_STANDARD_NUMBERED))
+                                    sizeGroups = ApplicationConstants.CONST_SIZE_OTHER_CODE;
+                                if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_HOSIERY_UNIFORM))
+                                    sizeValues = sizeValues.toUpperCase();
+                                if (null != sizeValues && !sizeValues.trim().equals("")) {
+                                    // cntr = productCriteriaSetsAry.length + 1;
+                                    sizeCriteriaSets = productParser.addCriteriaSetForCriteriaCode(existingProduct, product,
+                                            sizeGroups, sizeValues, emptyDescription);
+                                }
+                            } else if (!sizeGroups.equals("")) {
+                                String[] tmpSizeValuesAry = sizeValues.split(":");
+                                if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_DIMENSION)
+                                        && tmpSizeValuesAry.length > 3) {
+                                    sizeCriteriaSets = productParser.addCriteriaSetForSizes(sizeValues, existingProduct, product,
+                                            sizeGroups, productCriteriaSetsAry);
+                                } else if (tmpSizeValuesAry.length > 1) {
+                                    sizeCriteriaSets = productParser.addCriteriaSetForSizes(sizeValues, existingProduct, product,
+                                            sizeGroups, productCriteriaSetsAry);
+                                }
 
-                        }
-                        if (sizeCriteriaSets != null) {
-                            String criteriaCode = sizeCriteriaSets.getCriteriaCode();
-                            ProductCriteriaSets exisitingCriteriaSet = existingCriteriaSetMap.get(criteriaCode);
-                            if (exisitingCriteriaSet == null) {
-                                existingCriteriaSetMap = productSizeGroupProcessor
-                                        .removeSizeRelatedCriteriaSetFromExisting(existingCriteriaSetMap);
-                                exisitingCriteriaSet = productSizeGroupProcessor.compareAndUpdateSizeGroup(existingProduct,
-                                        sizeCriteriaSets, exisitingCriteriaSet);
-                            } else {
-                                exisitingCriteriaSet = productSizeGroupProcessor.compareAndUpdateSizeGroup(existingProduct,
-                                        sizeCriteriaSets, exisitingCriteriaSet);
                             }
-                            if (exisitingCriteriaSet != null) {
-                                existingCriteriaSetMap.put(criteriaCode, exisitingCriteriaSet);
+                            if (sizeCriteriaSets != null) {
+                                String criteriaCode = sizeCriteriaSets.getCriteriaCode();
+                                ProductCriteriaSets exisitingCriteriaSet = existingCriteriaSetMap.get(criteriaCode);
+                                if (exisitingCriteriaSet == null) {
+                                    existingCriteriaSetMap = productSizeGroupProcessor
+                                            .removeSizeRelatedCriteriaSetFromExisting(existingCriteriaSetMap);
+                                    exisitingCriteriaSet = productSizeGroupProcessor.compareAndUpdateSizeGroup(existingProduct,
+                                            sizeCriteriaSets, exisitingCriteriaSet);
+                                } else {
+                                    exisitingCriteriaSet = productSizeGroupProcessor.compareAndUpdateSizeGroup(existingProduct,
+                                            sizeCriteriaSets, exisitingCriteriaSet);
+                                }
+                                if (exisitingCriteriaSet != null) {
+                                    existingCriteriaSetMap.put(criteriaCode, exisitingCriteriaSet);
+                                }
                             }
+                            LOGGER.info("SizeGroups Transformation Ends");
                         }
-                        LOGGER.info("SizeGroups Transformation Ends");
-                    }
                     } catch (Exception e) {
                         LOGGER.error("Excepiton while processing SIZE CriteriaSetValues", e);
                     }
@@ -1091,7 +1139,7 @@ public class ImportTransformer {
                         } else {
                             product.setShipperBillsByCode(commonUtils.parseWeightValue(product.getShipperBillsByCode()));
                         }
-                        
+
                     } else if (product.getShipperBillsByCode() != null && !product.getShipperBillsByCode().trim().isEmpty()
                             && !product.getShipperBillsByCode().equalsIgnoreCase(ApplicationConstants.CONST_STRING_NULL_CAP)) {
                         LOGGER.info("Invalid ShipperBillsByCode : " + product.getShipperBillsByCode());
@@ -1114,7 +1162,7 @@ public class ImportTransformer {
                     } else if (CommonUtilities.isValueNull(product.getAddtionalShippingInfo())) {
                         if (!isNewProduct) {
                             existingProduct.setAddtionalShippingInfo("");
-                        } else  {
+                        } else {
                             product.setAddtionalShippingInfo("");
                         }
                     } else {
@@ -1142,8 +1190,8 @@ public class ImportTransformer {
                             if (relationShip != null) {
                                 // Before adding relationship we need to check for existence of this relationship
                                 if (existingProduct != null) {
-                                    relationShip = productParser.compareAndUpdateRelationship(tempExtRelations,
-                                            relationShip, ApplicationConstants.CONST_ARTWORK_CODE, productCriteriaSetsAry);
+                                    relationShip = productParser.compareAndUpdateRelationship(tempExtRelations, relationShip,
+                                            ApplicationConstants.CONST_ARTWORK_CODE, productCriteriaSetsAry);
                                 }
                                 if (relationShip != null) {
                                     relationShips.put(ApplicationConstants.CONST_ARTWORK_CODE, relationShip);
@@ -1183,8 +1231,8 @@ public class ImportTransformer {
 
                             if (relationShip != null) {
                                 if (existingProduct != null) {
-                                    relationShip = productParser.compareAndUpdateRelationship(tempExtRelations,
-                                            relationShip, ApplicationConstants.CONST_MINIMUM_QUANTITY, productCriteriaSetsAry);
+                                    relationShip = productParser.compareAndUpdateRelationship(tempExtRelations, relationShip,
+                                            ApplicationConstants.CONST_MINIMUM_QUANTITY, productCriteriaSetsAry);
                                 }
                                 if (relationShip != null) {
                                     relationShips.put(ApplicationConstants.CONST_MINIMUM_QUANTITY, relationShip);
@@ -1307,7 +1355,8 @@ public class ImportTransformer {
                                     tempPriceGrids.setIsQUR(CommonUtilities.parseBooleanValue(actualPriceGrids[priceTypeCntr]));
 
                                     if (priceTypeCntr % 2 == 0) {
-                                        tempPriceGrids.setPriceGridSubTypeCode(PriceGridUtil.getPriceGridSubTypeCode(priceCriteriaAry[priceTypeCntr], priceCriteria2Ary[priceTypeCntr], true));
+                                        tempPriceGrids.setPriceGridSubTypeCode(PriceGridUtil.getPriceGridSubTypeCode(
+                                                priceCriteriaAry[priceTypeCntr], priceCriteria2Ary[priceTypeCntr], true));
                                         String priceGridDescription = "";
                                         // priceCriteriaAry[priceTypeCntr] will be in this format<criteriaCode>:<criteriaCodevalues
                                         // separated by ,>
@@ -1430,7 +1479,8 @@ public class ImportTransformer {
                                                     "Upcharge criteria 1 is required for creating Upcharge PriceGrid");
                                             continue;
                                         }
-                                        tempPriceGrids.setPriceGridSubTypeCode(PriceGridUtil.getPriceGridSubTypeCode(priceCriteriaAry[priceTypeCntr], priceCriteria2Ary[priceTypeCntr], false));
+                                        tempPriceGrids.setPriceGridSubTypeCode(PriceGridUtil.getPriceGridSubTypeCode(
+                                                priceCriteriaAry[priceTypeCntr], priceCriteria2Ary[priceTypeCntr], false));
                                         String tempCriteriaCode = priceGridParser
                                                 .getCriteriaCodeFromPriceCriteria(priceCriteriaAry[priceTypeCntr]);
                                         if (!CommonUtilities.isValueNull(basePriceCriteria1Code)
@@ -1723,7 +1773,7 @@ public class ImportTransformer {
                             }
                         } else if (!isSimplifiedPG && existingProduct != null) {
                             product.setProductNumbers(productNumberCriteriaParser.generateProductNumberCriterias(product,
-                             existingProduct));
+                                    existingProduct));
                             if (null != existingProduct.getProductNumbers() && !existingProduct.getProductNumbers().isEmpty()) {
                                 List<ProductNumbers> productNumbers = productNumberCriteriaParser.getValidProductNumbers(
                                         existingProduct.getProductNumbers(), criteriaSetValueIds, isSimplifiedPG);
@@ -1733,8 +1783,8 @@ public class ImportTransformer {
                                 product.setProductNumbers(new ArrayList<ProductNumbers>());
                             }
                         } else {
-                             product.setProductNumbers(productNumberCriteriaParser.generateProductNumberCriterias(product,
-                             existingProduct));
+                            product.setProductNumbers(productNumberCriteriaParser.generateProductNumberCriterias(product,
+                                    existingProduct));
                             if (existingProduct != null && existingProduct.getProductNumbers() != null
                                     && !existingProduct.getProductNumbers().isEmpty()) {
                                 List<ProductNumbers> productNumbers = productNumberCriteriaParser.getValidProductNumbers(
@@ -1775,17 +1825,6 @@ public class ImportTransformer {
                         product.setProductMediaCitations(new ProductMediaCitations[] {});
                     }
 
-                    // Safety Warning Start Here
-                    if (isNewProduct) {
-                        product.setSelectedSafetyWarnings(safetyWarningProcessor.getSelectedSafetyWarnings(
-                                product.getSelectedSafetyWarnings()[0].getCode(), product.getExternalProductId(), product.getId(),
-                                existingProduct));
-                    } else {
-                        existingProduct.setSelectedSafetyWarnings(safetyWarningProcessor.getSelectedSafetyWarnings(
-                                product.getSelectedSafetyWarnings()[0].getCode(), existingProduct.getExternalProductId(),
-                                existingProduct.getId(), existingProduct));
-                    }
-
                     // Media Items Start here
                     ProductMediaItems[] productMediaItems = product.getProductMediaItems();
                     String mediaUrl = productMediaItems[0].getMedia().getUrl();
@@ -1822,25 +1861,28 @@ public class ImportTransformer {
                     }
                     LOGGER.info("Compliance Certs Transformation Completed ");
 
-                    LOGGER.info("Started Processing product keywords");
-                    if (isNewProduct) {
-                        product.setProductKeywords(ProductCompareUtil.comapreAndUpdateKeywords(product.getProductKeywords(),
-                                existingProduct));
-                    } else {
-                        existingProduct.setProductKeywords(ProductCompareUtil.comapreAndUpdateKeywords(
-                                product.getProductKeywords(), existingProduct));
-                    }
-                    LOGGER.info("Completed product keywords");
-
-                    LOGGER.info("Started Processing Product Categories");
-                    if (isNewProduct) {
-                        product.setSelectedProductCategories(ProductCompareUtil.compareAndUpdateCategories(
-                                product.getSelectedProductCategories(), product, existingProduct));
-                    } else {
-                        existingProduct.setSelectedProductCategories(ProductCompareUtil.compareAndUpdateCategories(
-                                product.getSelectedProductCategories(), product, existingProduct));
-                    }
-                    LOGGER.info("Completed Processing Product Categories");
+                    /*
+                     * LOGGER.info("Started Processing product keywords");
+                     * if (isNewProduct) {
+                     * product.setProductKeywords(ProductCompareUtil.comapreAndUpdateKeywords(product.getProductKeywords(),
+                     * existingProduct));
+                     * } else {
+                     * existingProduct.setProductKeywords(ProductCompareUtil.comapreAndUpdateKeywords(
+                     * product.getProductKeywords(), existingProduct));
+                     * }
+                     * 
+                     * LOGGER.info("Completed product keywords");
+                     * 
+                     * LOGGER.info("Started Processing Product Categories");
+                     * if (isNewProduct) {
+                     * product.setSelectedProductCategories(ProductCompareUtil.compareAndUpdateCategories(
+                     * product.getSelectedProductCategories(), product, existingProduct));
+                     * } else {
+                     * existingProduct.setSelectedProductCategories(ProductCompareUtil.compareAndUpdateCategories(
+                     * product.getSelectedProductCategories(), product, existingProduct));
+                     * }
+                     * LOGGER.info("Completed Processing Product Categories");
+                     */
 
                     if (isNewProduct) {
                         currentMsg = JsonProcessor.convertBeanToJson(product);
@@ -1850,14 +1892,16 @@ public class ImportTransformer {
                     LOGGER.info("Product At Str: " + currentMsg);
                     // Removing elements from reference table which are belongs to this externalProductId from reference table
                     productDataStore.removeEntryFromCriteriaReferenceTable(product.getExternalProductId().trim());
-                   //muleMessage.setProperty("XID", product.getExternalProductId(), PropertyScope.SESSION); // DO NOT REMOVE THIS
-                   // muleMessage.setPayload(currentMsg);
+                    // muleMessage.setProperty("XID", product.getExternalProductId(), PropertyScope.SESSION); // DO NOT REMOVE THIS
+                    // muleMessage.setPayload(currentMsg);
                     // muleMessage.setPayload(currentMsg);
                     // muleMessage.setPayload(NullPayload.getInstance());
-              /*      String numberOfRecordFailedToProcess = String.valueOf(muleMessage.getProperty("recordFailedToProcess",
-                            PropertyScope.SESSION));
-                    muleMessage.setProperty("recordFailedToProcess",
-                            String.valueOf(Integer.parseInt(numberOfRecordFailedToProcess) - 1), PropertyScope.SESSION);*/
+                    /*
+                     * String numberOfRecordFailedToProcess = String.valueOf(muleMessage.getProperty("recordFailedToProcess",
+                     * PropertyScope.SESSION));
+                     * muleMessage.setProperty("recordFailedToProcess",
+                     * String.valueOf(Integer.parseInt(numberOfRecordFailedToProcess) - 1), PropertyScope.SESSION);
+                     */
 
                 }
 
@@ -1870,24 +1914,26 @@ public class ImportTransformer {
                     LOGGER.info("External Id Should not be Empty ");
                     batchErrorLogs += "$batch:" + ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD + ":External Id is required field";
                 }
-                /*if (null == product.getName()) {
-                    LOGGER.info("Product Name Should not be Null ");
-                    batchErrorLogs += "$Ext-" + product.getExternalProductId() + ":"
-                            + ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD + ":Product_Name is a required field";
-                } else if (product.getName().equals("")) {
-                    LOGGER.info("Product Name Should not be Empty ");
-                    batchErrorLogs += "$Ext-" + product.getExternalProductId() + ":"
-                            + ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD + ":Product_Name is a required field";
-                }
-                if (null == product.getDescription()) {
-                    LOGGER.info(product.getName() + " Product Description Should not be Null ");
-                    batchErrorLogs += "$Ext-" + product.getExternalProductId() + ":"
-                            + ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD + ":Product Description is a required field";
-                } else if (product.getDescription().equals("")) {
-                    LOGGER.info(product.getName() + " Product Description Should not be Empty ");
-                    batchErrorLogs += "$Ext-" + product.getExternalProductId() + ":"
-                            + ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD + ":Product Description is a required field";
-                }*/
+                /*
+                 * if (null == product.getName()) {
+                 * LOGGER.info("Product Name Should not be Null ");
+                 * batchErrorLogs += "$Ext-" + product.getExternalProductId() + ":"
+                 * + ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD + ":Product_Name is a required field";
+                 * } else if (product.getName().equals("")) {
+                 * LOGGER.info("Product Name Should not be Empty ");
+                 * batchErrorLogs += "$Ext-" + product.getExternalProductId() + ":"
+                 * + ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD + ":Product_Name is a required field";
+                 * }
+                 * if (null == product.getDescription()) {
+                 * LOGGER.info(product.getName() + " Product Description Should not be Null ");
+                 * batchErrorLogs += "$Ext-" + product.getExternalProductId() + ":"
+                 * + ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD + ":Product Description is a required field";
+                 * } else if (product.getDescription().equals("")) {
+                 * LOGGER.info(product.getName() + " Product Description Should not be Empty ");
+                 * batchErrorLogs += "$Ext-" + product.getExternalProductId() + ":"
+                 * + ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD + ":Product Description is a required field";
+                 * }
+                 */
                 if (product.getCompanyId() == null || product.getCompanyId().isEmpty()) {
                     LOGGER.info(product.getName() + "Product Company Id not be null");
                     batchErrorLogs += "$Ext-" + product.getExternalProductId() + ":"
@@ -1899,7 +1945,7 @@ public class ImportTransformer {
                 productDataStore.removeEntryFromCriteriaReferenceTable(product.getExternalProductId().trim());
 
                 batchErrorLogs = ProductDataStore.updateBatchError(product.getExternalProductId(), batchErrorLogs);
-                //muleMessage.setPayload(null);
+                // muleMessage.setPayload(null);
             }
         } catch (VelocityException ve) {
             LOGGER.error("Velocity Exception occured while processing product", ve);
@@ -1907,40 +1953,47 @@ public class ImportTransformer {
             // Removing elements from reference table which are belongs to this externalProductId from reference table
             productDataStore.removeEntryFromCriteriaReferenceTable(product.getExternalProductId().trim());
 
-            /*if (ve.getExceptionType() != null && ExceptionType.INTERNAL_SERVER_ERROR.equals(ve.getExceptionType())) {
-                String errors = muleMessage.getProperty("INT_SER_ERR", PropertyScope.SESSION) != ApplicationConstants.CONST_STRING_NULL_SMALL ? ""
-                        : muleMessage.getProperty("INT_SER_ERR", PropertyScope.SESSION).toString();
-                errors += "$ERR-CODE-500:Ext-PRD-" + product.getExternalProductId() + ":" + ve.getMessage();
-
-                muleMessage.setProperty("INT_SER_ERR", errors, PropertyScope.SESSION);
-            } else {
-                String errors = muleMessage.getProperty("INT_SER_ERR", PropertyScope.SESSION) != ApplicationConstants.CONST_STRING_NULL_SMALL ? ""
-                        : muleMessage.getProperty("INT_SER_ERR", PropertyScope.SESSION).toString();
-
-                errors += "$ERR-CODE-500:Ext-PRD-" + product.getExternalProductId() + ":" + ve.getMessage();
-                muleMessage.setProperty("INT_SER_ERR", errors, PropertyScope.SESSION);
-            }
-            batchErrorLogs += "$Ext-" + product.getExternalProductId() + ":" + ApplicationConstants.CONST_BATCH_ERR_GENERIC_PLHDR
-                    + ":" + ve.getMessage();
-            batchErrorLogs = ProductDataStore.updateBatchError(product.getExternalProductId(), batchErrorLogs);
-            muleMessage.setPayload(null);*/
+            /*
+             * if (ve.getExceptionType() != null && ExceptionType.INTERNAL_SERVER_ERROR.equals(ve.getExceptionType())) {
+             * String errors = muleMessage.getProperty("INT_SER_ERR", PropertyScope.SESSION) !=
+             * ApplicationConstants.CONST_STRING_NULL_SMALL ? ""
+             * : muleMessage.getProperty("INT_SER_ERR", PropertyScope.SESSION).toString();
+             * errors += "$ERR-CODE-500:Ext-PRD-" + product.getExternalProductId() + ":" + ve.getMessage();
+             * 
+             * muleMessage.setProperty("INT_SER_ERR", errors, PropertyScope.SESSION);
+             * } else {
+             * String errors = muleMessage.getProperty("INT_SER_ERR", PropertyScope.SESSION) !=
+             * ApplicationConstants.CONST_STRING_NULL_SMALL ? ""
+             * : muleMessage.getProperty("INT_SER_ERR", PropertyScope.SESSION).toString();
+             * 
+             * errors += "$ERR-CODE-500:Ext-PRD-" + product.getExternalProductId() + ":" + ve.getMessage();
+             * muleMessage.setProperty("INT_SER_ERR", errors, PropertyScope.SESSION);
+             * }
+             * batchErrorLogs += "$Ext-" + product.getExternalProductId() + ":" + ApplicationConstants.CONST_BATCH_ERR_GENERIC_PLHDR
+             * + ":" + ve.getMessage();
+             * batchErrorLogs = ProductDataStore.updateBatchError(product.getExternalProductId(), batchErrorLogs);
+             * muleMessage.setPayload(null);
+             */
         } catch (Exception ex) {
             LOGGER.error("Exception occured while processing product", ex);
-            /*// Removing elements from reference table which are belongs to this externalProductId from reference table
-            productDataStore.removeEntryFromCriteriaReferenceTable(product.getExternalProductId().trim());
-
-            batchErrorLogs = ProductDataStore.updateBatchError(product.getExternalProductId(), batchErrorLogs);
-            batchErrorLogs += "$error:" + ApplicationConstants.CONST_BATCH_ERR_GENERIC_PLHDR + ":" + ex.getMessage();
-
-            String errors = muleMessage.getProperty("INT_SER_ERR", PropertyScope.SESSION) != ApplicationConstants.CONST_STRING_NULL_SMALL ? ""
-                    : muleMessage.getProperty("INT_SER_ERR", PropertyScope.SESSION).toString();
-            errors += "$ERROR:" + ex.getMessage();
-            muleMessage.setProperty("INT_SER_ERR", errors, PropertyScope.SESSION);
-            muleMessage.setPayload(null);*/
+            /*
+             * // Removing elements from reference table which are belongs to this externalProductId from reference table
+             * productDataStore.removeEntryFromCriteriaReferenceTable(product.getExternalProductId().trim());
+             * 
+             * batchErrorLogs = ProductDataStore.updateBatchError(product.getExternalProductId(), batchErrorLogs);
+             * batchErrorLogs += "$error:" + ApplicationConstants.CONST_BATCH_ERR_GENERIC_PLHDR + ":" + ex.getMessage();
+             * 
+             * String errors = muleMessage.getProperty("INT_SER_ERR", PropertyScope.SESSION) !=
+             * ApplicationConstants.CONST_STRING_NULL_SMALL ? ""
+             * : muleMessage.getProperty("INT_SER_ERR", PropertyScope.SESSION).toString();
+             * errors += "$ERROR:" + ex.getMessage();
+             * muleMessage.setProperty("INT_SER_ERR", errors, PropertyScope.SESSION);
+             * muleMessage.setPayload(null);
+             */
         }
 
         batchErrorLogs = ProductDataStore.updateBatchError(product.getExternalProductId(), batchErrorLogs);
-        //muleMessage.setProperty("batchErrorLog", batchErrorLogs, PropertyScope.SESSION);
+        // muleMessage.setProperty("batchErrorLog", batchErrorLogs, PropertyScope.SESSION);
 
         return muleMessage;
     }

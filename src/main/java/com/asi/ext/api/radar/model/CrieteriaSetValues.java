@@ -1,6 +1,7 @@
 package com.asi.ext.api.radar.model;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 public class CrieteriaSetValues {
+	@JsonProperty("ID")
 	private String id;
 	public String getId() {
 		return id;
@@ -32,8 +33,12 @@ public class CrieteriaSetValues {
 	public void setCriteriaSetCodeValues(CriteriaSetCodeValues criteriaSetCodeValues) {
 		this.criteriaSetCodeValues = criteriaSetCodeValues;
 	}
+	@JsonProperty("CriteriaCode")
 	private String crieteriaCode;
+	@JsonProperty("ValueTypeCode")
 	private String valueTypeCode;
+	@JsonProperty("ProductNumber")
 	private String productNumber;
+	@JsonProperty("CriteriaSetCodeValues")
 	private CriteriaSetCodeValues criteriaSetCodeValues;
 }

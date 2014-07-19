@@ -1,12 +1,15 @@
 package com.asi.ext.api.radar.model;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ProductMediaCitationReferences {
-
+	@JsonProperty("ProductId")
     private String                 productId;
+	@JsonProperty("MediaCitationReferenceId")
     private String                 mediaCitationReferenceId;
+	@JsonProperty("MediaCitationId")
     private String                 mediaCitationId;
+	@JsonProperty("IsPrimary")
     private String                 isPrimary;
     @JsonProperty("MediaCitationReference")
     private MediaCitationReference mediaCitationReference;

@@ -1,41 +1,68 @@
 package com.asi.ext.api.radar.model;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 public class PriceGrids {
     @JsonProperty("ID")
     private String               id                     = "0";
+    @JsonProperty("ProductId")
     private String               productId              = "";
+    @JsonProperty("IsBasePrice")
     private String               isBasePrice            = "true";
+    @JsonProperty("IsQUR")
     private String               isQUR                  = "false";
+    @JsonProperty("PriceGridSubTypeCode")
     private String               priceGridSubTypeCode   = "";
+    @JsonProperty("UsageLevelCode")
     private String               usageLevelCode         = "";
+    @JsonProperty("Description")
     private String               description            = "";
+    @JsonProperty("Comment")
     private String               comment                = "";
+    @JsonProperty("IsRange")
     private String               isRange                = "false";
+    @JsonProperty("IsSpecial")
     private String               isSpecial              = "false";
+    @JsonProperty("DisplaySequence")
     private String               displaySequence        = "1";
+    @JsonProperty("IsCopy")
     private String               isCopy                 = "false";
     @JsonProperty("priceIncludes")
     private String               priceIncludes          = "";
+    @JsonProperty("IsPriceIncludesEnabled")
     private String               isPriceIncludesEnabled = "false";
+    @JsonProperty("ApplyOneCode")
     private String               applyOneCode           = "";
+    @JsonProperty("IsApplyOneCodeEnabled")
     private String               isApplyOneCodeEnabled  = "false";
+    @JsonProperty("ErrorMessage")
     private String               errorMessage           = "";
+    @JsonProperty("IsUpArrowEnabled")
     private String               isUpArrowEnabled       = "false";
+    @JsonProperty("IsDownArrowEnabled")
     private String               isDownArrowEnabled     = "false";
+    @JsonProperty("InputMode")
     private String               inputMode              = "";
+    @JsonProperty("TotalVariations")
     private String               totalVariations        = "";
+    @JsonProperty("ConfigDesc")
     private String               configDesc             = "";
+    @JsonProperty("DisplayProductNumber")
     private String               displayProductNumber   = "";
+    @JsonProperty("AllowDeletion")
     private String               allowDeletion          = "";
+    @JsonProperty("Standalone")
     private String               standalone             = "";
+    @JsonProperty("IsNullo")
     private String               isNullo                = "false";
+    @JsonProperty("IsDirty")
     private String               isDirty                = "false";
-
+    @JsonProperty("Currency")
     private Currency             currency               = new Currency();
+    @JsonProperty("Prices")
     private Prices[]             prices                 = {};
+    @JsonProperty("PricingItems")
     private PricingItems[]       pricingItems           = {};
+    @JsonProperty("DiscountRateValues")
     private DiscountRateValues[] discountRateValues     = {};
 
     public PriceGrids() {

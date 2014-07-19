@@ -9,8 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.asi.ext.api.product.criteria.processor.ProductCategoriesProcessor;
-import com.asi.ext.api.product.criteria.processor.ProductKeywordProcessor;
 import com.asi.ext.api.radar.model.CriteriaSetRelationships;
 import com.asi.ext.api.radar.model.CriteriaSetValuePaths;
 import com.asi.ext.api.radar.model.CriteriaSetValues;
@@ -18,11 +16,9 @@ import com.asi.ext.api.radar.model.Product;
 import com.asi.ext.api.radar.model.ProductCriteriaSets;
 import com.asi.ext.api.radar.model.ProductDataSheet;
 import com.asi.ext.api.radar.model.ProductInventoryLink;
-import com.asi.ext.api.radar.model.ProductKeywords;
 import com.asi.ext.api.radar.model.ProductMediaCitations;
 import com.asi.ext.api.radar.model.ProductMediaItems;
 import com.asi.ext.api.radar.model.Relationships;
-import com.asi.ext.api.radar.model.SelectedProductCategories;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 
@@ -37,8 +33,8 @@ public class ProductCompareUtil extends CommonUtilities {
     /**
      * Always set this COMPARE_FLAG to false when a method start processing
      */
-    private static boolean      COMPARE_FLAG        =   false;
-    public static ProductDataStore     productDataStore    = new ProductDataStore();
+    private static boolean         COMPARE_FLAG     = false;
+    public static ProductDataStore productDataStore = new ProductDataStore();
 
     /**
      * Compares the current {@link ProductMediaItems} with existing {@link ProductMediaItems} and
@@ -63,42 +59,51 @@ public class ProductCompareUtil extends CommonUtilities {
 
         return null;
     }
-    
-    
+
     public static boolean checkRequiredFields(Product product, Product existingProduct) {
         boolean isValidForSaving = true;
         String externalProductId = product.getExternalProductId();
         // Check Product Name
-        
+
         if (isValueNull(product.getName())) {
-            productDataStore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD, "Product Name cannot be empty");
+            productDataStore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD,
+                    "Product Name cannot be empty");
             isValidForSaving = false;
         } else if (existingProduct != null && !isUpdateNeeded(product.getName()) && isValueNull(existingProduct.getName())) {
-            productDataStore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD, "Product Name cannot be empty");
+            productDataStore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD,
+                    "Product Name cannot be empty");
             isValidForSaving = false;
         } else if (existingProduct == null && !isUpdateNeeded(product.getName())) {
-            productDataStore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD, "Product Name cannot be empty");
+            productDataStore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD,
+                    "Product Name cannot be empty");
             isValidForSaving = false;
-        } 
+        }
         // Check Product Description
         if (isValueNull(product.getDescription())) {
-            productDataStore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD, "Product Description cannot be empty");
+            productDataStore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD,
+                    "Product Description cannot be empty");
             isValidForSaving = false;
-        } else if (existingProduct != null && !isUpdateNeeded(product.getDescription()) && isValueNull(existingProduct.getDescription())) {
-            productDataStore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD, "Product Description cannot be empty");
+        } else if (existingProduct != null && !isUpdateNeeded(product.getDescription())
+                && isValueNull(existingProduct.getDescription())) {
+            productDataStore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD,
+                    "Product Description cannot be empty");
             isValidForSaving = false;
         } else if (existingProduct == null && !isUpdateNeeded(product.getDescription())) {
-            productDataStore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD, "Product Description cannot be empty");
+            productDataStore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD,
+                    "Product Description cannot be empty");
             isValidForSaving = false;
         }
         // Check product categories
         if (product.getSelectedProductCategories() == null || product.getSelectedProductCategories().length == 0) {
-            productDataStore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD, "Product Categories cannot be empty");
+            productDataStore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD,
+                    "Product Categories cannot be empty");
         } else if (isValueNull(product.getSelectedProductCategories()[0].getCode()) && existingProduct == null) {
-            productDataStore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD, "Product Categories cannot be empty");
+            productDataStore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD,
+                    "Product Categories cannot be empty");
             isValidForSaving = false;
         } else if (!isUpdateNeeded(product.getSelectedProductCategories()[0].getCode()) && existingProduct == null) {
-            productDataStore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD, "Product Categories cannot be empty");
+            productDataStore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD,
+                    "Product Categories cannot be empty");
             isValidForSaving = false;
         }
         return isValidForSaving;
@@ -108,41 +113,40 @@ public class ProductCompareUtil extends CommonUtilities {
             ProductMediaCitations[] newMediaCitations, ProductMediaCitations[] existingMediaCitations) {
         return null;
     }
-    
+
     public static ProductCriteriaSets[] comapreAndUpdateProductCriteriaSet(String criteriaCode,
             ProductCriteriaSets[] currentProductCriteriaSet, ProductCriteriaSets[] existingProductCriteriaSets) {
-        
-        if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_PRODUCT_OPTION) 
+
+        if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_PRODUCT_OPTION)
                 || criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_IMPRINT_OPTION)
                 || criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_PRODUCT_OPTION)) {
             // Multiple CriteriaSetProcessing
-            
-            
+
         } else {
             // Normal CriteriaSet processing
-            
+
         }
         return null;
     }
-    
+
     public static ProductCriteriaSets multipleProductCriteriaSetCompareAndUpdate(Product product, String criteriaCode,
             ProductCriteriaSets currentProductCriteriaSet, List<ProductCriteriaSets> existingProductCriteriaSets,
             boolean requiredValueComaprison) {
         if (existingProductCriteriaSets != null && !existingProductCriteriaSets.isEmpty()) {
-            return multipleProductCriteriaSetCompareAndUpdate(product, criteriaCode, currentProductCriteriaSet, 
+            return multipleProductCriteriaSetCompareAndUpdate(product, criteriaCode, currentProductCriteriaSet,
                     existingProductCriteriaSets.toArray(new ProductCriteriaSets[0]), requiredValueComaprison);
         } else {
             return currentProductCriteriaSet;
         }
     }
-    
+
     public static ProductCriteriaSets multipleProductCriteriaSetCompareAndUpdate(Product product, String criteriaCode,
             ProductCriteriaSets currentProductCriteriaSet, ProductCriteriaSets[] existingProductCriteriaSets,
             boolean requiredValueComaprison) {
         COMPARE_FLAG = false;
-        if (currentProductCriteriaSet != null && currentProductCriteriaSet.getCriteriaSetValues().length > 0 
+        if (currentProductCriteriaSet != null && currentProductCriteriaSet.getCriteriaSetValues().length > 0
                 && existingProductCriteriaSets != null && existingProductCriteriaSets.length > 0) {
-            
+
             if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_ARTWORK_CODE)) {
                 return compareAndUpdateArtworkCriteriaSet(product.getExternalProductId(), currentProductCriteriaSet,
                         existingProductCriteriaSets[0]);
@@ -164,10 +168,10 @@ public class ProductCompareUtil extends CommonUtilities {
         } else {
             return currentProductCriteriaSet;
         }
-        
+
         return currentProductCriteriaSet;
     }
-    
+
     private static ProductCriteriaSets compareAndUpdateArtworkCriteriaSet(String externalPrductId,
             ProductCriteriaSets currentArtworkCrtCets, ProductCriteriaSets extArtworkCrtCets) {
         CriteriaSetValues[] currentCriteriaSetValues = currentArtworkCrtCets.getCriteriaSetValues();
@@ -179,15 +183,15 @@ public class ProductCompareUtil extends CommonUtilities {
             if (currentCriteriaSetValues[i] == null || currentCriteriaSetValues[i].getValue() == null) {
                 continue;
             }
-                    
+
             if (!tempList.isEmpty() && tempList.contains(currentCriteriaSetValues[i].getValue().toString())) {
                 freequency = Collections.frequency(tempList, currentCriteriaSetValues[i].getValue());
             }
-            
-            if (currentCriteriaSetValues[i].getCriteriaSetCodeValues() != null 
-                    && currentCriteriaSetValues[i].getCriteriaSetCodeValues().length > 0 
+
+            if (currentCriteriaSetValues[i].getCriteriaSetCodeValues() != null
+                    && currentCriteriaSetValues[i].getCriteriaSetCodeValues().length > 0
                     && currentCriteriaSetValues[i].getCriteriaSetCodeValues()[0].getSetCodeValueId() != null) {
-                
+
                 CriteriaSetValues criteriaSetValue = getCriteriaSetValueFromExistingList(extCriteriaSetValues, freequency,
                         currentCriteriaSetValues[i].getValue().toString(),
                         currentCriteriaSetValues[i].getCriteriaSetCodeValues()[0].getSetCodeValueId());
@@ -203,28 +207,28 @@ public class ProductCompareUtil extends CommonUtilities {
                     tempList.add(currentCriteriaSetValues[i].getValue().toString());
                     currentCriteriaSetValues[i].setCriteriaSetId(extArtworkCrtCets.getCriteriaSetId());
                 }
-                
+
             }
         }
         currentArtworkCrtCets.setCriteriaSetValues(currentCriteriaSetValues);
         return currentArtworkCrtCets;
     }
-    
+
     private static CriteriaSetValues getCriteriaSetValueFromExistingList(CriteriaSetValues[] extCriteriaSetValues, int fromPos,
             String value, String setCodeValueId) {
-        
+
         if (extCriteriaSetValues != null && extCriteriaSetValues.length > 0 && value != null && setCodeValueId != null) {
             int count = 0;
             for (int i = 0; i < extCriteriaSetValues.length; i++) {
-                if (extCriteriaSetValues[i] != null 
+                if (extCriteriaSetValues[i] != null
                         && extCriteriaSetValues[i].getValue() != null
-                        && extCriteriaSetValues[i].getValue().equals(value) 
-                        && extCriteriaSetValues[i].getCriteriaSetCodeValues() != null 
-                        && extCriteriaSetValues[i].getCriteriaSetCodeValues().length > 0 
+                        && extCriteriaSetValues[i].getValue().equals(value)
+                        && extCriteriaSetValues[i].getCriteriaSetCodeValues() != null
+                        && extCriteriaSetValues[i].getCriteriaSetCodeValues().length > 0
                         && extCriteriaSetValues[i].getCriteriaSetCodeValues()[0].getSetCodeValueId() != null
                         && extCriteriaSetValues[i].getCriteriaSetCodeValues()[0].getSetCodeValueId().equalsIgnoreCase(
                                 setCodeValueId)) {
-                        
+
                     if (count == fromPos) {
                         return extCriteriaSetValues[i];
                     }
@@ -232,9 +236,9 @@ public class ProductCompareUtil extends CommonUtilities {
                 }
             }
         }
-        return null;        
+        return null;
     }
-    
+
     private static ProductCriteriaSets compareAndUpdateSingleCriteriaSetWithExisting(Product product, String criteriaCode,
             ProductCriteriaSets currentProductCriteriaSet, ProductCriteriaSets existingProductCriteriaSet,
             boolean requiredValueComaprison) {
@@ -245,24 +249,24 @@ public class ProductCompareUtil extends CommonUtilities {
         }
         CriteriaSetValues[] crntCriteriaSetValues = currentProductCriteriaSet.getCriteriaSetValues();
         CriteriaSetValues[] existCriteriaSetValues = existingProductCriteriaSet.getCriteriaSetValues();
-        
+
         crntCriteriaSetValues = compareTwoCriteriaSetValueArray(product, criteriaCode, crntCriteriaSetValues,
                 existCriteriaSetValues, requiredValueComaprison);
-        
+
         if (COMPARE_FLAG) { // Matched and updated result
             existingProductCriteriaSet.setIsRequiredForOrder(currentProductCriteriaSet.getIsRequiredForOrder());
             existingProductCriteriaSet.setIsMultipleChoiceAllowed(currentProductCriteriaSet.getIsMultipleChoiceAllowed());
-            
-            currentProductCriteriaSet =  existingProductCriteriaSet;
+
+            currentProductCriteriaSet = existingProductCriteriaSet;
             currentProductCriteriaSet.setCriteriaSetValues(crntCriteriaSetValues);
-         
-            return currentProductCriteriaSet; // TODO Assign operation            
+
+            return currentProductCriteriaSet; // TODO Assign operation
         } else {
             return currentProductCriteriaSet;
-        }            
-        
+        }
+
     }
-    
+
     private static CriteriaSetValues[] compareTwoCriteriaSetValueArray(Product product, String criteriaCode,
             CriteriaSetValues[] currentCriteriaSetValues, CriteriaSetValues[] existCriteriaSetValues,
             boolean requiredValueComaprison) {
@@ -273,7 +277,7 @@ public class ProductCompareUtil extends CommonUtilities {
                     && currentCriteriaSetValues[crntCritiaSetValsCntr].getCriteriaSetCodeValues().length > 0) {
 
                 for (int existCritiaSetValsCntr = 0; existCritiaSetValsCntr < existCriteriaSetValues.length; existCritiaSetValsCntr++) {
-                    
+
                     if (existCriteriaSetValues[existCritiaSetValsCntr].getCriteriaSetCodeValues() != null
                             && existCriteriaSetValues[existCritiaSetValsCntr].getCriteriaSetCodeValues().length > 0) {
                         String existSetCodeValueId = existCriteriaSetValues[existCritiaSetValsCntr].getCriteriaSetCodeValues()[0]
@@ -282,10 +286,11 @@ public class ProductCompareUtil extends CommonUtilities {
                         if (currentCriteriaSetValues[crntCritiaSetValsCntr].getCriteriaSetCodeValues()[0].getSetCodeValueId()
                                 .equals(existSetCodeValueId)) {
 
-                            if (requiredValueComaprison) { 
+                            if (requiredValueComaprison) {
                                 // TODO : Write a function to compare values, because Value can be Object or String better logic is,
                                 // call function based on instance type
-                                if (compareValuesByString(currentCriteriaSetValues[crntCritiaSetValsCntr], existCriteriaSetValues[existCritiaSetValsCntr], criteriaCode)) {
+                                if (compareValuesByString(currentCriteriaSetValues[crntCritiaSetValsCntr],
+                                        existCriteriaSetValues[existCritiaSetValsCntr], criteriaCode)) {
                                     tempCriteriaId = existCriteriaSetValues[existCritiaSetValsCntr].getCriteriaSetId();
                                     productDataStore.updateCriteriaReferenceValueTableById(product.getExternalProductId(),
                                             criteriaCode, currentCriteriaSetValues[crntCritiaSetValsCntr].getId(),
@@ -295,7 +300,7 @@ public class ProductCompareUtil extends CommonUtilities {
                                     break;
                                 }
                             } else {
-                                //currentCriteriaSetValues[crntCritiaSetValsCntr].setCriteriaSetId(existCriteriaSet.getCriteriaSetId());
+                                // currentCriteriaSetValues[crntCritiaSetValsCntr].setCriteriaSetId(existCriteriaSet.getCriteriaSetId());
                                 COMPARE_FLAG = true;
                                 tempCriteriaId = existCriteriaSetValues[existCritiaSetValsCntr].getCriteriaSetId();
                                 productDataStore.updateCriteriaReferenceValueTableById(product.getExternalProductId(),
@@ -306,11 +311,11 @@ public class ProductCompareUtil extends CommonUtilities {
                             }
                         }
                     }
-                   
+
                 }
             }
         }
-        
+
         if (COMPARE_FLAG) { // which mean if at least one match was found then the entire new data belongs to exisitng criteriaSet
             for (int crntCritiaSetValsCntr = 0; crntCritiaSetValsCntr < currentCriteriaSetValues.length; crntCritiaSetValsCntr++) {
                 currentCriteriaSetValues[crntCritiaSetValsCntr].setCriteriaSetId(tempCriteriaId);
@@ -318,35 +323,34 @@ public class ProductCompareUtil extends CommonUtilities {
         }
         return currentCriteriaSetValues;
     }
-    
+
     public void registerExitingCriteriaValuesToReferenceTable(String externalProductId, String criteriaCode,
             ProductCriteriaSets[] productCriteriaSets) {
         CriteriaValueDecoder criteriaValueDecoder = new CriteriaValueDecoder();
         if (productCriteriaSets != null && productCriteriaSets.length > 0 && !isValueNull(criteriaCode)) {
             for (int i = 0; i < productCriteriaSets.length; i++) {
-                
+
                 if (productCriteriaSets[i] != null) {
                     if (ProductParser.isOptionGroup(criteriaCode)) {
                         criteriaValueDecoder.updateOptionCriteriaValuesToReference(externalProductId, productCriteriaSets[i]);
-                    } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_TRADE_NAME_CODE) 
+                    } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_TRADE_NAME_CODE)
                             || criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_ORIGIN_CRITERIA_CODE)
-                            || criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_PACKAGE_CRITERIA_CODE)){
+                            || criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_PACKAGE_CRITERIA_CODE)) {
                         criteriaValueDecoder.updateSimpleCriteriaValuesToReference(externalProductId, productCriteriaSets[i]);
                     }
                 }
             }
         }
     }
-    
-    
+
     public Relationships[] compareAndUpdateRelationships(Relationships[] currentRelationships, Relationships[] existingRelationships) {
-        // We need to skip IMMD X ARTW and IMMD X MINO relationship here because we already corrected it, 
+        // We need to skip IMMD X ARTW and IMMD X MINO relationship here because we already corrected it,
         // Because there are other relationships also available in this relationship array
         // We need to validate those element as well otherwise save may get Failed
         List<Relationships> currentRelationshiList = currentRelationships != null ? Arrays.asList(currentRelationships)
                 : new ArrayList<Relationships>();
         if (existingRelationships != null && existingRelationships.length > 0) {
-            // Iterate each relationships 
+            // Iterate each relationships
             for (Relationships relationship : existingRelationships) {
                 // Null check and Skip IMMD X ARTW and IMMD X MINO relationship
                 if (relationship != null && !relationship.getName().equalsIgnoreCase("Imprint Method x Artwork")
@@ -357,12 +361,12 @@ public class ProductCompareUtil extends CommonUtilities {
                      * }
                      */
                 }
-                
+
             }
         }
         return currentRelationshiList.toArray(new Relationships[0]);
     }
-    
+
     public Relationships getValidRelationshipForCriteriaCodes(ProductCriteriaSets[] productCriteriaSets,
             Relationships[] relationships, String criteriaCode1, String criteriaCode2, List<String> criteriaSetValueIds) {
         if (productCriteriaSets.length < 0) {
@@ -370,7 +374,7 @@ public class ProductCompareUtil extends CommonUtilities {
         }
         Relationships relationships2 = getRelationshipBasedOnCriteriaCodes(relationships, criteriaCode1, criteriaCode2,
                 productCriteriaSets);
-        
+
         if (relationships2 != null) {
             relationships2 = validateAndFixRelationship(relationships2, criteriaSetValueIds);
             if (relationships2 != null) {
@@ -381,9 +385,9 @@ public class ProductCompareUtil extends CommonUtilities {
         } else {
             return null;
         }
-        
+
     }
-        
+
     protected Relationships getRelationshipBasedOnCriteriaCodes(Relationships[] relationships, String parentCriteriaCode,
             String childCriteriaCode, ProductCriteriaSets[] productCriteriaSets) {
 
@@ -393,7 +397,7 @@ public class ProductCompareUtil extends CommonUtilities {
         ProductParser productParser = new ProductParser();
         String parentId = null;
         String childId = null;
-        
+
         ProductCriteriaSets parentCriteriaSet = productParser.getCriteriaSetBasedOnCriteriaCode(productCriteriaSets,
                 parentCriteriaCode);
         if (parentCriteriaSet != null) {
@@ -410,18 +414,18 @@ public class ProductCompareUtil extends CommonUtilities {
         if (childId == null || childId.isEmpty()) {
             return null;
         }
-        
+
         return getRelationshipByIds(relationships, parentId, childId);
     }
-    
+
     private Relationships getRelationshipByIds(Relationships[] relationships, String primaryId, String secondaryId) {
         Relationships matchedRelationships = null;
         if (relationships != null && relationships.length > 0) {
-            
+
             for (Relationships relationship : relationships) {
                 boolean parentMatched = false;
                 boolean childMatched = false;
-                
+
                 if (relationship != null) {
                     CriteriaSetRelationships[] criteriaSetRelationships = relationship.getCriteriaSetRelationships();
                     if (criteriaSetRelationships != null && criteriaSetRelationships.length == 2) {
@@ -442,7 +446,6 @@ public class ProductCompareUtil extends CommonUtilities {
         return matchedRelationships;
     }
 
-
     public static Relationships[] validateAllRelationships(Relationships[] relationships, List<String> criteriaSetValueIds) {
         List<Relationships> finalRelationships = new ArrayList<Relationships>();
         for (Relationships rel : relationships) {
@@ -455,7 +458,7 @@ public class ProductCompareUtil extends CommonUtilities {
     }
 
     private static Relationships validateAndFixRelationship(Relationships relationship, List<String> criteriaSetValueIds) {
-        //If any of the criteriaSetValuePath not exists in the referenceTable we ignore that relation
+        // If any of the criteriaSetValuePath not exists in the referenceTable we ignore that relation
         List<CriteriaSetValuePaths> finalCriteriaSetValuePaths = new ArrayList<CriteriaSetValuePaths>();
         if (relationship.getCriteriaSetValuePaths() != null && relationship.getCriteriaSetValuePaths().length > 0) {
             CriteriaSetValuePaths[] criteriaSetValuePaths = relationship.getCriteriaSetValuePaths();
@@ -480,71 +483,80 @@ public class ProductCompareUtil extends CommonUtilities {
             return null;
         }
     }
-    
-   /* protected static Product syncProductWithExisting(Product currentProduct, Product existingProduct) {
-        if (existingProduct != null) {
-            existingProduct.setDescription(CommonUtilities.checkAndUpdate(currentProduct.getDescription(), existingProduct.getDescription()));
-            existingProduct.setSummary(CommonUtilities.checkAndUpdate(currentProduct.getSummary(), existingProduct.getSummary()));
-            existingProduct.setDisclaimer(CommonUtilities.checkAndUpdate(currentProduct.getDisclaimer(), existingProduct.getDisclaimer()));
-            existingProduct.setDistributorComments(CommonUtilities.checkAndUpdate(currentProduct.getDistributorComments(), existingProduct.getDistributorComments()));
 
-            existingProduct.setIsOrderLessThanMinimumAllowed(CommonUtilities.parseBooleanValue(existingProduct.getIsOrderLessThanMinimumAllowed()));
-            existingProduct.setIsAvailableUnimprinted(existingProduct.getIsAvailableUnimprinted());
-            existingProduct.setIsPersonalizationAvailable(existingProduct.getIsPersonalizationAvailable());
-            // TODO : Correct Prod Num
-            existingProduct.setAsiProdNo(CommonUtilities.checkAndUpdate(CommonUtilities.truncate(currentProduct.getAsiProdNo(), 14), existingProduct.getAsiProdNo()));
-            
-            
-        } else {
-            // Update values
-            currentProduct.setDescription(CommonUtilities.checkAndUpdate(currentProduct.getDescription()));
-            currentProduct.setSummary(CommonUtilities.checkAndUpdate(currentProduct.getSummary()));
-            currentProduct.setDisclaimer(CommonUtilities.checkAndUpdate(currentProduct.getDisclaimer()));
-            currentProduct.setDistributorComments(CommonUtilities.checkAndUpdate(currentProduct.getDistributorComments()));
-            
-            currentProduct.setIsOrderLessThanMinimumAllowed(CommonUtilities.checkAndUpdate(CommonUtilities.parseBooleanValue(currentProduct.getIsOrderLessThanMinimumAllowed())));
-            currentProduct.setIsAvailableUnimprinted(CommonUtilities.checkAndUpdate(CommonUtilities.parseBooleanValue(currentProduct.getIsAvailableUnimprinted())));
-            currentProduct.setIsPersonalizationAvailable(CommonUtilities.checkAndUpdate(CommonUtilities.parseBooleanValue(currentProduct.getIsPersonalizationAvailable())));
-            // TODO : Correct Prod Num
-            currentProduct.setAsiProdNo(CommonUtilities.checkAndUpdate(CommonUtilities.truncate(currentProduct.getAsiProdNo(), 14)));
-            
-            
-        }
-        
-        
-        
-        
-        if (!CommonUtilities.isUpdateNeeded(product.getShipperBillsByCode())) {
-            if (existingProduct != null) {
-                product.setShipperBillsByCode(existingProduct.getShipperBillsByCode());
-            } else {
-                product.setShipperBillsByCode(null);
-            }
-        } else if (CommonUtilities.isWordExistsInReservedWordGroup(product.getShipperBillsByCode(),
-                ApplicationConstants.CONST_STRING_GRP_SHIP_BILL_BY, false)) {
-            product.setShipperBillsByCode(commonUtils.parseWeightValue(product.getShipperBillsByCode()));
-        } else if (product.getShipperBillsByCode() != null && !product.getShipperBillsByCode().trim().isEmpty()
-                && !product.getShipperBillsByCode().equalsIgnoreCase(ApplicationConstants.CONST_STRING_NULL_CAP)) {
-            LOGGER.info("Invalid ShipperBillsByCode : " + product.getShipperBillsByCode());
-            batchErrorLogs += "$Ext-" + product.getExternalProductId() + ":"
-                    + ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE + ":Invalid ShipperBillsByCode";
-            product.setShipperBillsByCode(null);
-        }
-        if (!CommonUtilities.isUpdateNeeded(product.getAddtionalShippingInfo())) {
-            if (existingProduct != null) {
-                product.setAddtionalShippingInfo(existingProduct.getAddtionalShippingInfo());
-            } else {
-                product.setAddtionalShippingInfo("");
-            }
-        }
-        
-        currentProduct = existingProduct != null ? existingProduct : currentProduct;
-        return currentProduct;
-    }
-    */
-    
+    /*
+     * protected static Product syncProductWithExisting(Product currentProduct, Product existingProduct) {
+     * if (existingProduct != null) {
+     * existingProduct.setDescription(CommonUtilities.checkAndUpdate(currentProduct.getDescription(),
+     * existingProduct.getDescription()));
+     * existingProduct.setSummary(CommonUtilities.checkAndUpdate(currentProduct.getSummary(), existingProduct.getSummary()));
+     * existingProduct.setDisclaimer(CommonUtilities.checkAndUpdate(currentProduct.getDisclaimer(),
+     * existingProduct.getDisclaimer()));
+     * existingProduct.setDistributorComments(CommonUtilities.checkAndUpdate(currentProduct.getDistributorComments(),
+     * existingProduct.getDistributorComments()));
+     * 
+     * existingProduct.setIsOrderLessThanMinimumAllowed(CommonUtilities.parseBooleanValue(existingProduct.
+     * getIsOrderLessThanMinimumAllowed()));
+     * existingProduct.setIsAvailableUnimprinted(existingProduct.getIsAvailableUnimprinted());
+     * existingProduct.setIsPersonalizationAvailable(existingProduct.getIsPersonalizationAvailable());
+     * // TODO : Correct Prod Num
+     * existingProduct.setAsiProdNo(CommonUtilities.checkAndUpdate(CommonUtilities.truncate(currentProduct.getAsiProdNo(), 14),
+     * existingProduct.getAsiProdNo()));
+     * 
+     * 
+     * } else {
+     * // Update values
+     * currentProduct.setDescription(CommonUtilities.checkAndUpdate(currentProduct.getDescription()));
+     * currentProduct.setSummary(CommonUtilities.checkAndUpdate(currentProduct.getSummary()));
+     * currentProduct.setDisclaimer(CommonUtilities.checkAndUpdate(currentProduct.getDisclaimer()));
+     * currentProduct.setDistributorComments(CommonUtilities.checkAndUpdate(currentProduct.getDistributorComments()));
+     * 
+     * currentProduct.setIsOrderLessThanMinimumAllowed(CommonUtilities.checkAndUpdate(CommonUtilities.parseBooleanValue(currentProduct
+     * .getIsOrderLessThanMinimumAllowed())));
+     * currentProduct.setIsAvailableUnimprinted(CommonUtilities.checkAndUpdate(CommonUtilities.parseBooleanValue(currentProduct.
+     * getIsAvailableUnimprinted())));
+     * currentProduct.setIsPersonalizationAvailable(CommonUtilities.checkAndUpdate(CommonUtilities.parseBooleanValue(currentProduct.
+     * getIsPersonalizationAvailable())));
+     * // TODO : Correct Prod Num
+     * currentProduct.setAsiProdNo(CommonUtilities.checkAndUpdate(CommonUtilities.truncate(currentProduct.getAsiProdNo(), 14)));
+     * 
+     * 
+     * }
+     * 
+     * 
+     * 
+     * 
+     * if (!CommonUtilities.isUpdateNeeded(product.getShipperBillsByCode())) {
+     * if (existingProduct != null) {
+     * product.setShipperBillsByCode(existingProduct.getShipperBillsByCode());
+     * } else {
+     * product.setShipperBillsByCode(null);
+     * }
+     * } else if (CommonUtilities.isWordExistsInReservedWordGroup(product.getShipperBillsByCode(),
+     * ApplicationConstants.CONST_STRING_GRP_SHIP_BILL_BY, false)) {
+     * product.setShipperBillsByCode(commonUtils.parseWeightValue(product.getShipperBillsByCode()));
+     * } else if (product.getShipperBillsByCode() != null && !product.getShipperBillsByCode().trim().isEmpty()
+     * && !product.getShipperBillsByCode().equalsIgnoreCase(ApplicationConstants.CONST_STRING_NULL_CAP)) {
+     * LOGGER.info("Invalid ShipperBillsByCode : " + product.getShipperBillsByCode());
+     * batchErrorLogs += "$Ext-" + product.getExternalProductId() + ":"
+     * + ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE + ":Invalid ShipperBillsByCode";
+     * product.setShipperBillsByCode(null);
+     * }
+     * if (!CommonUtilities.isUpdateNeeded(product.getAddtionalShippingInfo())) {
+     * if (existingProduct != null) {
+     * product.setAddtionalShippingInfo(existingProduct.getAddtionalShippingInfo());
+     * } else {
+     * product.setAddtionalShippingInfo("");
+     * }
+     * }
+     * 
+     * currentProduct = existingProduct != null ? existingProduct : currentProduct;
+     * return currentProduct;
+     * }
+     */
+
     public static Product comapreAndUpdateDirectElements(Product product, Product existingProduct) {
-        
+
         product.setChangeProductReasonCode(existingProduct.getChangeProductReasonCode());
         product.setChildChanged(existingProduct.getChildChanged());
         product.setExcludeAppOfferList(existingProduct.getExcludeAppOfferList());
@@ -567,7 +579,7 @@ public class ProductCompareUtil extends CommonUtilities {
         product.setProofSubIssueId(existingProduct.getProofSubIssueId());
         product.setShow1ProdNo(existingProduct.getShow1ProdNo());
         product.setShow1PriceGridId(existingProduct.getShow1PriceGridId());
-        
+
         product.setShow1MediaIdIm(existingProduct.getShow1MediaIdIm());
         product.setShow1MediaIdVd(existingProduct.getShow1MediaIdVd());
         product.setStatusCode(existingProduct.getStatusCode());
@@ -575,16 +587,15 @@ public class ProductCompareUtil extends CommonUtilities {
         product.setVisibleForAllUsersFlag(existingProduct.getVisibleForAllUsersFlag());
         product.setWorkflowStatusCode(existingProduct.getWorkflowStatusCode());
         product.setWorkflowStatusStateCode(existingProduct.getWorkflowStatusStateCode());
-        
+
         return product;
     }
-    
+
     protected static ProductInventoryLink compareAndUpdateInventoryLink(Product currentProduct, Product existingProduct) {
         ProductInventoryLink currentProdLink = currentProduct.getProductInventoryLink();
         if (existingProduct == null) {
             // Check url is null or not
-            if (currentProdLink != null && !isValueNull(currentProdLink.getUrl())
-                    && isUpdateNeeded(currentProdLink.getUrl(), true)) {
+            if (currentProdLink != null && !isValueNull(currentProdLink.getUrl()) && isUpdateNeeded(currentProdLink.getUrl(), true)) {
                 // Verify CompanyID is present if not get it from current product
                 if (isValueNull(currentProdLink.getCompanyId())) {
                     currentProdLink.setCompanyId(currentProdLink.getCompanyId());
@@ -614,10 +625,10 @@ public class ProductCompareUtil extends CommonUtilities {
                 currentProdLink.setProductId(existingProduct.getId());
                 return currentProdLink;
             }
-        }        
+        }
         return currentProdLink;
     }
-    
+
     protected static ProductDataSheet compareAndUpdateProductDatasheet(Product currentProduct, Product existingProduct) {
         ProductDataSheet currentProdDatasheet = currentProduct.getProductDataSheet();
         if (existingProduct == null) {
@@ -639,7 +650,8 @@ public class ProductCompareUtil extends CommonUtilities {
             ProductDataSheet extProdDatasheet = existingProduct.getProductDataSheet();
             if (!isUpdateNeeded(currentProdDatasheet.getUrl())) {
                 currentProdDatasheet = extProdDatasheet;
-            } else if (extProdDatasheet != null && !"0".equalsIgnoreCase(extProdDatasheet.getId()) && !isValueNull(extProdDatasheet.getUrl())) {
+            } else if (extProdDatasheet != null && !"0".equalsIgnoreCase(extProdDatasheet.getId())
+                    && !isValueNull(extProdDatasheet.getUrl())) {
                 // Now compare current element with existing
                 if (extProdDatasheet.getUrl().trim().equalsIgnoreCase(currentProdDatasheet.getUrl())) {
                     return extProdDatasheet;
@@ -653,13 +665,12 @@ public class ProductCompareUtil extends CommonUtilities {
                 currentProdDatasheet.setProductId(existingProduct.getId());
                 return currentProdDatasheet;
             }
-        }        
+        }
         return currentProdDatasheet;
     }
-    
-    public static ProductKeywords[] comapreAndUpdateKeywords(ProductKeywords[] currentProductKeywords,
-            Product existingProduct) {
-        
+
+    /*public static ProductKeywords[] comapreAndUpdateKeywords(ProductKeywords[] currentProductKeywords, Product existingProduct) {
+
         if (currentProductKeywords != null && currentProductKeywords.length > 0) {
             ProductKeywordProcessor productKeywordProcessor = new ProductKeywordProcessor();
             String value = currentProductKeywords[0].getValue();
@@ -673,45 +684,44 @@ public class ProductCompareUtil extends CommonUtilities {
             }
         }
         return new ProductKeywords[0];
-    }
-    
-    public static SelectedProductCategories[] compareAndUpdateCategories(SelectedProductCategories[] selectedProductCategories,
-            Product currentProduct, Product existingProduct) {
+    }*/
+
+  /*  public static SelectedProductCategories[] getCategories(List<String> productCategoryList, String productId,
+            String xid, Product existingProduct) {
         String crntProductCategory = null;
-        if (selectedProductCategories != null && selectedProductCategories.length > 0) {
-            crntProductCategory = selectedProductCategories[0].getCode();
+        if (productCategoryList != null && !productCategoryList.isEmpty()) {
+            crntProductCategory = convertStringListToCSV(productCategoryList);
         }
-        SelectedProductCategories[] productCategories = new ProductCategoriesProcessor().getProductCategories(crntProductCategory, currentProduct.getId(),
-                    currentProduct.getExternalProductId(), existingProduct);
-        
+        SelectedProductCategories[] productCategories = new ProductCategoriesProcessor().getProductCategories(crntProductCategory,
+                productId, xid, existingProduct);
+
         if (productCategories == null || productCategories.length == 0) {
-            productDataStore.addErrorToBatchLogCollection(currentProduct.getExternalProductId(),
-                    ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD, "Product Category is a required field");
-            return new SelectedProductCategories[]{};
+            return new SelectedProductCategories[] {};
         }
         return productCategories;
-    }
-    
-    
+    }*/
+
     public static Map<String, ProductCriteriaSets> getExistingProductCriteriaSets(ProductCriteriaSets[] productCrteriaSets) {
         Map<String, ProductCriteriaSets> productCrteriaSetMap = new HashMap<>();
         for (ProductCriteriaSets criteriaSet : productCrteriaSets) {
             if (criteriaSet != null) {
-                productCrteriaSetMap.put(criteriaSet.getCriteriaCode().trim(), criteriaSet);                
+                productCrteriaSetMap.put(criteriaSet.getCriteriaCode().trim(), criteriaSet);
             }
-        }     
+        }
         return productCrteriaSetMap;
     }
-    public static Map<String, ProductCriteriaSets> getExistingProductCriteriaSets(ProductCriteriaSets[] productCrteriaSets, boolean skipOptions) {
+
+    public static Map<String, ProductCriteriaSets> getExistingProductCriteriaSets(ProductCriteriaSets[] productCrteriaSets,
+            boolean skipOptions) {
         Map<String, ProductCriteriaSets> productCrteriaSetMap = new HashMap<>();
         for (ProductCriteriaSets criteriaSet : productCrteriaSets) {
             if (criteriaSet != null && !isOptionGroup(criteriaSet.getCriteriaCode())) {
-                productCrteriaSetMap.put(criteriaSet.getCriteriaCode().trim(), criteriaSet);                
+                productCrteriaSetMap.put(criteriaSet.getCriteriaCode().trim(), criteriaSet);
             }
-        }     
+        }
         return productCrteriaSetMap;
     }
-    
+
     public static Map<String, List<ProductCriteriaSets>> getOptionCriteriaSets(ProductCriteriaSets[] productCrteriaSets) {
         Map<String, List<ProductCriteriaSets>> options = new HashMap<String, List<ProductCriteriaSets>>();
         for (ProductCriteriaSets criteriaSet : productCrteriaSets) {
@@ -722,10 +732,10 @@ public class ProductCompareUtil extends CommonUtilities {
                 options.get(criteriaSet.getCriteriaCode()).add(criteriaSet);
             }
         }
-        
+
         return options;
     }
-    
+
     protected static Relationships[] mergeRelationShips1(Map<String, Relationships> currentRelationships, Product existingProduct) {
         List<Relationships> finalRelationships = new ArrayList<Relationships>();
         if (existingProduct != null && existingProduct.getRelationships() != null && existingProduct.getRelationships().length > 0) {
@@ -818,6 +828,7 @@ public class ProductCompareUtil extends CommonUtilities {
         }
         return currentImpMethod;
     }
+
     public static void registerFobPoints(String externalProductId, ProductCriteriaSets fobCriteriaSet) {
         CriteriaSetValues[] fobCriteriaValues = fobCriteriaSet.getCriteriaSetValues();
         for (CriteriaSetValues criteriaValue : fobCriteriaValues) {
@@ -852,8 +863,9 @@ public class ProductCompareUtil extends CommonUtilities {
         }
         return value1.trim().equalsIgnoreCase(value2.trim());
     }
-    
-    public static ProductCriteriaSets[] getFinalProductCriteriaSets(Map<String, ProductCriteriaSets> simpleCriteriaSets, Map<String, List<ProductCriteriaSets>> optionGroups, ProductCriteriaSets[] otherCriteriaSets) {
+
+    public static ProductCriteriaSets[] getFinalProductCriteriaSets(Map<String, ProductCriteriaSets> simpleCriteriaSets,
+            Map<String, List<ProductCriteriaSets>> optionGroups, ProductCriteriaSets[] otherCriteriaSets) {
         List<ProductCriteriaSets> finalList = new ArrayList<ProductCriteriaSets>();
         if (simpleCriteriaSets != null && !simpleCriteriaSets.isEmpty()) {
             Collection<ProductCriteriaSets> criteriaSets = simpleCriteriaSets.values();
@@ -875,13 +887,13 @@ public class ProductCompareUtil extends CommonUtilities {
                 }
             }
         }
-        
+
         for (ProductCriteriaSets productCriteriaSets : otherCriteriaSets) {
             if (productCriteriaSets != null) {
                 finalList.add(productCriteriaSets);
             }
         }
-        
+
         return finalList.toArray(new ProductCriteriaSets[0]);
     }
 }

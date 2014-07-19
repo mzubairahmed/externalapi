@@ -1,38 +1,38 @@
 package com.asi.ext.api.radar.model;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Value {
-    @JsonProperty("CriteriaAttributeId")
-    private String criteriaAttributeId = "";
+	@JsonProperty("CriteriaAttributeId")
+	private String criteriaAttributeId = "";
 
-    public String getCriteriaAttributeId() {
-        return criteriaAttributeId;
-    }
+	public String getCriteriaAttributeId() {
+		return criteriaAttributeId;
+	}
 
-    public void setCriteriaAttributeId(String criteriaAttributeId) {
-        this.criteriaAttributeId = criteriaAttributeId;
-    }
+	public void setCriteriaAttributeId(String criteriaAttributeId) {
+		this.criteriaAttributeId = criteriaAttributeId;
+	}
 
-    public String getUnitValue() {
-        return unitValue;
-    }
+	public String getUnitValue() {
+		return unitValue;
+	}
 
-    public void setUnitValue(String unitValue) {
-        this.unitValue = unitValue;
-    }
+	public void setUnitValue(String unitValue) {
+		this.unitValue = unitValue;
+	}
 
-    public String getUnitOfMeasureCode() {
-        return unitOfMeasureCode;
-    }
+	public String getUnitOfMeasureCode() {
+		return unitOfMeasureCode;
+	}
 
-    public void setUnitOfMeasureCode(String unitOfMeasureCode) {
-        this.unitOfMeasureCode = unitOfMeasureCode;
-    }
+	public void setUnitOfMeasureCode(String unitOfMeasureCode) {
+		this.unitOfMeasureCode = unitOfMeasureCode;
+	}
 
-    @JsonProperty("UnitValue")
-    private String unitValue         = "";
-    @JsonProperty("UnitOfMeasureCode")
-    private String unitOfMeasureCode = "";
+	@JsonProperty("UnitValue")
+	private String unitValue = "";
+	@JsonProperty("UnitOfMeasureCode")
+	private String unitOfMeasureCode = "";
 
 }

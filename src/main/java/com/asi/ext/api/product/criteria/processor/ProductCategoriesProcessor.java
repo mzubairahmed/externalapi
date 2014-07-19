@@ -21,11 +21,26 @@ import com.asi.ext.api.util.CommonUtilities;
 public class ProductCategoriesProcessor {
 
     List<SelectedProductCategories> adCategories = new ArrayList<SelectedProductCategories>();
-    
-    public SelectedProductCategories[] getProductCategories(String categories, String productId, String externalPrdId, Product existingProduct) {
+
+    public SelectedProductCategories[] getCategories(List<String> productCategoryList, String productId, String xid,
+            Product existingProduct) {
+        String crntProductCategory = null;
+        if (productCategoryList != null && !productCategoryList.isEmpty()) {
+            crntProductCategory = CommonUtilities.convertStringListToCSV(productCategoryList);
+        }
+        SelectedProductCategories[] productCategories = getProductCategories(crntProductCategory, productId, xid, existingProduct);
+
+        if (productCategories == null || productCategories.length == 0) {
+            return new SelectedProductCategories[] {};
+        }
+        return productCategories;
+    }
+
+    private SelectedProductCategories[] getProductCategories(String categories, String productId, String externalPrdId,
+            Product existingProduct) {
         if (!CommonUtilities.isUpdateNeeded(categories)) {
             if (existingProduct == null) {
-                return new SelectedProductCategories[0];                
+                return new SelectedProductCategories[0];
             } else {
                 return existingProduct.getSelectedProductCategories();
             }
@@ -58,19 +73,21 @@ public class ProductCategoriesProcessor {
                 if (category == null) { // Existing table not found data, create new one
                     category = createNewCategory(categCode, productId);
                 }
-           
+
                 finalCategories.add(category);
-                
+
             } else {
-                // LOG BATCH Invalid Category 
-                productDataStore.addErrorToBatchLogCollection(externalPrdId, ApplicationConstants.CONST_BATCH_ERR_LOOKUP_VALUE_NOT_EXIST, "Invalid product category specified, category "+categ);
+                // LOG BATCH Invalid Category
+                productDataStore.addErrorToBatchLogCollection(externalPrdId,
+                        ApplicationConstants.CONST_BATCH_ERR_LOOKUP_VALUE_NOT_EXIST,
+                        "Invalid product category specified, category " + categ);
             }
         }
 
         return finalCategories.toArray(new SelectedProductCategories[0]);
     }
 
-    public SelectedProductCategories createNewCategory(String code, String productId) {
+    private SelectedProductCategories createNewCategory(String code, String productId) {
 
         SelectedProductCategories newCategory = new SelectedProductCategories();
         newCategory.setCode(code);
@@ -81,21 +98,21 @@ public class ProductCategoriesProcessor {
         return newCategory;
     }
 
-    public Map<String, SelectedProductCategories> getExistingProductCategories(SelectedProductCategories[] categories) {
+    private Map<String, SelectedProductCategories> getExistingProductCategories(SelectedProductCategories[] categories) {
         Map<String, SelectedProductCategories> categoryMap = new HashMap<String, SelectedProductCategories>();
         for (SelectedProductCategories ctg : categories) {
             if (ctg != null) {
                 if (ApplicationConstants.CONST_STRING_TRUE_SMALL.equalsIgnoreCase(ctg.getAdCategoryFlg())) {
                     adCategories.add(ctg);
                 } else {
-                    categoryMap.put(ctg.getCode(), ctg);                    
+                    categoryMap.put(ctg.getCode(), ctg);
                 }
             }
         }
         return categoryMap;
     }
 
-    public String getCategoryCode(String category) {
+    private String getCategoryCode(String category) {
         if (category != null) {
             category = category.trim();
         } else {

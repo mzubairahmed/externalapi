@@ -1,57 +1,50 @@
-
 package com.asi.ext.api.service.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.codehaus.jackson.annotate.JsonAnyGetter;
-import org.codehaus.jackson.annotate.JsonAnySetter;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ProductConfigurations {
 
     @JsonProperty("Colors")
-    private List<Color> colors = new ArrayList<Color>();
+    private List<Color>               colors               = new ArrayList<Color>();
     @JsonProperty("Materials")
-    private List<Material> materials = new ArrayList<Material>();
+    private List<Material>            materials            = new ArrayList<Material>();
     @JsonProperty("Sizes")
-    private List<Size> sizes = new ArrayList<Size>();
+    private List<Size>                sizes                = new ArrayList<Size>();
     @JsonProperty("Shapes")
-    private List<String> shapes = new ArrayList<String>();
+    private List<String>              shapes               = new ArrayList<String>();
     @JsonProperty("Options")
-    private List<Option> options = new ArrayList<Option>();
+    private List<Option>              options              = new ArrayList<Option>();
     @JsonProperty("Origins")
-    private List<String> origins = new ArrayList<String>();
+    private List<String>              origins              = new ArrayList<String>();
     @JsonProperty("Packaging")
-    private List<String> packaging = new ArrayList<String>();
+    private List<String>              packaging            = new ArrayList<String>();
     @JsonProperty("TradeNames")
-    private List<String> tradeNames = new ArrayList<String>();
+    private List<String>              tradeNames           = new ArrayList<String>();
     @JsonProperty("ImprintMethods")
-    private List<ImprintMethod> imprintMethods = new ArrayList<ImprintMethod>();
+    private List<ImprintMethod>       imprintMethods       = new ArrayList<ImprintMethod>();
     @JsonProperty("ProductionTime")
-    private List<ProductionTime> productionTime = new ArrayList<ProductionTime>();
+    private List<ProductionTime>      productionTime       = new ArrayList<ProductionTime>();
     @JsonProperty("RushTime")
-    private List<RushTime> rushTime = new ArrayList<RushTime>();
+    private List<RushTime>            rushTime             = new ArrayList<RushTime>();
     @JsonProperty("AdditionalColors")
-    private List<String> additionalColors = new ArrayList<String>();
+    private List<String>              additionalColors     = new ArrayList<String>();
     @JsonProperty("AdditionalLocations")
-    private List<String> additionalLocations = new ArrayList<String>();
+    private List<String>              additionalLocations  = new ArrayList<String>();
     @JsonProperty("ImprintColors")
-    private List<ImprintColor> imprintColors = new ArrayList<ImprintColor>();
+    private List<ImprintColor>        imprintColors        = new ArrayList<ImprintColor>();
     @JsonProperty("ImprintSizeLocations")
     private List<ImprintSizeLocation> imprintSizeLocations = new ArrayList<ImprintSizeLocation>();
     @JsonProperty("Samples")
-    private List<Sample> samples = new ArrayList<Sample>();
+    private List<Sample>              samples              = new ArrayList<Sample>();
     @JsonProperty("ShippingEstimates")
-    private List<ShippingEstimate> shippingEstimates = new ArrayList<ShippingEstimate>();
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private List<ShippingEstimate>    shippingEstimates    = new ArrayList<ShippingEstimate>();
 
     @JsonProperty("Colors")
     public List<Color> getColors() {
@@ -236,16 +229,6 @@ public class ProductConfigurations {
     @Override
     public boolean equals(Object other) {
         return EqualsBuilder.reflectionEquals(this, other);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
     }
 
 }

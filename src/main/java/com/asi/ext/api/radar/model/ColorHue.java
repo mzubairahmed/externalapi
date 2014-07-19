@@ -1,5 +1,7 @@
 package com.asi.ext.api.radar.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ColorHue {
 	public String getCode() {
 		return code;
@@ -19,6 +21,7 @@ public class ColorHue {
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 	}
+	@JsonProperty("Code")
 	private String code;
 	private String description;
 	private String displayName;

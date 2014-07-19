@@ -1,38 +1,48 @@
 package com.asi.ext.api.radar.model;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SelectedProductCategories {
-	String code="";
+	@JsonProperty("Code")
+	String code = "";
 	@JsonProperty("AdCategoryFlg")
-	String adCategoryFlg="";
-	
+	String adCategoryFlg = "";
+
 	public String getAdCategoryFlg() {
 		return adCategoryFlg;
 	}
+
 	public void setAdCategoryFlg(String adCategoryFlg) {
 		this.adCategoryFlg = adCategoryFlg;
 	}
+
 	public String getCode() {
 		return code;
 	}
+
 	public void setCode(String code) {
 		this.code = code;
 	}
+
 	public String getIsPrimary() {
 		return isPrimary;
 	}
+
 	public void setIsPrimary(String isPrimary) {
 		this.isPrimary = isPrimary;
 	}
+
 	public String getProductId() {
 		return productId;
 	}
+
 	public void setProductId(String productId) {
 		this.productId = productId;
 	}
-	String isPrimary="";
-	String productId="";
 
+	@JsonProperty("IsPrimary")
+	String isPrimary = "";
+	@JsonProperty("ProductId")
+	String productId = "";
 
 }

@@ -3,7 +3,7 @@ package com.asi.ext.api.radar.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ChildCriteriaSetCodeValue {
 

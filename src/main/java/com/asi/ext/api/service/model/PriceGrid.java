@@ -1,40 +1,34 @@
 package com.asi.ext.api.service.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.codehaus.jackson.annotate.JsonAnyGetter;
-import org.codehaus.jackson.annotate.JsonAnySetter;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PriceGrid {
 
     @JsonProperty("IsBasePrice")
-    private Boolean isBasePrice;
+    private Boolean                  isBasePrice;
     @JsonProperty("IsQUR")
-    private Boolean isQUR;
+    private Boolean                  isQUR;
     @JsonProperty("Description")
-    private String description;
+    private String                   description;
     @JsonProperty("PriceIncludes")
-    private String priceIncludes;
+    private String                   priceIncludes;
     @JsonProperty("Sequence")
-    private Integer sequence;
+    private Integer                  sequence;
     @JsonProperty("Currency")
-    private String currency;
+    private String                   currency;
     @JsonProperty("ProductNumber")
-    private String productNumber;
+    private String                   productNumber;
     @JsonProperty("Prices")
-    private List<Price> prices = new ArrayList<Price>();
+    private List<Price>              prices              = new ArrayList<Price>();
     @JsonProperty("PriceConfigurations")
     private List<PriceConfiguration> priceConfigurations = new ArrayList<PriceConfiguration>();
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("IsBasePrice")
     public Boolean getIsBasePrice() {
@@ -139,16 +133,6 @@ public class PriceGrid {
     @Override
     public boolean equals(Object other) {
         return EqualsBuilder.reflectionEquals(this, other);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
     }
 
 }

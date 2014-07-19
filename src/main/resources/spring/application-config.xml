@@ -87,6 +87,8 @@
 	    <property name="criteriaLookupParser" ref="criteriasParser"/> 
 	     <property name="lookupsParser" ref="lookupParser"/>  
 	    </bean>
+	    <bean id="productService" class="com.asi.ext.api.service.impl.ProductServiceImpl">
+	    </bean>
 	    <bean id="productRepo" class="com.asi.core.repo.product.ProductRepo">
 	    	<property name="productClient" ref="productServiceClient"/>
 	    <!-- 	<property name="productConfiguration" ref="productConfigurationParser"/> -->
