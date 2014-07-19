@@ -38,9 +38,9 @@ import com.asi.service.product.client.vo.ProductConfiguration;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.Relationships;
-import com.asi.service.product.client.vo.parser.ConfigurationsParser;
-import com.asi.service.product.client.vo.parser.ImprintParser;
-import com.asi.service.product.client.vo.parser.LookupParser;
+import com.asi.ext.api.integration.lookup.parser.ConfigurationsParser;
+import com.asi.ext.api.integration.lookup.parser.ImprintParser;
+import com.asi.ext.api.integration.lookup.parser.LookupParser;
 import com.asi.service.product.exception.ProductNotFoundException;
 import com.asi.service.product.vo.ImprintMethod;
 import com.asi.service.product.vo.Imprints;
@@ -323,8 +323,10 @@ public class ProductRepo {
     public Imprints getProductImprintMethods(String companyId, String xid) throws ProductNotFoundException {
         productDetail = getProductFromService(companyId, xid);
         List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
-        ProductConfiguration productConfiguration = productDetail.getProductConfigurations().get(0);
-        ProductCriteriaSets imprintCriteriaSet = imprintParser.getCriteriaSetBasedOnCriteriaCode(
+        		ProductConfiguration productConfiguration = productDetail
+				.getProductConfigurations().get(0);
+		ProductCriteriaSets imprintCriteriaSet = lookupsParser
+				.getCriteriaSetBasedOnCriteriaCode(
                 productConfiguration.getProductCriteriaSets(), "IMMD");
         if (null != imprintCriteriaSet) {
             List<CriteriaSetValues> criteriaSetValues = imprintCriteriaSet.getCriteriaSetValues();
@@ -362,7 +364,7 @@ public class ProductRepo {
             productRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
             productRestTemplate.getMessageConverters().add(new StringHttpMessageConverter());
             HttpHeaders requestHeaders = new HttpHeaders();
-            requestHeaders.setContentType(new MediaType("application", "json"));
+            requestHeaders.setContentType(new MediaType("application", "com.asi.util.json"));
 
             ObjectMapper mapper = new ObjectMapper();
             String productJson = null;
@@ -493,14 +495,36 @@ public class ProductRepo {
         }
         // Imprint Processing
         if (null != srcProduct.getImprints() && srcProduct.getImprints().getImprintMethod().size() > 0) {
-            int imprintCntr = 0;
+			int imprintCntr=0,artworkCntr=0,minCntr=0;
             String finalImprintMethod = "";
+			String finalArtworks="";
+			String finalMinOrders="";
             for (ImprintMethod currentImprintMethod : srcProduct.getImprints().getImprintMethod()) {
                 finalImprintMethod = (imprintCntr == 0) ? currentImprintMethod.getMethodName() : finalImprintMethod + ","
                         + currentImprintMethod.getMethodName();
+				if(null!=currentImprintMethod.getArtworkName() && !currentImprintMethod.getArtworkName().isEmpty()){
+				if(artworkCntr==0){
+					finalArtworks=currentImprintMethod.getArtworkName();
+					artworkCntr++;
+				}else{
+					finalArtworks=finalArtworks+","+currentImprintMethod.getArtworkName();
+				}
             }
+				if(null!=currentImprintMethod.getMinimumOrder() && !currentImprintMethod.getMinimumOrder().isEmpty()){
+					if(minCntr==0){
+						finalMinOrders=currentImprintMethod.getMinimumOrder();
+						minCntr++;
+					}else{
+						finalMinOrders=finalMinOrders+","+currentImprintMethod.getMinimumOrder();
+					}
+					}					
+				imprintCntr++;				
+			}
             productToUpdate = configurationParser.setProductWithProductConfigurations(srcProduct, currentProductDetails,
                     productToUpdate, lookupsParser, "IMMD", finalImprintMethod);
+			productToUpdate=configurationParser.setProductWithProductConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,"ARTW",finalArtworks);
+			productToUpdate=configurationParser.setProductWithProductConfigurations(srcProduct,currentProductDetails,productToUpdate,lookupsParser,"MINO",finalMinOrders);
+			productToUpdate=imprintParser.setImprintRelations(srcProduct.getImprints().getImprintMethod(),currentProductDetails,productToUpdate);
         }
         // Size Processing
         SizeDetails sizeDetails = srcProduct.getSize();
@@ -539,7 +563,7 @@ public class ProductRepo {
         // Product Keywords
         productToUpdate = lookupsParser.setProductKeyWords(productToUpdate, srcProduct);
         if (null == productToUpdate.getRelationships()) {
-            productToUpdate.setRelationships(new Relationships[] {});
+			productToUpdate.setRelationships(new ArrayList<Relationships>());
         }
         // Product Inventory Link
         com.asi.service.product.client.vo.ProductInventoryLink productInventoryLink = new com.asi.service.product.client.vo.ProductInventoryLink();
@@ -580,6 +604,7 @@ public class ProductRepo {
         com.asi.service.product.client.vo.SelectedProductCategories[] productCategoriesLst = null;
         com.asi.service.product.client.vo.SelectedProductCategories productCategories = null;
         String productCategory = srcProduct.getCategory();
+		if(null!=productCategory && !productCategory.isEmpty()){
         String[] productCtgrs = productCategory.split(",");
         int productCategoryCntr = 0;
         if (null != productCtgrs && productCtgrs.length > 0) {
@@ -599,6 +624,8 @@ public class ProductRepo {
         }
 
         currentProduct.setSelectedProductCategories(productCategoriesLst);
+		}
+			
         // Product Keywords
         currentProduct = lookupsParser.setProductKeyWords(currentProduct, srcProduct);
         // Product Inventory Link
@@ -701,6 +728,25 @@ public class ProductRepo {
 
         return currency;
     }
+
+	public com.asi.ext.api.service.model.Product getServiceProduct(
+			String companyId, String xid) {
+		com.asi.ext.api.service.model.Product serviceProduct=null;
+		try {
+			ProductDetail currentProductDetails = getProductFromService(companyId, xid);
+			//serviceProduct=prepairServiceProduct();
+			if(null!=currentProductDetails){
+				serviceProduct=new com.asi.ext.api.service.model.Product();
+				serviceProduct.setName(currentProductDetails.getName());
+			}
+			
+		} catch (ProductNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return serviceProduct;
+	}
 
     /*
      * private String getDataSourceId(Integer companyId) {

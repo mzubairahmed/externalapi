@@ -1,4 +1,4 @@
-package com.asi.service.product.client.vo.parser;
+package com.asi.ext.api.integration.lookup.parser;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;

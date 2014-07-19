@@ -49,7 +49,7 @@ public class BatchProcessor {
                 LOGGER.info(response);
             }
         } else {
-            // batch json cannot be null
+            // batch com.asi.util.json cannot be null
             LOGGER.info("Batch JSON cannot be " + batchJSON);
         }
         return false;

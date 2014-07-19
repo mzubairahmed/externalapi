@@ -60,8 +60,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 		   "disclaimer",
 		   "publishDate",
 		   "lastPublishedDate",
-		   "locationCode",
-		   
+		   "locationCode",		   
 		   "isProductNumberBreakout",
 		   "isPriceBreakoutFlag",
 		   "includeAppOfferList",

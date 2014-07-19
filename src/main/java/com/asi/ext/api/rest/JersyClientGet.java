@@ -77,7 +77,7 @@ public class JersyClientGet {
             WebResource webResource = client.resource(getUrl);
 
             LOGGER.info("Checking the Product Existance :" + getUrl);
-            ClientResponse response = webResource.accept("application/json").get(ClientResponse.class);
+            ClientResponse response = webResource.accept("application/com.asi.util.json").get(ClientResponse.class);
             if (response.getStatus() != 200) {
                 LOGGER.info("Resp Code:" + response.getStatus());
                 if (response.getStatus() == 404)
@@ -342,7 +342,7 @@ public class JersyClientGet {
             Client client = Client.create();
             LOGGER.info("WS Call :" + url);
             WebResource webResource = client.resource(url);// "http://stage-espupdates.asicentral.com/api/api/lookup/origins"
-            ClientResponse clientResponse = webResource.accept("application/json").get(ClientResponse.class);
+            ClientResponse clientResponse = webResource.accept("application/com.asi.util.json").get(ClientResponse.class);
             if (clientResponse.getStatus() == 500) {
                 LOGGER.info(url + " is not reachable");
                 throw new VelocityException(url + " is not reachable", ExceptionType.INTERNAL_SERVER_ERROR, null);

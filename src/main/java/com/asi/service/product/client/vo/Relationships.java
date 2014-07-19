@@ -1,5 +1,7 @@
 package com.asi.service.product.client.vo;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 public class Relationships {
 	@JsonProperty("ID") 
@@ -28,18 +30,18 @@ public class Relationships {
 	public void setId(String id) {
 		this.id = id;
 	}
-	public CriteriaSetRelationships[] getCriteriaSetRelationships() {
+	public List<CriteriaSetRelationships> getCriteriaSetRelationships() {
 		return criteriaSetRelationships;
 	}
 	public void setCriteriaSetRelationships(
-			CriteriaSetRelationships[] criteriaSetRelationships) {
+			List<CriteriaSetRelationships> criteriaSetRelationships) {
 		this.criteriaSetRelationships = criteriaSetRelationships;
 	}
-	public CriteriaSetValuePaths[] getCriteriaSetValuePaths() {
+	public List<CriteriaSetValuePaths> getCriteriaSetValuePaths() {
 		return criteriaSetValuePaths;
 	}
 	public void setCriteriaSetValuePaths(
-			CriteriaSetValuePaths[] criteriaSetValuePaths) {
+			List<CriteriaSetValuePaths> criteriaSetValuePaths) {
 		this.criteriaSetValuePaths = criteriaSetValuePaths;
 	}
 	@JsonProperty("Name")
@@ -49,7 +51,7 @@ public class Relationships {
 	@JsonProperty("ParentCriteriaSetId")
       private String parentCriteriaSetId;
 	@JsonProperty("CriteriaSetRelationships")
-	private CriteriaSetRelationships[] criteriaSetRelationships;
+	private List<CriteriaSetRelationships> criteriaSetRelationships;
 	@JsonProperty("CriteriaSetValuePaths")
-	private CriteriaSetValuePaths[] criteriaSetValuePaths;
+	private List<CriteriaSetValuePaths> criteriaSetValuePaths;
 }

@@ -104,10 +104,10 @@ public final class JsonToLookupTableConverter {
                         }
                     }
                 } catch (Exception e) {
-                    LOGGER.error("Exception while processing color json model ", e);
+                    LOGGER.error("Exception while processing color com.asi.util.json model ", e);
                 }
             }
-            // LOGGER.info(JSONValue.toJSONString(json));
+            // LOGGER.info(JSONValue.toJSONString(com.asi.util.json));
         } catch (ParseException pe) {
             pe.printStackTrace();
         }
