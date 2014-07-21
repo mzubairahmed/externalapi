@@ -55,7 +55,10 @@
 			</bean>		
 	    <bean id="productServiceClient" class="com.asi.service.product.client.ProductClient">
 	    	<property name="productSearchUrl" value="${ws.api.product.import}"></property> 
-	    </bean>	    
+	    </bean>
+	    <bean id="lookupDataStore" class="com.asi.ext.api.product.transformers.ProductDataStore">
+		    <property name="lookupRestTemplate" ref="restTemplate"/>	    
+	    </bean>
 	    <bean id="lookupValuesClient" class="com.asi.service.product.client.LookupValuesClient">
 	        <property name="lookupRestTemplate" ref="restTemplate"/>
 	         <property name="lookupColorURL" value="${lookup.color.url}"></property> 

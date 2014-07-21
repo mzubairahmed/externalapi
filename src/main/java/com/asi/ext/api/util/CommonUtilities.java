@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import au.com.bytecode.opencsv.*;
+import au.com.bytecode.opencsv.CSVReader;
 
 import com.asi.ext.api.radar.model.CriteriaSetValues;
 import com.asi.ext.api.radar.model.Product;

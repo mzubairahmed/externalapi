@@ -12,46 +12,33 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import com.asi.core.exception.ResponseNotValidException;
+import com.asi.ext.api.integration.lookup.parser.ConfigurationsParser;
+import com.asi.ext.api.integration.lookup.parser.ImprintParser;
+import com.asi.ext.api.integration.lookup.parser.LookupParser;
 import com.asi.ext.api.product.transformers.ImportTransformer;
+import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.ProductClient;
 import com.asi.service.product.client.vo.Batch;
 import com.asi.service.product.client.vo.BatchDataSource;
-import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.Price;
 import com.asi.service.product.client.vo.PriceGrid;
-import com.asi.service.product.client.vo.ProductConfiguration;
-import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
-import com.asi.service.product.client.vo.Relationships;
-import com.asi.ext.api.integration.lookup.parser.ConfigurationsParser;
-import com.asi.ext.api.integration.lookup.parser.ImprintParser;
-import com.asi.ext.api.integration.lookup.parser.LookupParser;
+import com.asi.service.product.client.vo.ProductKeywords;
+import com.asi.service.product.client.vo.SelectedComplianceCert;
+import com.asi.service.product.client.vo.SelectedProductCategory;
+import com.asi.service.product.client.vo.SelectedSafetyWarnings;
 import com.asi.service.product.exception.ProductNotFoundException;
-import com.asi.service.product.vo.ImprintMethod;
-import com.asi.service.product.vo.Imprints;
 import com.asi.service.product.vo.ItemPriceDetail;
 import com.asi.service.product.vo.ItemPriceDetail.PRICE_Type;
-import com.asi.service.product.vo.PriceCriteria;
 import com.asi.service.product.vo.PriceDetail;
 import com.asi.service.product.vo.Product;
-import com.asi.service.product.vo.SizeDetails;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 // import javax.ws.rs.core.MediaType;
 
@@ -59,7 +46,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ProductRepo {
     private final static Logger _LOGGER = LoggerFactory.getLogger(ProductRepo.class);
     private ImportTransformer productTransformer = new ImportTransformer();
-
+    private ProductDataStore lookupDataStore=new ProductDataStore();
     /**
      * @return the productClient
      */
@@ -738,6 +725,8 @@ public class ProductRepo {
 			if(null!=productDetail){
 				serviceProduct=new com.asi.ext.api.service.model.Product();
 				BeanUtils.copyProperties(productDetail, serviceProduct);
+				serviceProduct=setBasicProductDetails(productDetail, serviceProduct);
+				
 				//serviceProduct.setName(productDetail.getName());
 			}
 			
@@ -747,6 +736,47 @@ public class ProductRepo {
 		}
 		
 		return serviceProduct;
+	}
+
+	private com.asi.ext.api.service.model.Product setBasicProductDetails(ProductDetail radProduct,
+			com.asi.ext.api.service.model.Product serviceProduct) {
+		// Selected Safety Warnings
+		List<SelectedSafetyWarnings> safetyWarningsList=radProduct.getSelectedSafetyWarnings();
+		List<String> finalSafetyWrngs=new ArrayList<>();
+		for(SelectedSafetyWarnings currentSafetyWrng:safetyWarningsList){
+			finalSafetyWrngs.add(lookupDataStore.getSelectedSafetyWarningNameByCode(currentSafetyWrng.getCode()));			
+		}
+		serviceProduct.setSafetyWarnings(finalSafetyWrngs);
+		
+		// Status Code
+		serviceProduct.setStatusCode(radProduct.getStatusCode().equalsIgnoreCase("ACTV")?"Active":"In Active");
+		
+		// Compliance certs
+		List<SelectedComplianceCert> complianceCertsList=radProduct.getSelectedComplianceCerts();
+		List<String> finalComplianceCerts=new ArrayList<>();
+		for(SelectedComplianceCert currentCompliance:complianceCertsList){
+			finalComplianceCerts.add(lookupDataStore.getComplianceCertNameById(String.valueOf(currentCompliance.getComplianceCertId())));
+		}
+		serviceProduct.setComplianceCerts(finalComplianceCerts);
+		
+		// Keywords
+		List<ProductKeywords> productKeywordsList=radProduct.getProductKeywords();
+		List<String> finalKeywords=new ArrayList<>();
+		for(ProductKeywords currentKeyword:productKeywordsList){
+			finalKeywords.add(currentKeyword.getValue());
+		}
+		serviceProduct.setProductKeywords(finalKeywords);
+		
+		// Categories
+		List<SelectedProductCategory> productCategoriesList=radProduct.getSelectedProductCategories();
+		List<String> finalCategoriesList=new ArrayList<>();
+		for(SelectedProductCategory currentCategory:productCategoriesList){
+			finalCategoriesList.add(lookupDataStore.findCategoryNameByCode(currentCategory.getCode()));
+		}
+		serviceProduct.setCategories(finalCategoriesList);
+		
+		
+		return serviceProduct;				
 	}
 
     /*
