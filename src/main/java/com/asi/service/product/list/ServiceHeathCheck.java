@@ -16,7 +16,7 @@ import com.asi.service.product.vo.ServiceVersion;
 @RequestMapping("healthCheck")
 public class ServiceHeathCheck {
 
-	@RequestMapping(value = "status", method = RequestMethod.GET,headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	@RequestMapping(value = "status", method = RequestMethod.GET,headers="content-type=application/com.asi.util.json, application/xml" ,produces={"application/xml", "application/com.asi.util.json"} )
 	public ResponseEntity<ServiceVersion> serviceInfo() throws UnsupportedEncodingException {
 		ServiceVersion version = new ServiceVersion();
 		RuntimeMXBean mx = ManagementFactory.getRuntimeMXBean();
