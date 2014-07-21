@@ -35,7 +35,7 @@ public class ProductConfigurationsParser {
 	private int newCriteriaSetCodeValueCntr=-112;
 	private int newCriteriaSetValuesCntr=-1;
 	
-	public String[] getPriceCriteria(ProductDetail productDetail,String priceGridId) {
+	/*public String[] getPriceCriteria(ProductDetail productDetail,String priceGridId) {
 		String[] priceCrterias=null;
 		String criteriaOne="",criteria1Value="";
 		String criteriaTwo="",criteria2Value="";
@@ -86,8 +86,8 @@ public class ProductConfigurationsParser {
 		priceCrterias[1]=(!criteriaTwo.isEmpty())?criteriaTwo+":"+criteria2Value:"";
 		}
 		return priceCrterias;
-	}
-	private HashMap<String,HashMap<String, String>> setCriteriaSet(ProductDetail productDetails,String externalId)
+	}*/
+	/*private HashMap<String,HashMap<String, String>> setCriteriaSet(ProductDetail productDetails,String externalId)
 	{
 		HashMap<String,HashMap<String, String>> currentHashMap=new HashMap<>();
 		HashMap<String, String> productCriteriSets=new HashMap<>();
@@ -106,7 +106,7 @@ public class ProductConfigurationsParser {
 		}
 		currentHashMap.put(externalId, productCriteriSets);
 		return currentHashMap;
-	}
+	}*/
 	public LookupParser getProductLookupParser() {
 		return productLookupParser;
 	}
@@ -260,7 +260,7 @@ public class ProductConfigurationsParser {
 		return velocityBean;
 	}
 
-	private List<ProductCriteriaSets> checkCriteriaSetAndCreateIfNotExist(
+/*	private List<ProductCriteriaSets> checkCriteriaSetAndCreateIfNotExist(
 			List<ProductCriteriaSets> productCriteriaSets, String methodName,
 			String criteriaCode) {
 		List<ProductCriteriaSets> finalProductCriteriaSets=new ArrayList<>();
@@ -331,7 +331,7 @@ public class ProductConfigurationsParser {
 		}
 			
 		return finalProductCriteriaSets;
-	}
+	}*/
 	private List<ProductCriteriaSets> removeCurrentCriteriaSet(
 			List<ProductCriteriaSets> tempProductCriteriaSets,
 			String criteriaCode) {
@@ -345,7 +345,7 @@ public class ProductConfigurationsParser {
 		
 		return newProductCriteriaSetList;
 	}
-	@SuppressWarnings("unchecked")
+/*	@SuppressWarnings("unchecked")
 	private ProductCriteriaSets checkCriteriaSetCodeValueIfNotExist(ProductCriteriaSets productCriteriaSets,
 			String methodName, String artworkCodeByName) {
 		ProductCriteriaSets finalProductCriteriaSets=productCriteriaSets;
@@ -418,7 +418,7 @@ public class ProductConfigurationsParser {
 				finalProductCriteriaSets.setCriteriaSetValues(currentCriteriaSetValueList);
 		}
 		return finalProductCriteriaSets;
-	}
+	}*/
 /*	private List<com.asi.service.product.vo.CriteriaSetValues> checkImprintMethod(com.asi.service.product.vo.ProductConfigurations productConfiguration,
 			com.asi.service.product.vo.ProductCriteriaSets imprintProductCriteriaSets,
 			Imprints imprintMethodsList,LookupParser lookupsParser) {
@@ -478,7 +478,8 @@ public class ProductConfigurationsParser {
 		}	
 		return finalCriteriaSetValues;
 	}
-*/	private String getRespectiveId(
+*/	
+	/*private String getRespectiveId(
 			com.asi.service.product.client.vo.ProductConfigurations productCriteriaSets,
 			String criteriaValue, String criteriaCode) {
 		String criteriaId=null;
@@ -503,7 +504,7 @@ public class ProductConfigurationsParser {
 						currentCriteriaValue=productLookupParser.getImprintNameByCode(currentCriteriSetValues.getCriteriaSetCodeValues()[0].getSetCodeValueId());
 				}
 				// check criteria set value id
-/*				if(criteriaCode.equalsIgnoreCase("ARTW")){
+				if(criteriaCode.equalsIgnoreCase("ARTW")){
 					currentCriteriaValue="";
 					if(null!=criteriaValue && !criteriaValue.trim().isEmpty()){
 						if(criteriaValue.contains(",")){
@@ -524,7 +525,7 @@ public class ProductConfigurationsParser {
 							break;
 						}
 					}						
-				}else*/ if(currentCriteriaValue.equalsIgnoreCase(criteriaValue)){
+				}else if(currentCriteriaValue.equalsIgnoreCase(criteriaValue)){
 					criteriaId=currentCriteriSetValues.getId();
 					break;
 				}
@@ -565,14 +566,14 @@ public class ProductConfigurationsParser {
 			}else{
 				finalArtworkId=productLookupParser.getArtworkNameByCode(artworkName);
 			}
-	/*		if(null!=currentCriteriaValue && !currentCriteriaValue.trim().isEmpty()){
+			if(null!=currentCriteriaValue && !currentCriteriaValue.trim().isEmpty()){
 				criteriaId=currentCriteriaValue;
 				break;
-			}*/
+			}
 		}
 		return finalArtworkId;
-	}
-	private com.asi.service.product.vo.CriteriaSetValues getCriteriaSetValuesIfExist(
+	}*/
+	/*private com.asi.service.product.vo.CriteriaSetValues getCriteriaSetValuesIfExist(
 			List<com.asi.service.product.vo.CriteriaSetValues> srcCriteriaSetValues, ImprintMethod crntImprint) {
 		com.asi.service.product.vo.CriteriaSetValues imprintCriteriaSetValues=null;
 		for(com.asi.service.product.vo.CriteriaSetValues currentSetValue:srcCriteriaSetValues){
@@ -596,7 +597,7 @@ public class ProductConfigurationsParser {
 		}
 		
 		return imprintCriteriaSetValues;
-	}
+	}*/
 	private ProductConfigurations[] replaceOrAddIfImprintExist(
 			ProductConfigurations[] productConfigAry, com.asi.service.product.vo.ProductCriteriaSets imprintProductCriteriaSets,String criteriaCode) {
 		com.asi.service.product.client.vo.ProductCriteriaSets clientImprintProductCriteriaSet=getClientProductCriteriaSetIfExist(productConfigAry[0],criteriaCode);
@@ -680,7 +681,7 @@ public class ProductConfigurationsParser {
 
 		return null;
 	}
-	public com.asi.service.product.client.vo.Product setProductWithProductConfigurations(
+	/*public com.asi.service.product.client.vo.Product setProductWithProductConfigurations(
 			ProductDetail srcProduct,
 			com.asi.service.product.client.vo.Product productToUpdate,
 			LookupParser lookupsParser, String string, String productColor) {
@@ -771,7 +772,7 @@ public class ProductConfigurationsParser {
 		productToUpdate.setProductConfigurations(productConfigList);//[0].setProductCriteriaSets(currentProductCriteriaSetList);
 		}
 		return productToUpdate;
-	}
+	}*/
 	private CriteriaSetValues transformCriteriaSetValues(
 			com.asi.service.product.vo.CriteriaSetValues currentCriteriaSetValues) {
 		CriteriaSetValues clientCriteriaSetValues=new CriteriaSetValues();

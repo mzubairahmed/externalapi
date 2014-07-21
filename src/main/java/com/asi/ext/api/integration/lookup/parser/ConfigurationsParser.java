@@ -39,7 +39,7 @@ public class ConfigurationsParser {
 	private int newCriteriaSetCodeValueCntr = -112;
 	private int newCriteriaSetValuesCntr = -1;
 
-	public String[] getPriceCriteria(ProductDetail productDetail,
+	/*public String[] getPriceCriteria(ProductDetail productDetail,
 			String priceGridId) {
 		String[] priceCrterias = null;
 		String criteriaOne = "", criteria1Value = "";
@@ -129,8 +129,8 @@ public class ConfigurationsParser {
 		}
 		return priceCrterias;
 	}
-
-	private HashMap<String, HashMap<String, String>> setCriteriaSet(
+*/
+	/*private HashMap<String, HashMap<String, String>> setCriteriaSet(
 			ProductDetail productDetails, String externalId) {
 		HashMap<String, HashMap<String, String>> currentHashMap = new HashMap<>();
 		HashMap<String, String> productCriteriSets = new HashMap<>();
@@ -161,7 +161,7 @@ public class ConfigurationsParser {
 		}
 		currentHashMap.put(externalId, productCriteriSets);
 		return currentHashMap;
-	}
+	}*/
 
 	public com.asi.service.product.client.vo.Product setProductWithProductConfigurations(
 			Product srcProduct, ProductDetail currentProductDetails,
@@ -227,11 +227,11 @@ public class ConfigurationsParser {
 					for (com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValues : existingProductCriteriaSet
 							.getCriteriaSetValues()) {
 						
-						currentCriteriaSetValue = productLookupParser
+			/*	today comment		currentCriteriaSetValue = productLookupParser
 								.getSetValueNameByCode(currentCriteriaSetValues
 										.getCriteriaSetCodeValues()[0]
 										.getSetCodeValueId(), criteriaCode,
-										currentCriteriaSetValues.getValue());
+										currentCriteriaSetValues.getValue());*/
 						if (currentCriteriaSetValues.getValue().toString()
 								.trim().equalsIgnoreCase(critieriaItem.trim())) {
 							clientCurrentCriteriaSetValues = new CriteriaSetValues();
@@ -291,10 +291,10 @@ public class ConfigurationsParser {
 					tempCriteriaSetCodeValues
 							.setCriteriaSetValueId(clientCurrentCriteriaSetValues
 									.getId());
-					tempCriteriaSetCodeValues
+				/*	today comment	tempCriteriaSetCodeValues
 							.setSetCodeValueId(productLookupParser
 									.getSetCodeByName(criteriaCode,
-											critieriaItem.trim()));
+											critieriaItem.trim()));*/
 					tempCriteriaSetCodeValuesList[0] = tempCriteriaSetCodeValues;
 					clientCurrentCriteriaSetValues
 							.setCriteriaSetCodeValues(tempCriteriaSetCodeValuesList);
@@ -315,11 +315,11 @@ public class ConfigurationsParser {
 					&& currentProductDetails.getProductConfigurations().size() > 0
 					&& null != currentProductDetails.getProductConfigurations()
 							.get(0).getProductCriteriaSets()) {
-				productCriteriaSetsList = addOrUpdateProductCriteriaSetsList(
+			/*	today comment	productCriteriaSetsList = addOrUpdateProductCriteriaSetsList(
 						clientProductCriteriaSet, currentProductDetails
 								.getProductConfigurations().get(0)
 								.getProductCriteriaSets(),
-						productToUpdate.getProductConfigurations());
+						productToUpdate.getProductConfigurations());*/
 			} else {
 				productCriteriaSetsList.add(clientProductCriteriaSet);
 			}
@@ -338,7 +338,7 @@ public class ConfigurationsParser {
 		return productToUpdate;
 	}
 
-	private List<ProductCriteriaSets> addOrUpdateProductCriteriaSetsList(
+/*	private List<ProductCriteriaSets> addOrUpdateProductCriteriaSetsList(
 			ProductCriteriaSets clientProductCriteriaSet,
 			List<ProductCriteriaSets> productCriteriaSets,
 			ProductConfigurations[] productConfigurations) {
@@ -385,7 +385,7 @@ public class ConfigurationsParser {
 		}
 		return criteriaAvailable;
 	}
-
+*/
 	private com.asi.service.product.client.vo.ProductCriteriaSets getProductCriteriaSetByCodeIfExist(
 			com.asi.service.product.client.vo.ProductConfiguration productConfiguration,
 			String criteriaCode) {
@@ -470,7 +470,7 @@ public class ConfigurationsParser {
 	 * .setCriteriaSetCodeValues(clientCriteriaSetCodeValueList); return
 	 * clientCriteriaSetValues; }
 	 */
-	public com.asi.service.product.client.vo.Product setProductWithSizeConfigurations(
+	/*public com.asi.service.product.client.vo.Product setProductWithSizeConfigurations(
 			Product srcProduct, ProductDetail currentProductDetails,
 			com.asi.service.product.client.vo.Product productToUpdate,
 			LookupParser lookupsParser, String groupName, String sizeValue) {
@@ -526,7 +526,7 @@ public class ConfigurationsParser {
 						.getCriteriaSetValues()) {
 					for (String critieriaItem : criteriaItems) {
 
-						/*
+						
 						 * if(currentCriteriaSetValues.getValue().toString().trim
 						 * ().equalsIgnoreCase(critieriaItem.trim())){
 						 * clientCurrentCriteriaSetValues=new
@@ -561,7 +561,7 @@ public class ConfigurationsParser {
 						 * .add(currentCriteriaSetValues);
 						 * //currentCriteriaSetValues=null;
 						 * criteriaSetValueExist=true; break; }
-						 */}
+						 }
 				}
 				if (!criteriaSetValueExist) {
 					clientCurrentCriteriaSetValues = new CriteriaSetValues();
@@ -575,11 +575,11 @@ public class ConfigurationsParser {
 					Value valueObj = null;
 					List<Value> valueList = setSizeValueItem(sizeValue,
 							groupName);
-					/*
+					
 					 * for(String critieriaItem:criteriaItems) {
 					 * valueObj=setSizeValueItem(critieriaItem,groupName);
 					 * valueList.add(valueObj); }
-					 */
+					 
 					clientCurrentCriteriaSetValues.setValue(valueList);
 					clientCurrentCriteriaSetValues.setValueTypeCode("LOOK");
 					clientCurrentCriteriaSetValues.setIsSubset("false");
@@ -637,8 +637,8 @@ public class ConfigurationsParser {
 		}
 		return productToUpdate;
 	}
-
-	private List<Value> setSizeValueItem(String critieriaItem,
+*/
+/*	private List<Value> setSizeValueItem(String critieriaItem,
 			String criteriaCode) {
 		List<Value> valueList = new ArrayList<>();
 		int valueItemCntr = 0, valueSizeCntr = 0;
@@ -725,8 +725,8 @@ public class ConfigurationsParser {
 		}
 		return valueList;
 	}
-
-	public com.asi.service.product.client.vo.Product setProductWithSizeApperalConfigurations(
+*/
+/*	public com.asi.service.product.client.vo.Product setProductWithSizeApperalConfigurations(
 			Product srcProduct, ProductDetail currentProductDetails,
 			com.asi.service.product.client.vo.Product productToUpdate,
 			LookupParser lookupsParser, String groupName, String sizeValue) {
@@ -915,4 +915,4 @@ public class ConfigurationsParser {
 		}
 		return productToUpdate;
 	}
-}
+*/}

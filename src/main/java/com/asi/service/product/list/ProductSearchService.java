@@ -35,8 +35,8 @@ public class ProductSearchService {
 	private static Logger _LOGGER = LoggerFactory.getLogger(ProductSearchService.class);
 
 	
-	@Secured("ROLE_CUSTOMER")
-	@RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.GET,headers="content-type=application/com.asi.util.json, application/xml" ,produces={"application/xml", "application/com.asi.util.json"} )
+//	@Secured("ROLE_CUSTOMER")
+	@RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.GET,headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
 	public ResponseEntity<Product> getProduct(@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws UnsupportedEncodingException, ProductNotFoundException {
 		if(_LOGGER.isDebugEnabled()) 
 			_LOGGER.debug("calling service");
@@ -57,8 +57,8 @@ public class ProductSearchService {
 	public ResponseEntity<Imprints> getImprintMethods(@PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws UnsupportedEncodingException, ProductNotFoundException {
 		if(_LOGGER.isDebugEnabled()) 
 			_LOGGER.debug("calling Imprint Method Service");
-		Imprints productResponse = repository.getProductImprintMethods(companyId, xid);
-	    return new ResponseEntity<Imprints>(productResponse, null, HttpStatus.OK);
+		//Imprints productResponse = repository.getProductImprintMethods(companyId, xid);
+	    return null;//new ResponseEntity<Imprints>(productResponse, null, HttpStatus.OK);
 	}
 	
 	@ExceptionHandler(IOException.class)

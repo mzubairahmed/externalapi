@@ -174,24 +174,24 @@ public class ProductRepo {
 
     private Product prepairProduct(String companyID, String productID) throws ProductNotFoundException, RestClientException,
             UnsupportedEncodingException {
-        productDetail = getProductFromService(companyID, productID);
+    	productDetail = getProductFromService(companyID, productID);
         Product product = new Product();
         BeanUtils.copyProperties(productDetail, product);
         // product=lookupsParser.setProductConfigurations(productDetail,product);
-        product = lookupsParser.setProductCategory(productDetail, product);
+/*        product = lookupsParser.setProductCategory(productDetail, product);
         product = lookupsParser.setProductServiceKeywords(productDetail, product);
         product = lookupsParser.setProductServiceDataSheet(productDetail, product);
         product = lookupsParser.setProductServiceInventoryLink(productDetail, product);
         product = lookupsParser.setProductServiceBasePriceInfo(productDetail, product);
         product = lookupsParser.setProductServiceWithConfigurations(productDetail, product);
-
+*/
         // product.setNewProductExpirationDate(productDetail.getn)
 
         return product;
     }
 
     public ProductDetail getProductFromService(String companyID, String productID) throws ProductNotFoundException {
-        if (null != productDetail) productDetail = productClient.doIt(companyID, productID);
+    	productDetail = productClient.doIt(companyID, productID);
 
         return productDetail;
 
@@ -226,7 +226,7 @@ public class ProductRepo {
     public Product getProductPrices(String companyID, String productID, Integer priceGridID) throws ProductNotFoundException,
             RestClientException, UnsupportedEncodingException {
 
-        productDetail = getProductFromService(companyID, productID);
+    	productDetail = getProductFromService(companyID, productID);
 
         List<PriceGrid> priceGrids = productDetail.getPriceGrids();
         List<ItemPriceDetail> pricesInfo = new ArrayList<ItemPriceDetail>();
@@ -277,7 +277,7 @@ public class ProductRepo {
         itemPrice.setProductID(String.valueOf(productDetail.getID()));
         itemPrice.setPriceDetails(pricesList);
         itemPrice.setPriceID(priceGrid.getID().toString());
-        String[] basePriceCriterias = configurationParser.getPriceCriteria(productDetail, priceGrid.getID());
+       /* String[] basePriceCriterias = configurationParser.getPriceCriteria(productDetail, priceGrid.getID());
         PriceCriteria[] priceCriterias = new PriceCriteria[basePriceCriterias.length];
         int criteriaCntr = 0;
         for (String crntBasePriceCriteria : basePriceCriterias) {
@@ -295,7 +295,7 @@ public class ProductRepo {
         if (null != priceCriterias && priceCriterias.length > 0) {
             itemPrice.setPriceCriteria(priceCriterias);
         }
-        /*
+ */       /*
          * if (null != basePriceCriterias && basePriceCriterias.length > 0) {
          * itemPrice.setFirstPriceCriteria(basePriceCriterias[0]);
          * if (basePriceCriterias.length > 1) {
@@ -308,7 +308,7 @@ public class ProductRepo {
 
     }
 
-    public Product getProductImprintMethodDetails(String companyId, String xid) throws ProductNotFoundException {
+  /*  public Product getProductImprintMethodDetails(String companyId, String xid) throws ProductNotFoundException {
         Product product = null;
         try {
             product = prepairProduct(companyId, xid);
@@ -318,9 +318,9 @@ public class ProductRepo {
         }
         product.setImprints(getProductImprintMethods(companyId, xid));
         return product;
-    }
+    }*/
 
-    public Imprints getProductImprintMethods(String companyId, String xid) throws ProductNotFoundException {
+  /*  public Imprints getProductImprintMethods(String companyId, String xid) throws ProductNotFoundException {
         productDetail = getProductFromService(companyId, xid);
         List<ImprintMethod> imprintMethodsList = new ArrayList<ImprintMethod>();
         		ProductConfiguration productConfiguration = productDetail
@@ -340,11 +340,11 @@ public class ProductRepo {
         imprints.setImprintMethod(imprintMethodsList);
         return imprints;
 
-    }
+    }*/
 
-    public Product updateProductBasePrices(String companyId, com.asi.ext.api.service.model.Product serviceProduct, String process)
+   /* public Product updateProductBasePrices(String companyId, com.asi.ext.api.service.model.Product serviceProduct, String process)
             throws ProductNotFoundException, ResponseNotValidException, RestClientException, UnsupportedEncodingException {
-        ProductDetail currentRadarProduct = productClient.doIt(companyId, serviceProduct.getExternalProductId());
+        Product currentRadarProduct = productClient.doIt(companyId, serviceProduct.getExternalProductId());
         Product currentProduct = null;
         try {
             // Product checkProductExistance=null;
@@ -391,7 +391,7 @@ public class ProductRepo {
         currentProduct = prepairProduct(String.valueOf(currentProduct.getCompanyId()), currentProduct.getExternalProductId());
         return currentProduct;
     }
-
+*/
     /*
      * private com.asi.service.product.client.vo.Product setProductWithProductConfigurations(
      * Product currentProduct, com.asi.service.product.client.vo.Product velocityBean) {
@@ -464,10 +464,10 @@ public class ProductRepo {
         if (null != srcProduct.getColor() && !srcProduct.getColor().isEmpty()) {
             String productColor = srcProduct.getColor();
             // productToUpdate=productConfiguration.transformProductColors(productColor);
-            productToUpdate = configurationParser.setProductWithProductConfigurations(srcProduct, currentProductDetails,
-                    productToUpdate, lookupsParser, "PRCL", productColor);
+          /*  productToUpdate = configurationParser.setProductWithProductConfigurations(srcProduct, currentProductDetails,
+                    productToUpdate, lookupsParser, "PRCL", productColor);*/
         }
-        // Product Material
+        /*     // Product Material
         if (null != srcProduct.getMaterial() && !srcProduct.getMaterial().isEmpty()) {
             productToUpdate = configurationParser.setProductWithProductConfigurations(srcProduct, currentProductDetails,
                     productToUpdate, lookupsParser, "MTRL", srcProduct.getMaterial());
@@ -492,9 +492,9 @@ public class ProductRepo {
         if (null != srcProduct.getTradeName() && !srcProduct.getTradeName().isEmpty()) {
             productToUpdate = configurationParser.setProductWithProductConfigurations(srcProduct, currentProductDetails,
                     productToUpdate, lookupsParser, "TDNM", srcProduct.getTradeName());
-        }
+        }*/
         // Imprint Processing
-        if (null != srcProduct.getImprints() && srcProduct.getImprints().getImprintMethod().size() > 0) {
+  /*      if (null != srcProduct.getImprints() && srcProduct.getImprints().getImprintMethod().size() > 0) {
 			int imprintCntr=0,artworkCntr=0,minCntr=0;
             String finalImprintMethod = "";
 			String finalArtworks="";
@@ -565,7 +565,7 @@ public class ProductRepo {
         if (null == productToUpdate.getRelationships()) {
 			productToUpdate.setRelationships(new ArrayList<Relationships>());
         }
-        // Product Inventory Link
+    */    // Product Inventory Link
         com.asi.service.product.client.vo.ProductInventoryLink productInventoryLink = new com.asi.service.product.client.vo.ProductInventoryLink();
         productInventoryLink.setCompanyId(String.valueOf(srcProduct.getCompanyId()));
         productInventoryLink.setProductId(String.valueOf(srcProduct.getID()));
@@ -604,7 +604,7 @@ public class ProductRepo {
         com.asi.service.product.client.vo.SelectedProductCategories[] productCategoriesLst = null;
         com.asi.service.product.client.vo.SelectedProductCategories productCategories = null;
         String productCategory = srcProduct.getCategory();
-		if(null!=productCategory && !productCategory.isEmpty()){
+        /*if(null!=productCategory && !productCategory.isEmpty()){
         String[] productCtgrs = productCategory.split(",");
         int productCategoryCntr = 0;
         if (null != productCtgrs && productCtgrs.length > 0) {
@@ -628,7 +628,7 @@ public class ProductRepo {
 			
         // Product Keywords
         currentProduct = lookupsParser.setProductKeyWords(currentProduct, srcProduct);
-        // Product Inventory Link
+*/        // Product Inventory Link
         com.asi.service.product.client.vo.ProductInventoryLink productInventoryLink = new com.asi.service.product.client.vo.ProductInventoryLink();
         productInventoryLink.setCompanyId(String.valueOf(srcProduct.getCompanyId()));
         productInventoryLink.setProductId(String.valueOf(srcProduct.getID()));
@@ -733,11 +733,12 @@ public class ProductRepo {
 			String companyId, String xid) {
 		com.asi.ext.api.service.model.Product serviceProduct=null;
 		try {
-			ProductDetail currentProductDetails = getProductFromService(companyId, xid);
+			productDetail = getProductFromService(companyId, xid);
 			//serviceProduct=prepairServiceProduct();
-			if(null!=currentProductDetails){
+			if(null!=productDetail){
 				serviceProduct=new com.asi.ext.api.service.model.Product();
-				serviceProduct.setName(currentProductDetails.getName());
+				BeanUtils.copyProperties(productDetail, serviceProduct);
+				//serviceProduct.setName(productDetail.getName());
 			}
 			
 		} catch (ProductNotFoundException e) {

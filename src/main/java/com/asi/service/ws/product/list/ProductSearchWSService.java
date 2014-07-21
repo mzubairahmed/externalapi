@@ -38,7 +38,7 @@ public class ProductSearchWSService implements ProductService{
 		}
 		try {
 			Product product = repository.getProductPrices(companyId, xid);
-			product.setImprints(repository.getProductImprintMethods(companyId, xid));
+//			product.setImprints(repository.getProductImprintMethods(companyId, xid));
 			response.setProduct(product);
 		} catch (ProductNotFoundException e) {
 			ErrorMessage errorInfo =errorMessageHandler.prepairError("error.genericerror.id", null, null, HttpStatus.BAD_REQUEST);

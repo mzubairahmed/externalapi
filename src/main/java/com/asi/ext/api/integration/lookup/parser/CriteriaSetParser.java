@@ -1,4 +1,4 @@
-package com.asi.integration.lookup.parser;
+package com.asi.ext.api.integration.lookup.parser;
 
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;

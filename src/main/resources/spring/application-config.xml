@@ -68,36 +68,38 @@
 	          <property name="lookupPackageURL" value="${lookup.packaging.url}"></property>  
 	                  
 	    </bean>
-	    
-	     <bean id="lookupParser" class="com.asi.service.product.client.vo.parser.LookupParser">
-	       <property name="lookupClient" ref="lookupValuesClient"/> 
-	       <property name="imprintParser" ref="imprintMethodParser"/>        
+	   <!--  <bean id="productDataStore" class="com.asi.ext.api.product.transformers.ProductDataStore">
+	    <property name="productDataStore" ref="restTemplate"/>
+	    </bean> -->
+	     <bean id="lookupParser" class="com.asi.ext.api.integration.lookup.parser.LookupParser">
+	       <!-- <property name="lookupClient" ref="lookupValuesClient"/>  -->
+	       <!-- <property name="imprintParser" ref="imprintMethodParser"/>      -->   
 	    </bean> 
-	     <bean id="criteriasParser" class="com.asi.service.product.client.vo.parser.CriteriaSetParser">
-	     	 <property name="productLookupParser" ref="lookupParser"/>   
+	     <bean id="criteriasParser" class="com.asi.ext.api.integration.lookup.parser.CriteriaSetParser">
+	     	<!--  <property name="productLookupParser" ref="lookupParser"/> -->   
 	    </bean>
-	    <bean id="productConfigurationParser" class="com.asi.service.product.client.vo.parser.ProductConfigurationsParser">
+	    <bean id="productConfigurationParser" class="com.asi.ext.api.integration.lookup.parser.ProductConfigurationsParser">
 	     	 <property name="productLookupParser" ref="lookupParser"/>   
 	    </bean>
 	    
-	    <bean id="configurationParser" class="com.asi.service.product.client.vo.parser.ConfigurationsParser">
-	     	 <property name="productLookupParser" ref="lookupParser"/>   
+	    <bean id="configurationParser" class="com.asi.ext.api.integration.lookup.parser.ConfigurationsParser">
+	     	 <!-- <property name="productLookupParser" ref="lookupParser"/>   --> 
 	    </bean>
-	    <bean id="imprintMethodParser" class="com.asi.service.product.client.vo.parser.ImprintParser">
-	    <property name="criteriaLookupParser" ref="criteriasParser"/> 
-	     <property name="lookupsParser" ref="lookupParser"/>  
+	    <bean id="imprintMethodParser" class="com.asi.ext.api.integration.lookup.parser.ImprintParser">
+	  <!--   <property name="criteriaLookupParser" ref="criteriasParser"/> 
+	     <property name="lookupsParser" ref="lookupParser"/> -->  
 	    </bean>
 	    <bean id="productService" class="com.asi.ext.api.service.impl.ProductServiceImpl">
 	    </bean>
 	    <bean id="productRepo" class="com.asi.core.repo.product.ProductRepo">
-	    	<property name="productClient" ref="productServiceClient"/>
+	    	<!--  <property name="productClient" ref="productServiceClient"/> --> 
 	    <!-- 	<property name="productConfiguration" ref="productConfigurationParser"/> -->
-	    	<property name="configurationParser" ref="configurationParser"/>
-	    	<property name="imprintParser" ref="imprintMethodParser"/>
-	    	 <property name="productRestTemplate" ref="restTemplate"/>
+	    <!-- 	<property name="configurationParser" ref="configurationParser"/> -->
+	    	<!-- <property name="imprintParser" ref="imprintMethodParser"/> -->
+	    	<!--  <property name="productRestTemplate" ref="restTemplate"/> -->
 	    	 <property name="productImportURL" value="${ws.api.product.import}"></property> 
 	    	 <property name="batchProcessingURL" value="${lookup.batch.processing}"></property> 
-	    	 <property name="lookupsParser" ref="lookupParser"/>    
+	    <!-- 	 <property name="lookupsParser" ref="lookupParser"/>     -->
 	    </bean>
 	   	<!-- To enable @RequestMapping process on type level and method level -->
    		<bean id="productDetail" class="com.asi.service.product.client.vo.ProductDetail"/>

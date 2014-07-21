@@ -3,8 +3,7 @@ package com.asi.ext.api.integration.lookup.parser;
 import java.util.HashMap;
 import java.util.List;
 
-import com.asi.integration.lookup.vo.LookupParser;
-import com.asi.vo.CriteriaSetValuePath;
+import com.asi.service.product.client.vo.CriteriaSetValuePath;
 
 public class ImprintParser {
 	private CriteriaSetParser criteriaSetParser=new CriteriaSetParser(); 

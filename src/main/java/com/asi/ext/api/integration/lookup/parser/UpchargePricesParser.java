@@ -8,15 +8,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.asi.payload.vo.ProcessProductsList;
-import com.asi.util.CommonUtilities;
+import com.asi.ext.api.util.CommonUtilities;
+import com.asi.service.product.client.vo.Price;
+import com.asi.service.product.client.vo.PriceGrid;
+import com.asi.service.product.client.vo.UpchargeDiscountList;
+import com.asi.service.product.client.vo.UpchargePricesList;
+import com.asi.service.product.client.vo.UpchargeQuantityList;
 import com.asi.util.json.IParser;
 import com.asi.util.json.JSONParserImpl;
-import com.asi.vo.Price;
-import com.asi.vo.PriceGrid;
-import com.asi.vo.UpchargeDiscountList;
-import com.asi.vo.UpchargePricesList;
-import com.asi.vo.UpchargeQuantityList;
 
 public class UpchargePricesParser {
     
@@ -113,7 +112,7 @@ public class UpchargePricesParser {
 		return upChargePriceFinalList;
 	}
 	
-	public ProcessProductsList setUpchargeItem(int pricingColumn,
+	/*public ProcessProductsList setUpchargeItem(int pricingColumn,
 			ProcessProductsList currentProduct, String[] listOfUPs,
 			String[] listOfUQs, String[] listOfUDs, int repeatableRow) {
 		UpchargePricesList pricesList=new UpchargePricesList();
@@ -207,7 +206,7 @@ public class UpchargePricesParser {
 
 		return currentProduct;
 	}
-
+*/
     public ConcurrentHashMap<String, String> getUpchargeTypeCollectionFromJSON(String response) {
         ConcurrentHashMap<String, String> upchargeTypes = new ConcurrentHashMap<String, String>();
         LinkedList<?> jsonMap = (LinkedList<?>) jsonParser.parseToList(response);

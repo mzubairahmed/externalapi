@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import scala.annotation.meta.setter;
+
 import com.asi.ext.api.radar.model.Product;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.exception.ProductNotFoundException;
@@ -40,6 +42,7 @@ public class ProductClient {
         } catch (RestClientException ex) {
             _LOGGER.error(ex.getMessage());
             ProductNotFoundException exc = new ProductNotFoundException(productID);
+            exc.setStackTrace(ex.getStackTrace());
             throw exc;
         }
         return product;

@@ -4,17 +4,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.asi.integration.lookup.vo.UpChargeLookup;
-import com.asi.payload.vo.ProcessProductsList;
-import com.asi.util.CommonUtilities;
-import com.asi.vo.BasePriceDetails;
-import com.asi.vo.DiscountList;
-import com.asi.vo.Price;
-import com.asi.vo.PriceGrid;
-import com.asi.vo.PricesList;
-import com.asi.vo.PricingItem;
-import com.asi.vo.QuantityList;
-import com.asi.vo.UpChargePriceDetails;
+import com.asi.ext.api.util.CommonUtilities;
+import com.asi.service.product.client.vo.BasePriceDetails;
+import com.asi.service.product.client.vo.DiscountList;
+import com.asi.service.product.client.vo.Price;
+import com.asi.service.product.client.vo.PriceGrid;
+import com.asi.service.product.client.vo.PricesList;
+import com.asi.service.product.client.vo.PricingItem;
+import com.asi.service.product.client.vo.QuantityList;
+import com.asi.service.product.client.vo.UpChargePriceDetails;
+import com.asi.service.product.client.vo.parser.UpChargeLookup;
 
 public class PricesParser {
     private CriteriaSetParser criteriaSetParser=new CriteriaSetParser(); 
@@ -112,7 +111,7 @@ CommonUtilities commonUtilities=new CommonUtilities();
         return priceFinalList;
     }
 
-    public ProcessProductsList setPricingItem(int pricingColumn, ProcessProductsList tempProduct, String[] listOfPs,
+ /*   public ProcessProductsList setPricingItem(int pricingColumn, ProcessProductsList tempProduct, String[] listOfPs,
             String[] listOfQs, String[] listOfDs, int repeatableRow) {
         PricesList pricesList=new PricesList();
         QuantityList quantityList=new QuantityList();
@@ -173,7 +172,7 @@ CommonUtilities commonUtilities=new CommonUtilities();
         }
         return tempProduct;
     }
-
+*/
     public String formatCriteriaValue(String srcString, String criteriaCode) {
         if (srcString != null) {
             if (criteriaCode != null && criteriaCode.equalsIgnoreCase("IMSZ")) {

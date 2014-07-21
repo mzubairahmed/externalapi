@@ -3,9 +3,10 @@ package com.asi.ext.api.radar.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Product {
 	public String getId() {
 		return id;

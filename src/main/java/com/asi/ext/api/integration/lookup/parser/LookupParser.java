@@ -5,29 +5,33 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-
-
-import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.util.StringUtils;
 
 import com.asi.core.utils.JerseyClient;
-import com.asi.ext.api.radar.model.SelectedSafetyWarnings;
 import com.asi.ext.api.radar.model.Value;
 import com.asi.service.product.client.vo.CriteriaSetValue;
 import com.asi.service.product.client.vo.ProductConfigurationsList;
 import com.asi.service.product.client.vo.ProductCriteriaSet;
-import com.asi.service.product.client.vo.Relationship;
-import com.asi.service.product.client.vo.parser.*;
+import com.asi.service.product.client.vo.parser.ColorLookup;
+import com.asi.service.product.client.vo.parser.ImprintLookup;
+import com.asi.service.product.client.vo.parser.ImprintSizeLookup;
+import com.asi.service.product.client.vo.parser.MaterialLookup;
+import com.asi.service.product.client.vo.parser.OptionLookup;
+import com.asi.service.product.client.vo.parser.OriginLookup;
+import com.asi.service.product.client.vo.parser.PackagingLookup;
+import com.asi.service.product.client.vo.parser.SampleLookup;
+import com.asi.service.product.client.vo.parser.ShapeLookup;
+import com.asi.service.product.client.vo.parser.SizeLookup;
+import com.asi.service.product.client.vo.parser.ThemeLookup;
+import com.asi.service.product.client.vo.parser.TradeNameLookup;
 import com.asi.util.json.IParser;
 import com.asi.util.json.JSONParserImpl;
 
@@ -71,6 +75,7 @@ public class LookupParser {
 			Object formatValue) {
 		if (criteriaCode.equals("PRCL")) {
 			if (productColorMap == null || productColorMap.isEmpty()) {
+				
 				ColorLookup colorLookup = new ColorLookup();
 				productColorMap = colorLookup.createProductColorMap(serverURL
 						+ "/api/api/lookup/colors");
@@ -284,7 +289,7 @@ public class LookupParser {
 	    return finalKeywordString;
 	}
 
-	public ProcessProductsList updateImprintMethod(
+/*	public ProcessProductsList updateImprintMethod(
 			ProcessProductsList processProductLst) {
 		imprintRelationMap=new ConcurrentHashMap<>();
 		String currentImprintMethod=processProductLst.getProductConfigurationsList().getImprintMethod();
@@ -418,7 +423,7 @@ public class LookupParser {
 		}
 		return processProductLst;
 	}
-	
+	*/
 	private boolean isImprintMethod(String method) {
 	    if (StringUtils.containsIgnoreCase(method.trim(), "Unimprinted") || StringUtils.containsIgnoreCase(method.trim(), "Personalization")) {
 	        return false;
@@ -458,7 +463,7 @@ public class LookupParser {
 		return null;
 	}
 
-	public String updateSafetyWarnings(
+	/*public String updateSafetyWarnings(
 			ProcessProductsList processProductLst) {
 		ArrayList<SelectedSafetyWarnings> safetyWarningsList=(ArrayList<SelectedSafetyWarnings>) processProductLst.getProduct().getSelectedSafetyWarnings();
 		String safetyWarning="";
@@ -477,7 +482,7 @@ public class LookupParser {
 			 cntr++;
 		}		
 		return safetyWarning;
-	}
+	}*/
 	
 	public ProductConfigurationsList setOptionList(
 			ProductConfigurationsList productConfigurationsList,

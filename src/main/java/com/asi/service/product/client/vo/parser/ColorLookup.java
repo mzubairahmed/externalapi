@@ -13,6 +13,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.asi.core.utils.JerseyClient;
+import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.util.json.IParser;
 import com.asi.util.json.JSONParserImpl;
 
@@ -30,6 +31,7 @@ public class ColorLookup {
 			productColorMap = new HashMap<String, String>();
 			String currentColorKey = "";
 			String currentColorValue = "";
+			// String response = restTemplate.getForObject(colorLookupUrl, String.class);
 			String response = JerseyClient.invoke(new URI(colorLookupUrl));
 			LinkedList<?> json = (LinkedList<?>) jsonParser
 					.parseToList(response);
