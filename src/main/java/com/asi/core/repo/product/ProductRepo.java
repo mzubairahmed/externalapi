@@ -29,7 +29,9 @@ import com.asi.service.product.client.vo.Batch;
 import com.asi.service.product.client.vo.BatchDataSource;
 import com.asi.service.product.client.vo.Price;
 import com.asi.service.product.client.vo.PriceGrid;
+import com.asi.service.product.client.vo.ProductDataSheet;
 import com.asi.service.product.client.vo.ProductDetail;
+import com.asi.service.product.client.vo.ProductInventoryLink;
 import com.asi.service.product.client.vo.ProductKeywords;
 import com.asi.service.product.client.vo.SelectedComplianceCert;
 import com.asi.service.product.client.vo.SelectedProductCategory;
@@ -779,6 +781,18 @@ public class ProductRepo {
 		}
 		serviceProduct.setCategories(finalCategoriesList);
 		
+		// Inventory Link
+		ProductInventoryLink inventoryList=radProduct.getProductInventoryLink();
+		if(null!=inventoryList) serviceProduct.setProductInventoryLink(inventoryList.getUrl());
+		
+		// Data Sheet
+		ProductDataSheet prodDatasheet=radProduct.getProductDataSheet();
+		if(null!=prodDatasheet) serviceProduct.setProductDataSheet(prodDatasheet.getUrl());
+		
+		//Same Day Rush
+		if(null!=radProduct.getSameDayRushFlag() && radProduct.getSameDayRushFlag().equalsIgnoreCase("U")){
+			serviceProduct.setSameDayRushOffered(true);
+		}else serviceProduct.setSameDayRushOffered(false);
 		
 		return serviceProduct;				
 	}
