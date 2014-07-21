@@ -22,13 +22,20 @@ import com.asi.ext.api.integration.lookup.parser.ConfigurationsParser;
 import com.asi.ext.api.integration.lookup.parser.ImprintParser;
 import com.asi.ext.api.integration.lookup.parser.LookupParser;
 import com.asi.ext.api.product.transformers.ImportTransformer;
+import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.ProductClient;
 import com.asi.service.product.client.vo.Batch;
 import com.asi.service.product.client.vo.BatchDataSource;
 import com.asi.service.product.client.vo.Price;
 import com.asi.service.product.client.vo.PriceGrid;
+import com.asi.service.product.client.vo.ProductDataSheet;
 import com.asi.service.product.client.vo.ProductDetail;
+import com.asi.service.product.client.vo.ProductInventoryLink;
+import com.asi.service.product.client.vo.ProductKeywords;
+import com.asi.service.product.client.vo.SelectedComplianceCert;
+import com.asi.service.product.client.vo.SelectedProductCategory;
+import com.asi.service.product.client.vo.SelectedSafetyWarnings;
 import com.asi.service.product.exception.ProductNotFoundException;
 import com.asi.service.product.vo.ItemPriceDetail;
 import com.asi.service.product.vo.ItemPriceDetail.PRICE_Type;
@@ -41,6 +48,8 @@ import com.asi.service.product.vo.Product;
 public class ProductRepo {
     private final static Logger _LOGGER            = LoggerFactory.getLogger(ProductRepo.class);
     private ImportTransformer   productTransformer = new ImportTransformer();
+
+    private ProductDataStore lookupDataStore=new ProductDataStore();
 
     /**
      * @return the productClient
@@ -740,6 +749,9 @@ public class ProductRepo {
             if (null != productDetail) {
                 serviceProduct = new com.asi.ext.api.service.model.Product();
                 BeanUtils.copyProperties(productDetail, serviceProduct);
+				serviceProduct=setBasicProductDetails(productDetail, serviceProduct);
+				List<com.asi.ext.api.service.model.PriceGrid> priceGridList=new ArrayList<>();
+				serviceProduct.setPriceGrids(priceGridList);
                 // serviceProduct.setName(productDetail.getName());
             }
 
@@ -751,6 +763,65 @@ public class ProductRepo {
         return serviceProduct;
     }
 
+	private com.asi.ext.api.service.model.Product setBasicProductDetails(ProductDetail radProduct,
+			com.asi.ext.api.service.model.Product serviceProduct) {
+		// Selected Safety Warnings
+		List<SelectedSafetyWarnings> safetyWarningsList=radProduct.getSelectedSafetyWarnings();
+		List<String> finalSafetyWrngs=new ArrayList<>();
+		for(SelectedSafetyWarnings currentSafetyWrng:safetyWarningsList){
+			finalSafetyWrngs.add(lookupDataStore.getSelectedSafetyWarningNameByCode(currentSafetyWrng.getCode()));			
+		}
+		serviceProduct.setSafetyWarnings(finalSafetyWrngs);
+		
+		// Status Code
+		serviceProduct.setStatusCode(radProduct.getStatusCode().equalsIgnoreCase("ACTV")?"Active":"In Active");
+		
+		// Compliance certs
+		List<SelectedComplianceCert> complianceCertsList=radProduct.getSelectedComplianceCerts();
+		List<String> finalComplianceCerts=new ArrayList<>();
+		for(SelectedComplianceCert currentCompliance:complianceCertsList){
+			finalComplianceCerts.add(lookupDataStore.getComplianceCertNameById(String.valueOf(currentCompliance.getComplianceCertId())));
+		}
+		serviceProduct.setComplianceCerts(finalComplianceCerts);
+		
+		// Keywords
+		List<ProductKeywords> productKeywordsList=radProduct.getProductKeywords();
+		List<String> finalKeywords=new ArrayList<>();
+		for(ProductKeywords currentKeyword:productKeywordsList){
+			finalKeywords.add(currentKeyword.getValue());
+		}
+		serviceProduct.setProductKeywords(finalKeywords);
+		
+		// Categories
+		List<SelectedProductCategory> productCategoriesList=radProduct.getSelectedProductCategories();
+		List<String> finalCategoriesList=new ArrayList<>();
+		for(SelectedProductCategory currentCategory:productCategoriesList){
+			finalCategoriesList.add(lookupDataStore.findCategoryNameByCode(currentCategory.getCode()));
+		}
+		serviceProduct.setCategories(finalCategoriesList);
+		
+		// Inventory Link
+		ProductInventoryLink inventoryList=radProduct.getProductInventoryLink();
+		if(null!=inventoryList) serviceProduct.setProductInventoryLink(inventoryList.getUrl());
+		
+		// Data Sheet
+		ProductDataSheet prodDatasheet=radProduct.getProductDataSheet();
+		if(null!=prodDatasheet) serviceProduct.setProductDataSheet(prodDatasheet.getUrl());
+		
+		//Same Day Rush
+		if(null!=radProduct.getSameDayRushFlag() && radProduct.getSameDayRushFlag().equalsIgnoreCase("U")){
+			serviceProduct.setSameDayRushOffered(true);
+		}else serviceProduct.setSameDayRushOffered(false);
+		
+		return serviceProduct;				
+	}
+	  public ProductDataStore getLookupDataStore() {
+			return lookupDataStore;
+		}
+
+		public void setLookupDataStore(ProductDataStore lookupDataStore) {
+			this.lookupDataStore = lookupDataStore;
+		}
     /*
      * private String getDataSourceId(Integer companyId) {
      * 

@@ -7,12 +7,16 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.web.client.RestTemplate;
 
 import com.asi.ext.api.util.CommonUtilities;
+import com.asi.ext.api.product.transformers.ProductDataStore;
+import com.asi.ext.api.util.JsonToLookupTableConverter;
 import com.asi.ext.api.util.RestAPIProperties;
 
 public class EnvironmentConfigurator implements InitializingBean {
-    private final static Logger LOGGER                   = Logger.getLogger(EnvironmentConfigurator.class.getName());
+	private final static Logger LOGGER = Logger
+			.getLogger(EnvironmentConfigurator.class.getName());
 
     private final static String DEFAULT_ENVIRONMENT      = "stage";
     private final static String PROP_FILE_NAME           = "velocity-api.properties";
@@ -20,6 +24,7 @@ public class EnvironmentConfigurator implements InitializingBean {
     private String              env;
     private Properties          restApiProps             = null;
 
+	private RestTemplate lookupRestTemplate;
     public static boolean       isEnvironmentInitialized = false;
 
     public void initializeApp() {
@@ -38,11 +43,17 @@ public class EnvironmentConfigurator implements InitializingBean {
             }
         } catch (IOException e) {
             isEnvironmentInitialized = false;
-            LOGGER.fatal("Failed to load required environment property file, please check mule run configurations ", e);
-            throw new RuntimeException("Failed to load required environment property file, please check mule run configurations", e);
+			LOGGER.fatal(
+					"Failed to load required environment property file, please check mule run configurations ",
+					e);
+			throw new RuntimeException(
+					"Failed to load required environment property file, please check mule run configurations",
+					e);
         }
         RestAPIProperties.initialize(restApiProps);
         isEnvironmentInitialized = true;
+		ProductDataStore.lookupRestTemplate = lookupRestTemplate;
+		JsonToLookupTableConverter.lookupRestTemplate = lookupRestTemplate;
     }
 
     /**
@@ -67,5 +78,16 @@ public class EnvironmentConfigurator implements InitializingBean {
         initializeApp();
 
     }
+
+	public RestTemplate getLookupRestTemplate() {
+		return lookupRestTemplate;
+	}
+
+	@Required
+	public void setLookupRestTemplate(RestTemplate lookupRestTemplate) {
+		this.lookupRestTemplate = lookupRestTemplate;
+	}
+	
+	
 
 }
