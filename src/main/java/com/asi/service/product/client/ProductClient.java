@@ -54,7 +54,9 @@ public class ProductClient {
 
         Product product = null;
         try {
+            //ProductDetail details = restTemplate.getForObject(productSearchUrl, ProductDetail.class, companyID, productID);
             product = restTemplate.getForObject(productSearchUrl, Product.class, companyID, productID);
+            //System.out.println(details);
 
         } catch (RestClientException ex) {
             _LOGGER.error(ex.getMessage());

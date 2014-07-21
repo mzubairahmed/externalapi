@@ -101,6 +101,8 @@
 	    </bean>
 	   	<!-- To enable @RequestMapping process on type level and method level -->
    		<bean id="productDetail" class="com.asi.service.product.client.vo.ProductDetail"/>
+   		<bean id="product" class="com.asi.ext.api.radar.model.Product"/>
+   		
 	    <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
 	        <property name="messageConverters">
 	            <list>
