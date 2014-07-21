@@ -37,10 +37,10 @@ public class ProductSearchWSService implements ProductService{
 			_LOGGER.debug("WS Service call customer ID " + companyId + " XID " + xid);
 		}
 		try {
-			Product product = repository.getProductPrices(companyId, xid);
+			Product product = null;//repository.getProductFromService(companyId, xid);
 //			product.setImprints(repository.getProductImprintMethods(companyId, xid));
 			response.setProduct(product);
-		} catch (ProductNotFoundException e) {
+		} catch (Exception e) {
 			ErrorMessage errorInfo =errorMessageHandler.prepairError("error.genericerror.id", null, null, HttpStatus.BAD_REQUEST);
 			response.setErrorInfo(errorInfo);
 			_LOGGER.error("WS Service call customer ID " + companyId + " XID " + xid + " " + e.getMessage());

@@ -24,7 +24,7 @@
 		<context:component-scan base-package="com.asi"></context:component-scan>
 		<cache:annotation-driven />
 		<bean id="environmentConfigurator" class="com.asi.ext.api.config.EnvironmentConfigurator">
-			<property name="propFileLoc" value="${Ext.env}/velocity-api.properties"></property>
+			<property name="env" value="${Ext.env}"></property>
 			<property name="lookupRestTemplate" ref="restTemplate"></property>
 		</bean>
 		<bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" p:config-location="classpath:ehcache.xml"/> 
@@ -56,7 +56,7 @@
 			</bean>		
 	    <bean id="productServiceClient" class="com.asi.service.product.client.ProductClient">
 	    	<property name="productSearchUrl" value="${ws.api.product.import}"></property> 
-	    </bean>
+	    </bean>	    
 	    <!-- <bean id="lookupDataStore" class="com.asi.ext.api.product.transformers.ProductDataStore">
 		    <property name="lookupRestTemplate" ref="restTemplate"/>
 		     <property name="lookupConverter" ref="jsonlookupConvertor" />	    

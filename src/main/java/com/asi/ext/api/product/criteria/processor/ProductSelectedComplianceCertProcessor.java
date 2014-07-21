@@ -8,41 +8,51 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.asi.ext.api.product.transformers.ProductDataStore;
-import com.asi.ext.api.radar.model.Product;
-import com.asi.ext.api.radar.model.SelectedComplianceCerts;
+
 import com.asi.ext.api.util.CommonUtilities;
+import com.asi.service.product.client.vo.ProductDetail;
+import com.asi.service.product.client.vo.SelectedComplianceCert;
 
 public class ProductSelectedComplianceCertProcessor {
 
     private final static Logger LOGGER = Logger.getLogger(ProductSelectedComplianceCertProcessor.class.getName());
 
-    public SelectedComplianceCerts[] getSelectedComplianceCerts(String complianceCerts, String companyId, String productId,
-            Product existingProduct) {
+    public List<SelectedComplianceCert> getSelectedComplianceCertList(List<String> complianceCertList, String companyId, String productId,
+            ProductDetail existingProduct) {
+        String complianceCertFinalString = null;
+        if (complianceCertList != null && !complianceCertList.isEmpty()) {
+            complianceCertFinalString = CommonUtilities.convertStringListToCSV(complianceCertList);
+        }
+        
+        return getSelectedComplianceCerts(complianceCertFinalString, companyId, productId, existingProduct);
+    }
+    private List<SelectedComplianceCert> getSelectedComplianceCerts(String complianceCerts, String companyId, String productId,
+            ProductDetail existingProduct) {
 
         if (complianceCerts == null) {
-            return new SelectedComplianceCerts[0];
+            return new ArrayList<>();
         } else if (!CommonUtilities.isUpdateNeeded(complianceCerts)) {
             if (existingProduct != null) {
                 return existingProduct.getSelectedComplianceCerts();
             } else {
-                return new SelectedComplianceCerts[0];
+                return new ArrayList<>();
             }
         }
         // Create / Update Compliance Cert
         
-        Map<String, SelectedComplianceCerts> existingComplianceCertMap = null;
+        Map<String, SelectedComplianceCert> existingComplianceCertMap = null;
         boolean checkForExisting = false;
         if (existingProduct != null && existingProduct.getSelectedComplianceCerts() != null 
-                && existingProduct.getSelectedComplianceCerts().length > 0) {
+                && existingProduct.getSelectedComplianceCerts().size() > 0) {
             existingComplianceCertMap = getExistingMap(existingProduct.getSelectedComplianceCerts());
             checkForExisting = (existingComplianceCertMap != null && !existingComplianceCertMap.isEmpty()); 
         }
         
-        List<SelectedComplianceCerts> finalComplianceCertsList = new ArrayList<SelectedComplianceCerts>();
+        List<SelectedComplianceCert> finalComplianceCertsList = new ArrayList<SelectedComplianceCert>();
         String[] finalValues = CommonUtilities.getCSVValues(complianceCerts);
         for (String compCert : finalValues) {
             String complianceId = getComplianceCertId(compCert);
-            SelectedComplianceCerts selectedComplianceCerts = null;
+            SelectedComplianceCert selectedComplianceCerts = null;
             if (checkForExisting) {
                 if (complianceId == "-1") {
                     selectedComplianceCerts = existingComplianceCertMap.get(complianceId + "_" + compCert.trim());
@@ -58,13 +68,13 @@ public class ProductSelectedComplianceCertProcessor {
         }
         
         LOGGER.info("Compliance Certs Transformation Completed :" + complianceCerts);
-        return finalComplianceCertsList.toArray(new SelectedComplianceCerts[0]);
+        return finalComplianceCertsList;
     }
     
     
-    private SelectedComplianceCerts createNewComplianceCert(String companyId, String productId, String complianceCertId, String description) {
+    private SelectedComplianceCert createNewComplianceCert(String companyId, String productId, String complianceCertId, String description) {
         
-        SelectedComplianceCerts compCert = new SelectedComplianceCerts();
+        SelectedComplianceCert compCert = new SelectedComplianceCert();
         compCert.setCompanyId(companyId);
         compCert.setProductId(productId);
         compCert.setDescription(description);
@@ -73,9 +83,9 @@ public class ProductSelectedComplianceCertProcessor {
         return compCert;
     }
     
-    private Map<String, SelectedComplianceCerts> getExistingMap(SelectedComplianceCerts[] existingCerts) {
-        Map<String, SelectedComplianceCerts> existingMap = new HashMap<String, SelectedComplianceCerts>();
-        for (SelectedComplianceCerts compCert : existingCerts) {
+    private Map<String, SelectedComplianceCert> getExistingMap(List<SelectedComplianceCert> existingCerts) {
+        Map<String, SelectedComplianceCert> existingMap = new HashMap<String, SelectedComplianceCert>();
+        for (SelectedComplianceCert compCert : existingCerts) {
             if ("-1".equalsIgnoreCase(compCert.getComplianceCertId())) {
                 existingMap.put(compCert.getComplianceCertId() + "_"+compCert.getDescription() != null ? compCert.getDescription().trim() : "", compCert);
             } else {

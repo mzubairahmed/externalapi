@@ -1,9 +1,10 @@
 
-package com.asi.service.product.client.vo;
+package com.asi.ext.api.radar.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.asi.service.product.client.vo.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -66,10 +67,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "Relationships",
     "PriceConfirmationDate"
 })
-public class ProductDetail {
+public class ProductDetailTest {
 
     @JsonProperty("ID")
-    private String ID;
+    private Integer ID;
     @JsonProperty("ProductTypeCode")
     private String productTypeCode;
     @JsonProperty("OriginalProductId")
@@ -156,7 +157,7 @@ public class ProductDetail {
     private String priceConfirmationDate;
 	@JsonProperty("DataSourceId")
 	private String dataSourceId="";
-	public ProductDetail() {
+	public ProductDetailTest() {
 		// TODO Auto-generated constructor stub
 	}
 	public String getDataSourceId() {
@@ -215,12 +216,12 @@ public class ProductDetail {
    // private Map<String, Object> additionalProperties = new HashMap<String, Object>();
     private String processedURL = "";
     @JsonProperty("ID")
-    public String getID() {
+    public Integer getID() {
         return ID;
     }
 
     @JsonProperty("ID")
-    public void setID(String ID) {
+    public void setID(Integer ID) {
         this.ID = ID;
     }
 

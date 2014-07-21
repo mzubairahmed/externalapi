@@ -5,14 +5,12 @@ package com.asi.ext.api.util;
 
 import java.util.List;
 
-import com.asi.ext.api.radar.model.Product;
-import com.asi.ext.api.radar.model.ProductConfigurations;
-import com.asi.ext.api.radar.model.ProductDataSheet;
-import com.asi.ext.api.radar.model.ProductInventoryLink;
-import com.asi.ext.api.radar.model.ProductKeywords;
-import com.asi.ext.api.radar.model.SelectedComplianceCerts;
-import com.asi.ext.api.radar.model.SelectedProductCategories;
-import com.asi.ext.api.radar.model.SelectedSafetyWarnings;
+import com.asi.service.product.client.vo.ProductConfiguration;
+import com.asi.service.product.client.vo.ProductConfigurations;
+import com.asi.service.product.client.vo.ProductDataSheet;
+import com.asi.service.product.client.vo.ProductDetail;
+import com.asi.service.product.client.vo.ProductInventoryLink;
+import com.asi.service.product.client.vo.ProductKeywords;
 
 /**
  * @author krahul
@@ -23,21 +21,21 @@ public final class ProductParserUtil {
     private final static String PRODUCT_ID = ApplicationConstants.CONST_STRING_ZERO;
     private final static String ID         = ApplicationConstants.CONST_STRING_ZERO;
 
-    public final static String getConfigId(ProductConfigurations[] productConfigurations) {
-        if (productConfigurations != null && productConfigurations.length > 0) {
-            return productConfigurations[0].getId();
+    public final static String getConfigId(List<ProductConfiguration> productConfigurations) {
+        if (productConfigurations != null && productConfigurations.size() > 0) {
+            return productConfigurations.get(0).getID()+"";
         } else {
             return ApplicationConstants.CONST_STRING_ZERO;
         }
     }
 
-    public static ProductInventoryLink getInventoryLink(String inventoryLink, Product existingProduct, String companyId) {
+    public static ProductInventoryLink getInventoryLink(String inventoryLink, ProductDetail existingProduct, String companyId) {
         ProductInventoryLink productInventoryLink = null;
         if (existingProduct != null) {
             productInventoryLink = existingProduct.getProductInventoryLink() != null ? existingProduct.getProductInventoryLink()
                     : new ProductInventoryLink();
             productInventoryLink.setUrl(inventoryLink);
-            productInventoryLink.setProductId(existingProduct.getId());
+            productInventoryLink.setProductId(String.valueOf(existingProduct.getID()));
             productInventoryLink.setCompanyId(companyId);
         } else {
             productInventoryLink = new ProductInventoryLink();
@@ -50,13 +48,13 @@ public final class ProductParserUtil {
         return productInventoryLink;
     }
 
-    public static ProductDataSheet getDataSheet(String productDataSheet, Product existingProduct, String companyId) {
+    public static ProductDataSheet getDataSheet(String productDataSheet, ProductDetail existingProduct, String companyId) {
         ProductDataSheet prodDataSheet = new ProductDataSheet();
         if (existingProduct != null) {
             prodDataSheet = existingProduct.getProductDataSheet() != null ? existingProduct.getProductDataSheet()
                     : new ProductDataSheet();
             prodDataSheet.setUrl(productDataSheet);
-            prodDataSheet.setProductId(existingProduct.getId());
+            prodDataSheet.setProductId(existingProduct.getID());
             prodDataSheet.setCompanyId(companyId);
         } else {
             prodDataSheet = new ProductDataSheet();
@@ -80,7 +78,7 @@ public final class ProductParserUtil {
             return new ProductKeywords[] {};
         }
     }
-
+/*
     private SelectedProductCategories[] getProductCategories(List<String> productCategories) {
         String categories = CommonUtilities.convertStringListToCSV(productCategories);
         if (!CommonUtilities.isValueNull(categories)) {
@@ -115,6 +113,6 @@ public final class ProductParserUtil {
         } else {
             return new SelectedSafetyWarnings[] {};
         }
-    }
+    }*/
 
 }

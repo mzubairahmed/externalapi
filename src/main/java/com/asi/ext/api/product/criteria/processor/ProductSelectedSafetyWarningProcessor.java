@@ -8,38 +8,38 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.asi.ext.api.product.transformers.ProductDataStore;
-import com.asi.ext.api.radar.model.Product;
-import com.asi.ext.api.radar.model.SelectedSafetyWarnings;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
+import com.asi.service.product.client.vo.ProductDetail;
+import com.asi.service.product.client.vo.SelectedSafetyWarnings;
 
 public class ProductSelectedSafetyWarningProcessor {
 
     private final static Logger LOGGER = Logger.getLogger(ProductSelectedSafetyWarningProcessor.class.getName());
 
-    public SelectedSafetyWarnings[] getSafetyWarnings(List<String> safetyWarnings, String xid, String productId,
-            Product existingProduct) {
+    public List<SelectedSafetyWarnings> getSafetyWarnings(List<String> safetyWarnings, String xid, String productId,
+            ProductDetail existingProduct) {
         String finalSafetyWarning = CommonUtilities.convertStringListToCSV(safetyWarnings);
 
         return getSelectedSafetyWarnings(finalSafetyWarning, xid, productId, existingProduct);
     }
 
-    private SelectedSafetyWarnings[] getSelectedSafetyWarnings(String safetyWarnings, String externalProductId, String productId,
-            Product existingProduct) {
+    private List<SelectedSafetyWarnings> getSelectedSafetyWarnings(String safetyWarnings, String externalProductId,
+            String productId, ProductDetail existingProduct) {
 
         LOGGER.info("Started ProductSelectedSafetyWarningProcessor.getSelectedSafetyWarnings(), SFW " + safetyWarnings);
 
         boolean checkExisting = false;
 
         if (CommonUtilities.isValueNull(safetyWarnings)) {
-            return new SelectedSafetyWarnings[0];
+            return new ArrayList<>();
         } else if (CommonUtilities.isUpdateNeeded(safetyWarnings)) {
             if (existingProduct != null && existingProduct.getSelectedSafetyWarnings() != null
-                    && existingProduct.getSelectedSafetyWarnings().length > 0) {
+                    && existingProduct.getSelectedSafetyWarnings().size() > 0) {
                 checkExisting = true;
             }
         } else if (!CommonUtilities.isUpdateNeeded(safetyWarnings)) {
-            return existingProduct != null ? existingProduct.getSelectedSafetyWarnings() : new SelectedSafetyWarnings[0];
+            return existingProduct != null ? existingProduct.getSelectedSafetyWarnings() : new ArrayList<SelectedSafetyWarnings>();
         }
 
         Map<String, SelectedSafetyWarnings> existingMap = null;
@@ -70,7 +70,7 @@ public class ProductSelectedSafetyWarningProcessor {
         }
 
         LOGGER.info("Completed ProductSelectedSafetyWarningProcessor.getSelectedSafetyWarnings(), SFW " + safetyWarnings);
-        return processedSftWarning.toArray(new SelectedSafetyWarnings[0]);
+        return processedSftWarning;
     }
 
     private String getSafetyWarningCode(String warning) {
@@ -96,7 +96,7 @@ public class ProductSelectedSafetyWarningProcessor {
         return warning;
     }
 
-    private Map<String, SelectedSafetyWarnings> getExistingSafetyWarningMap(SelectedSafetyWarnings[] existingSafetyWarnings) {
+    private Map<String, SelectedSafetyWarnings> getExistingSafetyWarningMap(List<SelectedSafetyWarnings> existingSafetyWarnings) {
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("Started ProductSelectedSafetyWarningProcessor.getExistingSafetyWarningMap(), " + existingSafetyWarnings);
         }
