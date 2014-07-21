@@ -7,6 +7,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({
     "ID",
@@ -68,7 +69,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ProductDetail {
 
     @JsonProperty("ID")
-    private Integer ID;
+    private String ID;
     @JsonProperty("ProductTypeCode")
     private String productTypeCode;
     @JsonProperty("OriginalProductId")
@@ -214,12 +215,12 @@ public class ProductDetail {
    // private Map<String, Object> additionalProperties = new HashMap<String, Object>();
     private String processedURL = "";
     @JsonProperty("ID")
-    public Integer getID() {
+    public String getID() {
         return ID;
     }
 
     @JsonProperty("ID")
-    public void setID(Integer ID) {
+    public void setID(String ID) {
         this.ID = ID;
     }
 

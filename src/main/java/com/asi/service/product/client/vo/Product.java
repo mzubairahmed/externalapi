@@ -2,6 +2,7 @@ package com.asi.service.product.client.vo;
 
 import java.util.List;
 
+import com.asi.ext.api.radar.model.SelectedProductCategories;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 

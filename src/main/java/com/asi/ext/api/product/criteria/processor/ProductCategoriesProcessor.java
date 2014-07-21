@@ -9,10 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.asi.ext.api.product.transformers.ProductDataStore;
-import com.asi.ext.api.radar.model.Product;
-import com.asi.ext.api.radar.model.SelectedProductCategories;
+
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
+import com.asi.service.product.client.vo.ProductDetail;
+import com.asi.service.product.client.vo.ProductKeywords;
+import com.asi.service.product.client.vo.SelectedProductCategory;
 
 /**
  * @author Rahul K
@@ -20,34 +22,34 @@ import com.asi.ext.api.util.CommonUtilities;
  */
 public class ProductCategoriesProcessor {
 
-    List<SelectedProductCategories> adCategories = new ArrayList<SelectedProductCategories>();
+    List<SelectedProductCategory> adCategories = new ArrayList<SelectedProductCategory>();
 
-    public SelectedProductCategories[] getCategories(List<String> productCategoryList, String productId, String xid,
-            Product existingProduct) {
+    public List<SelectedProductCategory> getCategories(List<String> productCategoryList, String productId, String xid,
+            ProductDetail existingProduct) {
         String crntProductCategory = null;
         if (productCategoryList != null && !productCategoryList.isEmpty()) {
             crntProductCategory = CommonUtilities.convertStringListToCSV(productCategoryList);
         }
-        SelectedProductCategories[] productCategories = getProductCategories(crntProductCategory, productId, xid, existingProduct);
+        List<SelectedProductCategory> productCategories = getProductCategories(crntProductCategory, productId, xid, existingProduct);
 
-        if (productCategories == null || productCategories.length == 0) {
-            return new SelectedProductCategories[] {};
+        if (productCategories == null || productCategories.size() == 0) {
+            return new ArrayList<SelectedProductCategory>();
         }
         return productCategories;
     }
 
-    private SelectedProductCategories[] getProductCategories(String categories, String productId, String externalPrdId,
-            Product existingProduct) {
+    private List<SelectedProductCategory> getProductCategories(String categories, String productId, String externalPrdId,
+            ProductDetail existingProduct) {
         if (!CommonUtilities.isUpdateNeeded(categories)) {
             if (existingProduct == null) {
-                return new SelectedProductCategories[0];
+                return new ArrayList<SelectedProductCategory>();
             } else {
                 return existingProduct.getSelectedProductCategories();
             }
         }
         ProductDataStore productDataStore = new ProductDataStore();
 
-        Map<String, SelectedProductCategories> existingCategoriesMap = null;
+        Map<String, SelectedProductCategory> existingCategoriesMap = null;
         if (existingProduct != null) {
             existingCategoriesMap = getExistingProductCategories(existingProduct.getSelectedProductCategories());
         }
@@ -57,7 +59,7 @@ public class ProductCategoriesProcessor {
             checkExisting = true;
         }
 
-        List<SelectedProductCategories> finalCategories = new ArrayList<SelectedProductCategories>();
+        List<SelectedProductCategory> finalCategories = new ArrayList<SelectedProductCategory>();
         finalCategories.addAll(adCategories);
 
         for (String categ : categories.split(",")) {
@@ -66,7 +68,7 @@ public class ProductCategoriesProcessor {
             }
             String categCode = ProductDataStore.findCategoryCode(categ.trim());
             if (categCode != null) {
-                SelectedProductCategories category = null;
+                SelectedProductCategory category = null;
                 if (checkExisting) {
                     category = existingCategoriesMap.get(categCode.toUpperCase());
                 }
@@ -84,25 +86,25 @@ public class ProductCategoriesProcessor {
             }
         }
 
-        return finalCategories.toArray(new SelectedProductCategories[0]);
+        return finalCategories;
     }
 
-    private SelectedProductCategories createNewCategory(String code, String productId) {
+    private SelectedProductCategory createNewCategory(String code, String productId) {
 
-        SelectedProductCategories newCategory = new SelectedProductCategories();
+        SelectedProductCategory newCategory = new SelectedProductCategory();
         newCategory.setCode(code);
-        newCategory.setIsPrimary(ApplicationConstants.CONST_STRING_FALSE_SMALL);
-        newCategory.setAdCategoryFlg(ApplicationConstants.CONST_STRING_FALSE_SMALL);
+        newCategory.setIsPrimary(false);
+        newCategory.setAdCategoryFlg(false);
         newCategory.setProductId(productId);
 
         return newCategory;
     }
 
-    private Map<String, SelectedProductCategories> getExistingProductCategories(SelectedProductCategories[] categories) {
-        Map<String, SelectedProductCategories> categoryMap = new HashMap<String, SelectedProductCategories>();
-        for (SelectedProductCategories ctg : categories) {
+    private Map<String, SelectedProductCategory> getExistingProductCategories(List<SelectedProductCategory> categories) {
+        Map<String, SelectedProductCategory> categoryMap = new HashMap<String, SelectedProductCategory>();
+        for (SelectedProductCategory ctg : categories) {
             if (ctg != null) {
-                if (ApplicationConstants.CONST_STRING_TRUE_SMALL.equalsIgnoreCase(ctg.getAdCategoryFlg())) {
+                if (ctg.getAdCategoryFlg()) {
                     adCategories.add(ctg);
                 } else {
                     categoryMap.put(ctg.getCode(), ctg);

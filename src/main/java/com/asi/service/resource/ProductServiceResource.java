@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +54,7 @@ public class ProductServiceResource {
             _LOGGER.debug("calling service");
         }
         try {
-            product = productService.updateProduct(companyId, xid, requestEntity.getBody());
+           // product = productService.updateProduct(companyId, xid, requestEntity.getBody());
         } catch (Exception e) {
 
         }
@@ -64,19 +65,20 @@ public class ProductServiceResource {
     @Secured("ROLE_CUSTOMER")
     @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.POST, headers = "content-type=application/json, application/xml", produces = {
             "application/xml", "application/json" })
-    public ResponseEntity<Product> updateProduct(HttpEntity<Product> requestEntity, @PathVariable("companyid") String companyId,
+    public Response updateProduct(HttpEntity<Product> requestEntity, @PathVariable("companyid") String companyId,
             @PathVariable("xid") String xid) throws Exception {
         if (_LOGGER.isDebugEnabled()) {
             _LOGGER.debug("calling service");
         }
-        Product product = null;
+        String message = null;
         try {
-            product = productService.updateProduct(companyId, xid, requestEntity.getBody());
+            message = productService.updateProduct(companyId, xid, requestEntity.getBody());
         } catch (Exception e) {
             e.printStackTrace();
         }
+    
 
-        return new ResponseEntity<Product>(product, null, HttpStatus.CREATED);
+        return Response.ok(message).build();
     }
 
     /*

@@ -12,12 +12,6 @@ import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
-/*
- * import org.mule.api.MuleMessage;
- * import org.mule.api.transformer.TransformerException;
- * import org.mule.api.transport.PropertyScope;
- * import org.mule.transformer.AbstractMessageTransformer;
- */
 
 import com.asi.ext.api.exception.AmbiguousPriceCriteriaException;
 import com.asi.ext.api.exception.VelocityException;
@@ -62,6 +56,13 @@ import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.PriceGridUtil;
 import com.asi.ext.api.util.ProductParserUtil;
 import com.asi.ext.api.util.RestAPIProperties;
+import com.asi.service.product.client.vo.ProductDetail;
+/*
+ * import org.mule.api.MuleMessage;
+ * import org.mule.api.transformer.TransformerException;
+ * import org.mule.api.transport.PropertyScope;
+ * import org.mule.transformer.AbstractMessageTransformer;
+ */
 
 /**
  * ImportTransformer consist logic for processing each individual Product,
@@ -87,7 +88,7 @@ public class ImportTransformer {
     private CommonUtilities                        commonUtils                     = new CommonUtilities();
     private ProductParser                          productParser                   = new ProductParser();
     private PriceGridParser                        priceGridParser                 = new PriceGridParser();
-    private ProductSelectedComplianceCertProcessor complianceCertProcessor         = new ProductSelectedComplianceCertProcessor();
+    
     private ProductSelectedSafetyWarningProcessor  safetyWarningProcessor          = new ProductSelectedSafetyWarningProcessor();
     private ProductMediaItemProcessor              productImageProcessor           = new ProductMediaItemProcessor();
     private ProductImprintMethodProcessor          productImprintMethodProcessor   = new ProductImprintMethodProcessor();
@@ -95,28 +96,28 @@ public class ImportTransformer {
 
     private ProductKeywordProcessor                keywordProcessor                = new ProductKeywordProcessor();
     private ProductCategoriesProcessor             categoryProcessor               = new ProductCategoriesProcessor();
+    private ProductSelectedComplianceCertProcessor complianceCertProcessor         = new ProductSelectedComplianceCertProcessor();
 
     private final static Logger                    LOGGER                          = Logger.getLogger(ImportTransformer.class
                                                                                            .getName());
 
-    public Product generateRadarProduct(com.asi.ext.api.service.model.Product serviceProduct, Product existingRadarModel,
-            String dataSourceId) {
+    public ProductDetail generateRadarProduct(com.asi.ext.api.service.model.Product serviceProduct, ProductDetail existingRadarModel,
+            String dataSourceId, String companyId) {
         boolean isNewProduct = existingRadarModel == null;
-        Product productToSave = null;
+        ProductDetail productToSave = null;
 
         String configId = "0";
         String productId = "0";
-        String companyId = "0";
         String xid = serviceProduct.getExternalProductId();
 
         if (!isNewProduct) {
-            productId = existingRadarModel.getId();
+            productId = existingRadarModel.getID();
             companyId = existingRadarModel.getCompanyId();
             configId = ProductParserUtil.getConfigId(existingRadarModel.getProductConfigurations());
             productToSave = existingRadarModel;
         } else {
-            productToSave = new Product();
-            productToSave.setId(productId);
+            productToSave = new ProductDetail();
+            productToSave.setID(productId);
             productToSave.setCompanyId(companyId);
         }
         // DataSourceId
@@ -145,6 +146,8 @@ public class ImportTransformer {
         // Safety Warning Start Here
         productToSave.setSelectedSafetyWarnings(safetyWarningProcessor.getSafetyWarnings(serviceProduct.getSafetyWarnings(), xid,
                 productId, existingRadarModel));
+        
+        productToSave.setSelectedComplianceCerts(complianceCertProcessor.getSelectedComplianceCertList(serviceProduct.getComplianceCerts(), companyId, xid, existingRadarModel));
 
         return productToSave;
     }
@@ -1850,7 +1853,7 @@ public class ImportTransformer {
 
                     LOGGER.info("Compliance Certs Transformation Starts :"
                             + product.getSelectedComplianceCerts()[0].getComplianceCertId());
-                    if (isNewProduct) {
+                    /*if (isNewProduct) {
                         product.setSelectedComplianceCerts(complianceCertProcessor.getSelectedComplianceCerts(
                                 product.getSelectedComplianceCerts()[0].getComplianceCertId(), product.getCompanyId(),
                                 product.getId(), existingProduct));
@@ -1858,7 +1861,7 @@ public class ImportTransformer {
                         existingProduct.setSelectedComplianceCerts(complianceCertProcessor.getSelectedComplianceCerts(
                                 product.getSelectedComplianceCerts()[0].getComplianceCertId(), product.getCompanyId(),
                                 product.getId(), existingProduct));
-                    }
+                    }*/
                     LOGGER.info("Compliance Certs Transformation Completed ");
 
                     /*

@@ -16,6 +16,6 @@ public interface ProductService {
     
     public Product getProduct(String companyId, String xid);
     
-    public Product updateProduct(String companyId, String xid, Product serviceProduct);
+    public String updateProduct(String companyId, String xid, Product serviceProduct);
 
 }

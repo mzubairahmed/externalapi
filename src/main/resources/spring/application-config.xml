@@ -17,14 +17,14 @@
 
 		<mvc:annotation-driven/>
 		<web-services:annotation-driven/>
-		<web-services:dynamic-wsdl id="productSearch" portTypeName="ProductSearch" 
+		<!-- <web-services:dynamic-wsdl id="productSearch" portTypeName="ProductSearch" 
 		targetNamespace="http://www.asicentral.com/schema/product" locationUri="/productSearchService">
 			<web-services:xsd location="/WEB-INF/product.xsd"/>
-		</web-services:dynamic-wsdl>
+		</web-services:dynamic-wsdl> -->
 		<context:component-scan base-package="com.asi"></context:component-scan>
 		<cache:annotation-driven />
 		<bean id="environmentConfigurator" class="com.asi.ext.api.config.EnvironmentConfigurator">
-			<property name="propFileLoc" value="${Ext.env}/velocity-api.properties"></property>
+			<property name="env" value="${Ext.env}"></property>
 		</bean>
 		<bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" p:config-location="classpath:ehcache.xml"/> 
 		<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" p:cache-manager-ref="ehcache"/> 	
@@ -107,12 +107,12 @@
 	   	<!-- To enable @RequestMapping process on type level and method level -->
    		<bean id="productDetail" class="com.asi.service.product.client.vo.ProductDetail"/>
 	    <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
-	        <property name="messageConverters">
+	        <!-- <property name="messageConverters">
 	            <list>
 	                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
 	                <bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter"/>
 	            </list>
-	        </property>
+	        </property> -->
 	    </bean>
 	<bean id="messageSource"
 		class="org.springframework.context.support.ResourceBundleMessageSource">

@@ -20,26 +20,32 @@ import com.fasterxml.jackson.annotation.JsonSetter;
         "ProductKeywords", "SelectedProductCategories", "SelectedLineNames", "SelectedComplianceCerts", "SelectedSafetyWarnings",
         "ProductMediaItems", "ProductMediaCitations", "PriceGrids", "ProductNumbers", "Relationships", "PriceConfirmationDate" })
 public class Product {
+    @JsonProperty("ID")
     public String getId() {
         return id;
     }
 
+    @JsonProperty("ID")
     public void setId(String id) {
         this.id = id;
     }
 
+    @JsonProperty("Name")
     public String getName() {
         return name;
     }
 
+    @JsonProperty("Name")
     public void setName(String name) {
         this.name = name;
     }
 
+    @JsonProperty("Description")
     public String getDescription() {
         return description;
     }
 
+    @JsonProperty("Description")
     public void setDescription(String description) {
         this.description = description;
     }

@@ -8,12 +8,16 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
+import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.RestAPIProperties;
 
 public class EnvironmentConfigurator implements InitializingBean {
     private final static Logger LOGGER                   = Logger.getLogger(EnvironmentConfigurator.class.getName());
 
-    private String              propFileLoc;
+    private final static String DEFAULT_ENVIRONMENT      = "stage";
+    private final static String PROP_FILE_NAME           = "velocity-api.properties";
+
+    private String              env;
     private Properties          restApiProps             = null;
 
     public static boolean       isEnvironmentInitialized = false;
@@ -22,7 +26,10 @@ public class EnvironmentConfigurator implements InitializingBean {
         //
 
         try {
-            restApiProps = PropertiesLoaderUtils.loadAllProperties(propFileLoc);
+            if (CommonUtilities.isValueNull(env)) {
+                env = DEFAULT_ENVIRONMENT;
+            }
+            restApiProps = PropertiesLoaderUtils.loadAllProperties(env + "/" + PROP_FILE_NAME);
             if (restApiProps == null || restApiProps.isEmpty()) {
                 LOGGER.fatal("Failed to load required environment property file, please check mule run configurations ");
                 isEnvironmentInitialized = false;
@@ -39,20 +46,20 @@ public class EnvironmentConfigurator implements InitializingBean {
     }
 
     /**
-     * @return the propFileLoc
+     * @return the env
      */
     @Required
-    public String getPropFileLoc() {
-        return propFileLoc;
+    public String getEnv() {
+        return env;
     }
 
     /**
-     * @param propFileLoc
-     *            the propFileLoc to set
+     * @param env
+     *            the env to set
      */
     @Required
-    public void setPropFileLoc(String propFileLoc) {
-        this.propFileLoc = propFileLoc;
+    public void setEnv(String env) {
+        this.env = env;
     }
 
     @Override
