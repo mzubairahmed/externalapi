@@ -143,10 +143,10 @@ public class ImportTransformer {
         productToSave.setSelectedProductCategories(categoryProcessor.getCategories(serviceProduct.getCategories(), productId, xid,
                 existingRadarModel));
 
-        // Safety Warning Start Here
+        // Safety Warning Start 
         productToSave.setSelectedSafetyWarnings(safetyWarningProcessor.getSafetyWarnings(serviceProduct.getSafetyWarnings(), xid,
                 productId, existingRadarModel));
-        
+        // Compliance Cert Processing 
         productToSave.setSelectedComplianceCerts(complianceCertProcessor.getSelectedComplianceCertList(serviceProduct.getComplianceCerts(), companyId, xid, existingRadarModel));
 
         return productToSave;

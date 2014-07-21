@@ -42,14 +42,13 @@ import com.asi.service.product.vo.ItemPriceDetail.PRICE_Type;
 import com.asi.service.product.vo.PriceDetail;
 import com.asi.service.product.vo.Product;
 
-// import javax.ws.rs.core.MediaType;
 
 @Component
 public class ProductRepo {
     private final static Logger _LOGGER            = LoggerFactory.getLogger(ProductRepo.class);
     private ImportTransformer   productTransformer = new ImportTransformer();
 
-    private ProductDataStore lookupDataStore=new ProductDataStore();
+    private ProductDataStore    lookupDataStore    = new ProductDataStore();
 
     /**
      * @return the productClient
@@ -146,8 +145,7 @@ public class ProductRepo {
         return null;
     }
 
-    public String updateProduct(String companyId, String xid,
-            com.asi.ext.api.service.model.Product serviceProduct) {
+    public String updateProduct(String companyId, String xid, com.asi.ext.api.service.model.Product serviceProduct) {
         ProductDetail existingRadarProduct = null;
         try {
             existingRadarProduct = productClient.getRadarProduct(companyId, serviceProduct.getExternalProductId());
@@ -155,14 +153,18 @@ public class ProductRepo {
             _LOGGER.info("Product Not found with Existing, going to create new Product");
         }
         existingRadarProduct = productTransformer.generateRadarProduct(serviceProduct, existingRadarProduct,
-                generateBatchDataSourceId(companyId),companyId);
+                generateBatchDataSourceId(companyId), companyId);
         String result = productClient.saveProduct(existingRadarProduct);
         return result;
     }
 
     private String generateBatchDataSourceId(String companyId) {
-        // TODO : Create new Batch record
-        return "14277";
+        try {
+            return getDataSourceId(companyId);
+        } catch (Exception e) {
+            _LOGGER.error("Batch Creation failed ", e);
+            return "0";
+        }
     }
 
     private Product prepairProduct(String companyID, String productID) throws ProductNotFoundException, RestClientException,
@@ -407,20 +409,20 @@ public class ProductRepo {
      */
 
     @SuppressWarnings("unchecked")
-    private String getDataSourceId(ProductDetail currentProduct) throws Exception {
+    private String getDataSourceId(String companyId) throws Exception {
         String dataSourceId = "0";
         Batch batchData = new Batch();
         batchData.setBatchId(0);
         batchData.setBatchTypeCode("IMRT");
         batchData.setStartDate(String.valueOf(new Timestamp(System.currentTimeMillis()).toString()));
         batchData.setStatus("N");
-        batchData.setCompanyId(String.valueOf(currentProduct.getCompanyId()));
+        batchData.setCompanyId(String.valueOf(companyId));
         BatchDataSource batchDataSources = new BatchDataSource();
         batchDataSources.setBatchId(0);
         batchDataSources.setId(0);
-        batchDataSources.setDescription("Batch Created by API");
-        batchDataSources.setName("ASIF");
-        batchDataSources.setTypeCode("IMRT");
+        batchDataSources.setDescription("Batch Created by External API");
+        batchDataSources.setName("Batch ExtAPI");
+        batchDataSources.setTypeCode("IMRT"); // TODO: Doubt full need to check with Chuck
         batchData.setBatchDataSources(new ArrayList<com.asi.service.product.client.vo.BatchDataSource>(Arrays
                 .asList(batchDataSources)));
         productRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
@@ -438,218 +440,224 @@ public class ProductRepo {
         return dataSourceId;
     }
 
-    /*private com.asi.service.product.client.vo.Product setProductWithPriceDetails(Product srcProduct,
-            ProductDetail currentProductDetails) throws RestClientException, UnsupportedEncodingException {
-
-        com.asi.service.product.client.vo.Product productToUpdate = new com.asi.service.product.client.vo.Product();
-        productToUpdate.setId(String.valueOf(srcProduct.getID()));
-        productToUpdate.setCompanyId(String.valueOf(srcProduct.getCompanyId()));
-        productToUpdate.setName(srcProduct.getName());
-        productToUpdate.setDescription(srcProduct.getDescription());
-        productToUpdate.setSummary(String.valueOf(srcProduct.getSummary()));
-        productToUpdate.setDataSourceId(srcProduct.getDataSourceId());
-        productToUpdate.setExternalProductId(srcProduct.getExternalProductId());
-
-        // Product DataSheet
-        com.asi.service.product.client.vo.ProductDataSheet productDataSheet = new com.asi.service.product.client.vo.ProductDataSheet();
-        
-         * productDataSheet.setProductId(String.valueOf(srcProduct.getID()));
-         * productDataSheet
-         * .setCompanyId(String.valueOf(srcProduct.getCompanyId()));
-         * productDataSheet.setId("0");
-         
-        if (null != srcProduct.getProductDataSheet()) {
-            productDataSheet.setUrl(srcProduct.getProductDataSheet().getUrl());
-        }
-        productToUpdate.setProductDataSheet(productDataSheet);
-        // Product Color
-        if (null != srcProduct.getColor() && !srcProduct.getColor().isEmpty()) {
-            String productColor = srcProduct.getColor();
-            // productToUpdate=productConfiguration.transformProductColors(productColor);
-            
-             * productToUpdate = configurationParser.setProductWithProductConfigurations(srcProduct, currentProductDetails,
-             * productToUpdate, lookupsParser, "PRCL", productColor);
-             
-        }
-        
-         * // Product Material
-         * if (null != srcProduct.getMaterial() && !srcProduct.getMaterial().isEmpty()) {
-         * productToUpdate = configurationParser.setProductWithProductConfigurations(srcProduct, currentProductDetails,
-         * productToUpdate, lookupsParser, "MTRL", srcProduct.getMaterial());
-         * }
-         * // Product Origin
-         * if (null != srcProduct.getOrigin() && !srcProduct.getOrigin().isEmpty()) {
-         * productToUpdate = configurationParser.setProductWithProductConfigurations(srcProduct, currentProductDetails,
-         * productToUpdate, lookupsParser, "ORGN", srcProduct.getOrigin());
-         * }
-         * // Product Packaging
-         * if (null != srcProduct.getPackages() && !srcProduct.getPackages().isEmpty()) {
-         * productToUpdate = configurationParser.setProductWithProductConfigurations(srcProduct, currentProductDetails,
-         * productToUpdate, lookupsParser, "PCKG", srcProduct.getPackages());
-         * }
-         * // Product Shapes
-         * if (null != srcProduct.getShape() && !srcProduct.getShape().isEmpty()) {
-         * productToUpdate = configurationParser.setProductWithProductConfigurations(srcProduct, currentProductDetails,
-         * productToUpdate, lookupsParser, "SHAP", srcProduct.getShape());
-         * }
-         * 
-         * // Product TradeName
-         * if (null != srcProduct.getTradeName() && !srcProduct.getTradeName().isEmpty()) {
-         * productToUpdate = configurationParser.setProductWithProductConfigurations(srcProduct, currentProductDetails,
-         * productToUpdate, lookupsParser, "TDNM", srcProduct.getTradeName());
-         * }
-         
-        // Imprint Processing
-        
-         * if (null != srcProduct.getImprints() && srcProduct.getImprints().getImprintMethod().size() > 0) {
-         * int imprintCntr=0,artworkCntr=0,minCntr=0;
-         * String finalImprintMethod = "";
-         * String finalArtworks="";
-         * String finalMinOrders="";
-         * for (ImprintMethod currentImprintMethod : srcProduct.getImprints().getImprintMethod()) {
-         * finalImprintMethod = (imprintCntr == 0) ? currentImprintMethod.getMethodName() : finalImprintMethod + ","
-         * + currentImprintMethod.getMethodName();
-         * if(null!=currentImprintMethod.getArtworkName() && !currentImprintMethod.getArtworkName().isEmpty()){
-         * if(artworkCntr==0){
-         * finalArtworks=currentImprintMethod.getArtworkName();
-         * artworkCntr++;
-         * }else{
-         * finalArtworks=finalArtworks+","+currentImprintMethod.getArtworkName();
-         * }
-         * }
-         * if(null!=currentImprintMethod.getMinimumOrder() && !currentImprintMethod.getMinimumOrder().isEmpty()){
-         * if(minCntr==0){
-         * finalMinOrders=currentImprintMethod.getMinimumOrder();
-         * minCntr++;
-         * }else{
-         * finalMinOrders=finalMinOrders+","+currentImprintMethod.getMinimumOrder();
-         * }
-         * }
-         * imprintCntr++;
-         * }
-         * productToUpdate = configurationParser.setProductWithProductConfigurations(srcProduct, currentProductDetails,
-         * productToUpdate, lookupsParser, "IMMD", finalImprintMethod);
-         * productToUpdate=configurationParser.setProductWithProductConfigurations(srcProduct,currentProductDetails,productToUpdate,
-         * lookupsParser,"ARTW",finalArtworks);
-         * productToUpdate=configurationParser.setProductWithProductConfigurations(srcProduct,currentProductDetails,productToUpdate,
-         * lookupsParser,"MINO",finalMinOrders);
-         * productToUpdate=imprintParser.setImprintRelations(srcProduct.getImprints().getImprintMethod(),currentProductDetails,
-         * productToUpdate);
-         * }
-         * // Size Processing
-         * SizeDetails sizeDetails = srcProduct.getSize();
-         * if (null != sizeDetails && null != sizeDetails.getGroupName()) {
-         * if (sizeDetails.getGroupName().contains("Apparel") || sizeDetails.getGroupName().contains("Other")
-         * || sizeDetails.getGroupName().contains("Standard") || sizeDetails.getGroupName().contains("Volume")) {
-         * productToUpdate = configurationParser.setProductWithSizeApperalConfigurations(srcProduct, currentProductDetails,
-         * productToUpdate, lookupsParser, sizeDetails.getGroupName(), sizeDetails.getSizeValue());
-         * } else {
-         * productToUpdate = configurationParser.setProductWithSizeConfigurations(srcProduct, currentProductDetails,
-         * productToUpdate, lookupsParser, sizeDetails.getGroupName(), sizeDetails.getSizeValue());
-         * }
-         * }
-         * // Product Category
-         * String sProductCategory = srcProduct.getCategory();
-         * if (null != sProductCategory || (!StringUtils.isEmpty(sProductCategory))) {
-         * String[] arrayProductCtgrs = sProductCategory.split(",");
-         * int productCtrgyCntr = 0;
-         * if (null != arrayProductCtgrs && arrayProductCtgrs.length > 0) {
-         * com.asi.service.product.client.vo.SelectedProductCategories productCategory = null;
-         * com.asi.service.product.client.vo.SelectedProductCategories[] productCategoryAry = new
-         * com.asi.service.product.client.vo.SelectedProductCategories[arrayProductCtgrs.length];
-         * for (String crntCategory : arrayProductCtgrs) {
-         * productCategory = new com.asi.service.product.client.vo.SelectedProductCategories();
-         * crntCategory = lookupsParser.getCategoryCodeByName(crntCategory.trim());
-         * if (null != crntCategory) {
-         * productCategory.setCode(crntCategory);
-         * productCategory.setProductId(String.valueOf(srcProduct.getID()));
-         * productCategory.setIsPrimary(String.valueOf(Boolean.FALSE));
-         * productCategory.setAdCategoryFlg(String.valueOf(Boolean.FALSE));
-         * }
-         * productCategoryAry[productCtrgyCntr] = productCategory;
-         * }
-         * productToUpdate.setSelectedProductCategories(productCategoryAry);
-         * }
-         * }
-         * // Product Keywords
-         * productToUpdate = lookupsParser.setProductKeyWords(productToUpdate, srcProduct);
-         * if (null == productToUpdate.getRelationships()) {
-         * productToUpdate.setRelationships(new ArrayList<Relationships>());
-         * }
-         // Product Inventory Link
-        com.asi.service.product.client.vo.ProductInventoryLink productInventoryLink = new com.asi.service.product.client.vo.ProductInventoryLink();
-        productInventoryLink.setCompanyId(String.valueOf(srcProduct.getCompanyId()));
-        productInventoryLink.setProductId(String.valueOf(srcProduct.getID()));
-        productInventoryLink.setId("0");
-        if (null != srcProduct.getProductInventoryLink())
-            productInventoryLink.setUrl(srcProduct.getProductInventoryLink().getUrl());
-        productToUpdate.setProductInventoryLink(productInventoryLink);
-
-        // Price Details
-        if (srcProduct.getItemPrice().size() == 0) {
-            com.asi.service.product.client.vo.PriceGrids priceGrid = getQURPriceGrid(srcProduct);
-            productToUpdate.setPriceGrids(new com.asi.service.product.client.vo.PriceGrids[] { priceGrid });
-        } else {
-            productToUpdate.setPriceGrids(setPriceDetails(srcProduct));
-        }
-
-        return productToUpdate;
-    }
-
-    private com.asi.service.product.client.vo.Product setProductWithBasicDetails(Product srcProduct,
-            ProductDetail currentProductDetails, com.asi.service.product.client.vo.Product currentProduct) {
-        BeanUtils.copyProperties(srcProduct, currentProduct);
-        // Product DataSheet
-        com.asi.service.product.client.vo.ProductDataSheet productDataSheet = new com.asi.service.product.client.vo.ProductDataSheet();
-        
-         * productDataSheet.setProductId(String.valueOf(srcProduct.getID()));
-         * productDataSheet
-         * .setCompanyId(String.valueOf(srcProduct.getCompanyId()));
-         * productDataSheet.setId("0");
-         
-        if (null != srcProduct.getProductDataSheet()) {
-            productDataSheet.setUrl(srcProduct.getProductDataSheet().getUrl());
-        }
-        currentProduct.setProductDataSheet(productDataSheet);
-        // Product Category
-        com.asi.service.product.client.vo.SelectedProductCategories[] productCategoriesLst = null;
-        com.asi.service.product.client.vo.SelectedProductCategories productCategories = null;
-        String productCategory = srcProduct.getCategory();
-        
-         * if(null!=productCategory && !productCategory.isEmpty()){
-         * String[] productCtgrs = productCategory.split(",");
-         * int productCategoryCntr = 0;
-         * if (null != productCtgrs && productCtgrs.length > 0) {
-         * productCategoriesLst = new com.asi.service.product.client.vo.SelectedProductCategories[productCtgrs.length];
-         * for (String crntCategory : productCtgrs) {
-         * productCategories = new com.asi.service.product.client.vo.SelectedProductCategories();
-         * crntCategory = lookupsParser.getCategoryCodeByName(crntCategory.trim());
-         * if (null != crntCategory) {
-         * productCategories.setCode(crntCategory);
-         * productCategories.setProductId(String.valueOf(srcProduct.getID()));
-         * productCategories.setIsPrimary("false");
-         * productCategories.setAdCategoryFlg("false");
-         * }
-         * productCategoriesLst[productCategoryCntr] = productCategories;
-         * productCategoryCntr++;
-         * }
-         * }
-         * 
-         * currentProduct.setSelectedProductCategories(productCategoriesLst);
-         * }
-         * 
-         * // Product Keywords
-         * currentProduct = lookupsParser.setProductKeyWords(currentProduct, srcProduct);
-         // Product Inventory Link
-        com.asi.service.product.client.vo.ProductInventoryLink productInventoryLink = new com.asi.service.product.client.vo.ProductInventoryLink();
-        productInventoryLink.setCompanyId(String.valueOf(srcProduct.getCompanyId()));
-        productInventoryLink.setProductId(String.valueOf(srcProduct.getID()));
-        productInventoryLink.setId("0");
-        if (null != srcProduct.getProductInventoryLink())
-            productInventoryLink.setUrl(srcProduct.getProductInventoryLink().getUrl());
-        currentProduct.setProductInventoryLink(productInventoryLink);
-        return currentProduct;
-    }*/
+    /*
+     * private com.asi.service.product.client.vo.Product setProductWithPriceDetails(Product srcProduct,
+     * ProductDetail currentProductDetails) throws RestClientException, UnsupportedEncodingException {
+     * 
+     * com.asi.service.product.client.vo.Product productToUpdate = new com.asi.service.product.client.vo.Product();
+     * productToUpdate.setId(String.valueOf(srcProduct.getID()));
+     * productToUpdate.setCompanyId(String.valueOf(srcProduct.getCompanyId()));
+     * productToUpdate.setName(srcProduct.getName());
+     * productToUpdate.setDescription(srcProduct.getDescription());
+     * productToUpdate.setSummary(String.valueOf(srcProduct.getSummary()));
+     * productToUpdate.setDataSourceId(srcProduct.getDataSourceId());
+     * productToUpdate.setExternalProductId(srcProduct.getExternalProductId());
+     * 
+     * // Product DataSheet
+     * com.asi.service.product.client.vo.ProductDataSheet productDataSheet = new
+     * com.asi.service.product.client.vo.ProductDataSheet();
+     * 
+     * productDataSheet.setProductId(String.valueOf(srcProduct.getID()));
+     * productDataSheet
+     * .setCompanyId(String.valueOf(srcProduct.getCompanyId()));
+     * productDataSheet.setId("0");
+     * 
+     * if (null != srcProduct.getProductDataSheet()) {
+     * productDataSheet.setUrl(srcProduct.getProductDataSheet().getUrl());
+     * }
+     * productToUpdate.setProductDataSheet(productDataSheet);
+     * // Product Color
+     * if (null != srcProduct.getColor() && !srcProduct.getColor().isEmpty()) {
+     * String productColor = srcProduct.getColor();
+     * // productToUpdate=productConfiguration.transformProductColors(productColor);
+     * 
+     * productToUpdate = configurationParser.setProductWithProductConfigurations(srcProduct, currentProductDetails,
+     * productToUpdate, lookupsParser, "PRCL", productColor);
+     * 
+     * }
+     * 
+     * // Product Material
+     * if (null != srcProduct.getMaterial() && !srcProduct.getMaterial().isEmpty()) {
+     * productToUpdate = configurationParser.setProductWithProductConfigurations(srcProduct, currentProductDetails,
+     * productToUpdate, lookupsParser, "MTRL", srcProduct.getMaterial());
+     * }
+     * // Product Origin
+     * if (null != srcProduct.getOrigin() && !srcProduct.getOrigin().isEmpty()) {
+     * productToUpdate = configurationParser.setProductWithProductConfigurations(srcProduct, currentProductDetails,
+     * productToUpdate, lookupsParser, "ORGN", srcProduct.getOrigin());
+     * }
+     * // Product Packaging
+     * if (null != srcProduct.getPackages() && !srcProduct.getPackages().isEmpty()) {
+     * productToUpdate = configurationParser.setProductWithProductConfigurations(srcProduct, currentProductDetails,
+     * productToUpdate, lookupsParser, "PCKG", srcProduct.getPackages());
+     * }
+     * // Product Shapes
+     * if (null != srcProduct.getShape() && !srcProduct.getShape().isEmpty()) {
+     * productToUpdate = configurationParser.setProductWithProductConfigurations(srcProduct, currentProductDetails,
+     * productToUpdate, lookupsParser, "SHAP", srcProduct.getShape());
+     * }
+     * 
+     * // Product TradeName
+     * if (null != srcProduct.getTradeName() && !srcProduct.getTradeName().isEmpty()) {
+     * productToUpdate = configurationParser.setProductWithProductConfigurations(srcProduct, currentProductDetails,
+     * productToUpdate, lookupsParser, "TDNM", srcProduct.getTradeName());
+     * }
+     * 
+     * // Imprint Processing
+     * 
+     * if (null != srcProduct.getImprints() && srcProduct.getImprints().getImprintMethod().size() > 0) {
+     * int imprintCntr=0,artworkCntr=0,minCntr=0;
+     * String finalImprintMethod = "";
+     * String finalArtworks="";
+     * String finalMinOrders="";
+     * for (ImprintMethod currentImprintMethod : srcProduct.getImprints().getImprintMethod()) {
+     * finalImprintMethod = (imprintCntr == 0) ? currentImprintMethod.getMethodName() : finalImprintMethod + ","
+     * + currentImprintMethod.getMethodName();
+     * if(null!=currentImprintMethod.getArtworkName() && !currentImprintMethod.getArtworkName().isEmpty()){
+     * if(artworkCntr==0){
+     * finalArtworks=currentImprintMethod.getArtworkName();
+     * artworkCntr++;
+     * }else{
+     * finalArtworks=finalArtworks+","+currentImprintMethod.getArtworkName();
+     * }
+     * }
+     * if(null!=currentImprintMethod.getMinimumOrder() && !currentImprintMethod.getMinimumOrder().isEmpty()){
+     * if(minCntr==0){
+     * finalMinOrders=currentImprintMethod.getMinimumOrder();
+     * minCntr++;
+     * }else{
+     * finalMinOrders=finalMinOrders+","+currentImprintMethod.getMinimumOrder();
+     * }
+     * }
+     * imprintCntr++;
+     * }
+     * productToUpdate = configurationParser.setProductWithProductConfigurations(srcProduct, currentProductDetails,
+     * productToUpdate, lookupsParser, "IMMD", finalImprintMethod);
+     * productToUpdate=configurationParser.setProductWithProductConfigurations(srcProduct,currentProductDetails,productToUpdate,
+     * lookupsParser,"ARTW",finalArtworks);
+     * productToUpdate=configurationParser.setProductWithProductConfigurations(srcProduct,currentProductDetails,productToUpdate,
+     * lookupsParser,"MINO",finalMinOrders);
+     * productToUpdate=imprintParser.setImprintRelations(srcProduct.getImprints().getImprintMethod(),currentProductDetails,
+     * productToUpdate);
+     * }
+     * // Size Processing
+     * SizeDetails sizeDetails = srcProduct.getSize();
+     * if (null != sizeDetails && null != sizeDetails.getGroupName()) {
+     * if (sizeDetails.getGroupName().contains("Apparel") || sizeDetails.getGroupName().contains("Other")
+     * || sizeDetails.getGroupName().contains("Standard") || sizeDetails.getGroupName().contains("Volume")) {
+     * productToUpdate = configurationParser.setProductWithSizeApperalConfigurations(srcProduct, currentProductDetails,
+     * productToUpdate, lookupsParser, sizeDetails.getGroupName(), sizeDetails.getSizeValue());
+     * } else {
+     * productToUpdate = configurationParser.setProductWithSizeConfigurations(srcProduct, currentProductDetails,
+     * productToUpdate, lookupsParser, sizeDetails.getGroupName(), sizeDetails.getSizeValue());
+     * }
+     * }
+     * // Product Category
+     * String sProductCategory = srcProduct.getCategory();
+     * if (null != sProductCategory || (!StringUtils.isEmpty(sProductCategory))) {
+     * String[] arrayProductCtgrs = sProductCategory.split(",");
+     * int productCtrgyCntr = 0;
+     * if (null != arrayProductCtgrs && arrayProductCtgrs.length > 0) {
+     * com.asi.service.product.client.vo.SelectedProductCategories productCategory = null;
+     * com.asi.service.product.client.vo.SelectedProductCategories[] productCategoryAry = new
+     * com.asi.service.product.client.vo.SelectedProductCategories[arrayProductCtgrs.length];
+     * for (String crntCategory : arrayProductCtgrs) {
+     * productCategory = new com.asi.service.product.client.vo.SelectedProductCategories();
+     * crntCategory = lookupsParser.getCategoryCodeByName(crntCategory.trim());
+     * if (null != crntCategory) {
+     * productCategory.setCode(crntCategory);
+     * productCategory.setProductId(String.valueOf(srcProduct.getID()));
+     * productCategory.setIsPrimary(String.valueOf(Boolean.FALSE));
+     * productCategory.setAdCategoryFlg(String.valueOf(Boolean.FALSE));
+     * }
+     * productCategoryAry[productCtrgyCntr] = productCategory;
+     * }
+     * productToUpdate.setSelectedProductCategories(productCategoryAry);
+     * }
+     * }
+     * // Product Keywords
+     * productToUpdate = lookupsParser.setProductKeyWords(productToUpdate, srcProduct);
+     * if (null == productToUpdate.getRelationships()) {
+     * productToUpdate.setRelationships(new ArrayList<Relationships>());
+     * }
+     * // Product Inventory Link
+     * com.asi.service.product.client.vo.ProductInventoryLink productInventoryLink = new
+     * com.asi.service.product.client.vo.ProductInventoryLink();
+     * productInventoryLink.setCompanyId(String.valueOf(srcProduct.getCompanyId()));
+     * productInventoryLink.setProductId(String.valueOf(srcProduct.getID()));
+     * productInventoryLink.setId("0");
+     * if (null != srcProduct.getProductInventoryLink())
+     * productInventoryLink.setUrl(srcProduct.getProductInventoryLink().getUrl());
+     * productToUpdate.setProductInventoryLink(productInventoryLink);
+     * 
+     * // Price Details
+     * if (srcProduct.getItemPrice().size() == 0) {
+     * com.asi.service.product.client.vo.PriceGrids priceGrid = getQURPriceGrid(srcProduct);
+     * productToUpdate.setPriceGrids(new com.asi.service.product.client.vo.PriceGrids[] { priceGrid });
+     * } else {
+     * productToUpdate.setPriceGrids(setPriceDetails(srcProduct));
+     * }
+     * 
+     * return productToUpdate;
+     * }
+     * 
+     * private com.asi.service.product.client.vo.Product setProductWithBasicDetails(Product srcProduct,
+     * ProductDetail currentProductDetails, com.asi.service.product.client.vo.Product currentProduct) {
+     * BeanUtils.copyProperties(srcProduct, currentProduct);
+     * // Product DataSheet
+     * com.asi.service.product.client.vo.ProductDataSheet productDataSheet = new
+     * com.asi.service.product.client.vo.ProductDataSheet();
+     * 
+     * productDataSheet.setProductId(String.valueOf(srcProduct.getID()));
+     * productDataSheet
+     * .setCompanyId(String.valueOf(srcProduct.getCompanyId()));
+     * productDataSheet.setId("0");
+     * 
+     * if (null != srcProduct.getProductDataSheet()) {
+     * productDataSheet.setUrl(srcProduct.getProductDataSheet().getUrl());
+     * }
+     * currentProduct.setProductDataSheet(productDataSheet);
+     * // Product Category
+     * com.asi.service.product.client.vo.SelectedProductCategories[] productCategoriesLst = null;
+     * com.asi.service.product.client.vo.SelectedProductCategories productCategories = null;
+     * String productCategory = srcProduct.getCategory();
+     * 
+     * if(null!=productCategory && !productCategory.isEmpty()){
+     * String[] productCtgrs = productCategory.split(",");
+     * int productCategoryCntr = 0;
+     * if (null != productCtgrs && productCtgrs.length > 0) {
+     * productCategoriesLst = new com.asi.service.product.client.vo.SelectedProductCategories[productCtgrs.length];
+     * for (String crntCategory : productCtgrs) {
+     * productCategories = new com.asi.service.product.client.vo.SelectedProductCategories();
+     * crntCategory = lookupsParser.getCategoryCodeByName(crntCategory.trim());
+     * if (null != crntCategory) {
+     * productCategories.setCode(crntCategory);
+     * productCategories.setProductId(String.valueOf(srcProduct.getID()));
+     * productCategories.setIsPrimary("false");
+     * productCategories.setAdCategoryFlg("false");
+     * }
+     * productCategoriesLst[productCategoryCntr] = productCategories;
+     * productCategoryCntr++;
+     * }
+     * }
+     * 
+     * currentProduct.setSelectedProductCategories(productCategoriesLst);
+     * }
+     * 
+     * // Product Keywords
+     * currentProduct = lookupsParser.setProductKeyWords(currentProduct, srcProduct);
+     * // Product Inventory Link
+     * com.asi.service.product.client.vo.ProductInventoryLink productInventoryLink = new
+     * com.asi.service.product.client.vo.ProductInventoryLink();
+     * productInventoryLink.setCompanyId(String.valueOf(srcProduct.getCompanyId()));
+     * productInventoryLink.setProductId(String.valueOf(srcProduct.getID()));
+     * productInventoryLink.setId("0");
+     * if (null != srcProduct.getProductInventoryLink())
+     * productInventoryLink.setUrl(srcProduct.getProductInventoryLink().getUrl());
+     * currentProduct.setProductInventoryLink(productInventoryLink);
+     * return currentProduct;
+     * }
+     */
 
     private com.asi.service.product.client.vo.PriceGrids[] setPriceDetails(Product srcProduct) {
         com.asi.service.product.client.vo.PriceGrids[] pricegridList = {};
@@ -749,9 +757,9 @@ public class ProductRepo {
             if (null != productDetail) {
                 serviceProduct = new com.asi.ext.api.service.model.Product();
                 BeanUtils.copyProperties(productDetail, serviceProduct);
-				serviceProduct=setBasicProductDetails(productDetail, serviceProduct);
-				List<com.asi.ext.api.service.model.PriceGrid> priceGridList=new ArrayList<>();
-				serviceProduct.setPriceGrids(priceGridList);
+                serviceProduct = setBasicProductDetails(productDetail, serviceProduct);
+                List<com.asi.ext.api.service.model.PriceGrid> priceGridList = new ArrayList<>();
+                serviceProduct.setPriceGrids(priceGridList);
                 // serviceProduct.setName(productDetail.getName());
             }
 
@@ -763,65 +771,68 @@ public class ProductRepo {
         return serviceProduct;
     }
 
-	private com.asi.ext.api.service.model.Product setBasicProductDetails(ProductDetail radProduct,
-			com.asi.ext.api.service.model.Product serviceProduct) {
-		// Selected Safety Warnings
-		List<SelectedSafetyWarnings> safetyWarningsList=radProduct.getSelectedSafetyWarnings();
-		List<String> finalSafetyWrngs=new ArrayList<>();
-		for(SelectedSafetyWarnings currentSafetyWrng:safetyWarningsList){
-			finalSafetyWrngs.add(lookupDataStore.getSelectedSafetyWarningNameByCode(currentSafetyWrng.getCode()));			
-		}
-		serviceProduct.setSafetyWarnings(finalSafetyWrngs);
-		
-		// Status Code
-		serviceProduct.setStatusCode(radProduct.getStatusCode().equalsIgnoreCase("ACTV")?"Active":"In Active");
-		
-		// Compliance certs
-		List<SelectedComplianceCert> complianceCertsList=radProduct.getSelectedComplianceCerts();
-		List<String> finalComplianceCerts=new ArrayList<>();
-		for(SelectedComplianceCert currentCompliance:complianceCertsList){
-			finalComplianceCerts.add(lookupDataStore.getComplianceCertNameById(String.valueOf(currentCompliance.getComplianceCertId())));
-		}
-		serviceProduct.setComplianceCerts(finalComplianceCerts);
-		
-		// Keywords
-		List<ProductKeywords> productKeywordsList=radProduct.getProductKeywords();
-		List<String> finalKeywords=new ArrayList<>();
-		for(ProductKeywords currentKeyword:productKeywordsList){
-			finalKeywords.add(currentKeyword.getValue());
-		}
-		serviceProduct.setProductKeywords(finalKeywords);
-		
-		// Categories
-		List<SelectedProductCategory> productCategoriesList=radProduct.getSelectedProductCategories();
-		List<String> finalCategoriesList=new ArrayList<>();
-		for(SelectedProductCategory currentCategory:productCategoriesList){
-			finalCategoriesList.add(lookupDataStore.findCategoryNameByCode(currentCategory.getCode()));
-		}
-		serviceProduct.setCategories(finalCategoriesList);
-		
-		// Inventory Link
-		ProductInventoryLink inventoryList=radProduct.getProductInventoryLink();
-		if(null!=inventoryList) serviceProduct.setProductInventoryLink(inventoryList.getUrl());
-		
-		// Data Sheet
-		ProductDataSheet prodDatasheet=radProduct.getProductDataSheet();
-		if(null!=prodDatasheet) serviceProduct.setProductDataSheet(prodDatasheet.getUrl());
-		
-		//Same Day Rush
-		if(null!=radProduct.getSameDayRushFlag() && radProduct.getSameDayRushFlag().equalsIgnoreCase("U")){
-			serviceProduct.setSameDayRushOffered(true);
-		}else serviceProduct.setSameDayRushOffered(false);
-		
-		return serviceProduct;				
-	}
-	  public ProductDataStore getLookupDataStore() {
-			return lookupDataStore;
-		}
+    private com.asi.ext.api.service.model.Product setBasicProductDetails(ProductDetail radProduct,
+            com.asi.ext.api.service.model.Product serviceProduct) {
+        // Selected Safety Warnings
+        List<SelectedSafetyWarnings> safetyWarningsList = radProduct.getSelectedSafetyWarnings();
+        List<String> finalSafetyWrngs = new ArrayList<>();
+        for (SelectedSafetyWarnings currentSafetyWrng : safetyWarningsList) {
+            finalSafetyWrngs.add(lookupDataStore.getSelectedSafetyWarningNameByCode(currentSafetyWrng.getCode()));
+        }
+        serviceProduct.setSafetyWarnings(finalSafetyWrngs);
 
-		public void setLookupDataStore(ProductDataStore lookupDataStore) {
-			this.lookupDataStore = lookupDataStore;
-		}
+        // Status Code
+        serviceProduct.setStatusCode(radProduct.getStatusCode().equalsIgnoreCase("ACTV") ? "Active" : "In Active");
+
+        // Compliance certs
+        List<SelectedComplianceCert> complianceCertsList = radProduct.getSelectedComplianceCerts();
+        List<String> finalComplianceCerts = new ArrayList<>();
+        for (SelectedComplianceCert currentCompliance : complianceCertsList) {
+            finalComplianceCerts.add(lookupDataStore.getComplianceCertNameById(String.valueOf(currentCompliance
+                    .getComplianceCertId())));
+        }
+        serviceProduct.setComplianceCerts(finalComplianceCerts);
+
+        // Keywords
+        List<ProductKeywords> productKeywordsList = radProduct.getProductKeywords();
+        List<String> finalKeywords = new ArrayList<>();
+        for (ProductKeywords currentKeyword : productKeywordsList) {
+            finalKeywords.add(currentKeyword.getValue());
+        }
+        serviceProduct.setProductKeywords(finalKeywords);
+
+        // Categories
+        List<SelectedProductCategory> productCategoriesList = radProduct.getSelectedProductCategories();
+        List<String> finalCategoriesList = new ArrayList<>();
+        for (SelectedProductCategory currentCategory : productCategoriesList) {
+            finalCategoriesList.add(lookupDataStore.findCategoryNameByCode(currentCategory.getCode()));
+        }
+        serviceProduct.setCategories(finalCategoriesList);
+
+        // Inventory Link
+        ProductInventoryLink inventoryList = radProduct.getProductInventoryLink();
+        if (null != inventoryList) serviceProduct.setProductInventoryLink(inventoryList.getUrl());
+
+        // Data Sheet
+        ProductDataSheet prodDatasheet = radProduct.getProductDataSheet();
+        if (null != prodDatasheet) serviceProduct.setProductDataSheet(prodDatasheet.getUrl());
+
+        // Same Day Rush
+        if (null != radProduct.getSameDayRushFlag() && radProduct.getSameDayRushFlag().equalsIgnoreCase("U")) {
+            serviceProduct.setSameDayRushOffered(true);
+        } else
+            serviceProduct.setSameDayRushOffered(false);
+
+        return serviceProduct;
+    }
+
+    public ProductDataStore getLookupDataStore() {
+        return lookupDataStore;
+    }
+
+    public void setLookupDataStore(ProductDataStore lookupDataStore) {
+        this.lookupDataStore = lookupDataStore;
+    }
     /*
      * private String getDataSourceId(Integer companyId) {
      * 
