@@ -25,6 +25,7 @@
 		<cache:annotation-driven />
 		<bean id="environmentConfigurator" class="com.asi.ext.api.config.EnvironmentConfigurator">
 			<property name="propFileLoc" value="${Ext.env}/velocity-api.properties"></property>
+			<property name="lookupRestTemplate" ref="restTemplate"></property>
 		</bean>
 		<bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" p:config-location="classpath:ehcache.xml"/> 
 		<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" p:cache-manager-ref="ehcache"/> 	
@@ -56,9 +57,13 @@
 	    <bean id="productServiceClient" class="com.asi.service.product.client.ProductClient">
 	    	<property name="productSearchUrl" value="${ws.api.product.import}"></property> 
 	    </bean>
-	    <bean id="lookupDataStore" class="com.asi.ext.api.product.transformers.ProductDataStore">
-		    <property name="lookupRestTemplate" ref="restTemplate"/>	    
+	    <!-- <bean id="lookupDataStore" class="com.asi.ext.api.product.transformers.ProductDataStore">
+		    <property name="lookupRestTemplate" ref="restTemplate"/>
+		     <property name="lookupConverter" ref="jsonlookupConvertor" />	    
 	    </bean>
+	    <bean id="jsonlookupConvertor" class="com.asi.ext.api.util.JsonToLookupTableConverter">
+		    <property name="lookupRestTemplate" ref="restTemplate"/>	    
+	    </bean> -->
 	    <bean id="lookupValuesClient" class="com.asi.service.product.client.LookupValuesClient">
 	        <property name="lookupRestTemplate" ref="restTemplate"/>
 	         <property name="lookupColorURL" value="${lookup.color.url}"></property> 
@@ -74,9 +79,7 @@
 	          <property name="lookupPackageURL" value="${lookup.packaging.url}"></property>  
 	                  
 	    </bean>
-	   <!--  <bean id="productDataStore" class="com.asi.ext.api.product.transformers.ProductDataStore">
-	    <property name="productDataStore" ref="restTemplate"/>
-	    </bean> -->
+	
 	     <bean id="lookupParser" class="com.asi.ext.api.integration.lookup.parser.LookupParser">
 	       <!-- <property name="lookupClient" ref="lookupValuesClient"/>  -->
 	       <!-- <property name="imprintParser" ref="imprintMethodParser"/>      -->   
@@ -105,6 +108,7 @@
 	    	<!--  <property name="productRestTemplate" ref="restTemplate"/> -->
 	    	 <property name="productImportURL" value="${ws.api.product.import}"></property> 
 	    	 <property name="batchProcessingURL" value="${lookup.batch.processing}"></property> 
+	    	<!--  <property name="lookupDataStore" ref="lookupDataStore" /> -->
 	    <!-- 	 <property name="lookupsParser" ref="lookupParser"/>     -->
 	    </bean>
 	   	<!-- To enable @RequestMapping process on type level and method level -->

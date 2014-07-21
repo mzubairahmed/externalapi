@@ -13,15 +13,13 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.client.RestTemplate;
 
 import com.asi.ext.api.exception.VelocityException;
 import com.asi.ext.api.radar.lookup.model.PriceUnitJsonModel;
-import com.asi.ext.api.rest.JersyClientGet;
 import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.ext.api.radar.model.PriceUnit;
+import com.asi.ext.api.rest.JersyClientGet;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.JsonToLookupTableConverter;
@@ -36,8 +34,8 @@ import com.asi.ext.api.util.RestAPIProperties;
  */
 public class ProductDataStore {
 
-	@Autowired
-	RestTemplate lookupRestTemplate;
+
+	public static RestTemplate lookupRestTemplate;
 	
 
 	private final static Logger LOGGER = Logger
@@ -290,6 +288,9 @@ public class ProductDataStore {
 			String categoryResponse = JersyClientGet
 					.getLookupsResponse(RestAPIProperties
 							.get(ApplicationConstants.PRODUCT_CATEGORIES_LOOKUP_URL));
+							
+		/*	String categoryResponse = lookupRestTemplate.getForObject(RestAPIProperties
+					.get(ApplicationConstants.PRODUCT_CATEGORIES_LOOKUP_URL), String.class);*/
 			if (categoryResponse == null || categoryResponse.isEmpty()) {
 				// Report error to API that we are not able to fetch data for
 				// Categories
@@ -743,6 +744,8 @@ public class ProductDataStore {
 			String complianceCertResponse = JersyClientGet
 					.getLookupsResponse(RestAPIProperties
 							.get(ApplicationConstants.PRODUCT_COMPLIANCECERTS_LOOKUP));
+			/*String complianceCertResponse=lookupRestTemplate.getForObject(RestAPIProperties
+							.get(ApplicationConstants.PRODUCT_COMPLIANCECERTS_LOOKUP),String.class);*/
 			if (complianceCertResponse == null
 					|| complianceCertResponse.isEmpty()) {
 				// Report error to API that we are not able to fetch data for
@@ -785,6 +788,7 @@ public class ProductDataStore {
 			String safetyWarningResponse = JersyClientGet
 					.getLookupsResponse(RestAPIProperties
 							.get(ApplicationConstants.SAFETY_WARNINGS_LOOKUP));
+			
 			if (safetyWarningResponse == null
 					|| safetyWarningResponse.isEmpty()) {
 				// Report error to API that we are not able to fetch data for

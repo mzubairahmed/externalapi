@@ -46,8 +46,10 @@ import com.asi.service.product.vo.Product;
 public class ProductRepo {
     private final static Logger _LOGGER = LoggerFactory.getLogger(ProductRepo.class);
     private ImportTransformer productTransformer = new ImportTransformer();
+
     private ProductDataStore lookupDataStore=new ProductDataStore();
-    /**
+
+	/**
      * @return the productClient
      */
     public ProductClient getProductClient() {
@@ -65,6 +67,7 @@ public class ProductRepo {
     @Autowired
     @Qualifier("productServiceClient")
     ProductClient productClient;
+  
     @Autowired
     ProductDetail productDetail;
     @Autowired
@@ -726,7 +729,8 @@ public class ProductRepo {
 				serviceProduct=new com.asi.ext.api.service.model.Product();
 				BeanUtils.copyProperties(productDetail, serviceProduct);
 				serviceProduct=setBasicProductDetails(productDetail, serviceProduct);
-				
+				List<com.asi.ext.api.service.model.PriceGrid> priceGridList=new ArrayList<>();
+				serviceProduct.setPriceGrids(priceGridList);
 				//serviceProduct.setName(productDetail.getName());
 			}
 			
@@ -778,7 +782,13 @@ public class ProductRepo {
 		
 		return serviceProduct;				
 	}
+	  public ProductDataStore getLookupDataStore() {
+			return lookupDataStore;
+		}
 
+		public void setLookupDataStore(ProductDataStore lookupDataStore) {
+			this.lookupDataStore = lookupDataStore;
+		}
     /*
      * private String getDataSourceId(Integer companyId) {
      * 
