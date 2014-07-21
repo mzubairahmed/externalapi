@@ -7,12 +7,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 
 import com.asi.ext.api.exception.VelocityException;
-import com.asi.ext.api.response.JsonProcessor;
-import com.asi.ext.api.rest.JersyClientGet;
 import com.asi.ext.api.radar.model.CriteriaSetCodeValues;
 import com.asi.ext.api.radar.model.CriteriaSetRelationships;
 import com.asi.ext.api.radar.model.CriteriaSetValuePaths;
@@ -28,6 +26,8 @@ import com.asi.ext.api.radar.model.Relationships;
 import com.asi.ext.api.radar.model.SelectedProductCategories;
 import com.asi.ext.api.radar.model.SelectedSafetyWarnings;
 import com.asi.ext.api.radar.model.Value;
+import com.asi.ext.api.response.JsonProcessor;
+import com.asi.ext.api.rest.JersyClientGet;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.PriceGridUtil;

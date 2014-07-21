@@ -42,8 +42,8 @@ public class ProductServiceResource {
     private MessageSource messageSource;
 
     @Secured("ROLE_CUSTOMER")
-    @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.PUT, headers = "content-type=application/json, application/xml", produces = {
-            "application/xml", "application/json" })
+    @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.PUT, headers = "content-type=application/com.asi.util.json, application/xml", produces = {
+            "application/xml", "application/com.asi.util.json" })
     public ResponseEntity<Product> createOrUpdateProduct(HttpEntity<Product> requestEntity,
             @PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws ProductNotFoundException,
             ExistingProductException, ResponseNotValidException, RestClientException, UnsupportedEncodingException {
@@ -62,8 +62,8 @@ public class ProductServiceResource {
     }
 
     @Secured("ROLE_CUSTOMER")
-    @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.POST, headers = "content-type=application/json, application/xml", produces = {
-            "application/xml", "application/json" })
+    @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.POST, headers = "content-type=application/com.asi.util.json, application/xml", produces = {
+            "application/xml", "application/com.asi.util.json" })
     public ResponseEntity<Product> updateProduct(HttpEntity<Product> requestEntity, @PathVariable("companyid") String companyId,
             @PathVariable("xid") String xid) throws Exception {
         if (_LOGGER.isDebugEnabled()) {
@@ -83,8 +83,8 @@ public class ProductServiceResource {
      * @Secured("ROLE_CUSTOMER")
      * 
      * @RequestMapping(value = "{companyid}/pid/{xid}/price/{priceGridId}", method = RequestMethod.POST, headers =
-     * "content-type=application/json, application/xml", produces = {
-     * "application/xml", "application/json" })
+     * "content-type=application/com.asi.util.json, application/xml", produces = {
+     * "application/xml", "application/com.asi.util.json" })
      * public ResponseEntity<ItemPriceDetail> createProductPrice(HttpEntity<ItemPriceDetail> requestEntity,
      * 
      * @PathVariable("companyid") String companyId, @PathVariable("xid") String xid,
@@ -96,8 +96,8 @@ public class ProductServiceResource {
      * }
      * 
      * @RequestMapping(value = "{companyid}/pid/{xid}/imprintMethods", method = RequestMethod.POST, headers =
-     * "content-type=application/json, application/xml", produces = {
-     * "application/xml", "application/json" })
+     * "content-type=application/com.asi.util.json, application/xml", produces = {
+     * "application/xml", "application/com.asi.util.json" })
      * public ResponseEntity<Imprints> createImprintMethods(@PathVariable("companyid") String companyId,
      * 
      * @PathVariable("xid") String xid) throws UnsupportedEncodingException, ProductNotFoundException {
@@ -109,8 +109,8 @@ public class ProductServiceResource {
      * @Secured("ROLE_CUSTOMER")
      * 
      * @RequestMapping(value = "{companyid}/pid/{xid}/price/{priceGridId}", method = RequestMethod.PUT, headers =
-     * "content-type=application/json, application/xml", produces = {
-     * "application/xml", "application/json" })
+     * "content-type=application/com.asi.util.json, application/xml", produces = {
+     * "application/xml", "application/com.asi.util.json" })
      * public ResponseEntity<ItemPriceDetail> updateProductPrice(HttpEntity<ItemPriceDetail> requestEntity,
      * 
      * @PathVariable("companyid") String companyId, @PathVariable("xid") String xid,
@@ -123,8 +123,8 @@ public class ProductServiceResource {
      * }
      * 
      * @RequestMapping(value = "{companyid}/pid/{xid}/imprintMethods", method = RequestMethod.PUT, headers =
-     * "content-type=application/json, application/xml", produces = {
-     * "application/xml", "application/json" })
+     * "content-type=application/com.asi.util.json, application/xml", produces = {
+     * "application/xml", "application/com.asi.util.json" })
      * public ResponseEntity<Imprints> updateImprintMethods(@PathVariable("companyid") String companyId,
      * 
      * @PathVariable("xid") String xid) throws UnsupportedEncodingException, ProductNotFoundException {
@@ -136,8 +136,8 @@ public class ProductServiceResource {
      * @Secured("ROLE_CUSTOMER")
      * 
      * @RequestMapping(value = "{companyid}/pid/{xid}/basePrices", method = RequestMethod.POST, headers =
-     * "content-type=application/json, application/xml", produces = {
-     * "application/xml", "application/json" })
+     * "content-type=application/com.asi.util.json, application/xml", produces = {
+     * "application/xml", "application/com.asi.util.json" })
      * public ResponseEntity<Product> updateBasePrices(HttpEntity<Product> product) throws Exception {
      * if (_LOGGER.isDebugEnabled()) _LOGGER.debug("calling Base Price Service Updation");
      * Product productResponse = repository.updateProductBasePrices(product.getBody(), "update");

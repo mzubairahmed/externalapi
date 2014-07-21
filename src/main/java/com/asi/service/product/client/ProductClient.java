@@ -40,6 +40,7 @@ public class ProductClient {
         } catch (RestClientException ex) {
             _LOGGER.error(ex.getMessage());
             ProductNotFoundException exc = new ProductNotFoundException(productID);
+            exc.setStackTrace(ex.getStackTrace());
             throw exc;
         }
         return product;

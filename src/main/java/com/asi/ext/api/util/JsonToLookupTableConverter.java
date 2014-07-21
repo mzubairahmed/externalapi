@@ -9,22 +9,31 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
-
 import org.json.simple.parser.ContainerFactory;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.client.RestTemplate;
 
 import com.asi.ext.api.radar.lookup.model.PriceUnitJsonModel;
-import com.asi.ext.api.response.JsonProcessor;
-import com.asi.ext.api.rest.JersyClientGet;
 import com.asi.ext.api.radar.model.CriteriaInfo;
+import com.asi.ext.api.response.JsonProcessor;
 
 
 public final class JsonToLookupTableConverter {
 
     private final static Logger LOGGER = Logger.getLogger(JsonToLookupTableConverter.class.getName());
+    @Autowired
+    static RestTemplate restTemplate;
+    public RestTemplate getRestTemplate() {
+		return restTemplate;
+	}
 
-    @SuppressWarnings("rawtypes")
+	public void setRestTemplate(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
+
+	@SuppressWarnings("rawtypes")
     public static ConcurrentHashMap<String, String> jsonToProductCategoryLookupTable(String jsonData) {
         JSONParser parser = new JSONParser();
         ConcurrentHashMap<String, String> categoryLookupData = new ConcurrentHashMap<String, String>();
@@ -104,10 +113,10 @@ public final class JsonToLookupTableConverter {
                         }
                     }
                 } catch (Exception e) {
-                    LOGGER.error("Exception while processing color json model ", e);
+                    LOGGER.error("Exception while processing color com.asi.util.json model ", e);
                 }
             }
-            // LOGGER.info(JSONValue.toJSONString(json));
+            // LOGGER.info(JSONValue.toJSONString(com.asi.util.json));
         } catch (ParseException pe) {
             pe.printStackTrace();
         }
@@ -152,7 +161,8 @@ public final class JsonToLookupTableConverter {
 
     public static Map<String, String> createProductColorMap(final String COLOR_API_URL) {
         try {
-            String response = JersyClientGet.getLookupsResponse(COLOR_API_URL);
+           // String response = JersyClientGet.getLookupsResponse(COLOR_API_URL);
+            String response =restTemplate.getForObject(COLOR_API_URL, String.class);
             return createColorLookupMap(response);
 
         } catch (Exception e) {

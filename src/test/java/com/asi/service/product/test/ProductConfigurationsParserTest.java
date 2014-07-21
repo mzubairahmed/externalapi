@@ -1,4 +1,4 @@
-package com.asi.service.product.test;
+/*package com.asi.service.product.test;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
@@ -51,3 +51,4 @@ public class ProductConfigurationsParserTest {
 
 	
 }
+*/

@@ -141,7 +141,7 @@ public class JerseyClientPost {
             Client client = Client.create();
             LOGGER.info("WS Call :" + url);
             WebResource webResource = client.resource(url);
-            ClientResponse clientResponse = webResource.accept("application/json").get(ClientResponse.class);
+            ClientResponse clientResponse = webResource.accept("application/com.asi.util.json").get(ClientResponse.class);
             if (clientResponse.getStatus() == 500) {
                 LOGGER.info(url + " is not reachable");
                 throw new VelocityException(url + " is not reachable", ExceptionType.INTERNAL_SERVER_ERROR, null);

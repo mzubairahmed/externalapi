@@ -65,7 +65,7 @@ import com.asi.ext.api.util.RestAPIProperties;
 
 /**
  * ImportTransformer consist logic for processing each individual Product,
- * and convert each product json to actual {@linkplain com.mule.velocity.bean.Product} object.
+ * and convert each product com.asi.util.json to actual {@linkplain com.mule.velocity.bean.Product} object.
  * All lookup and value processing are done by {@link #transformMessage(MuleMessage, String)}
  * 
  * @see AbstractMessageTransformer

@@ -82,7 +82,7 @@ public class JsonProcessor {
             
             return product;
 	    } catch (Exception e) {
-	        LOGGER.error("Exception while converting product json to Product model ", e);
+	        LOGGER.error("Exception while converting product com.asi.util.json to Product model ", e);
 	        return null;
 	    }
 	}
@@ -160,7 +160,7 @@ public class JsonProcessor {
     				}
 				}
 			}
-			//LOGGER.info(JSONValue.toJSONString(json));
+			//LOGGER.info(JSONValue.toJSONString(com.asi.util.json));
 		} catch (ParseException pe) {
 			pe.printStackTrace();
 		}
@@ -205,7 +205,7 @@ public class JsonProcessor {
 					if(crntValue.get(ApplicationConstants.CONST_STRING_VALUE).toString().equalsIgnoreCase(ApplicationConstants.CONST_STRING_OTHER))
 						criteriaCode=String.valueOf(crntValue.get(ApplicationConstants.CONST_STRING_KEY));
 			}
-			//LOGGER.info(JSONValue.toJSONString(json));
+			//LOGGER.info(JSONValue.toJSONString(com.asi.util.json));
 		} catch (ParseException pe) {
 			pe.printStackTrace();
 		}
@@ -276,7 +276,7 @@ public class JsonProcessor {
 			    LOGGER.warn("Ext-PRD-ID : "+externalProductId+", Invalid Currency Code " +srchValue+" for Pricing");
 			    dataStore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Invalid Currency Code " +srchValue+" for Pricing");
 			}
-			// LOGGER.info(JSONValue.toJSONString(json));
+			// LOGGER.info(JSONValue.toJSONString(com.asi.util.json));
 			return currency;
 		} catch (ParseException pe) {
 			LOGGER.error("Exception while processing Currency JSON : \n"+jsonText, pe);
@@ -340,7 +340,7 @@ public class JsonProcessor {
 						temp += "#" + crntValue.get("Description").toString();
 					}
 			}
-			// LOGGER.info(JSONValue.toJSONString(json));
+			// LOGGER.info(JSONValue.toJSONString(com.asi.util.json));
 			if (!validDiscountCode) {
 			    dataStore.addErrorToBatchLogCollection(externalPrdId, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Invalid discount code "+tempDiscountValue);
 			    return temp;
@@ -388,7 +388,7 @@ public class JsonProcessor {
 					return returnValue;
 				}
 			}
-			// LOGGER.info(JSONValue.toJSONString(json));
+			// LOGGER.info(JSONValue.toJSONString(com.asi.util.json));
 			return returnValue;
 		} catch (ParseException pe) {
 			pe.printStackTrace();
@@ -526,7 +526,7 @@ public class JsonProcessor {
 				if (productShape.trim().equalsIgnoreCase(crntValue.get(ApplicationConstants.CONST_STRING_VALUE).toString()))
 					returnValue = String.valueOf(crntValue.get(ApplicationConstants.CONST_STRING_KEY));
 			}
-			// LOGGER.info(JSONValue.toJSONString(json));
+			// LOGGER.info(JSONValue.toJSONString(com.asi.util.json));
 		} catch (ParseException pe) {
 			pe.printStackTrace();
 		}
@@ -628,7 +628,7 @@ public class JsonProcessor {
 					// LOGGER.info("in loop"+srchValue);
 				}
 			}
-			// LOGGER.info(JSONValue.toJSONString(json));
+			// LOGGER.info(JSONValue.toJSONString(com.asi.util.json));
 			return returnValue;
 		} catch (ParseException pe) {
 			pe.printStackTrace();
@@ -947,7 +947,7 @@ public class JsonProcessor {
 				if (srchValue.trim().equalsIgnoreCase(crntValue.get("CodeValue").toString()))
 					criteriaCode = String.valueOf(crntValue.get("ID"));
 			}
-			// System.out.println(JSONValue.toJSONString(json));
+			// System.out.println(JSONValue.toJSONString(com.asi.util.json));
 		} catch (ParseException pe) {
 			pe.printStackTrace();
 		}
@@ -1140,7 +1140,7 @@ public class JsonProcessor {
 					
 				}
 				
-				//LOGGER.info(JSONValue.toJSONString(json));
+				//LOGGER.info(JSONValue.toJSONString(com.asi.util.json));
 			} catch (ParseException pe) {
 				pe.printStackTrace();
 			}
@@ -1209,7 +1209,7 @@ public class JsonProcessor {
      * else try to use the fieldName and type
      * 
      * 
-     * @param json the JSON need to be converted to bean 
+     * @param com.asi.util.json the JSON need to be converted to bean 
      * @param classType the type JSON need be to converted
      * @return new type {@linkplain T} derived from the JSON
      */
@@ -1240,7 +1240,7 @@ public class JsonProcessor {
 
     /**
      * Creates collection of Specific classType from Json. Default collection implementation is {@link List}
-     * @param json is the json to process
+     * @param com.asi.util.json is the com.asi.util.json to process
      * @param classType Generic type of the collection which needs to be returned
      * @return {@link List} of elements of the classType specified
      */
@@ -1389,7 +1389,7 @@ public class JsonProcessor {
                             criteriaCode=String.valueOf(crntValue.get(ApplicationConstants.CONST_STRING_ID_CAP));*/
                 }
             }
-            //LOGGER.info(JSONValue.toJSONString(json));
+            //LOGGER.info(JSONValue.toJSONString(com.asi.util.json));
         } catch (ParseException pe) {
             pe.printStackTrace();
         }
@@ -1440,10 +1440,10 @@ public class JsonProcessor {
                         }
                     }
                 } catch (Exception e) {
-                    LOGGER.error("Exception while processing color json model ",e);
+                    LOGGER.error("Exception while processing color com.asi.util.json model ",e);
                 }
             }
-            //LOGGER.info(JSONValue.toJSONString(json));
+            //LOGGER.info(JSONValue.toJSONString(com.asi.util.json));
         } catch (ParseException pe) {
             pe.printStackTrace();
         }
