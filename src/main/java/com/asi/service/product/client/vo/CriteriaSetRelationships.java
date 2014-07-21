@@ -1,32 +1,39 @@
 package com.asi.service.product.client.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class CriteriaSetRelationships {
-	 public String getRelationshipId() {
-		return RelationshipId;
+	
+	@JsonProperty("RelationshipId")
+	private String relationshipId="0";
+	@JsonProperty("CriteriaSetId")
+     private String criteriaSetId="0";
+	@JsonProperty("ProductId")
+     private String productId="0";
+	@JsonProperty("IsParent")
+     private String isParent="false";
+	public String getRelationshipId() {
+		return relationshipId;
 	}
 	public void setRelationshipId(String relationshipId) {
-		RelationshipId = relationshipId;
+		this.relationshipId = relationshipId;
 	}
 	public String getCriteriaSetId() {
-		return CriteriaSetId;
+		return criteriaSetId;
 	}
 	public void setCriteriaSetId(String criteriaSetId) {
-		CriteriaSetId = criteriaSetId;
+		this.criteriaSetId = criteriaSetId;
 	}
 	public String getProductId() {
-		return ProductId;
+		return productId;
 	}
 	public void setProductId(String productId) {
-		ProductId = productId;
+		this.productId = productId;
 	}
 	public String getIsParent() {
-		return IsParent;
+		return isParent;
 	}
 	public void setIsParent(String isParent) {
-		IsParent = isParent;
+		this.isParent = isParent;
 	}
-	private String RelationshipId="0";
-     private String CriteriaSetId="0";
-     private String ProductId="0";
-     private String IsParent="false";
 }

@@ -1,19 +1,14 @@
 package com.asi.service.product.client.vo;
 
-import java.io.Serializable;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ProductCriteriaSets implements Serializable {
+public class ProductCriteriaSets {
 	
-	public ProductCriteriaSets()
-	{
-		
-	}
-/**
+	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
 public String getCriteriaSetId() {
 		return criteriaSetId;
 	}
@@ -116,10 +111,10 @@ public String getCriteriaSetId() {
 	public void setIsBrokenOutOn(String isBrokenOutOn) {
 		this.isBrokenOutOn = isBrokenOutOn;
 	}
-	public CriteriaSetValues[] getCriteriaSetValues() {
+	public List<CriteriaSetValues> getCriteriaSetValues() {
 		return criteriaSetValues;
 	}
-	public void setCriteriaSetValues(CriteriaSetValues[] criteriaSetValues) {
+	public void setCriteriaSetValues(List<CriteriaSetValues> criteriaSetValues) {
 		this.criteriaSetValues = criteriaSetValues;
 	}
 	
@@ -203,5 +198,5 @@ private String displayOptionName="";
 @JsonProperty("IsBrokenOutOn")
 private String isBrokenOutOn="false";
 @JsonProperty("CriteriaSetValues")
-private CriteriaSetValues[] criteriaSetValues={};
+private List<CriteriaSetValues> criteriaSetValues;
 }

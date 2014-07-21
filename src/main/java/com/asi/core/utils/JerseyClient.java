@@ -16,8 +16,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.json.JSONObject;
 
-import com.asi.velocity.bean.Batch;
-import com.asi.velocity.bean.BatchDataSource;
+import com.asi.service.product.client.vo.Batch;
+import com.asi.service.product.client.vo.BatchDataSource;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -35,7 +35,7 @@ public final class JerseyClient {
         Client client = Client.create();
         client.setConnectTimeout(5000);
         WebResource webResource = client.resource(uri);
-        ClientResponse response = webResource.accept("application/json").get(ClientResponse.class);
+        ClientResponse response = webResource.accept("application/com.asi.util.json").get(ClientResponse.class);
         if (response.getStatus() == 200) {
             restResponse = response.getEntity(String.class);
         }
@@ -47,7 +47,7 @@ public final class JerseyClient {
         Client client = Client.create();
         client.setConnectTimeout(5000);
         WebResource webResource = client.resource(uri);
-        String responseString = webResource.accept("application/json").get(String.class);
+        String responseString = webResource.accept("application/com.asi.util.json").get(String.class);
         if (null!=responseString && !responseString.isEmpty()) {
         	ObjectMapper objectMapper = new ObjectMapper();
         	objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);

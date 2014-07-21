@@ -1,35 +1,14 @@
 
 package com.asi.service.product.client.vo.material;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Generated;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@Generated("org.jsonschema2pojo")
-@JsonPropertyOrder({
-    "Code",
-    "Description",
-    "DisplayName",
-    "SuperCodeValueGroupCode",
-    "CodeValueGroups"
-})
 public class Material {
-
-    @JsonProperty("Code")
+	private String id;
+	private String displayName;
+    /*@JsonProperty("Code")
     private String code;
     @JsonProperty("Description")
     private String description;
@@ -38,60 +17,27 @@ public class Material {
     @JsonProperty("SuperCodeValueGroupCode")
     private String superCodeValueGroupCode;
     @JsonProperty("CodeValueGroups")
-    private List<CodeValueGroup> codeValueGroups = new ArrayList<CodeValueGroup>();
+    private List<CodeValueGroup> codeValueGroups = new ArrayList<CodeValueGroup>();*/
   //  private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("Code")
-    public String getCode() {
-        return code;
-    }
+ 
+    public String getId() {
+		return id;
+	}
 
-    @JsonProperty("Code")
-    public void setCode(String code) {
-        this.code = code;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    @JsonProperty("Description")
-    public String getDescription() {
-        return description;
-    }
+	public String getDisplayName() {
+		return displayName;
+	}
 
-    @JsonProperty("Description")
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
 
-    @JsonProperty("DisplayName")
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    @JsonProperty("DisplayName")
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
-    @JsonProperty("SuperCodeValueGroupCode")
-    public String getSuperCodeValueGroupCode() {
-        return superCodeValueGroupCode;
-    }
-
-    @JsonProperty("SuperCodeValueGroupCode")
-    public void setSuperCodeValueGroupCode(String superCodeValueGroupCode) {
-        this.superCodeValueGroupCode = superCodeValueGroupCode;
-    }
-
-    @JsonProperty("CodeValueGroups")
-    public List<CodeValueGroup> getCodeValueGroups() {
-        return codeValueGroups;
-    }
-
-    @JsonProperty("CodeValueGroups")
-    public void setCodeValueGroups(List<CodeValueGroup> codeValueGroups) {
-        this.codeValueGroups = codeValueGroups;
-    }
-
-    @Override
+	@Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }

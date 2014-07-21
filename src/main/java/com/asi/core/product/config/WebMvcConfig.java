@@ -51,7 +51,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 		contentViewResolver.setDefaultViews(Arrays.<View> asList(new MappingJackson2JsonView()));
 		ContentNegotiationManagerFactoryBean contentNegotiationManager = new ContentNegotiationManagerFactoryBean();
 		contentNegotiationManager.addMediaType("html", MediaType.TEXT_HTML);
-		contentNegotiationManager.addMediaType("json", MediaType.APPLICATION_JSON);
+		contentNegotiationManager.addMediaType("com.asi.util.json", MediaType.APPLICATION_JSON);
 		
 		contentViewResolver.setContentNegotiationManager(contentNegotiationManager.getObject());
 		

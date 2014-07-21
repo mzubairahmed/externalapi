@@ -1,5 +1,8 @@
 package com.asi.service.product.client.vo;
 
+import java.util.List;
+
+import com.asi.ext.api.radar.model.SelectedProductCategories;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
@@ -357,12 +360,12 @@ public class Product {
 	private String IsOrderLessThanMinimumAllowed;	
 	private String PublishDate;			
 	private String LocationCode;		
-	private String IsWIP;
-	private Relationships[] relationships;
-	public Relationships[] getRelationships() {
+	private String IsWIP="0";
+	private List<Relationships> relationships;
+	public List<Relationships> getRelationships() {
 		return relationships;
 	}
-	public void setRelationships(Relationships[] relationships) {
+	public void setRelationships(List<Relationships> relationships) {
 		this.relationships = relationships;
 	}
 	public ProductMediaItems[] getProductMediaItems() {

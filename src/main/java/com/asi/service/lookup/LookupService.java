@@ -16,6 +16,7 @@ import com.asi.service.lookup.vo.AsiColor;
 import com.asi.service.lookup.vo.AsiColorsList;
 import com.asi.service.lookup.vo.CategoriesList;
 import com.asi.service.lookup.vo.SizeInfo;
+import com.asi.service.product.client.vo.material.Materials;
 import com.asi.service.product.vo.OriginOfCountries;
 
 @RestController
@@ -24,7 +25,7 @@ public class LookupService {
 	@Autowired private LookupValuesRepo lookupValueRepository;
 	@Autowired
 	private MessageSource messageSource;
-	@RequestMapping(value = "colors", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	@RequestMapping(value = "colors", headers="content-type=application/com.asi.util.json, application/xml" ,produces={"application/xml", "application/com.asi.util.json"} )
 	public ResponseEntity<AsiColorsList> getColor() throws UnsupportedEncodingException {
 		List<AsiColor> colors = lookupValueRepository.getColors();
 		AsiColorsList colorResponse = new AsiColorsList();
@@ -32,28 +33,35 @@ public class LookupService {
 		
 		return new ResponseEntity<AsiColorsList>(colorResponse, null, HttpStatus.OK);
 	}
-	@RequestMapping(value = "origins", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	@RequestMapping(value = "origins", headers="content-type=application/com.asi.util.json, application/xml" ,produces={"application/xml", "application/com.asi.util.json"} )
 	public ResponseEntity<OriginOfCountries> getcountryOfOrigin()
 	{
 		OriginOfCountries countires = lookupValueRepository.getOrigin();
 		return new ResponseEntity<OriginOfCountries> (countires, null, HttpStatus.OK);
 		
 	}
-	@RequestMapping(value = "sizeInfo", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	@RequestMapping(value = "materials", headers="content-type=application/com.asi.util.json, application/xml" ,produces={"application/xml", "application/com.asi.util.json"} )
+	public ResponseEntity<Materials> getMaterials()
+	{
+		Materials materialsList = lookupValueRepository.getAllMaterials();
+		return new ResponseEntity<Materials> (materialsList, null, HttpStatus.OK);
+		
+	}
+	@RequestMapping(value = "sizeInfo", headers="content-type=application/com.asi.util.json, application/xml" ,produces={"application/xml", "application/com.asi.util.json"} )
 	public ResponseEntity<SizeInfo> getsizeInfo()
 	{
 		SizeInfo sizeInfo = lookupValueRepository.getSizeInfo();
 		return new ResponseEntity<SizeInfo> (sizeInfo, null, HttpStatus.OK);
 		
 	}	
-	@RequestMapping(value = "categoriesList", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	@RequestMapping(value = "categoriesList", headers="content-type=application/com.asi.util.json, application/xml" ,produces={"application/xml", "application/com.asi.util.json"} )
 	public ResponseEntity<CategoriesList> getcategoriesList()
 	{
 		CategoriesList categoriesList = lookupValueRepository.getAllCategories();
 		return new ResponseEntity<CategoriesList> (categoriesList, null, HttpStatus.OK);
 		
 	}	
-	@RequestMapping(value = "artworksList", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	@RequestMapping(value = "artworksList", headers="content-type=application/com.asi.util.json, application/xml" ,produces={"application/xml", "application/com.asi.util.json"} )
 	public ResponseEntity<ArtworksList> getArtworksList()
 	{
 		ArtworksList artworkList = lookupValueRepository.getAllArtworks();

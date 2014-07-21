@@ -1,7 +1,10 @@
 package com.asi.service.product.client.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 public class ProductMediaCitationReferences {
+	@JsonProperty("ProductId")
 private String productId;
 public String getProductId() {
 	return productId;
@@ -27,7 +30,10 @@ public String getIsPrimary() {
 public void setIsPrimary(String isPrimary) {
 	this.isPrimary = isPrimary;
 }
+@JsonProperty("MediaCitationReferenceId")
 private String mediaCitationReferenceId;
+@JsonProperty("MediaCitationId")
 private String mediaCitationId;
+@JsonProperty("IsPrimary")
 private String isPrimary;
 }

@@ -24,6 +24,8 @@ import com.asi.service.lookup.vo.SizeInfo;
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.vo.colors.CodeValueGroup;
 import com.asi.service.product.client.vo.colors.SetCodeValue;
+import com.asi.service.product.client.vo.material.Material;
+import com.asi.service.product.client.vo.material.Materials;
 import com.asi.service.product.vo.Constrain;
 import com.asi.service.product.vo.CountryOfOrigin;
 import com.asi.service.product.vo.OriginOfCountries;
@@ -183,6 +185,7 @@ public class LookupValuesRepo {
 	}
 	private Size makeSize(Map<?,?> sizeMap,Size size)
 	{
+		if(null!=sizeMap){
 		if(sizeMap.containsKey("ID"))
 			size.setId((String) sizeMap.get("ID"));
 		if(sizeMap.containsKey("Code"))
@@ -206,6 +209,7 @@ public class LookupValuesRepo {
 		if(sizeMap.containsKey("IsFlag"))
 			constrain.setFlag((Boolean)sizeMap.get("IsFlag"));
 		size.setConstrains(constrain);
+		}
 		return size;
 	}
 	@SuppressWarnings({ "unchecked" })
@@ -283,5 +287,40 @@ public class LookupValuesRepo {
 		}	
 		artworksList.setArtworks(artworkArrayList);
 		return artworksList;
+	}
+	public Materials getAllMaterials() {
+		Materials materials = new Materials();
+		Material material=null;
+		List<Material> materialList= new ArrayList<Material>();
+		LinkedHashMap<?,?> currentHashMap=new LinkedHashMap<>();
+		LinkedHashMap<?,?> setcodeValuesMap=new LinkedHashMap<>();
+		ArrayList<LinkedHashMap> materialsFromService = lookupClient.getMaterialFromLookup(lookupClient.getLookupMaterialURL());
+		Iterator materialsIterator=  materialsFromService.iterator();
+		ArrayList setCodeValuesList = null;
+		while(materialsIterator.hasNext())
+		{			
+			currentHashMap=(LinkedHashMap)materialsIterator.next();			
+			ArrayList codeValueGroupsList = (ArrayList<?>) currentHashMap.get("CodeValueGroups");
+						
+				Iterator<?> codeValueGroupsIterator  = (Iterator<?>) codeValueGroupsList.iterator();
+				while(codeValueGroupsIterator.hasNext())
+				{
+					setcodeValuesMap=(LinkedHashMap)codeValueGroupsIterator.next();
+				setCodeValuesList=(ArrayList)setcodeValuesMap.get("SetCodeValues");
+				Iterator setCodeValuesListIterator=setCodeValuesList.iterator();
+				while(setCodeValuesListIterator.hasNext())
+				{
+					material=new Material();	
+					currentHashMap=(LinkedHashMap)setCodeValuesListIterator.next();
+					if(currentHashMap.containsKey("ID"))
+						material.setId(currentHashMap.get("ID").toString());
+						if(currentHashMap.containsKey("CodeValue"))
+							material.setDisplayName(currentHashMap.get("CodeValue").toString());
+						materialList.add(material);
+				}
+				}
+		}	
+		materials.setMaterialsList(materialList);
+		return materials;
 	}
 }

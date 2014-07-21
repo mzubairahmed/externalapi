@@ -1,15 +1,10 @@
 
 package com.asi.service.product.client.vo;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -25,44 +20,44 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class SelectedComplianceCert {
 
     @JsonProperty("ID")
-    private Integer iD;
+    private String iD;
     @JsonProperty("ProductId")
-    private Integer productId;
+    private String productId;
     @JsonProperty("ComplianceCertId")
-    private Integer complianceCertId;
+    private String complianceCertId;
     @JsonProperty("Description")
     private String description;
     @JsonProperty("CompanyId")
-    private Integer companyId;
+    private String companyId;
    // private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("ID")
-    public Integer getID() {
+    public String getID() {
         return iD;
     }
 
     @JsonProperty("ID")
-    public void setID(Integer iD) {
+    public void setID(String iD) {
         this.iD = iD;
     }
 
     @JsonProperty("ProductId")
-    public Integer getProductId() {
+    public String getProductId() {
         return productId;
     }
 
     @JsonProperty("ProductId")
-    public void setProductId(Integer productId) {
+    public void setProductId(String productId) {
         this.productId = productId;
     }
 
     @JsonProperty("ComplianceCertId")
-    public Integer getComplianceCertId() {
+    public String getComplianceCertId() {
         return complianceCertId;
     }
 
     @JsonProperty("ComplianceCertId")
-    public void setComplianceCertId(Integer complianceCertId) {
+    public void setComplianceCertId(String complianceCertId) {
         this.complianceCertId = complianceCertId;
     }
 
@@ -77,12 +72,12 @@ public class SelectedComplianceCert {
     }
 
     @JsonProperty("CompanyId")
-    public Integer getCompanyId() {
+    public String getCompanyId() {
         return companyId;
     }
 
     @JsonProperty("CompanyId")
-    public void setCompanyId(Integer companyId) {
+    public void setCompanyId(String companyId) {
         this.companyId = companyId;
     }
 

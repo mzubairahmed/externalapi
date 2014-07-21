@@ -9,10 +9,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class CriteriaSetValues {
 	@JsonProperty("ID")
 	private String id="0";
-	private String criteriaCode="SHAP",valueTypeCode="",criteriaValueDetail="",
-	isSubset="",isSetValueMeasurement="",criteriaSetId="",baseLookupValue="",
-	productNumber="";
+	@JsonProperty("CriteriaCode")
+	private String criteriaCode="SHAP";
+	@JsonProperty("ValueTypeCode")
+	private String valueTypeCode="";
+	@JsonProperty("CriteriaValueDetail")
+	private String criteriaValueDetail="";
+	@JsonProperty("IsSubset")
+	private String isSubset="";
+	@JsonProperty("IsSetValueMeasurement")
+	private String isSetValueMeasurement="";
+	@JsonProperty("CriteriaSetId")
+	private String criteriaSetId="";
+	@JsonProperty("BaseLookupValue")
+	private String baseLookupValue="";
+	@JsonProperty("ProductNumber")
+	private String productNumber="";
+	@JsonProperty("Value")
 	private Object value=null;
+	@JsonProperty("FormatValue")
 	private String formatValue="";
 	public String getFormatValue() {
 		return formatValue;
@@ -20,6 +35,7 @@ public class CriteriaSetValues {
 	public void setFormatValue(String formatValue) {
 		this.formatValue = formatValue;
 	}
+	@JsonProperty("SubSets")
 	private SubSets[] subSets={};
 	public SubSets[] getSubSets() {
 		return subSets;
@@ -94,6 +110,7 @@ public class CriteriaSetValues {
 			CriteriaSetCodeValues[] criteriaSetCodeValues) {
 		this.criteriaSetCodeValues = criteriaSetCodeValues;
 	}
+	@JsonProperty("CriteriaSetCodeValues")
 	private CriteriaSetCodeValues[] criteriaSetCodeValues={};
 	@JsonProperty("DisplaySequence")
     private String displaySequence="";

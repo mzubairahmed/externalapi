@@ -6,6 +6,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import com.asi.service.product.client.vo.ProductMediaItems;
+import com.asi.service.product.client.vo.SelectedLineNames;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @XmlRootElement(namespace = "http://www.asicentral.com/schema/product" , name="productDetail")
 @XmlType(propOrder={    
 		   "ID",
@@ -18,6 +22,12 @@ import javax.xml.bind.annotation.XmlType;
 		   "summary",
 		   "category",
 		   "keyword",
+		   "color",
+		   "material",
+		    "shape",
+		   "tradeName",
+		    "packages",
+		    "origin",
 		   "itemPrice",
 		   "imprints",
 		   "workflowStatusCode",
@@ -36,12 +46,12 @@ import javax.xml.bind.annotation.XmlType;
 		   "virtualProductFlag",
 		   "nLevelConnectFlag",
 		   "productLockedFlag",
-		   "show1MediaIdIm",
-		   "show1MediaIdVd",
 		   "isCustomProduct",
 		   "shipperBillsByCode",
 		   "isShippableInPlainBox",
 		   "productDataSheet",
+		   "productMediaItems",
+		   "selectedLineNames",
 		   "productInventoryLink",
 		   "isAvailableUnimprinted",
 		   "isPersonalizationAvailable",
@@ -50,8 +60,7 @@ import javax.xml.bind.annotation.XmlType;
 		   "disclaimer",
 		   "publishDate",
 		   "lastPublishedDate",
-		   "locationCode",
-		   "isWIP",
+		   "locationCode",		   
 		   "isProductNumberBreakout",
 		   "isPriceBreakoutFlag",
 		   "includeAppOfferList",
@@ -68,32 +77,82 @@ public class Product {
 	public void setDataSourceId(String dataSourceId) {
 		this.dataSourceId = dataSourceId;
 	}
-
+@JsonProperty("ID")
 	private Integer ID;
-    
     private String productTypeCode;
-    
     private Integer originalProductId;
-    
     private String externalProductId;
-    
     private String companyId;
-    
     private String statusCode;
-    
 	private String dataSourceId="";
-    
     private String name;
-    
     private String description;
-    
     private String summary;
-    
     private String category;
-    
-    private String keyword;
-    
-    public String getKeyword() {
+    private SizeDetails size;
+    public SizeDetails getSize() {
+		return size;
+	}
+
+	public void setSize(SizeDetails size) {
+		this.size = size;
+	}
+	private String keyword;
+    private String color;
+    private String material;
+    private String shape;
+    private String tradeName;
+    private String packages;
+    private String origin;
+    public String getShape() {
+		return shape;
+	}
+
+	public void setShape(String shape) {
+		this.shape = shape;
+	}
+
+	public String getTradeName() {
+		return tradeName;
+	}
+
+	public void setTradeName(String tradeName) {
+		this.tradeName = tradeName;
+	}
+
+	public String getPackages() {
+		return packages;
+	}
+
+	public void setPackages(String packages) {
+		this.packages = packages;
+	}
+
+	public String getOrigin() {
+		return origin;
+	}
+
+	public void setOrigin(String origin) {
+		this.origin = origin;
+	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
+	}
+
+	public String getMaterial() {
+		return material;
+	}
+
+	public void setMaterial(String material) {
+		this.material = material;
+	}
+
+	public String getKeyword() {
 		return keyword;
 	}
 
@@ -112,21 +171,17 @@ public class Product {
 	private String rushServiceFlag;
     
     private String sameDayRushFlag;
+    private List<Configurations> productConfigurations;
     
-    private ProductConfigurations[] productConfigurations;
-    
-    public ProductConfigurations[] getProductConfigurations() {
+    public List<Configurations> getConfigurations() {
 		return productConfigurations;
 	}
 
-	public void setProductConfigurations(ProductConfigurations[] productConfigurations) {
+	public void setConfigurations(List<Configurations> productConfigurations) {
 		this.productConfigurations = productConfigurations;
 	}
-
 	private String asiProdNo;
-    
     private String newProductFlag;
-    
     private String newProductExpirationDate;
     public String getNewProductExpirationDate() {
 		return newProductExpirationDate;
@@ -135,36 +190,42 @@ public class Product {
 	public void setNewProductExpirationDate(String newProductExpirationDate) {
 		this.newProductExpirationDate = newProductExpirationDate;
 	}
-
 	private String fullColorProcessFlag;
-    
     private String visibleForAllUsersFlag;
-    
     private String virtualProductFlag;
-    
+    @JsonProperty("NLevelConnectFlag")
     private String nLevelConnectFlag;
-    
     private String productLockedFlag;
-    
-    private String workflowStatusCode;
-    
+   
+	private String workflowStatusCode;
     private String changeProductReasonCode;
     
     private String workflowStatusStateCode;
-    
-    private Integer show1MediaIdIm;
-    
-    private Integer show1MediaIdVd;
     
     private Boolean isCustomProduct;
     
     private String shipperBillsByCode;
     
     private Boolean isShippableInPlainBox;
+    private List<SelectedLineNames> selectedLineNames;
+    public List<SelectedLineNames> getSelectedLineNames() {
+		return selectedLineNames;
+	}
+
+	public void setSelecttedLineNames(List<SelectedLineNames> selectedLineNames) {
+		this.selectedLineNames = selectedLineNames;
+	}
+	private DataSheet productDataSheet;
+    private List<ProductMediaItems> productMediaItems;
     
-    private DataSheet productDataSheet;
-    
-    private InventoryLink productInventoryLink;
+    public List<ProductMediaItems> getProductMediaItems() {
+		return productMediaItems;
+	}
+
+	public void setProductMediaItems(List<ProductMediaItems> productMediaItems) {
+		this.productMediaItems = productMediaItems;
+	}
+	private InventoryLink productInventoryLink;
     
     private Boolean isAvailableUnimprinted;
     
@@ -190,8 +251,6 @@ public class Product {
     
     private String locationCode;
     
-    private Boolean isWIP;
-   
     private Boolean isProductNumberBreakout;
   
     private Boolean isPriceBreakoutFlag;
@@ -531,34 +590,6 @@ public class Product {
 	}
 
 	/**
-	 * @return the show1MediaIdIm
-	 */
-	public Integer getShow1MediaIdIm() {
-		return show1MediaIdIm;
-	}
-
-	/**
-	 * @param show1MediaIdIm the show1MediaIdIm to set
-	 */
-	public void setShow1MediaIdIm(Integer show1MediaIdIm) {
-		this.show1MediaIdIm = show1MediaIdIm;
-	}
-
-	/**
-	 * @return the show1MediaIdVd
-	 */
-	public Integer getShow1MediaIdVd() {
-		return show1MediaIdVd;
-	}
-
-	/**
-	 * @param show1MediaIdVd the show1MediaIdVd to set
-	 */
-	public void setShow1MediaIdVd(Integer show1MediaIdVd) {
-		this.show1MediaIdVd = show1MediaIdVd;
-	}
-
-	/**
 	 * @return the isCustomProduct
 	 */
 	public Boolean getIsCustomProduct() {
@@ -725,20 +756,6 @@ public class Product {
 	 */
 	public void setLocationCode(String locationCode) {
 		this.locationCode = locationCode;
-	}
-
-	/**
-	 * @return the isWIP
-	 */
-	public Boolean getIsWIP() {
-		return isWIP;
-	}
-
-	/**
-	 * @param isWIP the isWIP to set
-	 */
-	public void setIsWIP(Boolean isWIP) {
-		this.isWIP = isWIP;
 	}
 
 	/**
