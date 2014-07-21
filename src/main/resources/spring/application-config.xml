@@ -23,6 +23,9 @@
 		</web-services:dynamic-wsdl>
 		<context:component-scan base-package="com.asi"></context:component-scan>
 		<cache:annotation-driven />
+		<bean id="environmentConfigurator" class="com.asi.ext.api.config.EnvironmentConfigurator">
+			<property name="propFileLoc" value="${Ext.env}/velocity-api.properties"></property>
+		</bean>
 		<bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" p:config-location="classpath:ehcache.xml"/> 
 		<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" p:cache-manager-ref="ehcache"/> 	
 		<context:property-placeholder  location="classpath:dev-environment.properties, classpath:velocity-import.properties" order="1"/>

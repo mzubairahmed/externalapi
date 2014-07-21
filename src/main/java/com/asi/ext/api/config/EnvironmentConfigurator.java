@@ -4,12 +4,13 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 import com.asi.ext.api.util.RestAPIProperties;
 
-public class EnvironmentConfigurator {
+public class EnvironmentConfigurator implements InitializingBean {
     private final static Logger LOGGER                   = Logger.getLogger(EnvironmentConfigurator.class.getName());
 
     private String              propFileLoc;
@@ -52,6 +53,12 @@ public class EnvironmentConfigurator {
     @Required
     public void setPropFileLoc(String propFileLoc) {
         this.propFileLoc = propFileLoc;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        initializeApp();
+
     }
 
 }

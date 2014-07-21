@@ -42,8 +42,8 @@ public class ProductServiceResource {
     private MessageSource messageSource;
 
     @Secured("ROLE_CUSTOMER")
-    @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.PUT, headers = "content-type=application/com.asi.util.json, application/xml", produces = {
-            "application/xml", "application/com.asi.util.json" })
+    @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.PUT, headers = "content-type=application/json, application/xml", produces = {
+            "application/xml", "application/json" })
     public ResponseEntity<Product> createOrUpdateProduct(HttpEntity<Product> requestEntity,
             @PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws ProductNotFoundException,
             ExistingProductException, ResponseNotValidException, RestClientException, UnsupportedEncodingException {
@@ -62,8 +62,8 @@ public class ProductServiceResource {
     }
 
     @Secured("ROLE_CUSTOMER")
-    @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.POST, headers = "content-type=application/com.asi.util.json, application/xml", produces = {
-            "application/xml", "application/com.asi.util.json" })
+    @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.POST, headers = "content-type=application/json, application/xml", produces = {
+            "application/xml", "application/json" })
     public ResponseEntity<Product> updateProduct(HttpEntity<Product> requestEntity, @PathVariable("companyid") String companyId,
             @PathVariable("xid") String xid) throws Exception {
         if (_LOGGER.isDebugEnabled()) {
