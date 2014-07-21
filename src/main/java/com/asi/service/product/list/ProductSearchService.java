@@ -50,7 +50,8 @@ public class ProductSearchService {
 	public ResponseEntity<ItemPriceDetail> getPrice(@PathVariable("companyid") String companyId, @PathVariable("xid") String xid,@PathVariable("priceGridId") Integer priceGridId) throws UnsupportedEncodingException, ProductNotFoundException {
 		if(_LOGGER.isDebugEnabled()) 
 			_LOGGER.debug("calling service with priceid");	
-		ItemPriceDetail itemPrice = repository.getProductPrices(companyId, xid,priceGridId).getItemPrice().get(0);
+		//ItemPriceDetail itemPrice = repository.getProductPrices(companyId, xid,priceGridId).getItemPrice().get(0);
+		ItemPriceDetail itemPrice = null;
 	    return new ResponseEntity<ItemPriceDetail>(itemPrice, null, HttpStatus.OK);
 	}
 	@RequestMapping(value = "{companyid}/pid/{xid}/imprintMethods",method = RequestMethod.GET, headers="content-type=application/com.asi.util.json, application/xml" ,produces={"application/xml", "application/com.asi.util.json"} )

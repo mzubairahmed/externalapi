@@ -3,18 +3,17 @@ package com.asi.ext.api.service.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 @XmlRootElement
-@XmlType
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Product {
 
     @JsonProperty("ExternalProductId")
@@ -41,6 +40,7 @@ public class Product {
     private String                shipperBillsBy;
     @JsonProperty("ProductBreakoutBy")
     private String                productBreakoutBy;
+
     @JsonProperty("ProductKeywords")
     private List<String>          productKeywords = new ArrayList<String>();
     @JsonProperty("Categories")
