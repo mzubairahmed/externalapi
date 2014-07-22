@@ -24,7 +24,7 @@
 		<context:component-scan base-package="com.asi"></context:component-scan>
 		<cache:annotation-driven />
 		<bean id="environmentConfigurator" class="com.asi.ext.api.config.EnvironmentConfigurator">
-			<property name="env" value="${Ext.env}"></property>
+			<property name="env" value="stage"></property>
 			<property name="lookupRestTemplate" ref="restTemplate"></property>
 		</bean>
 		<bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" p:config-location="classpath:ehcache.xml"/> 
