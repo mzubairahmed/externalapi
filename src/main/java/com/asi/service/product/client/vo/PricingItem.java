@@ -6,15 +6,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class PricingItem {
 	@JsonProperty("ID")
 	private String id;
+	@JsonProperty("ProductId")
 	private String productId;
 	@JsonProperty("CriteriaSetValueId")
 	private String criteriaSetValueId;
+	@JsonProperty("MarketSegmentCode")
 	private String marketSegmentCode;
 	@JsonProperty("PriceGridId")
 	private String priceGridId;
+	@JsonProperty("PriceGridTypeCode")
 	private String priceGridTypeCode;
+	@JsonProperty("IsPrimary")
 	private String isPrimary;
+	@JsonProperty("Description")
 	private String description;
+	@JsonProperty("IsDateBased")
 	private String isDateBased;
 
 	public String getId() {

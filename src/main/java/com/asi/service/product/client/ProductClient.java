@@ -72,6 +72,8 @@ public class ProductClient {
 
     public String saveProduct(ProductDetail product) {
         try {
+            ObjectMapper mapper = new ObjectMapper();
+            _LOGGER.info("Product Data : "+mapper.writeValueAsString(product));
             String response = restTemplate.postForObject(productSearchUrl, product, String.class);
             /*
              * ObjectMapper mapper = new ObjectMapper();
@@ -79,9 +81,11 @@ public class ProductClient {
              * _LOGGER.info("Product Data  : " + productData);
              * String finalResult = jerseyClientPost.doPostRequest(productSearchUrl, productData);
              */
+            
             _LOGGER.info("Result : " + response);
             return response;
         } catch (Exception e) {
+            System.out.println();
             _LOGGER.error("Exception while posting product to Radar API", e);
             return "{Message : Not valid}";
         }
