@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,7 @@ import com.asi.service.product.client.vo.SelectedProductCategory;
 import com.asi.service.product.client.vo.SelectedSafetyWarnings;
 import com.asi.service.product.exception.ProductNotFoundException;
 import com.asi.service.product.vo.Product;
-
+import com.asi.service.resource.response.ExternalAPIResponse;
 
 @Component
 public class ProductRepo {
@@ -140,17 +141,30 @@ public class ProductRepo {
         return null;
     }
 
-    public String updateProduct(String companyId, String xid, com.asi.ext.api.service.model.Product serviceProduct) {
+    public ExternalAPIResponse updateProduct(String companyId, String xid, com.asi.ext.api.service.model.Product serviceProduct) {
         ProductDetail existingRadarProduct = null;
         try {
             existingRadarProduct = productClient.getRadarProduct(companyId, serviceProduct.getExternalProductId());
         } catch (ProductNotFoundException e) {
             _LOGGER.info("Product Not found with Existing, going to create new Product");
         }
-        existingRadarProduct = productTransformer.generateRadarProduct(serviceProduct, existingRadarProduct,
-                generateBatchDataSourceId(companyId), companyId);
-        String result = productClient.saveProduct(existingRadarProduct);
-        return result;
+        try {
+            // Doing Transformation of Service product to pure Radar object model (Core Component)
+            existingRadarProduct = productTransformer.generateRadarProduct(serviceProduct, existingRadarProduct,
+                    generateBatchDataSourceId(companyId), companyId);
+        } catch (Exception e) {
+            _LOGGER.error("Exception while generating Radar product", e);
+            return productClient.convertExceptionToResponseModel(e);
+        }
+        // Saving product to Radar API
+        ExternalAPIResponse response = productClient.saveProduct(existingRadarProduct);
+        return appendErrorLogsToResponse(response, xid);
+    }
+
+    private ExternalAPIResponse appendErrorLogsToResponse(ExternalAPIResponse response, String xid) {
+        Set<String> errors = ProductDataStore.getBatchErrors(xid);
+        response.setAdditionalInfo(errors);
+        return response;
     }
 
     private String generateBatchDataSourceId(String companyId) {
@@ -162,6 +176,7 @@ public class ProductRepo {
         }
     }
 
+    @SuppressWarnings("unused")
     private Product prepairProduct(String companyID, String productID) throws ProductNotFoundException, RestClientException,
             UnsupportedEncodingException {
         productDetail = getProductFromService(companyID, productID);
@@ -187,6 +202,7 @@ public class ProductRepo {
         return productDetail;
 
     }
+
     @SuppressWarnings("unchecked")
     private String getDataSourceId(String companyId) throws Exception {
         String dataSourceId = "0";
@@ -218,7 +234,7 @@ public class ProductRepo {
         }
         return dataSourceId;
     }
-    
+
     public com.asi.ext.api.service.model.Product getServiceProduct(String companyId, String xid) {
         com.asi.ext.api.service.model.Product serviceProduct = null;
         try {

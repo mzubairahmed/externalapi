@@ -6,14 +6,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.asi.ext.api.radar.model.CriteriaSetCodeValues;
+import com.asi.service.product.client.vo.CriteriaSetCodeValues;
 import com.asi.ext.api.radar.model.CriteriaSetValues;
-import com.asi.ext.api.radar.model.Product;
-import com.asi.ext.api.radar.model.ProductCriteriaSets;
 import com.asi.ext.api.radar.model.Value;
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
+import com.asi.service.product.client.vo.ProductCriteriaSets;
+import com.asi.service.product.client.vo.ProductDetail;
 
 public abstract class SimpleCriteriaProcessor {
 
@@ -22,8 +22,7 @@ public abstract class SimpleCriteriaProcessor {
     protected Map<String, String> resourceUrls     = new HashMap<String, String>();
     private ProductDataStore      productDataStore = new ProductDataStore();
 
-    public abstract ProductCriteriaSets getCriteriaSet(String values, Product existingProduct,
-            ProductCriteriaSets matchedCriteriaSet, int currentSetValueId);
+    protected abstract ProductCriteriaSets getCriteriaSet(String values, ProductDetail existingProduct, ProductCriteriaSets matchedCriteriaSet, int currentSetValueId);
 
     public abstract String getSetCodeValueId(String value);
 
@@ -34,7 +33,7 @@ public abstract class SimpleCriteriaProcessor {
     protected abstract boolean updateCriteriaSet(String value);
 
     protected void updateReferenceTable(String externalProductId, String criteriaCode, String value,
-            CriteriaSetValues criteriaSetValue) {
+            com.asi.service.product.client.vo.CriteriaSetValues criteriaSetValue) {
         productDataStore.updateCriteriaSetValueReferenceTable(externalProductId, criteriaCode, value, criteriaSetValue.getId());
     }
 
