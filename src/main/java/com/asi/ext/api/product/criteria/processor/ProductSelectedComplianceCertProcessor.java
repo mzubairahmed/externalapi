@@ -79,6 +79,7 @@ public class ProductSelectedComplianceCertProcessor {
         compCert.setProductId(productId);
         compCert.setDescription(description);
         compCert.setComplianceCertId(complianceCertId);
+        compCert.setID("0");
         
         return compCert;
     }

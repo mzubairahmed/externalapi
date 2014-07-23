@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +29,7 @@ import com.asi.core.exception.ResponseNotValidException;
 import com.asi.ext.api.service.ProductService;
 import com.asi.ext.api.service.model.Product;
 import com.asi.service.product.exception.ProductNotFoundException;
+import com.asi.service.resource.response.ExternalAPIResponse;
 
 @RestController
 @RequestMapping("api")
@@ -65,20 +65,20 @@ public class ProductServiceResource {
     @Secured("ROLE_CUSTOMER")
     @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.POST, headers = "content-type=application/json, application/xml", produces = {
             "application/xml", "application/json" })
-    public Response updateProduct(HttpEntity<Product> requestEntity, @PathVariable("companyid") String companyId,
+    public ResponseEntity<ExternalAPIResponse> updateProduct(HttpEntity<Product> requestEntity, @PathVariable("companyid") String companyId,
             @PathVariable("xid") String xid) throws Exception {
         if (_LOGGER.isDebugEnabled()) {
             _LOGGER.debug("calling service");
         }
-        String message = null;
+        ExternalAPIResponse message = null;
         try {
             message = productService.updateProduct(companyId, xid, requestEntity.getBody());
         } catch (Exception e) {
-            e.printStackTrace();
+            throw e;
         }
     
-
-        return Response.ok(message).build();
+        return new ResponseEntity<ExternalAPIResponse>(message, null, message.getStatusCode());
+        //return Response.status(message.getStatusCode()).entity(message).build();
     }
 
     /*

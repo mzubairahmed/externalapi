@@ -6,20 +6,20 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.asi.ext.api.radar.model.CriteriaSetValues;
-import com.asi.ext.api.radar.model.Product;
 import com.asi.ext.api.product.transformers.ProductDataStore;
-import com.asi.ext.api.radar.model.ProductCriteriaSets;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
+import com.asi.service.product.client.vo.CriteriaSetValues;
+import com.asi.service.product.client.vo.ProductCriteriaSets;
+import com.asi.service.product.client.vo.ProductDetail;
 
 public class AdditionalLocationProcessor extends SimpleCriteriaProcessor {
 
-    private final static Logger LOGGER = Logger.getLogger(AdditionalColorProcessor.class.getName());
-    
-    private int uniqueCriteriaSetId = 1;
-    private String configId = "0";
-    
+    private final static Logger LOGGER              = Logger.getLogger(AdditionalColorProcessor.class.getName());
+
+    private int                 uniqueCriteriaSetId = 1;
+    private String              configId            = "0";
+
     /**
      * @param uniqueSetValueId
      * @param uniqueCriteriaSetId
@@ -30,32 +30,37 @@ public class AdditionalLocationProcessor extends SimpleCriteriaProcessor {
         this.configId = configId;
     }
 
-    public ProductCriteriaSets getCriteriaSet(String values, Product existingProduct,
-            ProductCriteriaSets matchedCriteriaSet, int currentSetValueId) {
+    public ProductCriteriaSets getAdditionalLocationCriteriaSet(List<String> additionalLocation, ProductDetail product,
+            ProductCriteriaSets matchedCriteriaSet, String configId) {
+        this.configId = configId;
+        return getCriteriaSet(CommonUtilities.convertStringListToCSV(additionalLocation), product, matchedCriteriaSet, 0);
+    }
+
+    public ProductCriteriaSets getCriteriaSet(String values, ProductDetail existingProduct, ProductCriteriaSets matchedCriteriaSet,
+            int currentSetValueId) {
         if (!updateNeeded(matchedCriteriaSet, values)) {
             return null;
         }
         LOGGER.info("Started Processing of Additional location");
         // First verify and process value to desired format
-        
-        if (!isValueIsValid(values)) {      
+
+        if (!isValueIsValid(values)) {
             return null;
         }
-        
+
         String[] finalValues = processValues(values);
         List<CriteriaSetValues> finalCriteriaSetValues = new ArrayList<>();
-        
-        
+
         boolean checkExistingElements = matchedCriteriaSet != null;
 
-        HashMap<String,CriteriaSetValues> existingValueMap = new HashMap<String, CriteriaSetValues>();
+        HashMap<String, CriteriaSetValues> existingValueMap = new HashMap<String, CriteriaSetValues>();
         if (checkExistingElements) {
             existingValueMap = createTableForExistingSetValue(matchedCriteriaSet.getCriteriaSetValues());
         } else {
             matchedCriteriaSet = new ProductCriteriaSets();
             // Set Basic elements
             matchedCriteriaSet.setCriteriaSetId(String.valueOf(--uniqueCriteriaSetId));
-            matchedCriteriaSet.setProductId(existingProduct.getId());
+            matchedCriteriaSet.setProductId(existingProduct.getID());
             matchedCriteriaSet.setCompanyId(existingProduct.getCompanyId());
             matchedCriteriaSet.setConfigId(this.configId);
             matchedCriteriaSet.setCriteriaCode(ApplicationConstants.CONST_ADDITIONAL_LOCATION);
@@ -63,21 +68,21 @@ public class AdditionalLocationProcessor extends SimpleCriteriaProcessor {
             matchedCriteriaSet.setIsRequiredForOrder(ApplicationConstants.CONST_STRING_FALSE_SMALL);
             matchedCriteriaSet.setIsDefaultConfiguration(ApplicationConstants.CONST_STRING_FALSE_SMALL);
         }
-        
+
         for (String value : finalValues) {
             String setCodeValueId = getSetCodeValueId(value);
-            
+
             if (CommonUtilities.isValueNull(setCodeValueId)) {
                 continue;
             }
             CriteriaSetValues criteriaSetValue = null;
-            
+
             if (checkExistingElements) {
-                criteriaSetValue = existingValueMap.get(value.toUpperCase() + "_" +setCodeValueId);
+                criteriaSetValue = existingValueMap.get(value.toUpperCase() + "_" + setCodeValueId);
             }
             if (criteriaSetValue == null) {
-             // If no match found in the existing list
-             // Set basic properties for a criteriaSetValue
+                // If no match found in the existing list
+                // Set basic properties for a criteriaSetValue
                 criteriaSetValue = new CriteriaSetValues();
                 criteriaSetValue.setId(String.valueOf(--uniqueSetValueId));
                 criteriaSetValue.setCriteriaCode(ApplicationConstants.CONST_ADDITIONAL_LOCATION);
@@ -87,15 +92,16 @@ public class AdditionalLocationProcessor extends SimpleCriteriaProcessor {
                 criteriaSetValue.setCriteriaSetId(matchedCriteriaSet.getCriteriaSetId());
                 criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
                 criteriaSetValue.setValue(value);
-            }            
+            }
             // Register value to reference table
-            updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_ADDITIONAL_LOCATION, value, criteriaSetValue);
-            
+            updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_ADDITIONAL_LOCATION, value,
+                    criteriaSetValue);
+
             finalCriteriaSetValues.add(criteriaSetValue);
         }
-        
-        matchedCriteriaSet.setCriteriaSetValues(finalCriteriaSetValues.toArray(new CriteriaSetValues[0]));
-        
+
+        matchedCriteriaSet.setCriteriaSetValues(finalCriteriaSetValues);
+
         LOGGER.info("Completed Processing of Additional Location");
         return matchedCriteriaSet;
     }
@@ -104,7 +110,6 @@ public class AdditionalLocationProcessor extends SimpleCriteriaProcessor {
         // For color no need to validate values
         return true;
     }
-    
 
     public String getSetCodeValueId(String value) {
         return ProductDataStore.getSetCodeValueIdForAdditionalLocation(value.trim());
@@ -118,29 +123,29 @@ public class AdditionalLocationProcessor extends SimpleCriteriaProcessor {
 
     @Override
     protected boolean updateCriteriaSet(String value) {
-        //if (value != null )
+        // if (value != null )
         return false;
     }
-    
-    private HashMap<String,CriteriaSetValues> createTableForExistingSetValue(CriteriaSetValues[] setValues) {
+
+    private HashMap<String, CriteriaSetValues> createTableForExistingSetValue(List<CriteriaSetValues> setValues) {
         HashMap<String, CriteriaSetValues> tempHashMap = new HashMap<>();
-        
-        if (setValues != null && setValues.length > 0) {
+
+        if (setValues != null && !setValues.isEmpty()) {
             for (CriteriaSetValues criteriaSetValue : setValues) {
                 String setCodeValue = criteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(); // Check for AIOE
                 tempHashMap.put(String.valueOf(criteriaSetValue.getValue()).toUpperCase() + "_" + setCodeValue, criteriaSetValue);
             }
         }
-        
+
         return tempHashMap;
     }
-    
+
     public boolean registerExistingValuesForReference(ProductCriteriaSets criteriaSet, String externalProductId) {
         if (criteriaSet == null) {
             return false;
         }
         LOGGER.info("Registering existing Additional location values of product");
-        if (criteriaSet.getCriteriaSetValues() != null && criteriaSet.getCriteriaSetValues().length > 0) {
+        if (criteriaSet.getCriteriaSetValues() != null && !criteriaSet.getCriteriaSetValues().isEmpty()) {
             for (CriteriaSetValues criteriaValues : criteriaSet.getCriteriaSetValues()) {
                 if (criteriaValues.getCriteriaSetCodeValues().length != 0) {
                     String valueToRegister = null;

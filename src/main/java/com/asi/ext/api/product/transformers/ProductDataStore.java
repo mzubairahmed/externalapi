@@ -200,6 +200,13 @@ public class ProductDataStore {
 		return originalBatchError;
 	}
 
+	public synchronized static Set<String> getBatchErrors(String xid) {
+	    if (GLOBAL_BATCH_LOG_COLLECTION.containsKey(xid.trim())) {
+            Set<String> batchErrors = GLOBAL_BATCH_LOG_COLLECTION.get(xid.trim());
+            return batchErrors;
+	    }
+	    return new HashSet<String>();
+	}
 	/**
 	 * Adds error messages or validation messages to batch error collection,
 	 * this collection will be processed by batch processor and many tools for
@@ -229,10 +236,8 @@ public class ProductDataStore {
 						new HashSet<String>());
 			}
 
-			String batchMessage = "$Ext-" + externalPrdId + ":" + batchErrCode
-					+ ":" + message.replaceAll(":", "=");
 
-			GLOBAL_BATCH_LOG_COLLECTION.get(externalPrdId).add(batchMessage);
+			GLOBAL_BATCH_LOG_COLLECTION.get(externalPrdId).add(message);
 			LOGGER.info("Added batch error log for ExtID : " + externalPrdId
 					+ ", message : " + message);
 		}
