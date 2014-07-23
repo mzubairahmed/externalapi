@@ -515,7 +515,6 @@ public class ConfigurationsParser {
 			serviceProductConfig.setImprintSizeLocations(imprintSzLnList);		
 		}
 		
-		// Rush Time
 		
 		serviceProduct.setProductConfigurations(serviceProductConfig);
 		return serviceProduct;
