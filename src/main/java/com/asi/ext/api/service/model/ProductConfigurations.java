@@ -11,6 +11,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ProductConfigurations {
 
+    @JsonProperty("ImprintColors")
+    private ImprintColor              imprintColors        = null;
     @JsonProperty("Colors")
     private List<Color>               colors               = new ArrayList<Color>();
     @JsonProperty("Materials")
@@ -37,8 +39,6 @@ public class ProductConfigurations {
     private List<String>              additionalColors     = new ArrayList<String>();
     @JsonProperty("AdditionalLocations")
     private List<String>              additionalLocations  = new ArrayList<String>();
-    @JsonProperty("ImprintColors")
-    private List<ImprintColor>        imprintColors        = new ArrayList<ImprintColor>();
     @JsonProperty("ImprintSizeLocations")
     private List<ImprintSizeLocation> imprintSizeLocations = new ArrayList<ImprintSizeLocation>();
     @JsonProperty("Samples")
@@ -177,12 +177,12 @@ public class ProductConfigurations {
     }
 
     @JsonProperty("ImprintColors")
-    public List<ImprintColor> getImprintColors() {
+    public ImprintColor getImprintColors() {
         return imprintColors;
     }
 
     @JsonProperty("ImprintColors")
-    public void setImprintColors(List<ImprintColor> imprintColors) {
+    public void setImprintColors(ImprintColor imprintColors) {
         this.imprintColors = imprintColors;
     }
 

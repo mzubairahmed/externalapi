@@ -10,9 +10,11 @@ import org.apache.log4j.Logger;
 import com.asi.ext.api.product.criteria.processor.AdditionalColorProcessor;
 import com.asi.ext.api.product.criteria.processor.AdditionalLocationProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductCategoriesProcessor;
+import com.asi.ext.api.product.criteria.processor.ProductColorProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductImprintColorProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductImprintMethodProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductKeywordProcessor;
+import com.asi.ext.api.product.criteria.processor.ProductMateriaProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductMediaItemProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductOptionProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductOriginProcessor;
@@ -88,6 +90,8 @@ public class ImportTransformer {
     private ProductMediaItemProcessor              productImageProcessor           = new ProductMediaItemProcessor();
     // Product configuration related
     private ProductOriginProcessor                 originProcessor                 = new ProductOriginProcessor(-101, "0");
+    private ProductColorProcessor                  colorProcessor                  = new ProductColorProcessor(-201, "0");
+    private ProductMateriaProcessor                materialProcessor               = new ProductMateriaProcessor(-301, "0");
     private ProductShapeProcessor                  shapeProcessor                  = new ProductShapeProcessor(-401, "0");
     private ProductTradeNameProcessor              tradeNameProcessor              = new ProductTradeNameProcessor(-601, "0");
     private ProductImprintColorProcessor           imprintColorProcessor           = new ProductImprintColorProcessor(-701, "0");
@@ -220,7 +224,7 @@ public class ImportTransformer {
         }
 
         // Imprint Color Processing
-        if (serviceProdConfigs.getImprintColors() != null && !serviceProdConfigs.getImprintColors().isEmpty()) {
+        if (serviceProdConfigs.getImprintColors() != null) {
             tempCriteriaSet = imprintColorProcessor.getImprintColorCriteriaSet(serviceProdConfigs.getImprintColors(), rdrProduct,
                     existingCriteriaSetMap.get(ApplicationConstants.CONST_IMPRINT_COLOR_CRITERIA_CODE), configId);
             existingCriteriaSetMap.put(ApplicationConstants.CONST_IMPRINT_COLOR_CRITERIA_CODE, tempCriteriaSet);
@@ -247,6 +251,26 @@ public class ImportTransformer {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_ADDITIONAL_LOCATION);
         }
 
+        // Product Color Processing
+        if (serviceProdConfigs.getColors() != null && !serviceProdConfigs.getColors().isEmpty()) {
+            tempCriteriaSet = colorProcessor.getProductColorCriteriaSet(serviceProdConfigs.getColors(), rdrProduct,
+                    existingCriteriaSetMap.get(ApplicationConstants.CONST_COLORS_CRITERIA_CODE), configId);
+            existingCriteriaSetMap.put(ApplicationConstants.CONST_COLORS_CRITERIA_CODE, tempCriteriaSet);
+        } else {
+            existingCriteriaSetMap.remove(ApplicationConstants.CONST_COLORS_CRITERIA_CODE);
+        }
+
+        // Product Material Processing
+        if (serviceProdConfigs.getMaterials() != null && !serviceProdConfigs.getMaterials().isEmpty()) {
+            tempCriteriaSet = materialProcessor.getProductMaterialCriteriaSet(serviceProdConfigs.getMaterials(), rdrProduct,
+                    existingCriteriaSetMap.get(ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE), configId);
+            existingCriteriaSetMap.put(ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE, tempCriteriaSet);
+        } else {
+            existingCriteriaSetMap.remove(ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE);
+        }
+        
+        
+        
         // Merge all updated ProductCriteriaSets into product configuration and set back to list
         ProductConfiguration updatedProductConfiguration = new ProductConfiguration();
         updatedProductConfiguration.setConfigId(configId);

@@ -31,18 +31,34 @@ public class ProductImprintColorProcessor extends SimpleCriteriaProcessor {
         this.configId = configId;
     }
 
-    public ProductCriteriaSets getImprintColorCriteriaSet(List<ImprintColor> imprintColors, ProductDetail existingProduct,
+    public ProductCriteriaSets getImprintColorCriteriaSet(ImprintColor imprintColor, ProductDetail existingProduct,
             ProductCriteriaSets matchedCriteriaSet, String configId) {
-        
-        if (imprintColors == null || !imprintColors.isEmpty())
-        this.configId = configId;
 
-        String imprintColorss = null;
-        return null;
+        if (imprintColor == null) {
+            return null;
+        }
+        this.configId = configId;
+        if (imprintColor.getValues() == null || imprintColor.getValues().isEmpty()) {
+            productDataStore.addErrorToBatchLogCollection(existingProduct.getExternalProductId(),
+                    ApplicationConstants.CONST_BATCH_ERR_LOOKUP_VALUE_NOT_EXIST, "Imprint Color value collection cannot be empty");
+        }
+        String imprintColors = CommonUtilities.convertStringListToCSV(imprintColor.getValues());
+        String typeCode = null;
+        if (CommonUtilities.isValueNull(imprintColor.getType())) {
+            typeCode = ApplicationConstants.CONST_VALUE_TYPE_CODE_COLOR;
+        } else if (imprintColor.getType().equalsIgnoreCase(ApplicationConstants.CONST_VALUE_TYPE_CODE_COLOR)) {
+            typeCode = imprintColor.getType().toUpperCase().trim();
+        } else if (imprintColor.getType().equalsIgnoreCase(ApplicationConstants.CONST_VALUE_TYPE_CODE_PMS)) {
+            typeCode = imprintColor.getType().toUpperCase().trim();
+        } else {
+            typeCode = ApplicationConstants.CONST_VALUE_TYPE_CODE_COLOR;
+        }
+
+        return getCriteriaSet(imprintColors, typeCode, existingProduct, matchedCriteriaSet, 0);
     }
-    
-    public ProductCriteriaSets getCriteriaSet(String values, ProductDetail existingProduct, ProductCriteriaSets matchedCriteriaSet,
-            int currentSetValueId) {
+
+    public ProductCriteriaSets getCriteriaSet(String values, String typeCode, ProductDetail existingProduct,
+            ProductCriteriaSets matchedCriteriaSet, int currentSetValueId) {
         if (!updateNeeded(matchedCriteriaSet, values)) {
             return null;
         }
@@ -97,7 +113,7 @@ public class ProductImprintColorProcessor extends SimpleCriteriaProcessor {
                 criteriaSetValue = new CriteriaSetValues();
                 criteriaSetValue.setId(String.valueOf(--uniqueSetValueId));
                 criteriaSetValue.setCriteriaCode(ApplicationConstants.CONST_IMPRINT_COLOR_CRITERIA_CODE);
-                criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_COLOR);
+                criteriaSetValue.setValueTypeCode(typeCode);
                 criteriaSetValue.setIsSubset(ApplicationConstants.CONST_STRING_FALSE_SMALL);
                 criteriaSetValue.setIsSetValueMeasurement(ApplicationConstants.CONST_STRING_FALSE_SMALL);
                 criteriaSetValue.setCriteriaSetId(matchedCriteriaSet.getCriteriaSetId());
@@ -173,6 +189,13 @@ public class ProductImprintColorProcessor extends SimpleCriteriaProcessor {
         LOGGER.info("Completed existing Imprint color values of product");
 
         return false;
+    }
+
+    @Override
+    protected ProductCriteriaSets getCriteriaSet(String values, ProductDetail existingProduct,
+            ProductCriteriaSets matchedCriteriaSet, int currentSetValueId) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

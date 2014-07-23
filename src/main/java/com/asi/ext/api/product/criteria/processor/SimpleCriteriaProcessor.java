@@ -20,7 +20,7 @@ public abstract class SimpleCriteriaProcessor {
     protected static int          uniqueSetValueId = -12;
 
     protected Map<String, String> resourceUrls     = new HashMap<String, String>();
-    private ProductDataStore      productDataStore = new ProductDataStore();
+    protected ProductDataStore      productDataStore = new ProductDataStore();
 
     protected abstract ProductCriteriaSets getCriteriaSet(String values, ProductDetail existingProduct, ProductCriteriaSets matchedCriteriaSet, int currentSetValueId);
 
