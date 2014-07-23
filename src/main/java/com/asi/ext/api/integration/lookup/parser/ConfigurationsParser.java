@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.service.model.Color;
 import com.asi.ext.api.service.model.ImprintColor;
 import com.asi.ext.api.service.model.ImprintSizeLocation;
+import com.asi.ext.api.service.model.RushTime;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.service.product.client.vo.CriteriaSetCodeValues;
 import com.asi.service.product.client.vo.CriteriaSetValues;
@@ -27,7 +29,6 @@ import com.asi.service.product.vo.Product;
 public class ConfigurationsParser {
 	@Autowired
 	LookupParser productLookupParser;
-	 private ProductDataStore    lookupDataStore    = new ProductDataStore();
 	public LookupParser getProductLookupParser() {
 		return productLookupParser;
 	}
@@ -38,7 +39,7 @@ public class ConfigurationsParser {
 
 	private final static Logger _LOGGER = Logger
 			.getLogger(ConfigurationsParser.class.getName());
-	private HashMap<String, HashMap<String, String>> criteriaSet = new HashMap<>();
+//	private HashMap<String, HashMap<String, String>> criteriaSet = new HashMap<>();
 	private int productCriteriaSetCntr = -1;
 	private int newCriteriaSetCodeValueCntr = -112;
 	private int newCriteriaSetValuesCntr = -1;
@@ -512,6 +513,29 @@ public class ConfigurationsParser {
 			serviceProductConfig.setImprintSizeLocations(imprintSzLnList);		
 		}
 		
+		//Rush Time
+		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE);
+		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+			List<RushTime> rushTimeList=new ArrayList<>();
+			RushTime rushTime;
+			String rushValue="0";
+			ArrayList<?> rushList=null;
+			for(CriteriaSetValues currentCriteriasetValue:currentCriteriaSetValueList){
+				rushTime=new RushTime();
+				if(currentCriteriasetValue.getValue() instanceof List){
+					rushList=(ArrayList<?>)currentCriteriasetValue.getValue();
+					Iterator<?> rushValuesItr=rushList.iterator();
+					if(rushValuesItr.hasNext()){
+						LinkedHashMap<?, ?> rushValueMap=(LinkedHashMap<?, ?>)rushValuesItr.next();
+						rushValue=rushValueMap.get("UnitValue").toString();
+						rushTime.setBusinessDays(Integer.parseInt(rushValue));
+					}
+				}
+				rushTime.setDetails(currentCriteriasetValue.getCriteriaValueDetail());
+				rushTimeList.add(rushTime);
+			}		
+			serviceProductConfig.setRushTime(rushTimeList);
+		}
 		
 		serviceProduct.setProductConfigurations(serviceProductConfig);
 		return serviceProduct;
