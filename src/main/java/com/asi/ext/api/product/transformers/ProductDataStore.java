@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import com.asi.ext.api.exception.VelocityException;
@@ -34,9 +35,7 @@ import com.asi.ext.api.util.RestAPIProperties;
  */
 public class ProductDataStore {
 
-
 	public static RestTemplate lookupRestTemplate;
-	
 
 	private final static Logger LOGGER = Logger
 			.getLogger(ProductDataStore.class.getName());
@@ -48,6 +47,7 @@ public class ProductDataStore {
 	// Lookup value tables
 	private static Map<String, String> productColorMap = null;
 	private static ConcurrentHashMap<String, String> categoryCodeLookupTable = new ConcurrentHashMap<String, String>();
+	private static ConcurrentHashMap<String, String> productTypeCodeLookupTable = new ConcurrentHashMap<String, String>();
 	private static HashMap<String, String> productOriginsLookupTable = new HashMap<>();
 	private static HashMap<String, String> productShapesLookupTable = new HashMap<>();
 	private static HashMap<String, String> productThemesLookupTable = new HashMap<>();
@@ -288,14 +288,65 @@ public class ProductDataStore {
 		}
 	}
 
+	//
+	public static ConcurrentHashMap<String, String> setProductTypeCodes() {
+		try {
+			 LinkedList<?> prodTypecodeResponse = lookupRestTemplate.getForObject(RestAPIProperties
+					 .get(ApplicationConstants.PRODUCT_TYPECODE_LOOKUP_URL), LinkedList.class);
+			if (prodTypecodeResponse == null || prodTypecodeResponse.size()<=0) {
+				// Report error to API that we are not able to fetch data for
+				// Product Type Code
+				// throw new
+				// VelocityException("Unable to get response from Product Type Code API",
+				// null);
+				LOGGER.error("Product Type Code Lookup API returned null response");
+				// TODO : Batch Error
+				return null;
+			} else {
+				productTypeCodeLookupTable = JsonToLookupTableConverter
+						.jsonToProductTypeCodeLookupTable(prodTypecodeResponse);
+				if (productTypeCodeLookupTable == null) {
+					return null; // TODO : LOG Batch Error
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error(
+					"Exception while fetching/processing product Type Code lookup data",
+					e);
+			return null;
+		}
+		return productTypeCodeLookupTable;
+	}
+
+	public static String findProdTypeCodeByName(String prodTypeName) { // throws
+		// VelocityException
+		// {
+		if (productTypeCodeLookupTable == null
+				|| productTypeCodeLookupTable.isEmpty()) {
+			// Create Product Type Code Lookup table
+			productTypeCodeLookupTable = setProductTypeCodes();
+		}
+		return productTypeCodeLookupTable.get(prodTypeName.toUpperCase());
+
+	}
+
+	public String findProdTypeNameByCode(String typeCode) { // throws
+		// VelocityException
+		// {
+		if (productTypeCodeLookupTable == null
+				|| productTypeCodeLookupTable.isEmpty()) {
+			// Create Category Lookup table
+			productTypeCodeLookupTable = setProductTypeCodes();
+		}
+		return CommonUtilities.getKeysByValueGen(productTypeCodeLookupTable,
+				typeCode);
+
+	}
+
 	public static ConcurrentHashMap<String, String> setProductCategories() {
 		try {
-			String categoryResponse = JersyClientGet
-					.getLookupsResponse(RestAPIProperties
-							.get(ApplicationConstants.PRODUCT_CATEGORIES_LOOKUP_URL));
-							
-		/*	String categoryResponse = lookupRestTemplate.getForObject(RestAPIProperties
-					.get(ApplicationConstants.PRODUCT_CATEGORIES_LOOKUP_URL), String.class);*/
+			 LinkedList<?> categoryResponse = lookupRestTemplate.getForObject(RestAPIProperties
+					 .get(ApplicationConstants.PRODUCT_CATEGORIES_LOOKUP_URL), LinkedList.class);
 			if (categoryResponse == null || categoryResponse.isEmpty()) {
 				// Report error to API that we are not able to fetch data for
 				// Categories
@@ -422,9 +473,12 @@ public class ProductDataStore {
 				|| productOriginsLookupTable.isEmpty()) {
 			// Create Category Lookup table
 			try {
-				String productOriginResponse = JersyClientGet
+			/*	String productOriginResponse = JersyClientGet
 						.getLookupsResponse(RestAPIProperties
-								.get(ApplicationConstants.ORIGIN_LOOKUP_URL));
+								.get(ApplicationConstants.ORIGIN_LOOKUP_URL));*/
+				LinkedList<?> productOriginResponse=lookupRestTemplate.getForObject(RestAPIProperties
+						.get(ApplicationConstants.ORIGIN_LOOKUP_URL), LinkedList.class);
+				
 				if (productOriginResponse == null
 						|| productOriginResponse.isEmpty()) {
 					// Report error to API that we are not able to fetch data
@@ -746,11 +800,8 @@ public class ProductDataStore {
 
 	public static HashMap<String, String> getComplianceCertData() {
 		try {
-			String complianceCertResponse = JersyClientGet
-					.getLookupsResponse(RestAPIProperties
-							.get(ApplicationConstants.PRODUCT_COMPLIANCECERTS_LOOKUP));
-			/*String complianceCertResponse=lookupRestTemplate.getForObject(RestAPIProperties
-							.get(ApplicationConstants.PRODUCT_COMPLIANCECERTS_LOOKUP),String.class);*/
+			LinkedList<?> complianceCertResponse = lookupRestTemplate.getForObject(RestAPIProperties
+							.get(ApplicationConstants.PRODUCT_COMPLIANCECERTS_LOOKUP),LinkedList.class);
 			if (complianceCertResponse == null
 					|| complianceCertResponse.isEmpty()) {
 				// Report error to API that we are not able to fetch data for
@@ -790,10 +841,9 @@ public class ProductDataStore {
 
 	public static HashMap<String, String> setSelectedSafetyWarnings() {
 		try {
-			String safetyWarningResponse = JersyClientGet
-					.getLookupsResponse(RestAPIProperties
-							.get(ApplicationConstants.SAFETY_WARNINGS_LOOKUP));
-			
+			LinkedList<?> safetyWarningResponse = lookupRestTemplate.getForObject(RestAPIProperties
+							.get(ApplicationConstants.SAFETY_WARNINGS_LOOKUP),LinkedList.class);
+
 			if (safetyWarningResponse == null
 					|| safetyWarningResponse.isEmpty()) {
 				// Report error to API that we are not able to fetch data for
@@ -1178,7 +1228,12 @@ public class ProductDataStore {
 					setCodeValueId);
 		} else if (ApplicationConstants.CONST_SHAPE_CRITERIA_CODE
 				.equalsIgnoreCase(criteriaCode)) {
-
+			if (productShapesLookupTable == null
+					|| productShapesLookupTable.isEmpty()) {
+				getSetCodeValueIdForProductShape("safe");
+			}
+			return CommonUtilities.getKeysByValueGen(productShapesLookupTable,
+					setCodeValueId);
 		} else if (ApplicationConstants.CONST_THEME_CRITERIA_CODE
 				.equalsIgnoreCase(criteriaCode)) {
 
@@ -1187,7 +1242,12 @@ public class ProductDataStore {
 
 		} else if (ApplicationConstants.CONST_IMPRINT_COLOR_CRITERIA_CODE
 				.equalsIgnoreCase(criteriaCode)) {
-
+			if (imprintColorLookupTable == null
+					|| imprintColorLookupTable.isEmpty()) {
+				getSetCodeValueIdForImprintColor("red");
+			}
+			return CommonUtilities.getKeysByValueGen(imprintColorLookupTable,
+					setCodeValueId);
 		} else if (ApplicationConstants.CONST_IMPRINT_SIZE_CRITERIA_CODE
 				.equalsIgnoreCase(criteriaCode)) {
 
@@ -1326,6 +1386,7 @@ public class ProductDataStore {
 			return false;
 		}
 	}
+
 	public RestTemplate getLookupRestTemplate() {
 		return lookupRestTemplate;
 	}
