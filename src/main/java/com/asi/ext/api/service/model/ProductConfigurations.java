@@ -13,6 +13,8 @@ public class ProductConfigurations {
 
     @JsonProperty("ImprintColors")
     private ImprintColor              imprintColors        = null;
+    @JsonProperty("Samples")
+    private Samples                   samples;
     @JsonProperty("Colors")
     private List<Color>               colors               = new ArrayList<Color>();
     @JsonProperty("Materials")
@@ -41,8 +43,6 @@ public class ProductConfigurations {
     private List<String>              additionalLocations  = new ArrayList<String>();
     @JsonProperty("ImprintSizeLocations")
     private List<ImprintSizeLocation> imprintSizeLocations = new ArrayList<ImprintSizeLocation>();
-    @JsonProperty("Samples")
-    private List<Sample>              samples              = new ArrayList<Sample>();
     @JsonProperty("ShippingEstimates")
     private List<ShippingEstimate>    shippingEstimates    = new ArrayList<ShippingEstimate>();
 
@@ -196,13 +196,20 @@ public class ProductConfigurations {
         this.imprintSizeLocations = imprintSizeLocations;
     }
 
+    /**
+     * @return the samples
+     */
     @JsonProperty("Samples")
-    public List<Sample> getSamples() {
+    public Samples getSamples() {
         return samples;
     }
 
+    /**
+     * @param samples
+     *            the samples to set
+     */
     @JsonProperty("Samples")
-    public void setSamples(List<Sample> samples) {
+    public void setSamples(Samples samples) {
         this.samples = samples;
     }
 

@@ -23,6 +23,7 @@ import com.asi.ext.api.product.criteria.processor.ProductPackageProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductSelectedComplianceCertProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductSelectedSafetyWarningProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductShapeProcessor;
+import com.asi.ext.api.product.criteria.processor.ProductSpecSampleProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductTradeNameProcessor;
 import com.asi.ext.api.response.JsonProcessor;
 import com.asi.ext.api.rest.JersyClientGet;
@@ -101,6 +102,7 @@ public class ImportTransformer {
     private ProductPackageProcessor                packagingProcessor              = new ProductPackageProcessor(-901, "0");
     private AdditionalColorProcessor               additionalColorProcessor        = new AdditionalColorProcessor(-1201, "0");
     private AdditionalLocationProcessor            additionalLocationProcessor     = new AdditionalLocationProcessor(-1301, "0");
+    private ProductSpecSampleProcessor             specSampleProcessor             = new ProductSpecSampleProcessor(-1401, "0");
 
     private final static Logger                    LOGGER                          = Logger.getLogger(ImportTransformer.class
                                                                                            .getName());
@@ -281,9 +283,17 @@ public class ImportTransformer {
         } else {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_IMPRINT_SIZE_CRITERIA_CODE);
         }
-        
-        // Themes
 
+        // Product Samples and Spec Sample Processing        
+        if (serviceProdConfigs.getSamples() != null) {
+            tempCriteriaSet = specSampleProcessor.getProductSamplesCriteriaSet(serviceProdConfigs.getSamples(), rdrProduct,
+                    existingCriteriaSetMap.get(ApplicationConstants.CONST_PRODUCT_SAMPLE_CRITERIA_CODE), configId);
+            existingCriteriaSetMap.put(ApplicationConstants.CONST_PRODUCT_SAMPLE_CRITERIA_CODE, tempCriteriaSet);
+        } else {
+            existingCriteriaSetMap.remove(ApplicationConstants.CONST_PRODUCT_SAMPLE_CRITERIA_CODE);
+        }
+        
+        
         // Merge all updated ProductCriteriaSets into product configuration and set back to list
         ProductConfiguration updatedProductConfiguration = new ProductConfiguration();
         updatedProductConfiguration.setConfigId(configId);
