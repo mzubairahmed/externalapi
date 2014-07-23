@@ -25,6 +25,7 @@ import com.asi.ext.api.product.criteria.processor.ProductSelectedSafetyWarningPr
 import com.asi.ext.api.product.criteria.processor.ProductShapeProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductSpecSampleProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductTradeNameProcessor;
+import com.asi.ext.api.product.criteria.processor.RushTimeProcessor;
 import com.asi.ext.api.response.JsonProcessor;
 import com.asi.ext.api.rest.JersyClientGet;
 import com.asi.ext.api.service.model.Image;
@@ -103,6 +104,7 @@ public class ImportTransformer {
     private AdditionalColorProcessor               additionalColorProcessor        = new AdditionalColorProcessor(-1201, "0");
     private AdditionalLocationProcessor            additionalLocationProcessor     = new AdditionalLocationProcessor(-1301, "0");
     private ProductSpecSampleProcessor             specSampleProcessor             = new ProductSpecSampleProcessor(-1401, "0");
+    private RushTimeProcessor                      rushTimeProcessor               = new RushTimeProcessor(-1101, "0");
 
     private final static Logger                    LOGGER                          = Logger.getLogger(ImportTransformer.class
                                                                                            .getName());
@@ -291,6 +293,15 @@ public class ImportTransformer {
             existingCriteriaSetMap.put(ApplicationConstants.CONST_PRODUCT_SAMPLE_CRITERIA_CODE, tempCriteriaSet);
         } else {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_PRODUCT_SAMPLE_CRITERIA_CODE);
+        }
+        
+        // RUSH Time Processing        
+        if (serviceProdConfigs.getRushTime() != null) {
+            tempCriteriaSet = rushTimeProcessor.getRushTimeCriteriaSet(serviceProdConfigs.getRushTime(), rdrProduct,
+                    existingCriteriaSetMap.get(ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE), configId);
+            existingCriteriaSetMap.put(ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE, tempCriteriaSet);
+        } else {
+            existingCriteriaSetMap.remove(ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE);
         }
         
         
