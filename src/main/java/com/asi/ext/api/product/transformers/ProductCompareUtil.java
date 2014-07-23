@@ -21,6 +21,7 @@ import com.asi.ext.api.radar.model.ProductMediaItems;
 import com.asi.ext.api.radar.model.Relationships;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
+import com.asi.service.product.client.vo.ProductConfiguration;
 
 /**
  * Utility class for comparing current {@link Product} elements with existing {@link Product}
@@ -669,37 +670,41 @@ public class ProductCompareUtil extends CommonUtilities {
         return currentProdDatasheet;
     }
 
-    /*public static ProductKeywords[] comapreAndUpdateKeywords(ProductKeywords[] currentProductKeywords, Product existingProduct) {
+    /*
+     * public static ProductKeywords[] comapreAndUpdateKeywords(ProductKeywords[] currentProductKeywords, Product existingProduct) {
+     * 
+     * if (currentProductKeywords != null && currentProductKeywords.length > 0) {
+     * ProductKeywordProcessor productKeywordProcessor = new ProductKeywordProcessor();
+     * String value = currentProductKeywords[0].getValue();
+     * if (value != null && value.trim().startsWith(ApplicationConstants.PRODUCT_UPDATE_VALIDATE_CHAR)) {
+     * // updateNeeded = false;
+     * return existingProduct != null ? existingProduct.getProductKeywords() : new ProductKeywords[0];
+     * } else if (isValueNull(value)) {
+     * return new ProductKeywords[0];
+     * } else {
+     * return productKeywordProcessor.getProductKeywords(filterDuplicates(value.split(",")), existingProduct, true);
+     * }
+     * }
+     * return new ProductKeywords[0];
+     * }
+     */
 
-        if (currentProductKeywords != null && currentProductKeywords.length > 0) {
-            ProductKeywordProcessor productKeywordProcessor = new ProductKeywordProcessor();
-            String value = currentProductKeywords[0].getValue();
-            if (value != null && value.trim().startsWith(ApplicationConstants.PRODUCT_UPDATE_VALIDATE_CHAR)) {
-                // updateNeeded = false;
-                return existingProduct != null ? existingProduct.getProductKeywords() : new ProductKeywords[0];
-            } else if (isValueNull(value)) {
-                return new ProductKeywords[0];
-            } else {
-                return productKeywordProcessor.getProductKeywords(filterDuplicates(value.split(",")), existingProduct, true);
-            }
-        }
-        return new ProductKeywords[0];
-    }*/
-
-  /*  public static SelectedProductCategories[] getCategories(List<String> productCategoryList, String productId,
-            String xid, Product existingProduct) {
-        String crntProductCategory = null;
-        if (productCategoryList != null && !productCategoryList.isEmpty()) {
-            crntProductCategory = convertStringListToCSV(productCategoryList);
-        }
-        SelectedProductCategories[] productCategories = new ProductCategoriesProcessor().getProductCategories(crntProductCategory,
-                productId, xid, existingProduct);
-
-        if (productCategories == null || productCategories.length == 0) {
-            return new SelectedProductCategories[] {};
-        }
-        return productCategories;
-    }*/
+    /*
+     * public static SelectedProductCategories[] getCategories(List<String> productCategoryList, String productId,
+     * String xid, Product existingProduct) {
+     * String crntProductCategory = null;
+     * if (productCategoryList != null && !productCategoryList.isEmpty()) {
+     * crntProductCategory = convertStringListToCSV(productCategoryList);
+     * }
+     * SelectedProductCategories[] productCategories = new ProductCategoriesProcessor().getProductCategories(crntProductCategory,
+     * productId, xid, existingProduct);
+     * 
+     * if (productCategories == null || productCategories.length == 0) {
+     * return new SelectedProductCategories[] {};
+     * }
+     * return productCategories;
+     * }
+     */
 
     public static Map<String, ProductCriteriaSets> getExistingProductCriteriaSets(ProductCriteriaSets[] productCrteriaSets) {
         Map<String, ProductCriteriaSets> productCrteriaSetMap = new HashMap<>();
@@ -711,28 +716,45 @@ public class ProductCompareUtil extends CommonUtilities {
         return productCrteriaSetMap;
     }
 
-    public static Map<String, ProductCriteriaSets> getExistingProductCriteriaSets(ProductCriteriaSets[] productCrteriaSets,
-            boolean skipOptions) {
-        Map<String, ProductCriteriaSets> productCrteriaSetMap = new HashMap<>();
-        for (ProductCriteriaSets criteriaSet : productCrteriaSets) {
-            if (criteriaSet != null && !isOptionGroup(criteriaSet.getCriteriaCode())) {
-                productCrteriaSetMap.put(criteriaSet.getCriteriaCode().trim(), criteriaSet);
+    public static Map<String, com.asi.service.product.client.vo.ProductCriteriaSets> getExistingProductCriteriaSets(
+            List<ProductConfiguration> productConfigs, boolean skipOptions) {
+        Map<String, com.asi.service.product.client.vo.ProductCriteriaSets> productCrteriaSetMap = new HashMap<>();
+        if (productConfigs == null || productConfigs.isEmpty()) {
+            return productCrteriaSetMap;
+        }
+        for (ProductConfiguration config : productConfigs) {
+            if (config != null && config.getProductCriteriaSets() != null && !config.getProductCriteriaSets().isEmpty()) {
+                for (com.asi.service.product.client.vo.ProductCriteriaSets criteriaSet : config.getProductCriteriaSets()) {
+                    if (criteriaSet != null && !isOptionGroup(criteriaSet.getCriteriaCode())) {
+                        productCrteriaSetMap.put(criteriaSet.getCriteriaCode().trim(), criteriaSet);
+                    }
+                }
             }
         }
         return productCrteriaSetMap;
     }
 
-    public static Map<String, List<ProductCriteriaSets>> getOptionCriteriaSets(ProductCriteriaSets[] productCrteriaSets) {
-        Map<String, List<ProductCriteriaSets>> options = new HashMap<String, List<ProductCriteriaSets>>();
-        for (ProductCriteriaSets criteriaSet : productCrteriaSets) {
-            if (criteriaSet != null && isOptionGroup(criteriaSet.getCriteriaCode())) {
-                if (options.get(criteriaSet.getCriteriaCode()) == null) {
-                    options.put(criteriaSet.getCriteriaCode(), new ArrayList<ProductCriteriaSets>());
+    public static Map<String, List<com.asi.service.product.client.vo.ProductCriteriaSets>> getOptionCriteriaSets(
+            List<ProductConfiguration> productConfigs) {
+        Map<String, List<com.asi.service.product.client.vo.ProductCriteriaSets>> options = new HashMap<String, List<com.asi.service.product.client.vo.ProductCriteriaSets>>();
+
+        if (productConfigs == null || productConfigs.isEmpty()) {
+            return options;
+        }
+        for (ProductConfiguration config : productConfigs) {
+            if (config != null && config.getProductCriteriaSets() != null && !config.getProductCriteriaSets().isEmpty()) {
+                for (com.asi.service.product.client.vo.ProductCriteriaSets criteriaSet : config.getProductCriteriaSets()) {
+                    if (criteriaSet != null && isOptionGroup(criteriaSet.getCriteriaCode())) {
+
+                        if (options.get(criteriaSet.getCriteriaCode()) == null) {
+                            options.put(criteriaSet.getCriteriaCode(),
+                                    new ArrayList<com.asi.service.product.client.vo.ProductCriteriaSets>());
+                        }
+                        options.get(criteriaSet.getCriteriaCode()).add(criteriaSet);
+                    }
                 }
-                options.get(criteriaSet.getCriteriaCode()).add(criteriaSet);
             }
         }
-
         return options;
     }
 
@@ -864,36 +886,45 @@ public class ProductCompareUtil extends CommonUtilities {
         return value1.trim().equalsIgnoreCase(value2.trim());
     }
 
-    public static ProductCriteriaSets[] getFinalProductCriteriaSets(Map<String, ProductCriteriaSets> simpleCriteriaSets,
-            Map<String, List<ProductCriteriaSets>> optionGroups, ProductCriteriaSets[] otherCriteriaSets) {
-        List<ProductCriteriaSets> finalList = new ArrayList<ProductCriteriaSets>();
+    public static List<com.asi.service.product.client.vo.ProductCriteriaSets> getFinalProductCriteriaSets(
+            Map<String, com.asi.service.product.client.vo.ProductCriteriaSets> simpleCriteriaSets,
+            Map<String, List<com.asi.service.product.client.vo.ProductCriteriaSets>> optionGroups,
+            com.asi.service.product.client.vo.ProductCriteriaSets[] otherCriteriaSets) {
+        List<com.asi.service.product.client.vo.ProductCriteriaSets> finalList = new ArrayList<>();
+
         if (simpleCriteriaSets != null && !simpleCriteriaSets.isEmpty()) {
-            Collection<ProductCriteriaSets> criteriaSets = simpleCriteriaSets.values();
-            for (Iterator<ProductCriteriaSets> iterator = criteriaSets.iterator(); iterator.hasNext();) {
-                ProductCriteriaSets productCriteriaSets = (ProductCriteriaSets) iterator.next();
+            Collection<com.asi.service.product.client.vo.ProductCriteriaSets> criteriaSets = simpleCriteriaSets.values();
+            for (Iterator<com.asi.service.product.client.vo.ProductCriteriaSets> iterator = criteriaSets.iterator(); iterator
+                    .hasNext();) {
+                com.asi.service.product.client.vo.ProductCriteriaSets productCriteriaSets = (com.asi.service.product.client.vo.ProductCriteriaSets) iterator
+                        .next();
                 if (productCriteriaSets != null) {
                     finalList.add(productCriteriaSets);
                 }
             }
         }
         if (optionGroups != null && !optionGroups.isEmpty()) {
-            Collection<List<ProductCriteriaSets>> options = optionGroups.values();
-            for (Iterator<List<ProductCriteriaSets>> iterator = options.iterator(); iterator.hasNext();) {
-                List<ProductCriteriaSets> list = (List<ProductCriteriaSets>) iterator.next();
+            Collection<List<com.asi.service.product.client.vo.ProductCriteriaSets>> options = optionGroups.values();
+            for (Iterator<List<com.asi.service.product.client.vo.ProductCriteriaSets>> iterator = options.iterator(); iterator
+                    .hasNext();) {
+                List<com.asi.service.product.client.vo.ProductCriteriaSets> list = (List<com.asi.service.product.client.vo.ProductCriteriaSets>) iterator
+                        .next();
                 if (list != null && !list.isEmpty()) {
-                    for (ProductCriteriaSets productCriteriaSets : list) {
+                    for (com.asi.service.product.client.vo.ProductCriteriaSets productCriteriaSets : list) {
                         finalList.add(productCriteriaSets);
                     }
                 }
             }
         }
 
-        for (ProductCriteriaSets productCriteriaSets : otherCriteriaSets) {
-            if (productCriteriaSets != null) {
-                finalList.add(productCriteriaSets);
+        if (otherCriteriaSets != null && otherCriteriaSets.length > 0) {
+            for (com.asi.service.product.client.vo.ProductCriteriaSets productCriteriaSets : otherCriteriaSets) {
+                if (productCriteriaSets != null) {
+                    finalList.add(productCriteriaSets);
+                }
             }
         }
 
-        return finalList.toArray(new ProductCriteriaSets[0]);
+        return finalList;
     }
 }

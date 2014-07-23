@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.asi.core.repo.product.ProductRepo;
 import com.asi.ext.api.service.ProductService;
 import com.asi.ext.api.service.model.Product;
+import com.asi.service.resource.response.ExternalAPIResponse;
 
 /**
  * @author krahul
@@ -36,7 +37,7 @@ public class ProductServiceImpl implements ProductService {
      * com.asi.ext.api.service.model.Product)
      */
     @Override
-    public String updateProduct(String companyId, String xid, Product serviceProduct) {
+    public ExternalAPIResponse updateProduct(String companyId, String xid, Product serviceProduct) {
         // TODO Auto-generated method stub
         return productRepo.updateProduct(companyId, xid, serviceProduct);
     }

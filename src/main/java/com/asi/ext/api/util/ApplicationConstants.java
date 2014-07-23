@@ -72,6 +72,7 @@ public class ApplicationConstants {
     public static final String                       IMPRINT_COLOR_LOOKUP                        = "lookup.imprintcolor.url";
     public static final String                       IMPRINT_SIZE_LOOKUP                         = "lookup.imprintsize.url";
     public static final String                       LESS_THAN_MIN_LOOKUP                        = "lookup.pricing.less.than.min.url";
+    public static final String                       PRODUCT_TYPECODE_LOOKUP_URL              	 = "lookup.product.typecodes.url";
 
     public static final int                          PRD_DESCRIPTION_MAX_LENGTH                  = 800;
 
@@ -112,6 +113,7 @@ public class ApplicationConstants {
     public static final String                       CONST_VALUE_TYPE_CODE_LOOK                  = "LOOK";
     public static final String                       CONST_VALUE_TYPE_CODE_CUST                  = "CUST";
     public static final String                       CONST_VALUE_TYPE_CODE_COLOR                 = "COLR";
+    public static final String                       CONST_VALUE_TYPE_CODE_PMS                   = "PMS";
 
     // Size Groups - CODE
 

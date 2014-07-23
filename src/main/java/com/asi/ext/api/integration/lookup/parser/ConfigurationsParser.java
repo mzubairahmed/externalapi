@@ -3,27 +3,32 @@ package com.asi.ext.api.integration.lookup.parser;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestClientException;
 
+import com.asi.ext.api.product.transformers.ProductDataStore;
+import com.asi.ext.api.service.model.Color;
+import com.asi.ext.api.service.model.ImprintColor;
+import com.asi.ext.api.service.model.ImprintSizeLocation;
+import com.asi.ext.api.service.model.RushTime;
+import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.service.product.client.vo.CriteriaSetCodeValues;
 import com.asi.service.product.client.vo.CriteriaSetValues;
-import com.asi.service.product.client.vo.PriceGrid;
-import com.asi.service.product.client.vo.PricingItem;
 import com.asi.service.product.client.vo.ProductConfiguration;
 import com.asi.service.product.client.vo.ProductConfigurations;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
-import com.asi.service.product.client.vo.Value;
 import com.asi.service.product.vo.Product;
 
 public class ConfigurationsParser {
 	@Autowired
 	LookupParser productLookupParser;
-
 	public LookupParser getProductLookupParser() {
 		return productLookupParser;
 	}
@@ -34,7 +39,7 @@ public class ConfigurationsParser {
 
 	private final static Logger _LOGGER = Logger
 			.getLogger(ConfigurationsParser.class.getName());
-	private HashMap<String, HashMap<String, String>> criteriaSet = new HashMap<>();
+//	private HashMap<String, HashMap<String, String>> criteriaSet = new HashMap<>();
 	private int productCriteriaSetCntr = -1;
 	private int newCriteriaSetCodeValueCntr = -112;
 	private int newCriteriaSetValuesCntr = -1;
@@ -405,7 +410,7 @@ public class ConfigurationsParser {
 		return imprintProductCriteriaSet;
 	}
 
-	private List<CriteriaSetValues> transformCriteriaSetValues(
+/*	private List<CriteriaSetValues> transformCriteriaSetValues(
 			List<com.asi.service.product.client.vo.CriteriaSetValues> list) {
 		List<CriteriaSetValues> criteriaSetValuesAry = new ArrayList<>();
 		// CriteriaSetValues clientCriteriaSetValues=null;
@@ -421,6 +426,164 @@ public class ConfigurationsParser {
 			}
 		}
 		return criteriaSetValuesAry;
+	}*/
+
+	public com.asi.ext.api.service.model.Product setProductWithConfigurations(
+			ProductDetail productDetail,
+			com.asi.ext.api.service.model.Product serviceProduct) {
+		com.asi.ext.api.service.model.ProductConfigurations serviceProductConfig=new com.asi.ext.api.service.model.ProductConfigurations(); 
+		// Product Color
+		List<com.asi.service.product.client.vo.CriteriaSetValues> currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_COLORS_CRITERIA_CODE);
+		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+			Color currentColor;
+			List<Color> colorsList=new ArrayList<>();
+			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
+				currentColor=new Color();
+				currentColor.setAlias(currentCriteriaSetValue.getValue().toString());
+				currentColor.setName(ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_COLORS_CRITERIA_CODE));
+				colorsList.add(currentColor);
+			}
+			serviceProductConfig.setColors(colorsList);
+		}
+		
+		// Origin
+		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_ORIGIN_CRITERIA_CODE);
+		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+			
+			List<String> originsList=new ArrayList<>();
+			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
+				originsList.add(ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_ORIGIN_CRITERIA_CODE));
+			}
+			serviceProductConfig.setOrigins(originsList);
+		}
+		
+		// Packaging
+				currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_PACKAGE_CRITERIA_CODE);
+				if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+					String packageName="";
+					List<String> packageList=new ArrayList<>();
+					for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
+						packageName=ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_PACKAGE_CRITERIA_CODE);
+						if(packageName.equalsIgnoreCase("Custom")){
+							packageName=currentCriteriaSetValue.getValue().toString();
+						}
+						packageList.add(packageName);
+					}
+					serviceProductConfig.setPackaging(packageList);
+				}
+		// Shapes
+		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_SHAPE_CRITERIA_CODE);
+		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+			List<String> shapesList=new ArrayList<>();
+			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
+				shapesList.add(ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_SHAPE_CRITERIA_CODE));
+			}
+			serviceProductConfig.setShapes(shapesList);
+		}
+		
+		// Imprint Colors
+		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_IMPRINT_COLOR_CRITERIA_CODE);
+		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+			ImprintColor currentImprintcolor=new ImprintColor();
+			String currentImprintColorValue="";
+			String[] imprintColrsAry;
+			List<String> imprColrValues=null;
+			HashMap<String,String> imprintColorByValueTypeCode=getImprintColorsByTypeCode(currentCriteriaSetValueList);
+			Iterator itr = imprintColorByValueTypeCode.entrySet().iterator();
+		    while (itr.hasNext()) {
+		        Map.Entry pairs = (Map.Entry)itr.next();
+		        currentImprintcolor.setType(pairs.getKey().toString());
+		        currentImprintColorValue=pairs.getValue().toString();
+		        if(currentImprintColorValue.contains(",")){
+		        	imprColrValues=new ArrayList<>();
+		        	imprintColrsAry=currentImprintColorValue.split(",");
+		        	for(String crntImprintColr:imprintColrsAry){
+		        		imprColrValues.add(crntImprintColr);
+		        	}
+		        	currentImprintcolor.setValues(imprColrValues);
+		        }else{
+		        	currentImprintcolor.getValues().add(currentImprintColorValue);
+		        }		        	
+		        itr.remove(); // avoids a ConcurrentModificationException
+		    }
+			serviceProductConfig.setImprintColors(currentImprintcolor);
+		}
+		
+		// Imprint Size / Location
+		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_IMPRINT_SIZE_CRITERIA_CODE);
+		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+			List<ImprintSizeLocation> imprintSzLnList=new ArrayList<>();
+			String imprintSizeLocation="";
+			ImprintSizeLocation currentImprintSizeLocation=null;
+			for(CriteriaSetValues currentCriteriasetValue:currentCriteriaSetValueList){
+				currentImprintSizeLocation=new ImprintSizeLocation();
+				imprintSizeLocation=currentCriteriasetValue.getValue().toString();
+				if(imprintSizeLocation.contains("|")){
+				currentImprintSizeLocation.setSize(imprintSizeLocation.substring(0,imprintSizeLocation.indexOf("|")));
+				currentImprintSizeLocation.setLocation(imprintSizeLocation.substring(imprintSizeLocation.indexOf("|")+1));
+				imprintSzLnList.add(currentImprintSizeLocation);
+				}
+			}			
+			serviceProductConfig.setImprintSizeLocations(imprintSzLnList);		
+		}
+		
+		//Rush Time
+		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE);
+		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+			List<RushTime> rushTimeList=new ArrayList<>();
+			RushTime rushTime;
+			String rushValue="0";
+			ArrayList<?> rushList=null;
+			for(CriteriaSetValues currentCriteriasetValue:currentCriteriaSetValueList){
+				rushTime=new RushTime();
+				if(currentCriteriasetValue.getValue() instanceof List){
+					rushList=(ArrayList<?>)currentCriteriasetValue.getValue();
+					Iterator<?> rushValuesItr=rushList.iterator();
+					if(rushValuesItr.hasNext()){
+						LinkedHashMap<?, ?> rushValueMap=(LinkedHashMap<?, ?>)rushValuesItr.next();
+						rushValue=rushValueMap.get("UnitValue").toString();
+						rushTime.setBusinessDays(Integer.parseInt(rushValue));
+					}
+				}
+				rushTime.setDetails(currentCriteriasetValue.getCriteriaValueDetail());
+				rushTimeList.add(rushTime);
+			}		
+			serviceProductConfig.setRushTime(rushTimeList);
+		}
+		
+		serviceProduct.setProductConfigurations(serviceProductConfig);
+		return serviceProduct;
+	}
+
+	private HashMap<String, String> getImprintColorsByTypeCode(
+			List<CriteriaSetValues> currentCriteriaSetValueList) {
+		HashMap<String,String> typeCodeColorMap=null;
+		String imprintColor="";
+		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+			typeCodeColorMap=new HashMap<>();
+			for(CriteriaSetValues currentCriteriasetValue:currentCriteriaSetValueList){
+				imprintColor=ProductDataStore.reverseLookupFindAttribute(currentCriteriasetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_IMPRINT_COLOR_CRITERIA_CODE);
+				if(null!=imprintColor && imprintColor.equalsIgnoreCase("other")){
+					imprintColor=currentCriteriasetValue.getValue().toString();
+				}
+			if(null==typeCodeColorMap.get(currentCriteriasetValue.getValueTypeCode())){
+				typeCodeColorMap.put(currentCriteriasetValue.getValueTypeCode(), imprintColor);
+			}else{
+				typeCodeColorMap.put(currentCriteriasetValue.getValueTypeCode(), typeCodeColorMap.get(currentCriteriasetValue.getValueTypeCode())+","+imprintColor);
+			}
+			
+			}
+			
+		}		
+		return typeCodeColorMap;
+	}
+
+	private List<CriteriaSetValues> getCriteriaSetValuesListByCode(
+			ProductConfiguration productConfiguration, String criteriaCode) {
+		List<CriteriaSetValues> criteriaSetValuesList=new ArrayList<>();
+		com.asi.service.product.client.vo.ProductCriteriaSets productCriteriaSets=getProductCriteriaSetByCodeIfExist(productConfiguration,criteriaCode);
+		if(null!=productCriteriaSets) criteriaSetValuesList=productCriteriaSets.getCriteriaSetValues();
+		return criteriaSetValuesList;
 	}
 
 	/*

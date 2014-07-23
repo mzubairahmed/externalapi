@@ -6,12 +6,12 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.asi.ext.api.radar.model.CriteriaSetValues;
-import com.asi.ext.api.radar.model.Product;
 import com.asi.ext.api.product.transformers.ProductDataStore;
-import com.asi.ext.api.radar.model.ProductCriteriaSets;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
+import com.asi.service.product.client.vo.CriteriaSetValues;
+import com.asi.service.product.client.vo.ProductCriteriaSets;
+import com.asi.service.product.client.vo.ProductDetail;
 
 public class AdditionalColorProcessor extends SimpleCriteriaProcessor {
 
@@ -30,7 +30,13 @@ public class AdditionalColorProcessor extends SimpleCriteriaProcessor {
         this.configId = configId;
     }
 
-    public ProductCriteriaSets getCriteriaSet(String values, Product existingProduct, ProductCriteriaSets matchedCriteriaSet,
+    public ProductCriteriaSets getAdditionalColorCriteriaSet(List<String> additionalColor, ProductDetail product,
+            ProductCriteriaSets matchedCriteriaSet, String configId) {
+        this.configId = configId;
+        return getCriteriaSet(CommonUtilities.convertStringListToCSV(additionalColor), product, matchedCriteriaSet, 0);
+    }
+
+    public ProductCriteriaSets getCriteriaSet(String values, ProductDetail existingProduct, ProductCriteriaSets matchedCriteriaSet,
             int currentSetValueId) {
         if (!updateNeeded(matchedCriteriaSet, values)) {
             return null;
@@ -55,7 +61,7 @@ public class AdditionalColorProcessor extends SimpleCriteriaProcessor {
             matchedCriteriaSet = new ProductCriteriaSets();
             // Set Basic elements
             matchedCriteriaSet.setCriteriaSetId(String.valueOf(--uniqueCriteriaSetId));
-            matchedCriteriaSet.setProductId(existingProduct.getId());
+            matchedCriteriaSet.setProductId(existingProduct.getID());
             matchedCriteriaSet.setCompanyId(existingProduct.getCompanyId());
             matchedCriteriaSet.setConfigId(this.configId);
             matchedCriteriaSet.setCriteriaCode(ApplicationConstants.CONST_ADDITIONAL_COLOR);
@@ -100,7 +106,7 @@ public class AdditionalColorProcessor extends SimpleCriteriaProcessor {
             finalCriteriaSetValues.add(criteriaSetValue);
         }
 
-        matchedCriteriaSet.setCriteriaSetValues(finalCriteriaSetValues.toArray(new CriteriaSetValues[0]));
+        matchedCriteriaSet.setCriteriaSetValues(finalCriteriaSetValues);
 
         LOGGER.info("Completed Processing of Additional Color");
         productDataStore = null;
@@ -128,10 +134,10 @@ public class AdditionalColorProcessor extends SimpleCriteriaProcessor {
         return false;
     }
 
-    private HashMap<String, CriteriaSetValues> createTableForExistingSetValue(CriteriaSetValues[] setValues) {
+    private HashMap<String, CriteriaSetValues> createTableForExistingSetValue(List<CriteriaSetValues> setValues) {
         HashMap<String, CriteriaSetValues> tempHashMap = new HashMap<>();
 
-        if (setValues != null && setValues.length > 0) {
+        if (setValues != null && !setValues.isEmpty()) {
             for (CriteriaSetValues criteriaSetValue : setValues) {
                 String setCodeValue = criteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(); // Check for AIOE
                 tempHashMap.put(String.valueOf(criteriaSetValue.getValue()).toUpperCase() + "_" + setCodeValue, criteriaSetValue);
@@ -146,7 +152,7 @@ public class AdditionalColorProcessor extends SimpleCriteriaProcessor {
             return false;
         }
         LOGGER.info("Registering existing Additional color values of product");
-        if (criteriaSet.getCriteriaSetValues() != null && criteriaSet.getCriteriaSetValues().length > 0) {
+        if (criteriaSet.getCriteriaSetValues() != null && !criteriaSet.getCriteriaSetValues().isEmpty()) {
             for (CriteriaSetValues criteriaValues : criteriaSet.getCriteriaSetValues()) {
                 if (criteriaValues.getCriteriaSetCodeValues().length != 0) {
                     String valueToRegister = null;

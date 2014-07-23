@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ import com.asi.ext.api.integration.lookup.parser.ImprintParser;
 import com.asi.ext.api.integration.lookup.parser.LookupParser;
 import com.asi.ext.api.product.transformers.ImportTransformer;
 import com.asi.ext.api.product.transformers.ProductDataStore;
+import com.asi.ext.api.service.model.Image;
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.ProductClient;
 import com.asi.service.product.client.vo.Batch;
@@ -31,12 +33,13 @@ import com.asi.service.product.client.vo.ProductDataSheet;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductInventoryLink;
 import com.asi.service.product.client.vo.ProductKeywords;
+import com.asi.service.product.client.vo.ProductMediaItems;
 import com.asi.service.product.client.vo.SelectedComplianceCert;
 import com.asi.service.product.client.vo.SelectedProductCategory;
 import com.asi.service.product.client.vo.SelectedSafetyWarnings;
 import com.asi.service.product.exception.ProductNotFoundException;
 import com.asi.service.product.vo.Product;
-
+import com.asi.service.resource.response.ExternalAPIResponse;
 
 @Component
 public class ProductRepo {
@@ -140,17 +143,30 @@ public class ProductRepo {
         return null;
     }
 
-    public String updateProduct(String companyId, String xid, com.asi.ext.api.service.model.Product serviceProduct) {
+    public ExternalAPIResponse updateProduct(String companyId, String xid, com.asi.ext.api.service.model.Product serviceProduct) {
         ProductDetail existingRadarProduct = null;
         try {
             existingRadarProduct = productClient.getRadarProduct(companyId, serviceProduct.getExternalProductId());
         } catch (ProductNotFoundException e) {
             _LOGGER.info("Product Not found with Existing, going to create new Product");
         }
-        existingRadarProduct = productTransformer.generateRadarProduct(serviceProduct, existingRadarProduct,
-                generateBatchDataSourceId(companyId), companyId);
-        String result = productClient.saveProduct(existingRadarProduct);
-        return result;
+        try {
+            // Doing Transformation of Service product to pure Radar object model (Core Component)
+            existingRadarProduct = productTransformer.generateRadarProduct(serviceProduct, existingRadarProduct,
+                    generateBatchDataSourceId(companyId), companyId);
+        } catch (Exception e) {
+            _LOGGER.error("Exception while generating Radar product", e);
+            return productClient.convertExceptionToResponseModel(e);
+        }
+        // Saving product to Radar API
+        ExternalAPIResponse response = productClient.saveProduct(existingRadarProduct);
+        return appendErrorLogsToResponse(response, xid);
+    }
+
+    private ExternalAPIResponse appendErrorLogsToResponse(ExternalAPIResponse response, String xid) {
+        Set<String> errors = ProductDataStore.getBatchErrors(xid);
+        response.setAdditionalInfo(errors);
+        return response;
     }
 
     private String generateBatchDataSourceId(String companyId) {
@@ -162,6 +178,7 @@ public class ProductRepo {
         }
     }
 
+    @SuppressWarnings("unused")
     private Product prepairProduct(String companyID, String productID) throws ProductNotFoundException, RestClientException,
             UnsupportedEncodingException {
         productDetail = getProductFromService(companyID, productID);
@@ -187,6 +204,7 @@ public class ProductRepo {
         return productDetail;
 
     }
+
     @SuppressWarnings("unchecked")
     private String getDataSourceId(String companyId) throws Exception {
         String dataSourceId = "0";
@@ -218,7 +236,7 @@ public class ProductRepo {
         }
         return dataSourceId;
     }
-    
+
     public com.asi.ext.api.service.model.Product getServiceProduct(String companyId, String xid) {
         com.asi.ext.api.service.model.Product serviceProduct = null;
         try {
@@ -228,6 +246,7 @@ public class ProductRepo {
                 serviceProduct = new com.asi.ext.api.service.model.Product();
                 BeanUtils.copyProperties(productDetail, serviceProduct);
                 serviceProduct = setBasicProductDetails(productDetail, serviceProduct);
+                serviceProduct=configurationParser.setProductWithConfigurations(productDetail, serviceProduct);
                 List<com.asi.ext.api.service.model.PriceGrid> priceGridList = new ArrayList<>();
                 serviceProduct.setPriceGrids(priceGridList);
                 // serviceProduct.setName(productDetail.getName());
@@ -258,8 +277,11 @@ public class ProductRepo {
         List<SelectedComplianceCert> complianceCertsList = radProduct.getSelectedComplianceCerts();
         List<String> finalComplianceCerts = new ArrayList<>();
         for (SelectedComplianceCert currentCompliance : complianceCertsList) {
-            finalComplianceCerts.add(lookupDataStore.getComplianceCertNameById(String.valueOf(currentCompliance
-                    .getComplianceCertId())));
+        	if(currentCompliance.getComplianceCertId().equals("-1")){
+        		finalComplianceCerts.add(currentCompliance.getDescription());
+        	}else{            
+        		finalComplianceCerts.add(lookupDataStore.getComplianceCertNameById(String.valueOf(currentCompliance.getComplianceCertId())));
+        	}
         }
         serviceProduct.setComplianceCerts(finalComplianceCerts);
 
@@ -293,6 +315,24 @@ public class ProductRepo {
         } else
             serviceProduct.setSameDayRushOffered(false);
 
+        // Product Type Code
+        if(null!=radProduct.getProductTypeCode() && !radProduct.getProductTypeCode().trim().isEmpty()){
+        serviceProduct.setProductType(lookupDataStore.findProdTypeNameByCode(radProduct.getProductTypeCode()));	
+        }
+        
+        // Imaging
+        if(null!=radProduct.getProductMediaItems() && radProduct.getProductMediaItems().size()>0){
+        	List<Image> imagesList=new ArrayList<>();
+        	Image currentImage=null;
+        	for(ProductMediaItems currentProductMediaItems:radProduct.getProductMediaItems()){
+        		currentImage=new Image();
+        		currentImage.setRank(currentProductMediaItems.getMediaRank());
+        		currentImage.setIsPrimary(currentProductMediaItems.getIsPrimary());
+        		currentImage.setImageURL(currentProductMediaItems.getMedia().getUrl());
+        		imagesList.add(currentImage);
+        	}
+        	serviceProduct.setImages(imagesList);
+        }
         return serviceProduct;
     }
 

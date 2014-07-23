@@ -2,16 +2,12 @@
 package com.asi.service.product.client.vo;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -27,9 +23,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ProductConfiguration {
 
     @JsonProperty("ID")
-    private Integer iD;
+    private String iD;
     @JsonProperty("ProductId")
-    private Integer productId;
+    private String productId;
     @JsonProperty("IsDefault")
     private Boolean isDefault;
     @JsonProperty("ConfigId")
@@ -48,22 +44,22 @@ public class ProductConfiguration {
   //  private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("ID")
-    public Integer getID() {
+    public String getID() {
         return iD;
     }
 
     @JsonProperty("ID")
-    public void setID(Integer iD) {
+    public void setID(String iD) {
         this.iD = iD;
     }
 
     @JsonProperty("ProductId")
-    public Integer getProductId() {
+    public String getProductId() {
         return productId;
     }
 
     @JsonProperty("ProductId")
-    public void setProductId(Integer productId) {
+    public void setProductId(String productId) {
         this.productId = productId;
     }
 

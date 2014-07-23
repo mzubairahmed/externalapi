@@ -6,12 +6,13 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.asi.ext.api.radar.model.CriteriaSetValues;
-import com.asi.ext.api.radar.model.Product;
 import com.asi.ext.api.product.transformers.ProductDataStore;
-import com.asi.ext.api.radar.model.ProductCriteriaSets;
+import com.asi.ext.api.service.model.ImprintColor;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
+import com.asi.service.product.client.vo.CriteriaSetValues;
+import com.asi.service.product.client.vo.ProductCriteriaSets;
+import com.asi.service.product.client.vo.ProductDetail;
 
 public class ProductImprintColorProcessor extends SimpleCriteriaProcessor {
 
@@ -30,8 +31,34 @@ public class ProductImprintColorProcessor extends SimpleCriteriaProcessor {
         this.configId = configId;
     }
 
-    public ProductCriteriaSets getCriteriaSet(String values, Product existingProduct, ProductCriteriaSets matchedCriteriaSet,
-            int currentSetValueId) {
+    public ProductCriteriaSets getImprintColorCriteriaSet(ImprintColor imprintColor, ProductDetail existingProduct,
+            ProductCriteriaSets matchedCriteriaSet, String configId) {
+
+        if (imprintColor == null) {
+            return null;
+        }
+        this.configId = configId;
+        if (imprintColor.getValues() == null || imprintColor.getValues().isEmpty()) {
+            productDataStore.addErrorToBatchLogCollection(existingProduct.getExternalProductId(),
+                    ApplicationConstants.CONST_BATCH_ERR_LOOKUP_VALUE_NOT_EXIST, "Imprint Color value collection cannot be empty");
+        }
+        String imprintColors = CommonUtilities.convertStringListToCSV(imprintColor.getValues());
+        String typeCode = null;
+        if (CommonUtilities.isValueNull(imprintColor.getType())) {
+            typeCode = ApplicationConstants.CONST_VALUE_TYPE_CODE_COLOR;
+        } else if (imprintColor.getType().equalsIgnoreCase(ApplicationConstants.CONST_VALUE_TYPE_CODE_COLOR)) {
+            typeCode = imprintColor.getType().toUpperCase().trim();
+        } else if (imprintColor.getType().equalsIgnoreCase(ApplicationConstants.CONST_VALUE_TYPE_CODE_PMS)) {
+            typeCode = imprintColor.getType().toUpperCase().trim();
+        } else {
+            typeCode = ApplicationConstants.CONST_VALUE_TYPE_CODE_COLOR;
+        }
+
+        return getCriteriaSet(imprintColors, typeCode, existingProduct, matchedCriteriaSet, 0);
+    }
+
+    public ProductCriteriaSets getCriteriaSet(String values, String typeCode, ProductDetail existingProduct,
+            ProductCriteriaSets matchedCriteriaSet, int currentSetValueId) {
         if (!updateNeeded(matchedCriteriaSet, values)) {
             return null;
         }
@@ -55,7 +82,7 @@ public class ProductImprintColorProcessor extends SimpleCriteriaProcessor {
             matchedCriteriaSet = new ProductCriteriaSets();
             // Set Basic elements
             matchedCriteriaSet.setCriteriaSetId(String.valueOf(--uniqueCriteriaSetId));
-            matchedCriteriaSet.setProductId(existingProduct.getId());
+            matchedCriteriaSet.setProductId(existingProduct.getID());
             matchedCriteriaSet.setCompanyId(existingProduct.getCompanyId());
             matchedCriteriaSet.setConfigId(this.configId);
             matchedCriteriaSet.setCriteriaCode(ApplicationConstants.CONST_IMPRINT_COLOR_CRITERIA_CODE);
@@ -86,7 +113,7 @@ public class ProductImprintColorProcessor extends SimpleCriteriaProcessor {
                 criteriaSetValue = new CriteriaSetValues();
                 criteriaSetValue.setId(String.valueOf(--uniqueSetValueId));
                 criteriaSetValue.setCriteriaCode(ApplicationConstants.CONST_IMPRINT_COLOR_CRITERIA_CODE);
-                criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_COLOR);
+                criteriaSetValue.setValueTypeCode(typeCode);
                 criteriaSetValue.setIsSubset(ApplicationConstants.CONST_STRING_FALSE_SMALL);
                 criteriaSetValue.setIsSetValueMeasurement(ApplicationConstants.CONST_STRING_FALSE_SMALL);
                 criteriaSetValue.setCriteriaSetId(matchedCriteriaSet.getCriteriaSetId());
@@ -99,7 +126,7 @@ public class ProductImprintColorProcessor extends SimpleCriteriaProcessor {
             finalCriteriaSetValues.add(criteriaSetValue);
         }
 
-        matchedCriteriaSet.setCriteriaSetValues(finalCriteriaSetValues.toArray(new CriteriaSetValues[0]));
+        matchedCriteriaSet.setCriteriaSetValues(finalCriteriaSetValues);
 
         LOGGER.info("Completed Processing of Imprint Color");
         productDataStore = null;
@@ -126,10 +153,10 @@ public class ProductImprintColorProcessor extends SimpleCriteriaProcessor {
         return false;
     }
 
-    private HashMap<String, CriteriaSetValues> createTableForExistingSetValue(CriteriaSetValues[] setValues) {
+    private HashMap<String, CriteriaSetValues> createTableForExistingSetValue(List<CriteriaSetValues> setValues) {
         HashMap<String, CriteriaSetValues> tempHashMap = new HashMap<>();
 
-        if (setValues != null && setValues.length > 0) {
+        if (setValues != null && !setValues.isEmpty()) {
             for (CriteriaSetValues criteriaSetValue : setValues) {
                 String setCodeValue = criteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(); // Check for AIOE
                 tempHashMap.put(String.valueOf(criteriaSetValue.getValue()).toUpperCase() + "_" + setCodeValue, criteriaSetValue);
@@ -144,7 +171,7 @@ public class ProductImprintColorProcessor extends SimpleCriteriaProcessor {
             return false;
         }
         LOGGER.info("Registering existing Imprint color values of product");
-        if (criteriaSet.getCriteriaSetValues() != null && criteriaSet.getCriteriaSetValues().length > 0) {
+        if (criteriaSet.getCriteriaSetValues() != null && !criteriaSet.getCriteriaSetValues().isEmpty()) {
             for (CriteriaSetValues criteriaValues : criteriaSet.getCriteriaSetValues()) {
                 if (criteriaValues.getCriteriaSetCodeValues().length != 0) {
                     String valueToRegister = null;
@@ -162,6 +189,13 @@ public class ProductImprintColorProcessor extends SimpleCriteriaProcessor {
         LOGGER.info("Completed existing Imprint color values of product");
 
         return false;
+    }
+
+    @Override
+    protected ProductCriteriaSets getCriteriaSet(String values, ProductDetail existingProduct,
+            ProductCriteriaSets matchedCriteriaSet, int currentSetValueId) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
