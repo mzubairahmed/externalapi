@@ -1253,6 +1253,12 @@ public class ProductDataStore {
 
 		} else if (ApplicationConstants.CONST_PACKAGE_CRITERIA_CODE
 				.equalsIgnoreCase(criteriaCode)) {
+			if (productPackagesLookupTable == null
+					|| productPackagesLookupTable.isEmpty()) {
+				getSetCodeValueIdForProductPackage("Pouch");
+			}
+			return CommonUtilities.getKeysByValueGen(productPackagesLookupTable,
+					setCodeValueId);
 
 		} else if (ApplicationConstants.CONST_PRODUCTION_TIME_CRITERIA_CODE
 				.equalsIgnoreCase(criteriaCode)) {

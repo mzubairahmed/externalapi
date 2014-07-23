@@ -24,6 +24,7 @@ import com.asi.ext.api.integration.lookup.parser.ImprintParser;
 import com.asi.ext.api.integration.lookup.parser.LookupParser;
 import com.asi.ext.api.product.transformers.ImportTransformer;
 import com.asi.ext.api.product.transformers.ProductDataStore;
+import com.asi.ext.api.service.model.Image;
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.ProductClient;
 import com.asi.service.product.client.vo.Batch;
@@ -32,6 +33,7 @@ import com.asi.service.product.client.vo.ProductDataSheet;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductInventoryLink;
 import com.asi.service.product.client.vo.ProductKeywords;
+import com.asi.service.product.client.vo.ProductMediaItems;
 import com.asi.service.product.client.vo.SelectedComplianceCert;
 import com.asi.service.product.client.vo.SelectedProductCategory;
 import com.asi.service.product.client.vo.SelectedSafetyWarnings;
@@ -275,8 +277,11 @@ public class ProductRepo {
         List<SelectedComplianceCert> complianceCertsList = radProduct.getSelectedComplianceCerts();
         List<String> finalComplianceCerts = new ArrayList<>();
         for (SelectedComplianceCert currentCompliance : complianceCertsList) {
-            finalComplianceCerts.add(lookupDataStore.getComplianceCertNameById(String.valueOf(currentCompliance
-                    .getComplianceCertId())));
+        	if(currentCompliance.getComplianceCertId().equals("-1")){
+        		finalComplianceCerts.add(currentCompliance.getDescription());
+        	}else{            
+        		finalComplianceCerts.add(lookupDataStore.getComplianceCertNameById(String.valueOf(currentCompliance.getComplianceCertId())));
+        	}
         }
         serviceProduct.setComplianceCerts(finalComplianceCerts);
 
@@ -313,7 +318,21 @@ public class ProductRepo {
         // Product Type Code
         if(null!=radProduct.getProductTypeCode() && !radProduct.getProductTypeCode().trim().isEmpty()){
         serviceProduct.setProductType(lookupDataStore.findProdTypeNameByCode(radProduct.getProductTypeCode()));	
-        }        	
+        }
+        
+        // Imaging
+        if(null!=radProduct.getProductMediaItems() && radProduct.getProductMediaItems().size()>0){
+        	List<Image> imagesList=new ArrayList<>();
+        	Image currentImage=null;
+        	for(ProductMediaItems currentProductMediaItems:radProduct.getProductMediaItems()){
+        		currentImage=new Image();
+        		currentImage.setRank(currentProductMediaItems.getMediaRank());
+        		currentImage.setIsPrimary(currentProductMediaItems.getIsPrimary());
+        		currentImage.setImageURL(currentProductMediaItems.getMedia().getUrl());
+        		imagesList.add(currentImage);
+        	}
+        	serviceProduct.setImages(imagesList);
+        }
         return serviceProduct;
     }
 

@@ -457,6 +457,20 @@ public class ConfigurationsParser {
 			serviceProductConfig.setOrigins(originsList);
 		}
 		
+		// Packaging
+				currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_PACKAGE_CRITERIA_CODE);
+				if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+					String packageName="";
+					List<String> packageList=new ArrayList<>();
+					for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
+						packageName=ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_PACKAGE_CRITERIA_CODE);
+						if(packageName.equalsIgnoreCase("Custom")){
+							packageName=currentCriteriaSetValue.getValue().toString();
+						}
+						packageList.add(packageName);
+					}
+					serviceProductConfig.setPackaging(packageList);
+				}
 		// Shapes
 		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_SHAPE_CRITERIA_CODE);
 		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
