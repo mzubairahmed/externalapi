@@ -12,14 +12,11 @@ import org.apache.log4j.Logger;
 import org.json.simple.parser.ContainerFactory;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.client.RestTemplate;
 
 import com.asi.ext.api.radar.lookup.model.PriceUnitJsonModel;
 import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.ext.api.response.JsonProcessor;
-import com.asi.ext.api.rest.JersyClientGet;
 
 
 public final class JsonToLookupTableConverter {
@@ -28,22 +25,12 @@ public final class JsonToLookupTableConverter {
 	
 	public static RestTemplate lookupRestTemplate;
 	@SuppressWarnings("rawtypes")
-    public static ConcurrentHashMap<String, String> jsonToProductCategoryLookupTable(String jsonData) {
-        JSONParser parser = new JSONParser();
+    public static ConcurrentHashMap<String, String> jsonToProductCategoryLookupTable(LinkedList<?> jsonList) {
         ConcurrentHashMap<String, String> categoryLookupData = new ConcurrentHashMap<String, String>();
-        ContainerFactory containerFactory = new ContainerFactory() {
-            public List<?> creatArrayContainer() {
-                return new LinkedList<Object>();
-            }
-
-            public Map<?, ?> createObjectContainer() {
-                return new LinkedHashMap<Object, Object>();
-            }
-        };
+       
         try {
-            LinkedList<?> json = (LinkedList<?>) parser.parse(jsonData, containerFactory);
-            Iterator<?> iter = json.iterator();
-            categoryLookupData = new ConcurrentHashMap<String, String>(json.size() + 2);
+            Iterator<?> iter = jsonList.iterator();
+            categoryLookupData = new ConcurrentHashMap<String, String>(jsonList.size() + 2);
             while (iter.hasNext()) {
                 try {
                     LinkedHashMap crntValue = (LinkedHashMap) iter.next();
@@ -53,30 +40,19 @@ public final class JsonToLookupTableConverter {
                 } // Collecting maximum elements
             }
             return categoryLookupData;
-        } catch (ParseException pe) {
+        } catch (Exception pe) {
             pe.printStackTrace();
         }
         return categoryLookupData;
     }
 
     @SuppressWarnings("unchecked")
-    private static Map<String, String> createColorLookupMap(String colorLookupJson) {
+    private static Map<String, String> createColorLookupMap(LinkedList<?> colorLookupJsonList) {
         Map<String, String> colorJsonLookupTable = new HashMap<String, String>();
-        JSONParser parser = new JSONParser();
-        ContainerFactory containerFactory = new ContainerFactory() {
-            public List<?> creatArrayContainer() {
-                return new LinkedList<Object>();
-            }
-
-            public Map<?, ?> createObjectContainer() {
-                return new LinkedHashMap<Object, Object>();
-            }
-        };
 
         try {
-            LinkedList<?> json = (LinkedList<?>) parser.parse(colorLookupJson, containerFactory);
-            colorJsonLookupTable = new HashMap<String, String>(json.size() * 2);
-            Iterator<?> iter = json.iterator();
+            colorJsonLookupTable = new HashMap<String, String>(colorLookupJsonList.size() * 2);
+            Iterator<?> iter = colorLookupJsonList.iterator();
             while (iter.hasNext()) {
                 try {
                     LinkedHashMap<?, ?> crntValue = (LinkedHashMap<String, String>) iter.next();
@@ -111,7 +87,7 @@ public final class JsonToLookupTableConverter {
                 }
             }
             // LOGGER.info(JSONValue.toJSONString(com.asi.util.json));
-        } catch (ParseException pe) {
+        } catch (Exception pe) {
             pe.printStackTrace();
         }
         return colorJsonLookupTable;
@@ -155,8 +131,8 @@ public final class JsonToLookupTableConverter {
 
     public static Map<String, String> createProductColorMap(final String COLOR_API_URL) {
         try {
-            String response = JersyClientGet.getLookupsResponse(COLOR_API_URL);
-           // String response =restTemplate.getForObject(COLOR_API_URL, String.class);
+           // String response = JersyClientGet.getLookupsResponse(COLOR_API_URL);
+            LinkedList<?> response =lookupRestTemplate.getForObject(COLOR_API_URL, LinkedList.class);
             return createColorLookupMap(response);
 
         } catch (Exception e) {
@@ -469,22 +445,12 @@ public final class JsonToLookupTableConverter {
         return customLookupTable;
     }
 
-    public static HashMap<String, String> jsonToComplianceCertLookupTable(String jsonText) {
-        JSONParser parser = new JSONParser();
-        ContainerFactory containerFactory = new ContainerFactory() {
-            public List<?> creatArrayContainer() {
-                return new LinkedList<Object>();
-            }
-
-            public Map<?, ?> createObjectContainer() {
-                return new LinkedHashMap<Object, Object>();
-            }
-        };
+    public static HashMap<String, String> jsonToComplianceCertLookupTable(LinkedList<?> jsonList) {
+      
         HashMap<String, String> complianceCertLookupTable = new HashMap<>();
         try {
-            LinkedList<?> json = (LinkedList<?>) parser.parse(jsonText, containerFactory);
-            complianceCertLookupTable = new HashMap<>(json.size());
-            Iterator<?> iter = json.iterator();
+            complianceCertLookupTable = new HashMap<>(jsonList.size());
+            Iterator<?> iter = jsonList.iterator();
             while (iter.hasNext()) {
                 @SuppressWarnings("unchecked")
                 LinkedHashMap<String, ?> crntValue = (LinkedHashMap<String, ?>) iter.next();
@@ -495,28 +461,17 @@ public final class JsonToLookupTableConverter {
                     // Trying to get maximum data so no exception need to process now
                 }
             }
-        } catch (ParseException pe) {
+        } catch (Exception pe) {
             pe.printStackTrace();
         }
         return complianceCertLookupTable;
     }
 
-    public static HashMap<String, String> jsonToSafetyWarningLookupTable(String safetyWarningResponse) {
-        JSONParser parser = new JSONParser();
-        ContainerFactory containerFactory = new ContainerFactory() {
-            public List<?> creatArrayContainer() {
-                return new LinkedList<Object>();
-            }
-
-            public Map<?, ?> createObjectContainer() {
-                return new LinkedHashMap<Object, Object>();
-            }
-        };
-        HashMap<String, String> safetywarningLookupTable = new HashMap<>();
+    public static HashMap<String, String> jsonToSafetyWarningLookupTable(LinkedList<?> jsonList) {
+          HashMap<String, String> safetywarningLookupTable = new HashMap<>();
         try {
-            LinkedList<?> json = (LinkedList<?>) parser.parse(safetyWarningResponse, containerFactory);
-            safetywarningLookupTable = new HashMap<>(json.size());
-            Iterator<?> iter = json.iterator();
+            safetywarningLookupTable = new HashMap<>(jsonList.size());
+            Iterator<?> iter = jsonList.iterator();
             while (iter.hasNext()) {
                 @SuppressWarnings("unchecked")
                 LinkedHashMap<String, ?> crntValue = (LinkedHashMap<String, ?>) iter.next();
@@ -527,7 +482,7 @@ public final class JsonToLookupTableConverter {
                     // Trying to get maximum data so no exception need to process now
                 }
             }
-        } catch (ParseException pe) {
+        } catch (Exception pe) {
             pe.printStackTrace();
         }
         return safetywarningLookupTable;
@@ -769,6 +724,28 @@ public final class JsonToLookupTableConverter {
             }
         }
         return criteriaInfoMap;
+    }
+
+	public static ConcurrentHashMap<String, String> jsonToProductTypeCodeLookupTable(
+			LinkedList<?> prodTypecodeResponse) {
+		ConcurrentHashMap<String, String> typeCodeLookupData=null;
+        try {
+            LinkedList<?> json = prodTypecodeResponse;
+            Iterator<?> iter = json.iterator();
+            typeCodeLookupData = new ConcurrentHashMap<String, String>(json.size() + 2);
+            while (iter.hasNext()) {
+                try {
+                    LinkedHashMap crntValue = (LinkedHashMap) iter.next();
+                    typeCodeLookupData.put(String.valueOf(crntValue.get("DisplayName")).toUpperCase(),
+                            String.valueOf(crntValue.get("Code")));
+                } catch (Exception e) {
+                } // Collecting maximum elements
+            }
+            return typeCodeLookupData;
+        } catch (Exception pe) {
+            pe.printStackTrace();
+        }
+        return typeCodeLookupData;
     }
 
 }

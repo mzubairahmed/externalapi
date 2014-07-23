@@ -293,6 +293,10 @@ public class ProductRepo {
         } else
             serviceProduct.setSameDayRushOffered(false);
 
+        // Product Type Code
+        if(null!=radProduct.getProductTypeCode() && !radProduct.getProductTypeCode().trim().isEmpty()){
+        serviceProduct.setProductType(lookupDataStore.findProdTypeNameByCode(radProduct.getProductTypeCode()));	
+        }        	
         return serviceProduct;
     }
 
