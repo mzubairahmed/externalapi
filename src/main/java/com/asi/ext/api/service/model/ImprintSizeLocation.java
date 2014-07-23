@@ -15,6 +15,9 @@ public class ImprintSizeLocation {
 
     @JsonProperty("Size")
     public String getSize() {
+        if(size == null) {
+            return "";
+        }
         return size;
     }
 
@@ -25,6 +28,9 @@ public class ImprintSizeLocation {
 
     @JsonProperty("Location")
     public String getLocation() {
+        if(location == null) {
+            return "";
+        }
         return location;
     }
 

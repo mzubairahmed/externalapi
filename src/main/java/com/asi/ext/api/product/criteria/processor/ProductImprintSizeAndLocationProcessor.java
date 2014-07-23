@@ -1,18 +1,18 @@
 package com.asi.ext.api.product.criteria.processor;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.asi.ext.api.radar.model.CriteriaSetValues;
-import com.asi.ext.api.radar.model.Product;
-import com.asi.ext.api.radar.model.ProductCriteriaSets;
+import com.asi.ext.api.service.model.ImprintSizeLocation;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
+import com.asi.service.product.client.vo.CriteriaSetValues;
+import com.asi.service.product.client.vo.ProductCriteriaSets;
+import com.asi.service.product.client.vo.ProductDetail;
 
 public class ProductImprintSizeAndLocationProcessor extends SimpleCriteriaProcessor {
 
@@ -31,8 +31,28 @@ public class ProductImprintSizeAndLocationProcessor extends SimpleCriteriaProces
         this.configId = configId;
     }
 
+    public ProductCriteriaSets getProductImprintSizeAndLocationCriteriaSet(List<ImprintSizeLocation> imprintSizeAndLocations,
+            ProductDetail existingProduct, ProductCriteriaSets matchedCriteriaSet, String configId) {
+
+        if (imprintSizeAndLocations == null || imprintSizeAndLocations.isEmpty()) {
+            return null;
+        }
+        this.configId = configId;
+
+        return getCriteriaSet(getImprintSizeLocationString(imprintSizeAndLocations), existingProduct, matchedCriteriaSet, 0);
+    }
+
+    private String getImprintSizeLocationString(List<ImprintSizeLocation> imprintSizeLocations) {
+        String finalImprintSizeAndLocation = "";
+        for (ImprintSizeLocation imsz : imprintSizeLocations) {
+            finalImprintSizeAndLocation = finalImprintSizeAndLocation.isEmpty() ? finalImprintSizeAndLocation + imsz.getSize()
+                    + "|" + imsz.getLocation() : finalImprintSizeAndLocation + "," + imsz.getSize() + "|" + imsz.getLocation();
+        }
+        return finalImprintSizeAndLocation;
+    }
+
     @Override
-    public ProductCriteriaSets getCriteriaSet(String values, Product existingProduct, ProductCriteriaSets matchedCriteriaSet,
+    public ProductCriteriaSets getCriteriaSet(String values, ProductDetail existingProduct, ProductCriteriaSets matchedCriteriaSet,
             int currentSetValueId) {
 
         if (!updateNeeded(matchedCriteriaSet, values)) {
@@ -58,7 +78,7 @@ public class ProductImprintSizeAndLocationProcessor extends SimpleCriteriaProces
             matchedCriteriaSet = new ProductCriteriaSets();
             // Set Basic elements
             matchedCriteriaSet.setCriteriaSetId(String.valueOf(--uniqueCriteriaSetId));
-            matchedCriteriaSet.setProductId(existingProduct.getId());
+            matchedCriteriaSet.setProductId(existingProduct.getID());
             matchedCriteriaSet.setCompanyId(existingProduct.getCompanyId());
             matchedCriteriaSet.setConfigId(this.configId);
             matchedCriteriaSet.setCriteriaCode(ApplicationConstants.CONST_IMPRINT_SIZE_CRITERIA_CODE);
@@ -101,7 +121,7 @@ public class ProductImprintSizeAndLocationProcessor extends SimpleCriteriaProces
             finalCriteriaSetValues.add(criteriaSetValue);
         }
 
-        matchedCriteriaSet.setCriteriaSetValues(finalCriteriaSetValues.toArray(new CriteriaSetValues[0]));
+        matchedCriteriaSet.setCriteriaSetValues(finalCriteriaSetValues);
 
         LOGGER.info("Completed processing imprint size and location");
         return matchedCriteriaSet;
@@ -114,7 +134,7 @@ public class ProductImprintSizeAndLocationProcessor extends SimpleCriteriaProces
         return null;
     }
 
-    private Map<String, CriteriaSetValues> createTableForExistingSetValue(CriteriaSetValues[] existingCriteriaSetValues) {
+    private Map<String, CriteriaSetValues> createTableForExistingSetValue(List<CriteriaSetValues> existingCriteriaSetValues) {
         Map<String, CriteriaSetValues> existing = new HashMap<String, CriteriaSetValues>();
         try {
             for (CriteriaSetValues setValues : existingCriteriaSetValues) {
@@ -135,7 +155,7 @@ public class ProductImprintSizeAndLocationProcessor extends SimpleCriteriaProces
     @Override
     protected String[] processValues(String value) {
 
-        if (value.contains(",")) {
+        /*if (value.contains(",")) {
             // x1,x2|y1,y2
             String[] imprintAttributes = value.split("\\|");
             String[] imprintSizes = imprintAttributes.length > 0 ? imprintAttributes[0].split(",") : new String[] {};
@@ -167,7 +187,7 @@ public class ProductImprintSizeAndLocationProcessor extends SimpleCriteriaProces
                 }
             }
 
-        }
+        }*/
         return value.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
     }
 

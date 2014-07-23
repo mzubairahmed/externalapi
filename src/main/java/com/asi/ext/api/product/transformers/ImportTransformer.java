@@ -13,6 +13,7 @@ import com.asi.ext.api.product.criteria.processor.ProductCategoriesProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductColorProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductImprintColorProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductImprintMethodProcessor;
+import com.asi.ext.api.product.criteria.processor.ProductImprintSizeAndLocationProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductKeywordProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductMateriaProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductMediaItemProcessor;
@@ -95,6 +96,8 @@ public class ImportTransformer {
     private ProductShapeProcessor                  shapeProcessor                  = new ProductShapeProcessor(-401, "0");
     private ProductTradeNameProcessor              tradeNameProcessor              = new ProductTradeNameProcessor(-601, "0");
     private ProductImprintColorProcessor           imprintColorProcessor           = new ProductImprintColorProcessor(-701, "0");
+    private ProductImprintSizeAndLocationProcessor imszProcessor                   = new ProductImprintSizeAndLocationProcessor(
+                                                                                           -801, "0");
     private ProductPackageProcessor                packagingProcessor              = new ProductPackageProcessor(-901, "0");
     private AdditionalColorProcessor               additionalColorProcessor        = new AdditionalColorProcessor(-1201, "0");
     private AdditionalLocationProcessor            additionalLocationProcessor     = new AdditionalLocationProcessor(-1301, "0");
@@ -268,9 +271,19 @@ public class ImportTransformer {
         } else {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE);
         }
+
+        // Imprint Size and Location Processing
+        if (serviceProdConfigs.getImprintSizeLocations() != null && !serviceProdConfigs.getImprintSizeLocations().isEmpty()) {
+            tempCriteriaSet = imszProcessor.getProductImprintSizeAndLocationCriteriaSet(
+                    serviceProdConfigs.getImprintSizeLocations(), rdrProduct,
+                    existingCriteriaSetMap.get(ApplicationConstants.CONST_IMPRINT_SIZE_CRITERIA_CODE), configId);
+            existingCriteriaSetMap.put(ApplicationConstants.CONST_IMPRINT_SIZE_CRITERIA_CODE, tempCriteriaSet);
+        } else {
+            existingCriteriaSetMap.remove(ApplicationConstants.CONST_IMPRINT_SIZE_CRITERIA_CODE);
+        }
         
-        
-        
+        // Themes
+
         // Merge all updated ProductCriteriaSets into product configuration and set back to list
         ProductConfiguration updatedProductConfiguration = new ProductConfiguration();
         updatedProductConfiguration.setConfigId(configId);
