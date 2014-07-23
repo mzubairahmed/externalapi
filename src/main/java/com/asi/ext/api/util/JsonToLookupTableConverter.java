@@ -1,5 +1,6 @@
 package com.asi.ext.api.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -57,13 +58,13 @@ public final class JsonToLookupTableConverter {
                 try {
                     LinkedHashMap<?, ?> crntValue = (LinkedHashMap<String, String>) iter.next();
                     if (crntValue != null) {
-                        LinkedList<LinkedHashMap<?, ?>> codeValueGroups = (LinkedList<LinkedHashMap<?, ?>>) crntValue
+                        ArrayList<LinkedHashMap<?, ?>> codeValueGroups = (ArrayList<LinkedHashMap<?, ?>>) crntValue
                                 .get("CodeValueGroups");
                         if (codeValueGroups != null && !codeValueGroups.isEmpty()) {
                             Iterator<LinkedHashMap<?, ?>> codeValueGrpItr = codeValueGroups.iterator();
                             while (codeValueGrpItr.hasNext()) {
                                 LinkedHashMap<?, ?> codeValueGroup = (LinkedHashMap<?, ?>) codeValueGrpItr.next();
-                                LinkedList<LinkedHashMap<?, ?>> setCodeValues = (LinkedList<LinkedHashMap<?, ?>>) codeValueGroup
+                                ArrayList<LinkedHashMap<?, ?>> setCodeValues = (ArrayList<LinkedHashMap<?, ?>>) codeValueGroup
                                         .get("SetCodeValues");
                                 if (setCodeValues != null && !setCodeValues.isEmpty()) {
                                     Iterator<LinkedHashMap<?, ?>> setCodeValuesItr = setCodeValues.iterator();
@@ -143,24 +144,12 @@ public final class JsonToLookupTableConverter {
     }
 
     @SuppressWarnings("unchecked")
-    public static HashMap<String, String> jsonToProductOriginMap(String json) {
-        JSONParser parser = new JSONParser();
-        ContainerFactory containerFactory = new ContainerFactory() {
-            public List<?> creatArrayContainer() {
-                return new LinkedList<Object>();
-            }
+    public static HashMap<String, String> jsonToProductOriginMap(LinkedList<?> originsList) {
 
-            public Map<?, ?> createObjectContainer() {
-                return new LinkedHashMap<Object, Object>();
-            }
-        };
         HashMap<String, String> originMap = new HashMap<String, String>();
         try {
-            LinkedList<?> origins = (LinkedList<?>) parser.parse(json, containerFactory);
-
-            originMap = new HashMap<String, String>(origins.size());
-
-            Iterator<?> iter = origins.iterator();// entrySet().iterator();
+            originMap = new HashMap<String, String>(originsList.size());
+            Iterator<?> iter = originsList.iterator();// entrySet().iterator();
             while (iter.hasNext()) {
                 LinkedHashMap<String, String> crntValue = (LinkedHashMap<String, String>) iter.next();
                 if (crntValue != null) {

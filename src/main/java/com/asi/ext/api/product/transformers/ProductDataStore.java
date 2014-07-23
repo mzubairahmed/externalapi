@@ -473,9 +473,12 @@ public class ProductDataStore {
 				|| productOriginsLookupTable.isEmpty()) {
 			// Create Category Lookup table
 			try {
-				String productOriginResponse = JersyClientGet
+			/*	String productOriginResponse = JersyClientGet
 						.getLookupsResponse(RestAPIProperties
-								.get(ApplicationConstants.ORIGIN_LOOKUP_URL));
+								.get(ApplicationConstants.ORIGIN_LOOKUP_URL));*/
+				LinkedList<?> productOriginResponse=lookupRestTemplate.getForObject(RestAPIProperties
+						.get(ApplicationConstants.ORIGIN_LOOKUP_URL), LinkedList.class);
+				
 				if (productOriginResponse == null
 						|| productOriginResponse.isEmpty()) {
 					// Report error to API that we are not able to fetch data
@@ -1225,7 +1228,12 @@ public class ProductDataStore {
 					setCodeValueId);
 		} else if (ApplicationConstants.CONST_SHAPE_CRITERIA_CODE
 				.equalsIgnoreCase(criteriaCode)) {
-
+			if (productShapesLookupTable == null
+					|| productShapesLookupTable.isEmpty()) {
+				getSetCodeValueIdForProductShape("safe");
+			}
+			return CommonUtilities.getKeysByValueGen(productShapesLookupTable,
+					setCodeValueId);
 		} else if (ApplicationConstants.CONST_THEME_CRITERIA_CODE
 				.equalsIgnoreCase(criteriaCode)) {
 
@@ -1234,7 +1242,12 @@ public class ProductDataStore {
 
 		} else if (ApplicationConstants.CONST_IMPRINT_COLOR_CRITERIA_CODE
 				.equalsIgnoreCase(criteriaCode)) {
-
+			if (imprintColorLookupTable == null
+					|| imprintColorLookupTable.isEmpty()) {
+				getSetCodeValueIdForImprintColor("red");
+			}
+			return CommonUtilities.getKeysByValueGen(imprintColorLookupTable,
+					setCodeValueId);
 		} else if (ApplicationConstants.CONST_IMPRINT_SIZE_CRITERIA_CODE
 				.equalsIgnoreCase(criteriaCode)) {
 

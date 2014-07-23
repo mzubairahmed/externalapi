@@ -244,6 +244,7 @@ public class ProductRepo {
                 serviceProduct = new com.asi.ext.api.service.model.Product();
                 BeanUtils.copyProperties(productDetail, serviceProduct);
                 serviceProduct = setBasicProductDetails(productDetail, serviceProduct);
+                serviceProduct=configurationParser.setProductWithConfigurations(productDetail, serviceProduct);
                 List<com.asi.ext.api.service.model.PriceGrid> priceGridList = new ArrayList<>();
                 serviceProduct.setPriceGrids(priceGridList);
                 // serviceProduct.setName(productDetail.getName());
