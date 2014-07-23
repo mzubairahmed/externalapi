@@ -469,15 +469,13 @@ public class ConfigurationsParser {
 		// Imprint Colors
 		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_IMPRINT_COLOR_CRITERIA_CODE);
 		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
-			List<ImprintColor> imprintColorList=new ArrayList<>();
-			ImprintColor currentImprintcolor;
+			ImprintColor currentImprintcolor=new ImprintColor();
 			String currentImprintColorValue="";
 			String[] imprintColrsAry;
 			List<String> imprColrValues=null;
 			HashMap<String,String> imprintColorByValueTypeCode=getImprintColorsByTypeCode(currentCriteriaSetValueList);
 			Iterator itr = imprintColorByValueTypeCode.entrySet().iterator();
 		    while (itr.hasNext()) {
-		    	currentImprintcolor=new ImprintColor();
 		        Map.Entry pairs = (Map.Entry)itr.next();
 		        currentImprintcolor.setType(pairs.getKey().toString());
 		        currentImprintColorValue=pairs.getValue().toString();
@@ -492,9 +490,8 @@ public class ConfigurationsParser {
 		        	currentImprintcolor.getValues().add(currentImprintColorValue);
 		        }		        	
 		        itr.remove(); // avoids a ConcurrentModificationException
-		        imprintColorList.add(currentImprintcolor);
 		    }
-			serviceProductConfig.setImprintColors(imprintColorList);
+			serviceProductConfig.setImprintColors(currentImprintcolor);
 		}
 		
 		// Imprint Size / Location
