@@ -166,24 +166,13 @@ public final class JsonToLookupTableConverter {
     }
 
     @SuppressWarnings("unchecked")
-    public static HashMap<String, String> jsonToProductShapesMap(String json) {
-        JSONParser parser = new JSONParser();
-        ContainerFactory containerFactory = new ContainerFactory() {
-            public List<?> creatArrayContainer() {
-                return new LinkedList<Object>();
-            }
-
-            public Map<?, ?> createObjectContainer() {
-                return new LinkedHashMap<Object, Object>();
-            }
-        };
+    public static HashMap<String, String> jsonToProductShapesMap(LinkedList<?> jsonList) {
         HashMap<String, String> shapesMap = new HashMap<String, String>();
         try {
-            LinkedList<?> shape = (LinkedList<?>) parser.parse(json, containerFactory);
 
-            shapesMap = new HashMap<String, String>(shape.size());
+            shapesMap = new HashMap<String, String>(jsonList.size());
 
-            Iterator<?> iter = shape.iterator();
+            Iterator<?> iter = jsonList.iterator();
             while (iter.hasNext()) {
                 LinkedHashMap<String, String> crntValue = (LinkedHashMap<String, String>) iter.next();
                 if (crntValue != null) {
@@ -358,22 +347,11 @@ public final class JsonToLookupTableConverter {
     }
 
     @SuppressWarnings("unchecked")
-    public static HashMap<String, String> jsonToProductPackagesMap(String productPackagesResponse) {
-        JSONParser parser = new JSONParser();
-        ContainerFactory containerFactory = new ContainerFactory() {
-            public List<?> creatArrayContainer() {
-                return new LinkedList<Object>();
-            }
-
-            public Map<?, ?> createObjectContainer() {
-                return new LinkedHashMap<Object, Object>();
-            }
-        };
+    public static HashMap<String, String> jsonToProductPackagesMap(LinkedList<?> productPackagesList) {
         HashMap<String, String> packagesMap = new HashMap<>();
         try {
-            LinkedList<?> json = (LinkedList<?>) parser.parse(productPackagesResponse, containerFactory);
-            Iterator<?> iter = json.iterator();// entrySet().iterator();
-            packagesMap = new HashMap<>(json.size());
+            Iterator<?> iter = productPackagesList.iterator();// entrySet().iterator();
+            packagesMap = new HashMap<>(productPackagesList.size());
             while (iter.hasNext()) {
                 LinkedHashMap<String, String> crntValue = (LinkedHashMap<String, String>) iter.next();
                 if (crntValue != null) {
@@ -385,39 +363,28 @@ public final class JsonToLookupTableConverter {
 
                 }
             }
-        } catch (ParseException pe) {
+        } catch (Exception pe) {
             pe.printStackTrace();
         }
         return packagesMap;
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static HashMap<String, String> jsonToProductCustomLookupTable(String wsResponse, String criteriaCode) {
+    public static HashMap<String, String> jsonToProductCustomLookupTable(LinkedList<?> wsResponseList, String criteriaCode) {
 
-        JSONParser parser = new JSONParser();
-        ContainerFactory containerFactory = new ContainerFactory() {
-            public List<?> creatArrayContainer() {
-                return new LinkedList<Object>();
-            }
-
-            public Map<?, ?> createObjectContainer() {
-                return new LinkedHashMap<Object, Object>();
-            }
-        };
         HashMap<String, String> customLookupTable = new HashMap<>();
         try {
-            LinkedList<?> json = (LinkedList<?>) parser.parse(wsResponse, containerFactory);
-            Iterator<?> iter = json.iterator();// entrySet().iterator();
+            Iterator<?> iter = wsResponseList.iterator();// entrySet().iterator();
             while (iter.hasNext()) {
                 Map<?, ?> crntValue = (LinkedHashMap<?, ?>) iter.next();
                 if (criteriaCode.equalsIgnoreCase(String.valueOf(crntValue.get("Code")))) {
-                    LinkedList<LinkedHashMap> codeValueGrps = (LinkedList<LinkedHashMap>) crntValue.get("CodeValueGroups");
+                    ArrayList<LinkedHashMap> codeValueGrps = (ArrayList<LinkedHashMap>) crntValue.get("CodeValueGroups");
                     Iterator<LinkedHashMap> iterator = codeValueGrps.iterator();
 
                     while (iterator.hasNext()) {
                         Map codeValueGrpsMap = (LinkedHashMap) iterator.next();
 
-                        List finalLst = (LinkedList) codeValueGrpsMap.get("SetCodeValues");
+                        ArrayList finalLst = (ArrayList) codeValueGrpsMap.get("SetCodeValues");
                         Iterator finalItr = finalLst.iterator();
                         while (finalItr.hasNext()) {
                             Map finalMap = (LinkedHashMap) finalItr.next();
@@ -771,5 +738,18 @@ public final class JsonToLookupTableConverter {
         
         return optionsLookupTable;
     }
+
+	public static Map<String, String> createProductMaterialMap(final String MATERIAL_API_URL) {
+		  try {
+	            LinkedList<?> response = lookupRestTemplate.getForObject(MATERIAL_API_URL, LinkedList.class);
+	            return createColorLookupMap(response);
+
+	        } catch (Exception e) {
+	            LOGGER.error("Exception while processing Product Color JSON", e);
+	            return new HashMap<String, String>();
+	        }
+
+	}
+
 
 }

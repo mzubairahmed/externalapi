@@ -155,7 +155,8 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
     
 
     public String getSetCodeValueId(String value) {
-        return ProductDataStore.getSetCodeValueIdForProductMaterial(value);
+        //return ProductDataStore.getSetCodeValueIdForProductMaterial(value);
+    	return ProductDataStore.getMaterialSetCodeValueId(value);
     }
 
     @Override
