@@ -25,6 +25,7 @@ import com.asi.ext.api.integration.lookup.parser.LookupParser;
 import com.asi.ext.api.product.transformers.ImportTransformer;
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.service.model.Image;
+import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.ProductClient;
 import com.asi.service.product.client.vo.Batch;
@@ -318,6 +319,8 @@ public class ProductRepo {
         // Product Type Code
         if(null!=radProduct.getProductTypeCode() && !radProduct.getProductTypeCode().trim().isEmpty()){
         serviceProduct.setProductType(lookupDataStore.findProdTypeNameByCode(radProduct.getProductTypeCode()));	
+        }else{
+        	serviceProduct.setProductType(ApplicationConstants.CONST_STRING_EMPTY);
         }
         
         // Imaging

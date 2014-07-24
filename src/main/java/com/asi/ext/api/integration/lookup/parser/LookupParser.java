@@ -16,7 +16,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.asi.core.utils.JerseyClient;
+import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.radar.model.Value;
+import com.asi.ext.api.util.CommonUtilities;
 import com.asi.service.product.client.vo.CriteriaSetValue;
 import com.asi.service.product.client.vo.ProductConfigurationsList;
 import com.asi.service.product.client.vo.ProductCriteriaSet;
@@ -49,7 +51,7 @@ public class LookupParser {
 	public static ConcurrentHashMap<String, String> imprintRelationMap = null;
 	private HashMap<String, String> productWarningMap=null;
 	@SuppressWarnings("rawtypes")
-	public static  LinkedList<LinkedHashMap>  SamplesElementsResponse=null;
+	public static  HashMap<String,String>  SamplesElementsResponse=null;
 	@SuppressWarnings("rawtypes")
 	public static LinkedList<LinkedHashMap> sizeElementsResponse = null;
 	@SuppressWarnings("rawtypes")
@@ -60,7 +62,7 @@ public class LookupParser {
 	private HashMap<String, String> productOriginMap = null;
 	private final static Logger _LOGGER = Logger
 			.getLogger(TradeNameLookup.class.getName());
-
+	private ProductDataStore productDataStore=new ProductDataStore();
 	private String serverURL;
 	private String[] inValidImprintMethods={"PERSONALIZATION","UNIMPRINTED"};
 	public String getServerURL() {
@@ -214,20 +216,23 @@ public class LookupParser {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public String findSampleType(String setCodeValueId) {
 		SampleLookup sampleLookup=new SampleLookup();
+		
 		try {
 			if(SamplesElementsResponse==null)
 			{
-				String response = JerseyClient.invoke(new URI(serverURL
+				SamplesElementsResponse=productDataStore.getSamplesList();
+				
+				/*String response = JerseyClient.invoke(new URI(serverURL
 						+ "/api/api/lookup/criteria?code=IMPR"));
 				SamplesElementsResponse = (LinkedList<LinkedHashMap>) jsonParser
-						.parseToList(response);
+						.parseToList(response);*/
 			}
 			
 		} catch (Exception e) {
 			_LOGGER.error("Exception while processing Product Option parsing",
 					e);
 		}
-		return sampleLookup.findSampleTypeFromSet(SamplesElementsResponse,setCodeValueId);
+		return  CommonUtilities.getKeysByValueGen(SamplesElementsResponse, setCodeValueId);
 	}
 
 	public String getTimeText(Object valueAry) {
