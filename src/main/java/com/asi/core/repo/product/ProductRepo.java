@@ -160,7 +160,7 @@ public class ProductRepo {
         }
         // Saving product to Radar API
         ExternalAPIResponse response = productClient.saveProduct(existingRadarProduct);
-        return appendErrorLogsToResponse(response, xid);
+        return appendErrorLogsToResponse(response, existingRadarProduct.getExternalProductId());
     }
 
     private ExternalAPIResponse appendErrorLogsToResponse(ExternalAPIResponse response, String xid) {
