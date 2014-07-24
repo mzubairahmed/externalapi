@@ -144,7 +144,7 @@ public class ProductionTimeProcessor extends SimpleCriteriaProcessor {
 
         for (CriteriaSetValues criteriaSetValue : existingCriteriaSetValues) {
             if (criteriaSetValue != null) {
-                existing.put(getKeyFromValue(criteriaSetValue), criteriaSetValue);
+                existing.put(getKeyFromValue(criteriaSetValue.getValue()), criteriaSetValue);
             }
         }
 
