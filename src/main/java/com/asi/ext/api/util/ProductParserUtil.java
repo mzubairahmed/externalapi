@@ -23,7 +23,7 @@ public final class ProductParserUtil {
 
     public final static String getConfigId(List<ProductConfiguration> productConfigurations) {
         if (productConfigurations != null && productConfigurations.size() > 0) {
-            return productConfigurations.get(0).getID()+"";
+            return productConfigurations.get(0).getID() + "";
         } else {
             return ApplicationConstants.CONST_STRING_ZERO;
         }
@@ -78,41 +78,57 @@ public final class ProductParserUtil {
             return new ProductKeywords[] {};
         }
     }
-/*
-    private SelectedProductCategories[] getProductCategories(List<String> productCategories) {
-        String categories = CommonUtilities.convertStringListToCSV(productCategories);
-        if (!CommonUtilities.isValueNull(categories)) {
-            SelectedProductCategories category = new SelectedProductCategories();
-            category.setCode(categories);
-            category.setProductId(PRODUCT_ID);
-            return new SelectedProductCategories[] { category };
+
+    public static String getCodeFromOptionType(String type) {
+        if (type == null || type.isEmpty()) {
+            return null;
+        }
+        if (type.equalsIgnoreCase("Product")) {
+            return ApplicationConstants.CONST_PRODUCT_OPTION;
+        } else if (type.equalsIgnoreCase("Imprint")) {
+            return ApplicationConstants.CONST_IMPRINT_OPTION;
+        } else if (type.equalsIgnoreCase("Shipping")) {
+            return ApplicationConstants.CONST_SHIPPING_OPTION;
         } else {
-            return new SelectedProductCategories[] {};
+            return null;
         }
     }
-
-    private SelectedComplianceCerts[] getProductComplianceCerts(List<String> productComplianceCerts) {
-        String complianceCerts = CommonUtilities.convertStringListToCSV(productComplianceCerts);
-        if (!CommonUtilities.isValueNull(complianceCerts)) {
-            SelectedComplianceCerts selectedCompliance = new SelectedComplianceCerts();
-            selectedCompliance.setId(ID);
-            selectedCompliance.setProductId(PRODUCT_ID);
-            selectedCompliance.setComplianceCertId(complianceCerts);
-            return new SelectedComplianceCerts[] { selectedCompliance };
-        } else {
-            return new SelectedComplianceCerts[] {};
-        }
-    }
-
-    private SelectedSafetyWarnings[] getSelectedSafetyWarnings(List<String> selectedSafetyWarnings) {
-        String safetyWarnings = CommonUtilities.convertStringListToCSV(selectedSafetyWarnings);
-        if (!CommonUtilities.isValueNull(safetyWarnings)) {
-            SelectedSafetyWarnings safetyWarning = new SelectedSafetyWarnings();
-            safetyWarning.setCode(safetyWarnings);
-            return new SelectedSafetyWarnings[] { safetyWarning };
-        } else {
-            return new SelectedSafetyWarnings[] {};
-        }
-    }*/
+    /*
+     * private SelectedProductCategories[] getProductCategories(List<String> productCategories) {
+     * String categories = CommonUtilities.convertStringListToCSV(productCategories);
+     * if (!CommonUtilities.isValueNull(categories)) {
+     * SelectedProductCategories category = new SelectedProductCategories();
+     * category.setCode(categories);
+     * category.setProductId(PRODUCT_ID);
+     * return new SelectedProductCategories[] { category };
+     * } else {
+     * return new SelectedProductCategories[] {};
+     * }
+     * }
+     * 
+     * private SelectedComplianceCerts[] getProductComplianceCerts(List<String> productComplianceCerts) {
+     * String complianceCerts = CommonUtilities.convertStringListToCSV(productComplianceCerts);
+     * if (!CommonUtilities.isValueNull(complianceCerts)) {
+     * SelectedComplianceCerts selectedCompliance = new SelectedComplianceCerts();
+     * selectedCompliance.setId(ID);
+     * selectedCompliance.setProductId(PRODUCT_ID);
+     * selectedCompliance.setComplianceCertId(complianceCerts);
+     * return new SelectedComplianceCerts[] { selectedCompliance };
+     * } else {
+     * return new SelectedComplianceCerts[] {};
+     * }
+     * }
+     * 
+     * private SelectedSafetyWarnings[] getSelectedSafetyWarnings(List<String> selectedSafetyWarnings) {
+     * String safetyWarnings = CommonUtilities.convertStringListToCSV(selectedSafetyWarnings);
+     * if (!CommonUtilities.isValueNull(safetyWarnings)) {
+     * SelectedSafetyWarnings safetyWarning = new SelectedSafetyWarnings();
+     * safetyWarning.setCode(safetyWarnings);
+     * return new SelectedSafetyWarnings[] { safetyWarning };
+     * } else {
+     * return new SelectedSafetyWarnings[] {};
+     * }
+     * }
+     */
 
 }

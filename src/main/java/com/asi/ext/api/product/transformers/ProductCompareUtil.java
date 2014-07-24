@@ -22,6 +22,7 @@ import com.asi.ext.api.radar.model.Relationships;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.service.product.client.vo.ProductConfiguration;
+import com.asi.service.product.client.vo.ProductDetail;
 
 /**
  * Utility class for comparing current {@link Product} elements with existing {@link Product}
@@ -130,37 +131,41 @@ public class ProductCompareUtil extends CommonUtilities {
         return null;
     }
 
-    public static ProductCriteriaSets multipleProductCriteriaSetCompareAndUpdate(Product product, String criteriaCode,
-            ProductCriteriaSets currentProductCriteriaSet, List<ProductCriteriaSets> existingProductCriteriaSets,
+    public static com.asi.service.product.client.vo.ProductCriteriaSets multipleProductCriteriaSetCompareAndUpdate(ProductDetail product, String criteriaCode,
+            com.asi.service.product.client.vo.ProductCriteriaSets currentProductCriteriaSet, List<com.asi.service.product.client.vo.ProductCriteriaSets> existingProductCriteriaSets,
             boolean requiredValueComaprison) {
         if (existingProductCriteriaSets != null && !existingProductCriteriaSets.isEmpty()) {
-            return multipleProductCriteriaSetCompareAndUpdate(product, criteriaCode, currentProductCriteriaSet,
-                    existingProductCriteriaSets.toArray(new ProductCriteriaSets[0]), requiredValueComaprison);
+            return multipleProductCriteriaSetsCompareAndUpdate(product, criteriaCode, currentProductCriteriaSet,
+                    existingProductCriteriaSets, requiredValueComaprison);
         } else {
             return currentProductCriteriaSet;
         }
     }
 
-    public static ProductCriteriaSets multipleProductCriteriaSetCompareAndUpdate(Product product, String criteriaCode,
-            ProductCriteriaSets currentProductCriteriaSet, ProductCriteriaSets[] existingProductCriteriaSets,
+    public static com.asi.service.product.client.vo.ProductCriteriaSets multipleProductCriteriaSetsCompareAndUpdate(ProductDetail product, String criteriaCode,
+            com.asi.service.product.client.vo.ProductCriteriaSets currentProductCriteriaSet, List<com.asi.service.product.client.vo.ProductCriteriaSets> existingProductCriteriaSets,
             boolean requiredValueComaprison) {
         COMPARE_FLAG = false;
-        if (currentProductCriteriaSet != null && currentProductCriteriaSet.getCriteriaSetValues().length > 0
-                && existingProductCriteriaSets != null && existingProductCriteriaSets.length > 0) {
+        if (currentProductCriteriaSet != null && !currentProductCriteriaSet.getCriteriaSetValues().isEmpty()
+                && existingProductCriteriaSets != null && !existingProductCriteriaSets.isEmpty()) {
 
-            if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_ARTWORK_CODE)) {
+            /*if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_ARTWORK_CODE)) {
                 return compareAndUpdateArtworkCriteriaSet(product.getExternalProductId(), currentProductCriteriaSet,
                         existingProductCriteriaSets[0]);
-            }
-            for (int i = 0; i < existingProductCriteriaSets.length; i++) {
-                if (existingProductCriteriaSets[i].getCriteriaSetValues() != null
-                        && existingProductCriteriaSets[i].getCriteriaSetValues().length > 0) {
+            }*/
+            for (com.asi.service.product.client.vo.ProductCriteriaSets extCtiteriaSet : existingProductCriteriaSets) {
+                if (extCtiteriaSet.getCriteriaSetValues() != null
+                        && !extCtiteriaSet.getCriteriaSetValues().isEmpty()) {
                     String optionName = currentProductCriteriaSet.getCriteriaDetail();
+                    String optionDescription = currentProductCriteriaSet.getDescription();
                     currentProductCriteriaSet = compareAndUpdateSingleCriteriaSetWithExisting(product, criteriaCode,
-                            currentProductCriteriaSet, existingProductCriteriaSets[i], requiredValueComaprison);
+                            currentProductCriteriaSet, extCtiteriaSet, requiredValueComaprison);
                     if (COMPARE_FLAG) {
-                        if (!optionName.trim().equalsIgnoreCase(existingProductCriteriaSets[i].getCriteriaDetail().trim())) {
+                        if (!optionName.trim().equalsIgnoreCase(extCtiteriaSet.getCriteriaDetail().trim())) {
                             currentProductCriteriaSet.setCriteriaDetail(optionName);
+                        }
+                        if (!optionDescription.trim().equalsIgnoreCase(extCtiteriaSet.getDescription().trim())) {
+                            currentProductCriteriaSet.setDescription(optionDescription);
                         }
                         return currentProductCriteriaSet;
                     }
@@ -173,6 +178,7 @@ public class ProductCompareUtil extends CommonUtilities {
         return currentProductCriteriaSet;
     }
 
+    @SuppressWarnings("unused")
     private static ProductCriteriaSets compareAndUpdateArtworkCriteriaSet(String externalPrductId,
             ProductCriteriaSets currentArtworkCrtCets, ProductCriteriaSets extArtworkCrtCets) {
         CriteriaSetValues[] currentCriteriaSetValues = currentArtworkCrtCets.getCriteriaSetValues();
@@ -240,16 +246,16 @@ public class ProductCompareUtil extends CommonUtilities {
         return null;
     }
 
-    private static ProductCriteriaSets compareAndUpdateSingleCriteriaSetWithExisting(Product product, String criteriaCode,
-            ProductCriteriaSets currentProductCriteriaSet, ProductCriteriaSets existingProductCriteriaSet,
+    private static com.asi.service.product.client.vo.ProductCriteriaSets compareAndUpdateSingleCriteriaSetWithExisting(ProductDetail product, String criteriaCode,
+            com.asi.service.product.client.vo.ProductCriteriaSets currentProductCriteriaSet, com.asi.service.product.client.vo.ProductCriteriaSets existingProductCriteriaSet,
             boolean requiredValueComaprison) {
         COMPARE_FLAG = false;
         if (!String.valueOf(currentProductCriteriaSet.getCriteriaDetail()).equalsIgnoreCase(
                 String.valueOf(existingProductCriteriaSet.getCriteriaDetail()))) {
             return currentProductCriteriaSet;
         }
-        CriteriaSetValues[] crntCriteriaSetValues = currentProductCriteriaSet.getCriteriaSetValues();
-        CriteriaSetValues[] existCriteriaSetValues = existingProductCriteriaSet.getCriteriaSetValues();
+        List<com.asi.service.product.client.vo.CriteriaSetValues> crntCriteriaSetValues = currentProductCriteriaSet.getCriteriaSetValues();
+        List<com.asi.service.product.client.vo.CriteriaSetValues> existCriteriaSetValues = existingProductCriteriaSet.getCriteriaSetValues();
 
         crntCriteriaSetValues = compareTwoCriteriaSetValueArray(product, criteriaCode, crntCriteriaSetValues,
                 existCriteriaSetValues, requiredValueComaprison);
@@ -268,61 +274,69 @@ public class ProductCompareUtil extends CommonUtilities {
 
     }
 
-    private static CriteriaSetValues[] compareTwoCriteriaSetValueArray(Product product, String criteriaCode,
-            CriteriaSetValues[] currentCriteriaSetValues, CriteriaSetValues[] existCriteriaSetValues,
+    private static List<com.asi.service.product.client.vo.CriteriaSetValues> compareTwoCriteriaSetValueArray(ProductDetail product, String criteriaCode,
+            List<com.asi.service.product.client.vo.CriteriaSetValues> currentCriteriaSetValues, List<com.asi.service.product.client.vo.CriteriaSetValues> existCriteriaSetValues,
             boolean requiredValueComaprison) {
         COMPARE_FLAG = false;
         String tempCriteriaId = null;
-        for (int crntCritiaSetValsCntr = 0; crntCritiaSetValsCntr < currentCriteriaSetValues.length; crntCritiaSetValsCntr++) {
-            if (currentCriteriaSetValues[crntCritiaSetValsCntr].getCriteriaSetCodeValues() != null
-                    && currentCriteriaSetValues[crntCritiaSetValsCntr].getCriteriaSetCodeValues().length > 0) {
+        List<com.asi.service.product.client.vo.CriteriaSetValues> finalValuesList = new ArrayList<>();
+        for (com.asi.service.product.client.vo.CriteriaSetValues crntCrtValue : currentCriteriaSetValues) {
+            
+            if (crntCrtValue.getCriteriaSetCodeValues() != null
+                    && crntCrtValue.getCriteriaSetCodeValues().length > 0) {
 
-                for (int existCritiaSetValsCntr = 0; existCritiaSetValsCntr < existCriteriaSetValues.length; existCritiaSetValsCntr++) {
+                for (com.asi.service.product.client.vo.CriteriaSetValues extCrValue : existCriteriaSetValues) {
 
-                    if (existCriteriaSetValues[existCritiaSetValsCntr].getCriteriaSetCodeValues() != null
-                            && existCriteriaSetValues[existCritiaSetValsCntr].getCriteriaSetCodeValues().length > 0) {
-                        String existSetCodeValueId = existCriteriaSetValues[existCritiaSetValsCntr].getCriteriaSetCodeValues()[0]
+                    if (extCrValue.getCriteriaSetCodeValues() != null
+                            && extCrValue.getCriteriaSetCodeValues().length > 0) {
+                        String existSetCodeValueId = extCrValue.getCriteriaSetCodeValues()[0]
                                 .getSetCodeValueId();
 
-                        if (currentCriteriaSetValues[crntCritiaSetValsCntr].getCriteriaSetCodeValues()[0].getSetCodeValueId()
+                        if (crntCrtValue.getCriteriaSetCodeValues()[0].getSetCodeValueId()
                                 .equals(existSetCodeValueId)) {
 
                             if (requiredValueComaprison) {
                                 // TODO : Write a function to compare values, because Value can be Object or String better logic is,
                                 // call function based on instance type
-                                if (compareValuesByString(currentCriteriaSetValues[crntCritiaSetValsCntr],
-                                        existCriteriaSetValues[existCritiaSetValsCntr], criteriaCode)) {
-                                    tempCriteriaId = existCriteriaSetValues[existCritiaSetValsCntr].getCriteriaSetId();
+                                if (compareValuesByString(crntCrtValue,
+                                        extCrValue, criteriaCode)) {
+                                    tempCriteriaId = extCrValue.getCriteriaSetId();
                                     productDataStore.updateCriteriaReferenceValueTableById(product.getExternalProductId(),
-                                            criteriaCode, currentCriteriaSetValues[crntCritiaSetValsCntr].getId(),
-                                            existCriteriaSetValues[existCritiaSetValsCntr].getId());
-                                    currentCriteriaSetValues[crntCritiaSetValsCntr] = existCriteriaSetValues[existCritiaSetValsCntr];
+                                            criteriaCode, crntCrtValue.getId(),
+                                            extCrValue.getId());
+                                    crntCrtValue = extCrValue;
+                                    finalValuesList.add(extCrValue);
                                     COMPARE_FLAG = true;
                                     break;
                                 }
                             } else {
-                                // currentCriteriaSetValues[crntCritiaSetValsCntr].setCriteriaSetId(existCriteriaSet.getCriteriaSetId());
+                                // crntCrtValue.setCriteriaSetId(existCriteriaSet.getCriteriaSetId());
                                 COMPARE_FLAG = true;
-                                tempCriteriaId = existCriteriaSetValues[existCritiaSetValsCntr].getCriteriaSetId();
+                                tempCriteriaId = extCrValue.getCriteriaSetId();
                                 productDataStore.updateCriteriaReferenceValueTableById(product.getExternalProductId(),
-                                        criteriaCode, currentCriteriaSetValues[crntCritiaSetValsCntr].getId(),
-                                        existCriteriaSetValues[existCritiaSetValsCntr].getId());
-                                currentCriteriaSetValues[crntCritiaSetValsCntr] = existCriteriaSetValues[existCritiaSetValsCntr];
+                                        criteriaCode, crntCrtValue.getId(),
+                                        extCrValue.getId());
+                                crntCrtValue = extCrValue;
+                                finalValuesList.add(extCrValue);
                                 break;
                             }
                         }
+                        
                     }
 
+                }
+                if (!COMPARE_FLAG) {
+                    finalValuesList.add(crntCrtValue);
                 }
             }
         }
 
         if (COMPARE_FLAG) { // which mean if at least one match was found then the entire new data belongs to exisitng criteriaSet
-            for (int crntCritiaSetValsCntr = 0; crntCritiaSetValsCntr < currentCriteriaSetValues.length; crntCritiaSetValsCntr++) {
-                currentCriteriaSetValues[crntCritiaSetValsCntr].setCriteriaSetId(tempCriteriaId);
+            for (int crntCritiaSetValsCntr = 0; crntCritiaSetValsCntr < finalValuesList.size(); crntCritiaSetValsCntr++) {
+                finalValuesList.get(crntCritiaSetValsCntr).setCriteriaSetId(tempCriteriaId);
             }
         }
-        return currentCriteriaSetValues;
+        return finalValuesList;
     }
 
     public void registerExitingCriteriaValuesToReferenceTable(String externalProductId, String criteriaCode,
@@ -872,7 +886,7 @@ public class ProductCompareUtil extends CommonUtilities {
      * @param criteriaCode
      * @return true if both are equal otherwise false
      */
-    public static boolean compareValuesByString(CriteriaSetValues criteriaValue1, CriteriaSetValues criteriaValue2,
+    public static boolean compareValuesByString(com.asi.service.product.client.vo.CriteriaSetValues criteriaValue1, com.asi.service.product.client.vo.CriteriaSetValues criteriaValue2,
             String criteriaCode) {
         String value1 = isValueNull(String.valueOf(criteriaValue1.getValue()).trim()) ? String.valueOf(criteriaValue1
                 .getBaseLookupValue()) : String.valueOf(criteriaValue1.getValue());
