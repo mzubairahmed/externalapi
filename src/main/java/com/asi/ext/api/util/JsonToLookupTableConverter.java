@@ -19,16 +19,16 @@ import com.asi.ext.api.radar.lookup.model.PriceUnitJsonModel;
 import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.ext.api.response.JsonProcessor;
 
-
 public final class JsonToLookupTableConverter {
 
     private final static Logger LOGGER = Logger.getLogger(JsonToLookupTableConverter.class.getName());
-	
-	public static RestTemplate lookupRestTemplate;
-	@SuppressWarnings("rawtypes")
+
+    public static RestTemplate  lookupRestTemplate;
+
+    @SuppressWarnings("rawtypes")
     public static ConcurrentHashMap<String, String> jsonToProductCategoryLookupTable(LinkedList<?> jsonList) {
         ConcurrentHashMap<String, String> categoryLookupData = new ConcurrentHashMap<String, String>();
-       
+
         try {
             Iterator<?> iter = jsonList.iterator();
             categoryLookupData = new ConcurrentHashMap<String, String>(jsonList.size() + 2);
@@ -132,8 +132,8 @@ public final class JsonToLookupTableConverter {
 
     public static Map<String, String> createProductColorMap(final String COLOR_API_URL) {
         try {
-           // String response = JersyClientGet.getLookupsResponse(COLOR_API_URL);
-            LinkedList<?> response =lookupRestTemplate.getForObject(COLOR_API_URL, LinkedList.class);
+            // String response = JersyClientGet.getLookupsResponse(COLOR_API_URL);
+            LinkedList<?> response = lookupRestTemplate.getForObject(COLOR_API_URL, LinkedList.class);
             return createColorLookupMap(response);
 
         } catch (Exception e) {
@@ -435,7 +435,7 @@ public final class JsonToLookupTableConverter {
     }
 
     public static HashMap<String, String> jsonToComplianceCertLookupTable(LinkedList<?> jsonList) {
-      
+
         HashMap<String, String> complianceCertLookupTable = new HashMap<>();
         try {
             complianceCertLookupTable = new HashMap<>(jsonList.size());
@@ -457,7 +457,7 @@ public final class JsonToLookupTableConverter {
     }
 
     public static HashMap<String, String> jsonToSafetyWarningLookupTable(LinkedList<?> jsonList) {
-          HashMap<String, String> safetywarningLookupTable = new HashMap<>();
+        HashMap<String, String> safetywarningLookupTable = new HashMap<>();
         try {
             safetywarningLookupTable = new HashMap<>(jsonList.size());
             Iterator<?> iter = jsonList.iterator();
@@ -606,7 +606,8 @@ public final class JsonToLookupTableConverter {
             while (iter.hasNext()) {
                 Map<?, ?> crntValue = (LinkedHashMap<?, ?>) iter.next();
                 if (crntValue != null && !crntValue.isEmpty()) {
-                    criteriaSetAttributeLookupTable.put(String.valueOf(crntValue.get("CriteriaCode")), String.valueOf(crntValue.get("ID")));
+                    criteriaSetAttributeLookupTable.put(String.valueOf(crntValue.get("CriteriaCode")),
+                            String.valueOf(crntValue.get("ID")));
                 }
             }
         } catch (Exception pe) {
@@ -615,7 +616,7 @@ public final class JsonToLookupTableConverter {
         return criteriaSetAttributeLookupTable;
 
     }
-    
+
     public static Map<String, HashMap<String, String>> generateUnitOfMeasureTable(String jsonData) {
         JSONParser parser = new JSONParser();
         ContainerFactory containerFactory = new ContainerFactory() {
@@ -627,7 +628,7 @@ public final class JsonToLookupTableConverter {
                 return new LinkedHashMap<Object, Object>();
             }
         };
-        Map<String, HashMap<String, String>> unitOfMeasureMap = new HashMap<String, HashMap<String,String>>();
+        Map<String, HashMap<String, String>> unitOfMeasureMap = new HashMap<String, HashMap<String, String>>();
         try {
             LinkedList<?> json = (LinkedList<?>) parser.parse(jsonData, containerFactory);
             Iterator<?> iter = json.iterator();
@@ -642,7 +643,8 @@ public final class JsonToLookupTableConverter {
                         while (unitOfMeasureItr.hasNext()) {
                             Map<?, ?> unitsOfMeasures = (LinkedHashMap<?, ?>) unitOfMeasureItr.next();
                             if (unitsOfMeasures != null) {
-                                criteriaSetAttributeMap.put(String.valueOf(unitsOfMeasures.get("Format")).toUpperCase(), String.valueOf(unitsOfMeasures.get("Code")));
+                                criteriaSetAttributeMap.put(String.valueOf(unitsOfMeasures.get("Format")).toUpperCase(),
+                                        String.valueOf(unitsOfMeasures.get("Code")));
                             }
                         }
                         unitOfMeasureMap.put(criteriaCode, criteriaSetAttributeMap);
@@ -654,7 +656,7 @@ public final class JsonToLookupTableConverter {
         }
         return unitOfMeasureMap;
     }
-    
+
     public static Map<String, HashMap<String, String>> generateCriteriaItemTable(String jsonData) {
         JSONParser parser = new JSONParser();
         ContainerFactory containerFactory = new ContainerFactory() {
@@ -666,7 +668,7 @@ public final class JsonToLookupTableConverter {
                 return new LinkedHashMap<Object, Object>();
             }
         };
-        Map<String, HashMap<String, String>> criteriaItemsMap = new HashMap<String, HashMap<String,String>>();
+        Map<String, HashMap<String, String>> criteriaItemsMap = new HashMap<String, HashMap<String, String>>();
         try {
             LinkedList<?> json = (LinkedList<?>) parser.parse(jsonData, containerFactory);
             Iterator<?> iter = json.iterator();
@@ -676,7 +678,7 @@ public final class JsonToLookupTableConverter {
                     String criteriaCode = String.valueOf(crntValue.get("CriteriaCode"));
                     Map<?, ?> criteriaItemMap = (HashMap<?, ?>) crntValue.get("CriteriaItem");
                     if (criteriaItemMap != null) {
-                        
+
                         HashMap<String, String> criteriaItem = new HashMap<String, String>();
                         LinkedList<?> codeValueGroupList = (LinkedList<?>) criteriaItemMap.get("CodeValueGroups");
                         if (codeValueGroupList != null) {
@@ -688,7 +690,8 @@ public final class JsonToLookupTableConverter {
                                     Iterator<?> setCodeValueIter = setCodeValueList.iterator();
                                     while (setCodeValueIter.hasNext()) {
                                         Map<?, ?> setCodeValue = (LinkedHashMap<?, ?>) setCodeValueIter.next();
-                                        criteriaItem.put(String.valueOf(setCodeValue.get("CodeValue")), String.valueOf(setCodeValue.get("ID")));
+                                        criteriaItem.put(String.valueOf(setCodeValue.get("CodeValue")),
+                                                String.valueOf(setCodeValue.get("ID")));
                                     }
                                 }
                             }
@@ -715,9 +718,9 @@ public final class JsonToLookupTableConverter {
         return criteriaInfoMap;
     }
 
-	public static ConcurrentHashMap<String, String> jsonToProductTypeCodeLookupTable(
-			LinkedList<?> prodTypecodeResponse) {
-		ConcurrentHashMap<String, String> typeCodeLookupData=null;
+    @SuppressWarnings("rawtypes")
+    public static ConcurrentHashMap<String, String> jsonToProductTypeCodeLookupTable(LinkedList<?> prodTypecodeResponse) {
+        ConcurrentHashMap<String, String> typeCodeLookupData = null;
         try {
             LinkedList<?> json = prodTypecodeResponse;
             Iterator<?> iter = json.iterator();
@@ -735,6 +738,38 @@ public final class JsonToLookupTableConverter {
             pe.printStackTrace();
         }
         return typeCodeLookupData;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static Map<String, String> jsonToOptionLookupMap(LinkedList<LinkedHashMap> producOptionResponse) {
+        Map<String, String> optionsLookupTable = new HashMap<>();
+        try {
+            LinkedList<?> json = producOptionResponse;
+            Iterator<?> iter = json.iterator();// entrySet().iterator();
+            while (iter.hasNext()) {
+                Map<?, ?> crntValue = (LinkedHashMap<?, ?>) iter.next();
+                if (CommonUtilities.isOptionGroup(String.valueOf(crntValue.get("Code")))) {
+                    ArrayList<LinkedHashMap> codeValueGrps = (ArrayList<LinkedHashMap>) crntValue.get("CodeValueGroups");
+                    Iterator<LinkedHashMap> iterator = codeValueGrps.iterator();
+
+                    while (iterator.hasNext()) {
+                        Map codeValueGrpsMap = (LinkedHashMap) iterator.next();
+
+                        List finalLst = (ArrayList) codeValueGrpsMap.get("SetCodeValues");
+                        Iterator finalItr = finalLst.iterator();
+                        while (finalItr.hasNext()) {
+                            Map finalMap = (LinkedHashMap) finalItr.next();
+                            optionsLookupTable.put(String.valueOf(crntValue.get("Code")), String.valueOf(finalMap.get("ID")));
+                            
+                        }
+                    }
+                }
+            }
+        } catch (Exception pe) {
+            pe.printStackTrace();
+        }
+        
+        return optionsLookupTable;
     }
 
 }
