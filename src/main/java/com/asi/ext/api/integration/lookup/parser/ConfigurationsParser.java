@@ -16,6 +16,7 @@ import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.service.model.Color;
 import com.asi.ext.api.service.model.ImprintColor;
 import com.asi.ext.api.service.model.ImprintSizeLocation;
+import com.asi.ext.api.service.model.Material;
 import com.asi.ext.api.service.model.RushTime;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.service.product.client.vo.CriteriaSetCodeValues;
@@ -550,6 +551,28 @@ public class ConfigurationsParser {
 			}		
 			serviceProductConfig.setRushTime(rushTimeList);
 		}
+		
+		// Materials
+		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE);
+				if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+					Material material;
+					List<Material> materialList=new ArrayList<>();
+					for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
+						material=new Material();
+						material.setAlias(currentCriteriaSetValue.getValue().toString());
+						material.setName(ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE));
+						materialList.add(material);
+					}
+					serviceProductConfig.setMaterials(materialList);
+				}
+				
+		// Additional Colors
+		
+		// Additional Locations
+		
+		// Tradenames
+		
+		// Production Time
 		
 		serviceProduct.setProductConfigurations(serviceProductConfig);
 		return serviceProduct;
