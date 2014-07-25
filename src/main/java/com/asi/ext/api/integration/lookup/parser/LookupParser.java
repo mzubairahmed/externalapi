@@ -25,13 +25,13 @@ import com.asi.ext.api.radar.model.Value;
 import com.asi.ext.api.service.model.Artwork;
 import com.asi.ext.api.service.model.ImprintMethod;
 import com.asi.ext.api.service.model.MinimumOrder;
-import com.asi.ext.api.service.model.ProductConfigurations;
+import com.asi.ext.api.service.model.Option;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.RestAPIProperties;
 import com.asi.service.product.client.vo.CriteriaSetValue;
 import com.asi.service.product.client.vo.ProductConfigurationsList;
-import com.asi.service.product.client.vo.ProductCriteriaSet;
+import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.Relationship;
 import com.asi.service.product.client.vo.parser.ColorLookup;
@@ -74,7 +74,7 @@ public class LookupParser {
 	private static IParser jsonParser = new JSONParserImpl();
 	private HashMap<String, String> productOriginMap = null;
 	private final static Logger _LOGGER = Logger
-			.getLogger(TradeNameLookup.class.getName());
+			.getLogger(LookupParser.class.getName());
 	private ProductDataStore productDataStore=new ProductDataStore();
 	private String serverURL;
 	private String[] inValidImprintMethods={"PERSONALIZATION","UNIMPRINTED"};
@@ -200,16 +200,13 @@ public class LookupParser {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public ConcurrentHashMap<String,ArrayList<String>> findOptionValueDetails(ConcurrentHashMap<String,ArrayList<String>> optionsList,String criteriaCode,
-			ProductCriteriaSet productCriteriaSet,String externalProductId) {
+			ProductCriteriaSets productCriteriaSet,String externalProductId) {
 		OptionLookup optionLookup=new OptionLookup();
 		String response;
 		try {
 			if(optionElementsResponse==null)
 			{
-				response = JerseyClient.invoke(new URI(serverURL
-						+ "/api/api/lookup/criteria?code=PROD"));
-				optionElementsResponse = (LinkedList<LinkedHashMap>) jsonParser
-						.parseToList(response);
+				optionElementsResponse=lookupRestTemplate.getForObject(RestAPIProperties.get(ApplicationConstants.OPTION_PRODUCT_LOOKUP), LinkedList.class);
 			}
 			
 		} catch (Exception e) {
@@ -309,10 +306,11 @@ public class LookupParser {
 	public List<ImprintMethod> setServiceImprintMethods(
 			ProductDetail productDetail,String imprintMethods,CriteriaSetParser
 			 criteriaSetParserCurnt) {
-		ImprintMethod serviceImprintMethod=new ImprintMethod();
+		ImprintMethod serviceImprintMethod=null;
 		List<ImprintMethod> imprintMethodList=new ArrayList<>();
-		Artwork imprntArtwork=new Artwork();
-		MinimumOrder imprintMinOrder=new MinimumOrder();
+		Artwork imprntArtwork=null;
+		Artwork tempImprntArtwork=null;
+		MinimumOrder imprintMinOrder=null;
 		
 		imprintRelationMap=new ConcurrentHashMap<>();
 		//String currentImprintMethod=processProductLst.getProductConfigurationsList().getImprintMethod();
@@ -335,8 +333,13 @@ public class LookupParser {
 		String imprintMethodKey="",relationValue="",tempImprintMethod="";
 		String[] individualRelations=null;
 		String[] relationValueAry=null,tempRelationValueAry=null;
+		String minQtyStr="";
+		String[] artworkValueAry={};
 		for(@SuppressWarnings("rawtypes") Map.Entry relationEntry : imprintRelationMap.entrySet())
 		{
+			serviceImprintMethod=new ImprintMethod();
+			imprntArtwork=new Artwork();
+			imprintMinOrder=new MinimumOrder();
 			imprintMethodKey=relationEntry.getKey().toString();
 			relationValue=relationEntry.getValue().toString();
 			if(null!=relationValue)
@@ -352,8 +355,22 @@ public class LookupParser {
 					relationValueAry=imprintParser.getImprintRelations(individualRelations,productDetail.getExternalProductId());
 					if(null!=relationValueAry && relationValueAry.length==2)
 					{
+						if(imprintMethod.contains(":")){
+							serviceImprintMethod.setType(imprintMethod.substring(0,imprintMethod.indexOf(":")));
+							serviceImprintMethod.setAlias(imprintMethod.substring(imprintMethod.indexOf(":")+1));
+						}else{
+							serviceImprintMethod.setType(imprintMethod);
+							serviceImprintMethod.setAlias(imprintMethod);
+						}
 						minQty=(null==relationValueAry[0] || relationValueAry[0].equalsIgnoreCase("null"))?"":relationValueAry[0];
 						artwork=(null==relationValueAry[1] || relationValueAry[1].equalsIgnoreCase("null"))?"":relationValueAry[1];
+						imprntArtwork.setValue(artwork);
+						if(minQtyStr.contains(":")){
+						imprintMinOrder.setUnit(minQty.substring(0,minQty.indexOf(":")-2));
+						imprintMinOrder.setValue(minQty.substring(minQty.indexOf(":")-1));
+						}else{
+							imprintMinOrder=null;							
+						}
 					}
 				}else
 				{
@@ -371,15 +388,40 @@ public class LookupParser {
 				tempRelationValueAry=imprintParser.getImprintRelations(individualRelations,productDetail.getExternalProductId());
 				if(tempRelationValueAry.length==2)
 				{
-					minQty+="||"+((null==tempRelationValueAry[0] || tempRelationValueAry[0].equalsIgnoreCase("null"))?"":tempRelationValueAry[0]);
+					if(tempImprintMethod.contains(":")){
+						serviceImprintMethod.setType(tempImprintMethod.substring(0,tempImprintMethod.indexOf(":")));
+						serviceImprintMethod.setAlias(tempImprintMethod.substring(tempImprintMethod.indexOf(":")+1));
+					}else{
+						serviceImprintMethod.setType(tempImprintMethod);
+						serviceImprintMethod.setAlias(tempImprintMethod);
+					}
+					minQtyStr=((null==tempRelationValueAry[0] || tempRelationValueAry[0].equalsIgnoreCase("null"))?"":tempRelationValueAry[0]);
+					minQty+="||"+minQtyStr;
 					artwork+="||"+((null==tempRelationValueAry[1] || tempRelationValueAry[1].equalsIgnoreCase("null"))?"":tempRelationValueAry[1]);
+					imprntArtwork.setValue(((null==tempRelationValueAry[1] || tempRelationValueAry[1].equalsIgnoreCase("null"))?"":tempRelationValueAry[1]));
+					if(minQtyStr.contains(":")){
+						imprintMinOrder.setUnit(minQtyStr.substring(0,minQty.indexOf(":")-2));
+						imprintMinOrder.setValue(minQtyStr.substring(minQty.indexOf(":")-1));
+					}else{
+						imprintMinOrder=null;							
+					}
 				}
 				}else {
 					tempImprintMethod="";
 					imprintCntr--;
 				}
 			}
-			
+			if(imprntArtwork.getValue().contains(",")){
+				artworkValueAry=imprntArtwork.getValue().split(",");
+				for(String currentArtwork:artworkValueAry){
+					tempImprntArtwork=new Artwork();
+					tempImprntArtwork.setValue(currentArtwork);
+					serviceImprintMethod.getArtwork().add(tempImprntArtwork);		
+				}
+			}
+						
+			serviceImprintMethod.setMinimumOrder(imprintMinOrder);	
+			imprintMethodList.add(serviceImprintMethod);
 			}
 					imprintCntr++;
 		}
@@ -406,7 +448,7 @@ public class LookupParser {
 	/*	if(imprintParser.checkImprintMethod("Unimprinted",processProductLst.getProduct().getExternalProductId())) sold_unimprintedFlag="Y";
 		if(imprintParser.checkImprintMethod("Personalization",processProductLst.getProduct().getExternalProductId())) personalizationFlag="Y";	*/
 	
-		if(null!=relationValueAry && relationValueAry.length==2)
+	/*	if(null!=relationValueAry && relationValueAry.length==2)
 		{
 			imprntArtwork.setValue(artwork);
 			serviceImprintMethod.getArtwork().add(imprntArtwork);
@@ -414,10 +456,10 @@ public class LookupParser {
 			serviceImprintMethod.setMinimumOrder(imprintMinOrder);			
 			//processProductLst.getProductConfigurationsList().setMinimumQuantity(minQty);
 			//processProductLst.getProductConfigurationsList().setArtwork(artwork);
-		}
+		}*/
 	/*	processProductLst.getProductConfigurationsList().setPersonalizationAvailable(personalizationFlag);
 		processProductLst.getProductConfigurationsList().setSolidUnimprinted(sold_unimprintedFlag);*/
-		serviceImprintMethod.setType(imprintMethod);
+		
 		} else if (imprintMethods != null && !imprintMethods.isEmpty()) {
 		    String[] temp = imprintMethods.split("\\|\\|");
 		    if (temp != null && temp.length > 0) { 
@@ -512,13 +554,16 @@ public class LookupParser {
 		return safetyWarning;
 	}*/
 	
-	public ProductConfigurationsList setOptionList(
-			ProductConfigurationsList productConfigurationsList,
+	public com.asi.ext.api.service.model.ProductConfigurations setOptionList(
+			com.asi.ext.api.service.model.ProductConfigurations serviceConfigurations,
 			ConcurrentHashMap<String, ArrayList<String>> optionList) {
+			List<Option> optionsList=new ArrayList<>();
+			Option currentOption=null;
 		  String[] optionDetails=null;
 		  int optionCntr=0;
 		  String optionName="",optionType="",optionValue="",crntOptionType="";
 		  String canOrderOnlyOne="",reqForOrder="";
+		  String[] optionValueAry={};
 		  ArrayList<String> optionAryList=null;
           for(String optionKey:optionList.keySet())
           {
@@ -530,6 +575,16 @@ public class LookupParser {
           		crntOptionType=(crntOptionType.equalsIgnoreCase("PROP"))?"Product Option":crntOptionType.equalsIgnoreCase("SHOP")?"Shipping Option":crntOptionType.equalsIgnoreCase("IMOP")?"Imprint Option":"";
           		if(null!=optionAryList && optionDetails.length>1 && optionAryList.size()==3)
           		{
+          			currentOption=new Option();
+          			currentOption.setOptionType(crntOptionType);
+          			currentOption.setName(optionDetails[1]);
+          			optionValueAry=optionAryList.get(0).split(",");
+          			for(String currentOptValue:optionValueAry){
+          				currentOption.getValues().add(currentOptValue);
+          			}          			
+          			currentOption.setCanOnlyOrderOne(Boolean.valueOf(optionAryList.get(1)));
+          			currentOption.setRequiredForOrder(Boolean.valueOf(optionAryList.get(2)));
+          		//	currentOption.setAdditionalInformation(optionAryList.get(3));
 	          		if(optionCntr==0)
 	          		{
 	          			optionType=crntOptionType;
@@ -547,15 +602,17 @@ public class LookupParser {
 	          			reqForOrder+="||"+optionAryList.get(2);
 	          		}
           		}
+          		optionsList.add(currentOption);
           	}
           	optionCntr++;
           }
-          productConfigurationsList.setOptionName(optionName);
+      /*    productConfigurationsList.setOptionName(optionName);
           productConfigurationsList.setOptionType(optionType);
           productConfigurationsList.setOptionValue(optionValue);
           productConfigurationsList.setCanOrderOnlyOne(canOrderOnlyOne);
-          productConfigurationsList.setReqForOrder(reqForOrder);
-		return productConfigurationsList;
+          productConfigurationsList.setReqForOrder(reqForOrder);*/
+          serviceConfigurations.setOptions(optionsList);
+		return serviceConfigurations;
 	}
 
 	

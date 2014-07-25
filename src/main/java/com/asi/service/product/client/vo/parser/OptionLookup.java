@@ -7,7 +7,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.asi.ext.api.integration.lookup.parser.CriteriaSetParser;
 import com.asi.service.product.client.vo.CriteriaSetValue;
-import com.asi.service.product.client.vo.ProductCriteriaSet;
+import com.asi.service.product.client.vo.CriteriaSetValues;
+import com.asi.service.product.client.vo.ProductCriteriaSets;
 
 
 public class OptionLookup {
@@ -16,21 +17,21 @@ public class OptionLookup {
 			ConcurrentHashMap<String,ArrayList<String>> optionList,
 			String criteriaCode,
 			@SuppressWarnings("rawtypes") LinkedList<LinkedHashMap> optionElementsResponse,
-			ProductCriteriaSet productCriteriaSet,String externalId) {
+			ProductCriteriaSets productCriteriaSet,String externalId) {
 		if(optionList==null)
 			optionList=new ConcurrentHashMap<>();
 		String canOrderOnlyOne = "", reqForOrder = "", optionName = "", optionValue = "";
-		ArrayList<CriteriaSetValue> criteriaSetValueLst = (ArrayList<CriteriaSetValue>) productCriteriaSet
+		ArrayList<CriteriaSetValues> criteriaSetValueLst = (ArrayList<CriteriaSetValues>) productCriteriaSet
 				.getCriteriaSetValues();
 		int cntr=0;
 		ArrayList<String> tempArrayList=new ArrayList<>();
 		String optionTyp="",checkOption="",crntOptionVal="";
-		for (CriteriaSetValue criteriaSetValue : criteriaSetValueLst) {
+		for (CriteriaSetValues criteriaSetValue : criteriaSetValueLst) {
 			tempArrayList=new ArrayList<>();
 			optionTyp=criteriaCode;
-			criteriaSetParser.addReferenceSet(externalId,criteriaCode,criteriaSetValue.getID(),(criteriaSetValue.getValue() instanceof String)?productCriteriaSet.getCriteriaDetail()+":"+criteriaSetValue.getValue().toString():"");
-				canOrderOnlyOne = (productCriteriaSet.getIsMultipleChoiceAllowed())?"Y":"N";
-				reqForOrder = (productCriteriaSet.getIsRequiredForOrder())?"Y":"N";
+			criteriaSetParser.addReferenceSet(externalId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),(criteriaSetValue.getValue() instanceof String)?productCriteriaSet.getCriteriaDetail()+":"+criteriaSetValue.getValue().toString():"");
+				canOrderOnlyOne = (productCriteriaSet.getIsMultipleChoiceAllowed().equalsIgnoreCase("true"))?"Y":"N";
+				reqForOrder = (productCriteriaSet.getIsRequiredForOrder().equalsIgnoreCase("true"))?"Y":"N";
 			optionName = productCriteriaSet.getCriteriaDetail();
 			checkOption=optionTyp+"_"+optionName;
 			if (criteriaSetValue.getValue() instanceof String)
@@ -42,6 +43,7 @@ public class OptionLookup {
 					tempArrayList.add(0,crntOptionVal);
 					tempArrayList.add(1,canOrderOnlyOne);
 					tempArrayList.add(2,reqForOrder);
+				//	tempArrayList.add(3,productCriteriaSet.getDescription());
 					optionList.put(checkOption,tempArrayList);
 					//optionList.put(checkOption,(null!=optionList.get(checkOption))?optionList.get(checkOption)+","+crntOptionVal:crntOptionVal);
 				}
@@ -52,6 +54,7 @@ public class OptionLookup {
 						tempArrayList.add(0, optionList.get(checkOption).get(0)+","+crntOptionVal);
 						tempArrayList.add(1,canOrderOnlyOne);
 						tempArrayList.add(2,reqForOrder);
+					//	tempArrayList.add(3,productCriteriaSet.getDescription());
 						optionList.put(checkOption,tempArrayList);
 					}
 					else
@@ -60,6 +63,7 @@ public class OptionLookup {
 						tempArrayList.add(0, crntOptionVal);
 						tempArrayList.add(1,canOrderOnlyOne);
 						tempArrayList.add(2,reqForOrder);
+					//	tempArrayList.add(3,productCriteriaSet.getDescription());
 						optionList.put(checkOption,tempArrayList);
 					}
 				}
@@ -72,6 +76,7 @@ public class OptionLookup {
 				tempArrayList.add(0, optionValue);
 				tempArrayList.add(1,canOrderOnlyOne);
 				tempArrayList.add(2,reqForOrder);
+				//tempArrayList.add(3,productCriteriaSet.getDescription());
 				optionList.put(optionTyp+"_"+optionName, tempArrayList);
 			}
 			cntr++;

@@ -6,13 +6,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestClientException;
 
 import com.asi.ext.api.product.transformers.ProductDataStore;
-import com.asi.ext.api.service.model.Artwork;
 import com.asi.ext.api.service.model.Color;
 import com.asi.ext.api.service.model.ImprintColor;
 import com.asi.ext.api.service.model.ImprintMethod;
@@ -657,7 +657,7 @@ public class ConfigurationsParser {
 			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
 				currentImprintMethod=ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_IMPRINT_METHOD_CODE);
 				if(currentImprintMethod.equalsIgnoreCase("Other")){
-					currentImprintMethod=currentCriteriaSetValue.getValue().toString();
+					currentImprintMethod=currentImprintMethod+":"+currentCriteriaSetValue.getValue().toString();
 				}
 				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), ApplicationConstants.CONST_IMPRINT_METHOD_CODE, Integer.parseInt(currentCriteriaSetValue.getId()), currentImprintMethod);
 				if(null!=currentImprintMethod && !currentImprintMethod.equalsIgnoreCase("Unimprinted") && !currentImprintMethod.equalsIgnoreCase("Personalization")){
@@ -687,25 +687,24 @@ public class ConfigurationsParser {
 				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), ApplicationConstants.CONST_MINIMUM_QUANTITY, Integer.parseInt(currentCriteriaSetValue.getId()), productLookupParser.getValueInText(currentCriteriaSetValue.getValue()));
 			}
 		}
-		
-		
+
 		imprintMethodsList=productLookupParser.setServiceImprintMethods(productDetail,imprintMethods,criteriaSetParser);
 		serviceProductConfig.setImprintMethods(imprintMethodsList);
 		
 		
+		// Options
+		List<ProductCriteriaSets> productCriteriaSetsList=productDetail.getProductConfigurations().get(0).getProductCriteriaSets();
+		ConcurrentHashMap<String,ArrayList<String>> optionList=null;
+		for(ProductCriteriaSets currentProductCriteriaSet:productCriteriaSetsList){
+			optionList=productLookupParser.findOptionValueDetails(optionList,currentProductCriteriaSet.getCriteriaCode(),currentProductCriteriaSet,productDetail.getExternalProductId());
+		}
+		
+		
+		 if(null!=optionList) serviceProductConfig=productLookupParser.setOptionList(serviceProductConfig,optionList);
 		
 		
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+				
 		serviceProduct.setProductConfigurations(serviceProductConfig);
 		return serviceProduct;
 	}
