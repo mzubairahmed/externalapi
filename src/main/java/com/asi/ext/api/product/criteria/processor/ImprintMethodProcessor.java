@@ -19,7 +19,7 @@ import com.asi.service.product.client.vo.ProductDetail;
  * @author Rahul K
  * 
  */
-public class ImprintMethodProcessor {
+public class ImprintMethodProcessor extends SimpleCriteriaProcessor {
 
     private final static Logger           LOGGER                        = Logger.getLogger(ImprintMethodProcessor.class.getName());
 
@@ -329,5 +329,36 @@ public class ImprintMethodProcessor {
      * return criteriaSet;
      * }
      */
+
+    @Override
+    protected ProductCriteriaSets getCriteriaSet(String values, ProductDetail existingProduct,
+            ProductCriteriaSets matchedCriteriaSet, int currentSetValueId) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getSetCodeValueId(String value) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    protected boolean isValueIsValid(String value) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    protected String[] processValues(String value) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    protected boolean updateCriteriaSet(String value) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
 }
