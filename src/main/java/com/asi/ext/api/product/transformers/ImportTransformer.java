@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.asi.ext.api.product.criteria.processor.AdditionalColorProcessor;
 import com.asi.ext.api.product.criteria.processor.AdditionalLocationProcessor;
+import com.asi.ext.api.product.criteria.processor.ImprintMethodProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductCategoriesProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductColorProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductImprintColorProcessor;
@@ -106,6 +107,7 @@ public class ImportTransformer {
     private AdditionalLocationProcessor            additionalLocationProcessor     = new AdditionalLocationProcessor(-1301, "0");
     private ProductSpecSampleProcessor             specSampleProcessor             = new ProductSpecSampleProcessor(-1401, "0");
     private ProductOptionsProcessor                optionsProcessor                = new ProductOptionsProcessor(-1501, "0");
+    private ImprintMethodProcessor                 imprintMethodProcessor          = new ImprintMethodProcessor();//1601, 
 
     private final static Logger                    LOGGER                          = Logger.getLogger(ImportTransformer.class
                                                                                            .getName());
@@ -313,13 +315,21 @@ public class ImportTransformer {
         } else {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_PRODUCTION_TIME_CRITERIA_CODE);
         }
-        /*// Product options processing
+        // Product options processing
         if (serviceProdConfigs.getOptions() != null && !serviceProdConfigs.getOptions().isEmpty()) {
             optionsCriteriaSet = optionsProcessor.getOptionCriteriaSets(serviceProdConfigs.getOptions(), rdrProduct, configId,
                     optionsCriteriaSet);
         } else {
             optionsCriteriaSet = null;
-        }*/
+        }
+        
+        if (serviceProdConfigs.getImprintMethods() != null && !serviceProdConfigs.getImprintMethods().isEmpty()) { 
+            existingCriteriaSetMap = imprintMethodProcessor.getImprintCriteriaSet(serviceProdConfigs.getImprintMethods(), rdrProduct, existingCriteriaSetMap, configId);
+        } else {
+            existingCriteriaSetMap.put(ApplicationConstants.CONST_IMPRINT_METHOD_CODE, null);
+            existingCriteriaSetMap.put(ApplicationConstants.CONST_ARTWORK_CODE, null);
+            existingCriteriaSetMap.put(ApplicationConstants.CONST_MINIMUM_QUANTITY, null);
+        }
         
         // Merge all updated ProductCriteriaSets into product configuration and set back to list
         ProductConfiguration updatedProductConfiguration = new ProductConfiguration();

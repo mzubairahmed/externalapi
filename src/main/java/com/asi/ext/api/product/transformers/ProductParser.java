@@ -11,18 +11,18 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 
 import com.asi.ext.api.exception.VelocityException;
-import com.asi.ext.api.radar.model.CriteriaSetCodeValues;
-import com.asi.ext.api.radar.model.CriteriaSetRelationships;
-import com.asi.ext.api.radar.model.CriteriaSetValuePaths;
-import com.asi.ext.api.radar.model.CriteriaSetValues;
+import com.asi.service.product.client.vo.CriteriaSetCodeValues;
+import com.asi.service.product.client.vo.CriteriaSetRelationships;
+import com.asi.service.product.client.vo.CriteriaSetValuePaths;
+import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.ext.api.radar.model.Currency;
 import com.asi.ext.api.radar.model.DiscountRate;
 import com.asi.ext.api.radar.model.PriceGrids;
 import com.asi.ext.api.radar.model.Prices;
 import com.asi.ext.api.radar.model.Product;
-import com.asi.ext.api.radar.model.ProductCriteriaSets;
+import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.ext.api.radar.model.ProductKeywords;
-import com.asi.ext.api.radar.model.Relationships;
+import com.asi.service.product.client.vo.Relationships;
 import com.asi.ext.api.radar.model.SelectedProductCategories;
 import com.asi.ext.api.radar.model.SelectedSafetyWarnings;
 import com.asi.ext.api.radar.model.Value;
@@ -32,6 +32,7 @@ import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.PriceGridUtil;
 import com.asi.ext.api.util.RestAPIProperties;
+import com.asi.service.product.client.vo.ProductDetail;
 
 /**
  * Product parser is one of the important Class which contains the processing logic for all lookup
@@ -212,14 +213,14 @@ public class ProductParser {
         return product;
     }
 
-    public String getUpchargeCriteriaSetCode(ProductCriteriaSets[] productCriteriaSets, String criteriaCode, String lookupValue) {
+  /*  public String getUpchargeCriteriaSetCode(ProductCriteriaSets[] productCriteriaSets, String criteriaCode, String lookupValue) {
 
         if (criteriaCode != null && !criteriaCode.isEmpty() && lookupValue != null && !lookupValue.isEmpty()) {
             return getCriteriaSetCodeValueId(productCriteriaSets, criteriaCode, lookupValue);
         } else {
             return criteriaCode;
         }
-    }
+    }*/
 
     /**
      * Finds the CriteriaCodeValue for a give criteriaCode using lookup
@@ -230,7 +231,7 @@ public class ProductParser {
      *            is the criteria code of CriteriaSetCodeValue which we need to find
      * @param lookupValue
      * @return CriteriSetCodeValue
-     */
+     *//*
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private String getCriteriaSetCodeValueId(ProductCriteriaSets productCriteriaSetsAry[], String criteriaCode, String lookupValue) {
         String criteriaSetCodeValueId = null;
@@ -287,7 +288,7 @@ public class ProductParser {
         }
         return criteriaSetCodeValueId;
     }
-
+*/
     /**
      * Creates PriceGrid data for the given price type
      * 
@@ -584,7 +585,7 @@ public class ProductParser {
      *         Imprint methods
      * @throws VelocityException
      */
-    public ProductCriteriaSets addCriteriaSetForImprint(Product existingProduct, Product product, String imprintMethods,
+    public com.asi.service.product.client.vo.ProductCriteriaSets addCriteriaSetForImprint(ProductDetail existingProduct, ProductDetail product, String imprintMethods,
             ProductCriteriaSets[] productCriteriaSetsAry2, String criteriaCode) throws VelocityException {
         //ProductCriteriaSets[] crntProductCriteriaSets = productCriteriaSetsAry2;
         ProductCriteriaSets productCriteriaSet = null;
@@ -619,7 +620,7 @@ public class ProductParser {
         productCriteriaSet = new ProductCriteriaSets();
         productCriteriaSet.setCriteriaCode(criteriaCode);
         productCriteriaSet.setCriteriaSetId(criteriaSetId);
-        productCriteriaSet.setProductId(product.getId());
+        productCriteriaSet.setProductId(product.getID());
         productCriteriaSet.setCompanyId(product.getCompanyId());
         
         productCriteriaSet.setConfigId(ApplicationConstants.CONST_STRING_ZERO);
@@ -763,7 +764,7 @@ public class ProductParser {
         } // End of product sizes if condition
         
         if (criteriaSetValueList != null && !criteriaSetValueList.isEmpty()) {
-            productCriteriaSet.setCriteriaSetValues(criteriaSetValueList.toArray(new CriteriaSetValues[0]));
+            productCriteriaSet.setCriteriaSetValues(criteriaSetValueList);
         } else {
             productCriteriaSet = null;
         }
@@ -1231,7 +1232,7 @@ public class ProductParser {
                         filteredSetValues.add(criteriaSetValuesAry[i]);
                     }
                 }
-                productCriteriaSet.setCriteriaSetValues(filteredSetValues.toArray(new CriteriaSetValues[0]));
+                productCriteriaSet.setCriteriaSetValues(filteredSetValues);
             }
             productCriteriaSet.setCompanyId(product.getCompanyId());
             // productCriteriaSet.setCriteriaSetValues(criteriaSetValuesAry);
@@ -1244,7 +1245,7 @@ public class ProductParser {
         } // End of product sizes if condition
         
         if (productCriteriaSet != null && productCriteriaSet.getCriteriaSetValues() != null
-                && productCriteriaSet.getCriteriaSetValues().length > 0) {
+                && !productCriteriaSet.getCriteriaSetValues().isEmpty()) {
             // criteriaSetValuesID=criteriaSetValuesID+1;
             return productCriteriaSet;
         } else {
@@ -1270,22 +1271,22 @@ public class ProductParser {
             if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_IMPRINT_METHOD_CODE)) {
                 productCriteriaSets.setCriteriaSetId(Integer.parseInt(productConfigId) - 1 + "");
                 productCriteriaSets.setParentCriteriaSetId(productConfigId);
-                productCriteriaSets.getCriteriaSetValues()[0].setId(Integer.parseInt(productConfigId) - 2 + "");
-                productCriteriaSets.getCriteriaSetValues()[0].setCriteriaSetId(productCriteriaSets.getCriteriaSetId());
-                productCriteriaSets.getCriteriaSetValues()[0].getCriteriaSetCodeValues()[0].setId(Integer.parseInt(productConfigId)
+                productCriteriaSets.getCriteriaSetValues().get(0).setId(Integer.parseInt(productConfigId) - 2 + "");
+                productCriteriaSets.getCriteriaSetValues().get(0).setCriteriaSetId(productCriteriaSets.getCriteriaSetId());
+                productCriteriaSets.getCriteriaSetValues().get(0).getCriteriaSetCodeValues()[0].setId(Integer.parseInt(productConfigId)
                         - 3 + "");
-                productCriteriaSets.getCriteriaSetValues()[0].getCriteriaSetCodeValues()[0]
-                        .setCriteriaSetValueId(productCriteriaSets.getCriteriaSetValues()[0].getId());
+                productCriteriaSets.getCriteriaSetValues().get(0).getCriteriaSetCodeValues()[0]
+                        .setCriteriaSetValueId(productCriteriaSets.getCriteriaSetValues().get(0).getId());
 
             } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_ARTWORK_CODE)) {
                 productCriteriaSets.setCriteriaSetId(Integer.parseInt(productConfigId) - 4 + "");
                 productCriteriaSets.setParentCriteriaSetId(productConfigId);
-                productCriteriaSets.getCriteriaSetValues()[0].setId(Integer.parseInt(productConfigId) - 5 + "");
-                productCriteriaSets.getCriteriaSetValues()[0].setCriteriaSetId(productCriteriaSets.getCriteriaSetId());
-                productCriteriaSets.getCriteriaSetValues()[0].getCriteriaSetCodeValues()[0].setId(Integer.parseInt(productConfigId)
+                productCriteriaSets.getCriteriaSetValues().get(0).setId(Integer.parseInt(productConfigId) - 5 + "");
+                productCriteriaSets.getCriteriaSetValues().get(0).setCriteriaSetId(productCriteriaSets.getCriteriaSetId());
+                productCriteriaSets.getCriteriaSetValues().get(0).getCriteriaSetCodeValues()[0].setId(Integer.parseInt(productConfigId)
                         - 6 + "");
-                productCriteriaSets.getCriteriaSetValues()[0].getCriteriaSetCodeValues()[0]
-                        .setCriteriaSetValueId(productCriteriaSets.getCriteriaSetValues()[0].getId());
+                productCriteriaSets.getCriteriaSetValues().get(0).getCriteriaSetCodeValues()[0]
+                        .setCriteriaSetValueId(productCriteriaSets.getCriteriaSetValues().get(0).getId());
             }
         }
 
@@ -1306,6 +1307,17 @@ public class ProductParser {
 
         for (int i = 0; i < productCriteriaSetsAry.length; i++) {
             crntProductCriteriaSet = productCriteriaSetsAry[i];
+            if (null != crntProductCriteriaSet && crntProductCriteriaSet.getCriteriaCode().equalsIgnoreCase(criteriaCode.trim()))
+                break;
+        }
+        return crntProductCriteriaSet;
+    }
+    
+    public ProductCriteriaSets getCriteriaSetBasedOnCriteriaCode(List<ProductCriteriaSets> productCriteriaSetsAry, String criteriaCode) {
+        ProductCriteriaSets crntProductCriteriaSet = null;
+
+        for (int i = 0; i < productCriteriaSetsAry.size(); i++) {
+            crntProductCriteriaSet = productCriteriaSetsAry.get(i);
             if (null != crntProductCriteriaSet && crntProductCriteriaSet.getCriteriaCode().equalsIgnoreCase(criteriaCode.trim()))
                 break;
         }
@@ -1709,9 +1721,9 @@ public class ProductParser {
                             }
                         }
                     }
-                    tempCriteriaSetValues = jerseyClient.IsExistingCriteriaCode(existingCriteriaSetCodeValues, curntCriteria,
-                            sourceProduct);
-
+                    /*tempCriteriaSetValues = jerseyClient.IsExistingCriteriaCode(existingCriteriaSetCodeValues, curntCriteria,
+                            sourceProduct);*/
+                    tempCriteriaSetValues = null;
                     if (null != tempCriteriaSetValues && !crntCriteriaCheck) {
                         crntCriteriaCheck = true;
                         criteriaSetValuesAry[cntr] = tempCriteriaSetValues;
@@ -2233,12 +2245,7 @@ public class ProductParser {
                         isCustomValue = true;
                     }
                 }
-                if (null != jerseyClient.IsExistingCriteriaCode(existingCriteriaSetCodeValues, srcCriteria, sourceProduct)) {
-                    crntCriteriaCheck = true;
-                    criteriaSetValuesAry = new CriteriaSetValues[1];
-                    criteriaSetValuesAry[0] = jerseyClient.IsExistingCriteriaCode(existingCriteriaSetCodeValues, srcCriteria,
-                            sourceProduct);
-                } else if (null != srcCriteria && !srcCriteria.equalsIgnoreCase(ApplicationConstants.CONST_STRING_NULL_SMALL)) {
+               if (null != srcCriteria && !srcCriteria.equalsIgnoreCase(ApplicationConstants.CONST_STRING_NULL_SMALL)) {
                     crntCriteriaCheck = true;
                     criteriaSetValuesID = criteriaSetValuesID - 1;
                     child1Obj.setSetCodeValueId(srcCriteria);
@@ -2459,9 +2466,9 @@ public class ProductParser {
             if (!crntCriteriaCheck) {
                 crntProductCriteriaSets = null;
             } else {
-                crntProductCriteriaSets.setCriteriaSetValues(criteriaSetValuesAry);
+                crntProductCriteriaSets.setCriteriaSetValues(Arrays.asList(criteriaSetValuesAry));
 
-                crntProductCriteriaSets.getCriteriaSetValues()[0].setCriteriaCode(criteriaCode);
+                crntProductCriteriaSets.getCriteriaSetValues().get(0).setCriteriaCode(criteriaCode);
                 crntProductCriteriaSets.setCompanyId(product.getProductConfigurations()[0].getProductCriteriaSets()[0]
                         .getCompanyId());
                 crntProductCriteriaSets.setCriteriaCode(criteriaCode);
@@ -2512,11 +2519,10 @@ public class ProductParser {
 
     }
 
-    public Relationships createImprintArtworkRelationShip(ProductCriteriaSets[] productCriteriaSets, Product product,
+    public Relationships createImprintArtworkRelationShip(com.asi.service.product.client.vo.ProductCriteriaSets imprintCriteriaSet, com.asi.service.product.client.vo.ProductCriteriaSets productCriteriaSets, Product product,
             String imprintMethod, String artwork, boolean isArtwork, String relationshipId) {
 
-        ProductCriteriaSets immdCriteriaSet = getCriteriaSetBasedOnCriteriaCode(productCriteriaSets,
-                ApplicationConstants.CONST_IMPRINT_METHOD_CODE);
+        ProductCriteriaSets immdCriteriaSet = imprintCriteriaSet;
         ProductCriteriaSets artwCriteriaSet = null;
         ProductCriteriaSets minOrderCriteriaSet = null;
         int criteriaSetValuePathId = -1;
@@ -2528,11 +2534,9 @@ public class ProductParser {
         individualRelationShip.setId(relationshipId);
         if (isArtwork) {
             individualRelationShip.setName("Imprint Method x Artwork");
-            artwCriteriaSet = getCriteriaSetBasedOnCriteriaCode(productCriteriaSets, ApplicationConstants.CONST_ARTWORK_CODE);
         } else {
             individualRelationShip.setName("Imprint Method x Min Order");
-            minOrderCriteriaSet = getCriteriaSetBasedOnCriteriaCode(productCriteriaSets,
-                    ApplicationConstants.CONST_MINIMUM_QUANTITY);
+            
         }
         individualRelationShip.setProductId(product.getId());
         individualRelationShip.setParentCriteriaSetId(immdCriteriaSet.getCriteriaSetId());
@@ -2555,7 +2559,7 @@ public class ProductParser {
         }
         criteriaSetRelationshipsAry[1].setIsParent("false");
 
-        individualRelationShip.setCriteriaSetRelationships(criteriaSetRelationshipsAry);
+        individualRelationShip.setCriteriaSetRelationships(Arrays.asList(criteriaSetRelationshipsAry));
 
         List<CriteriaSetValuePaths> criteriaSetValuePathCollection = new ArrayList<CriteriaSetValuePaths>();
         if (isArtwork) {
@@ -2642,7 +2646,7 @@ public class ProductParser {
             }
         }
         if (criteriaSetValuePathCollection != null && !criteriaSetValuePathCollection.isEmpty()) {
-            individualRelationShip.setCriteriaSetValuePaths(criteriaSetValuePathCollection.toArray(new CriteriaSetValuePaths[0]));
+            individualRelationShip.setCriteriaSetValuePaths(criteriaSetValuePathCollection);
         } else {
             individualRelationShip = null;
         }
@@ -2651,16 +2655,16 @@ public class ProductParser {
     }
 
     @SuppressWarnings("unchecked")
-    private CriteriaSetValues findByCriteriaValue(String criteriaValue, CriteriaSetValues[] values, String criteriaCode) {
+    private CriteriaSetValues findByCriteriaValue(String criteriaValue, List<CriteriaSetValues> values, String criteriaCode) {
         if (criteriaValue != null && !criteriaValue.isEmpty()) {
-            for (int i = 0; i < values.length; i++) {
+            for (int i = 0; i < values.size(); i++) {
                 if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_MINIMUM_QUANTITY)) {
 
                     // Value v = (Value) values[i].getValue();
                     ArrayList<LinkedHashMap<String, String>> temp = new ArrayList<>();
                     LinkedHashMap<String, String> tempMap = null;
-                    if (values[i].getValue() instanceof ArrayList) {
-                        temp = (ArrayList<LinkedHashMap<String, String>>) values[i].getValue();
+                    if (values.get(i).getValue() instanceof ArrayList) {
+                        temp = (ArrayList<LinkedHashMap<String, String>>) values.get(i).getValue();
                         tempMap = (LinkedHashMap<String, String>) temp.get(0);
                         if (tempMap != null && tempMap.size() > 0) {
                             String[] tempValueAry = criteriaValue.split(":");
@@ -2669,11 +2673,11 @@ public class ProductParser {
                                     && tempMap.get("UnitOfMeasureCode").equalsIgnoreCase(
                                             jsonProcessorObj.getSizesElementValue("UNITS", sizeElementsResponse,
                                                     tempValueAry[1].trim()))) {
-                                return values[i];
+                                return values.get(i);
                             }
                         }
                     } else {
-                        Value[] v = (Value[]) values[i].getValue();
+                        Value[] v = (Value[]) values.get(i).getValue();
                         if (v != null && v.length > 0) {
                             String[] tempValueAry = criteriaValue.split(":");
                             if (tempValueAry.length > 1
@@ -2681,15 +2685,15 @@ public class ProductParser {
                                     && v[0].getUnitOfMeasureCode().equalsIgnoreCase(
                                             jsonProcessorObj.getSizesElementValue("UNITS", sizeElementsResponse,
                                                     tempValueAry[1].trim()))) {
-                                return values[i];
+                                return values.get(i);
                             }
                         }
                     }
 
                 } else {
-                    if (values[i] != null && values[i].getValue() != null
-                            && String.valueOf(values[i].getValue()).equalsIgnoreCase(criteriaValue)) {
-                        return values[i];
+                    if (values.get(i) != null && values.get(i).getValue() != null
+                            && String.valueOf(values.get(i).getValue()).equalsIgnoreCase(criteriaValue)) {
+                        return values.get(i);
                     }
                 }
             }
@@ -2743,10 +2747,10 @@ public class ProductParser {
 
     static String elementIndex = null;
 
-    public Relationships compareAndUpdateRelationship(Relationships[] existingRelationships, Relationships newRelationship,
-            String relationshipType, ProductCriteriaSets[] productCriteriaSetsAry) {
+    public Relationships compareAndUpdateRelationship(List<Relationships> existingRelationships, Relationships newRelationship,
+            String relationshipType, List<ProductCriteriaSets> productCriteriaSetsAry) {
 
-        if (existingRelationships != null && existingRelationships.length > 0) {
+        if (existingRelationships != null && !existingRelationships.isEmpty()) {
             
             Relationships matchedRelationShip = getRelationshipBasedOnType(existingRelationships, relationshipType,
                     productCriteriaSetsAry);
@@ -2773,22 +2777,22 @@ public class ProductParser {
                 List<String> processedCriteriaSetValuePathIds = new ArrayList<>();
                 // Now check criteria set value paths
                 List<CriteriaSetValuePaths> criteriaSetValuePathsList = new ArrayList<CriteriaSetValuePaths>();
-                for (int i = 0; i < newRelationship.getCriteriaSetValuePaths().length
+                for (int i = 0; i < newRelationship.getCriteriaSetValuePaths().size()
                         && newRelationship.getCriteriaSetValuePaths() != null; i++) {
 
-                    if (newRelationship.getCriteriaSetValuePaths()[i] != null) {
+                    if (newRelationship.getCriteriaSetValuePaths().get(i) != null) {
 
                         CriteriaSetValuePaths currentCrtValuePathParent = null;
                         CriteriaSetValuePaths currentCrtValuePathChild = null;
-                        if (newRelationship.getCriteriaSetValuePaths()[i] != null
-                                && newRelationship.getCriteriaSetValuePaths()[i].getIsParent().equalsIgnoreCase(
+                        if (newRelationship.getCriteriaSetValuePaths().get(i) != null
+                                && newRelationship.getCriteriaSetValuePaths().get(i).getIsParent().equalsIgnoreCase(
                                         ApplicationConstants.CONST_STRING_TRUE_SMALL)) {
-                            currentCrtValuePathParent = newRelationship.getCriteriaSetValuePaths()[i];
+                            currentCrtValuePathParent = newRelationship.getCriteriaSetValuePaths().get(i);
 
                             currentCrtValuePathChild = getCriteriaSetValuePathById(newRelationship.getCriteriaSetValuePaths(),
                                     currentCrtValuePathParent.getId(), ApplicationConstants.CONST_STRING_FALSE_SMALL);
                         } else {
-                            currentCrtValuePathChild = newRelationship.getCriteriaSetValuePaths()[i];
+                            currentCrtValuePathChild = newRelationship.getCriteriaSetValuePaths().get(i);
                             currentCrtValuePathParent = getCriteriaSetValuePathById(newRelationship.getCriteriaSetValuePaths(),
                                     currentCrtValuePathChild.getId(), ApplicationConstants.CONST_STRING_TRUE_SMALL);
                         }
@@ -2809,24 +2813,23 @@ public class ProductParser {
                                     && extCrtValuePathParent.getId().equalsIgnoreCase(extCrtValuePathChild.getId())) {
                                 criteriaSetValuePathsList.add(extCrtValuePathParent);
                                 criteriaSetValuePathsList.add(extCrtValuePathChild);
-                                int matchedExtPrntIndex = ArrayUtils.indexOf(matchedRelationShip.getCriteriaSetValuePaths(),
-                                        extCrtValuePathParent);
-                                matchedRelationShip.getCriteriaSetValuePaths()[matchedExtPrntIndex] = null; // Remove the element
+                                int matchedExtPrntIndex = matchedRelationShip.getCriteriaSetValuePaths().indexOf(extCrtValuePathParent);
+                                matchedRelationShip.getCriteriaSetValuePaths().set(matchedExtPrntIndex, null); // Remove the element
                                                                                                             // from the array, other
                                                                                                             // it will conflict
                             } else {
                                 criteriaSetValuePathsList.add(currentCrtValuePathParent);
                                 criteriaSetValuePathsList.add(currentCrtValuePathChild);
                             }
-                            newRelationship.getCriteriaSetValuePaths()[i] = null;
-                            int index = ArrayUtils.indexOf(newRelationship.getCriteriaSetValuePaths(), currentCrtValuePathChild);
-                            newRelationship.getCriteriaSetValuePaths()[index] = null;
+                            newRelationship.getCriteriaSetValuePaths().set(i, null);
+                            int index = newRelationship.getCriteriaSetValuePaths().indexOf(currentCrtValuePathChild);
+                            newRelationship.getCriteriaSetValuePaths().set(index, null);
                         }
                     }
                 }
 
                 if (criteriaSetValuePathsList.size() > 1) {
-                    newRelationship.setCriteriaSetValuePaths(criteriaSetValuePathsList.toArray(new CriteriaSetValuePaths[0]));
+                    newRelationship.setCriteriaSetValuePaths(criteriaSetValuePathsList);
                     
                 } else {
                     // Invalid Relationship set
@@ -2840,8 +2843,8 @@ public class ProductParser {
         // Iterate over each existing CriteriaSetRelationships
     }
 
-     private Relationships getRelationshipBasedOnType(Relationships[] relationships, String type,
-            ProductCriteriaSets[] productCriteriaSets) {
+     private Relationships getRelationshipBasedOnType(List<Relationships> relationships, String type,
+            List<ProductCriteriaSets> productCriteriaSets) {
         if (type.equalsIgnoreCase(ApplicationConstants.CONST_ARTWORK_CODE)) {
             return productCompareUtil.getRelationshipBasedOnCriteriaCodes(relationships,
                     ApplicationConstants.CONST_IMPRINT_METHOD_CODE, ApplicationConstants.CONST_ARTWORK_CODE, productCriteriaSets);
@@ -2854,24 +2857,24 @@ public class ProductParser {
         }
     }
 
-    private CriteriaSetRelationships getParentCriteriaSetRelationship(CriteriaSetRelationships[] relationships) {
-        for (int i = 0; i < relationships.length; i++) {
-            if (relationships[i] != null
-                    && relationships[i].getIsParent().equalsIgnoreCase(ApplicationConstants.CONST_STRING_TRUE_CAP)) {
-                return relationships[i];
+    private CriteriaSetRelationships getParentCriteriaSetRelationship(List<CriteriaSetRelationships> relationships) {
+        for (int i = 0; i < relationships.size(); i++) {
+            if (relationships.get(i) != null
+                    && relationships.get(i).getIsParent().equalsIgnoreCase(ApplicationConstants.CONST_STRING_TRUE_CAP)) {
+                return relationships.get(i);
             }
         }
         return null;
     }
 
-    private CriteriaSetValuePaths getCriteriaSetValuePathFromExistingList(CriteriaSetValuePaths[] exiCriteriaSetValuePaths,
+    private CriteriaSetValuePaths getCriteriaSetValuePathFromExistingList(List<CriteriaSetValuePaths> exiCriteriaSetValuePaths,
             String criteriaSetValueId, String isParent) {
-        if (exiCriteriaSetValuePaths != null && exiCriteriaSetValuePaths.length > 0) {
-            for (int i = 0; i < exiCriteriaSetValuePaths.length; i++) {
-                if (exiCriteriaSetValuePaths[i] != null
-                        && exiCriteriaSetValuePaths[i].getCriteriaSetValueId().equalsIgnoreCase(criteriaSetValueId)
-                        && exiCriteriaSetValuePaths[i].getIsParent().equalsIgnoreCase(isParent)) {
-                    return exiCriteriaSetValuePaths[i];
+        if (exiCriteriaSetValuePaths != null && !exiCriteriaSetValuePaths.isEmpty()) {
+            for (int i = 0; i < exiCriteriaSetValuePaths.size(); i++) {
+                if (exiCriteriaSetValuePaths.get(i) != null
+                        && exiCriteriaSetValuePaths.get(i).getCriteriaSetValueId().equalsIgnoreCase(criteriaSetValueId)
+                        && exiCriteriaSetValuePaths.get(i).getIsParent().equalsIgnoreCase(isParent)) {
+                    return exiCriteriaSetValuePaths.get(i);
                 }
             }
             return null;
@@ -2880,14 +2883,14 @@ public class ProductParser {
         }
     }
 
-    private CriteriaSetValuePaths getCriteriaSetValuePathById(CriteriaSetValuePaths[] exiCriteriaSetValuePaths, String elementId,
+    private CriteriaSetValuePaths getCriteriaSetValuePathById(List<CriteriaSetValuePaths> exiCriteriaSetValuePaths, String elementId,
             String isParent) {
-        if (exiCriteriaSetValuePaths != null && exiCriteriaSetValuePaths.length > 0) {
-            for (int i = 0; i < exiCriteriaSetValuePaths.length; i++) {
-                if (exiCriteriaSetValuePaths[i] != null && exiCriteriaSetValuePaths[i].getId().equalsIgnoreCase(elementId)
-                        && exiCriteriaSetValuePaths[i].getIsParent().equalsIgnoreCase(isParent)) {
+        if (exiCriteriaSetValuePaths != null && exiCriteriaSetValuePaths.size() > 0) {
+            for (int i = 0; i < exiCriteriaSetValuePaths.size(); i++) {
+                if (exiCriteriaSetValuePaths.get(i) != null && exiCriteriaSetValuePaths.get(i).getId().equalsIgnoreCase(elementId)
+                        && exiCriteriaSetValuePaths.get(i).getIsParent().equalsIgnoreCase(isParent)) {
                     elementIndex = String.valueOf(i);
-                    return exiCriteriaSetValuePaths[i];
+                    return exiCriteriaSetValuePaths.get(i);
                 }
             }
             return null;
@@ -2942,7 +2945,7 @@ public class ProductParser {
         return tempValues;
     }
     
-    public HashMap<String, Object> updateProductCriteriaSetArray(ProductCriteriaSets[] currentProductCriteriaSets, Integer counter,
+    /*public HashMap<String, Object> updateProductCriteriaSetArray(ProductCriteriaSets[] currentProductCriteriaSets, Integer counter,
             String criteriaCode, Product extProduct) {
         
         if (criteriaCode != null && extProduct != null) {
@@ -2969,9 +2972,9 @@ public class ProductParser {
         prdCrtMap.put("Counter", counter);
         
         return prdCrtMap;
-    }
+    }*/
     
-    public HashMap<String, Object> updateProductOptionCriteriaSets(ProductCriteriaSets[] currentProductCriteriaSets, Integer count,
+  /*  public HashMap<String, Object> updateProductOptionCriteriaSets(ProductCriteriaSets[] currentProductCriteriaSets, Integer count,
             Product extProduct) {
         HashMap<String, Object> tempMap = new HashMap<>();
         tempMap.put("CriteriaSet", currentProductCriteriaSets);
@@ -2985,5 +2988,5 @@ public class ProductParser {
                     (Integer) tempMap.get("Counter"), ApplicationConstants.CONST_IMPRINT_OPTION, extProduct);
         }
         return tempMap;
-    }
+    }*/
 }

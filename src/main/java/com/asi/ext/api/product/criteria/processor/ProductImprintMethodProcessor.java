@@ -6,16 +6,17 @@ import java.util.List;
 import java.util.Map;
 
 import com.asi.ext.api.product.transformers.ProductDataStore;
-import com.asi.ext.api.radar.model.CriteriaSetValues;
-import com.asi.ext.api.radar.model.ProductCriteriaSets;
+
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
+import com.asi.service.product.client.vo.CriteriaSetValues;
+import com.asi.service.product.client.vo.ProductCriteriaSets;
 
 public class ProductImprintMethodProcessor {
 
     public ProductCriteriaSets compareAndUpdateImprintMethod(ProductCriteriaSets currentImpMethodSet,
             ProductCriteriaSets extImpMethodSet, String configId, String productId) {
-        
+
         List<CriteriaSetValues> finalCriteriaSetValues = new ArrayList<CriteriaSetValues>();
 
         String criteriaSetId = extImpMethodSet != null ? extImpMethodSet.getCriteriaSetId() : currentImpMethodSet
@@ -38,7 +39,7 @@ public class ProductImprintMethodProcessor {
             }
         }
         if (finalCriteriaSetValues != null && !finalCriteriaSetValues.isEmpty()) {
-            currentImpMethodSet.setCriteriaSetValues(finalCriteriaSetValues.toArray(new CriteriaSetValues[0]));
+            currentImpMethodSet.setCriteriaSetValues(finalCriteriaSetValues);
         }
         currentImpMethodSet.setConfigId(configId);
         currentImpMethodSet.setProductId(productId);
@@ -46,7 +47,7 @@ public class ProductImprintMethodProcessor {
         return currentImpMethodSet;
     }
 
-    private Map<String, CriteriaSetValues> getExistingCriteriaSetValues(CriteriaSetValues[] criteriaSetValues) {
+    private Map<String, CriteriaSetValues> getExistingCriteriaSetValues(List<CriteriaSetValues> criteriaSetValues) {
         Map<String, CriteriaSetValues> finalCriteriaValueMap = new HashMap<String, CriteriaSetValues>();
         for (CriteriaSetValues criteriaValue : criteriaSetValues) {
             if (criteriaValue != null) {

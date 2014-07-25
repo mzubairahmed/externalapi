@@ -101,6 +101,9 @@ public class RushTimeProcessor extends SimpleCriteriaProcessor {
 
             finalCriteriaSetValues.add(criteriaSetValue);
         }
+        if (!finalCriteriaSetValues.isEmpty()) {
+            matchedCriteriaSet.setCriteriaSetValues(finalCriteriaSetValues);
+        }
         LOGGER.info("Completed Processing of ProductTime of product " + rushTimes);
 
         return matchedCriteriaSet;

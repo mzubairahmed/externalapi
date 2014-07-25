@@ -8,7 +8,7 @@ import java.util.Map;
 
 import com.asi.service.product.client.vo.CriteriaSetCodeValues;
 import com.asi.ext.api.radar.model.CriteriaSetValues;
-import com.asi.ext.api.radar.model.Value;
+import com.asi.service.product.client.vo.Value;
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
