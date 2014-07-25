@@ -943,6 +943,23 @@ public class CommonUtilities {
         return isValueNull(value) ? null : value;
     }
 
+    public static String getValueFromCriteriaSet(com.asi.service.product.client.vo.CriteriaSetValues criteriaValue) {
+        String value = null;
+
+        if (isValueNull(String.valueOf(criteriaValue.getValue()))) {
+            if (isValueNull(String.valueOf(criteriaValue.getFormatValue()))) {
+                if (!isValueNull(String.valueOf(criteriaValue.getBaseLookupValue()))) {
+                    value = String.valueOf(criteriaValue.getBaseLookupValue());
+                }
+            } else {
+                value = String.valueOf(criteriaValue.getFormatValue());
+            }
+        } else {
+            value = String.valueOf(criteriaValue.getValue());
+        }
+
+        return isValueNull(value) ? null : value;
+    }
     public static <T> T[] cloneArray(T[] array) {
         if (array == null) {
             return null;

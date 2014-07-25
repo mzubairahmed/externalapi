@@ -9,8 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.asi.ext.api.radar.model.CriteriaSetRelationships;
-import com.asi.ext.api.radar.model.CriteriaSetValuePaths;
 import com.asi.ext.api.radar.model.CriteriaSetValues;
 import com.asi.ext.api.radar.model.Product;
 import com.asi.ext.api.radar.model.ProductCriteriaSets;
@@ -18,11 +16,13 @@ import com.asi.ext.api.radar.model.ProductDataSheet;
 import com.asi.ext.api.radar.model.ProductInventoryLink;
 import com.asi.ext.api.radar.model.ProductMediaCitations;
 import com.asi.ext.api.radar.model.ProductMediaItems;
-import com.asi.ext.api.radar.model.Relationships;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
+import com.asi.service.product.client.vo.CriteriaSetRelationships;
 import com.asi.service.product.client.vo.ProductConfiguration;
 import com.asi.service.product.client.vo.ProductDetail;
+import com.asi.service.product.client.vo.Relationship;
+import com.asi.service.product.client.vo.Relationships;
 
 /**
  * Utility class for comparing current {@link Product} elements with existing {@link Product}
@@ -382,12 +382,12 @@ public class ProductCompareUtil extends CommonUtilities {
         return currentRelationshiList.toArray(new Relationships[0]);
     }
 
-    public Relationships getValidRelationshipForCriteriaCodes(ProductCriteriaSets[] productCriteriaSets,
-            Relationships[] relationships, String criteriaCode1, String criteriaCode2, List<String> criteriaSetValueIds) {
-        if (productCriteriaSets.length < 0) {
+    public com.asi.service.product.client.vo.Relationships getValidRelationshipForCriteriaCodes(List<com.asi.service.product.client.vo.ProductCriteriaSets> productCriteriaSets,
+            List<com.asi.service.product.client.vo.Relationships> relationships, String criteriaCode1, String criteriaCode2, List<String> criteriaSetValueIds) {
+        if (productCriteriaSets.size() < 0) {
             return null;
         }
-        Relationships relationships2 = getRelationshipBasedOnCriteriaCodes(relationships, criteriaCode1, criteriaCode2,
+        com.asi.service.product.client.vo.Relationships relationships2 = getRelationshipBasedOnCriteriaCodes(relationships, criteriaCode1, criteriaCode2,
                 productCriteriaSets);
 
         if (relationships2 != null) {
@@ -403,17 +403,17 @@ public class ProductCompareUtil extends CommonUtilities {
 
     }
 
-    protected Relationships getRelationshipBasedOnCriteriaCodes(Relationships[] relationships, String parentCriteriaCode,
-            String childCriteriaCode, ProductCriteriaSets[] productCriteriaSets) {
+    protected com.asi.service.product.client.vo.Relationships getRelationshipBasedOnCriteriaCodes(List<com.asi.service.product.client.vo.Relationships> relationships, String parentCriteriaCode,
+            String childCriteriaCode, List<com.asi.service.product.client.vo.ProductCriteriaSets> productCriteriaSets) {
 
-        if (relationships == null || productCriteriaSets == null || productCriteriaSets.length < 0) {
+        if (relationships == null || productCriteriaSets == null || productCriteriaSets.size() < 0) {
             return null;
         }
         ProductParser productParser = new ProductParser();
         String parentId = null;
         String childId = null;
 
-        ProductCriteriaSets parentCriteriaSet = productParser.getCriteriaSetBasedOnCriteriaCode(productCriteriaSets,
+        com.asi.service.product.client.vo.ProductCriteriaSets parentCriteriaSet = productParser.getCriteriaSetBasedOnCriteriaCode(productCriteriaSets,
                 parentCriteriaCode);
         if (parentCriteriaSet != null) {
             parentId = parentCriteriaSet.getCriteriaSetId();
@@ -421,7 +421,7 @@ public class ProductCompareUtil extends CommonUtilities {
         if (parentId == null || parentId.isEmpty()) {
             return null;
         }
-        ProductCriteriaSets childCriteriaSet = productParser.getCriteriaSetBasedOnCriteriaCode(productCriteriaSets,
+        com.asi.service.product.client.vo.ProductCriteriaSets childCriteriaSet = productParser.getCriteriaSetBasedOnCriteriaCode(productCriteriaSets,
                 childCriteriaCode);
         if (childCriteriaSet != null) {
             childId = childCriteriaSet.getCriteriaSetId();
@@ -433,17 +433,17 @@ public class ProductCompareUtil extends CommonUtilities {
         return getRelationshipByIds(relationships, parentId, childId);
     }
 
-    private Relationships getRelationshipByIds(Relationships[] relationships, String primaryId, String secondaryId) {
-        Relationships matchedRelationships = null;
-        if (relationships != null && relationships.length > 0) {
+    private Relationships getRelationshipByIds(List<com.asi.service.product.client.vo.Relationships> relationships, String primaryId, String secondaryId) {
+        com.asi.service.product.client.vo.Relationships matchedRelationships = null;
+        if (relationships != null && !relationships.isEmpty()) {
 
-            for (Relationships relationship : relationships) {
+            for (com.asi.service.product.client.vo.Relationships relationship : relationships) {
                 boolean parentMatched = false;
                 boolean childMatched = false;
 
                 if (relationship != null) {
-                    CriteriaSetRelationships[] criteriaSetRelationships = relationship.getCriteriaSetRelationships();
-                    if (criteriaSetRelationships != null && criteriaSetRelationships.length == 2) {
+                    List<CriteriaSetRelationships> criteriaSetRelationships = relationship.getCriteriaSetRelationships();
+                    if (criteriaSetRelationships != null && criteriaSetRelationships.size() == 2) {
                         for (CriteriaSetRelationships crtSetRlship : criteriaSetRelationships) {
                             if (crtSetRlship != null && crtSetRlship.getIsParent().equalsIgnoreCase("true")) {
                                 parentMatched = crtSetRlship.getCriteriaSetId().equalsIgnoreCase(primaryId);
@@ -461,10 +461,10 @@ public class ProductCompareUtil extends CommonUtilities {
         return matchedRelationships;
     }
 
-    public static Relationships[] validateAllRelationships(Relationships[] relationships, List<String> criteriaSetValueIds) {
-        List<Relationships> finalRelationships = new ArrayList<Relationships>();
-        for (Relationships rel : relationships) {
-            Relationships temp = validateAndFixRelationship(rel, criteriaSetValueIds);
+    public static Relationships[] validateAllRelationships(List<com.asi.service.product.client.vo.Relationships> relationships, List<String> criteriaSetValueIds) {
+        List<com.asi.service.product.client.vo.Relationships> finalRelationships = new ArrayList<com.asi.service.product.client.vo.Relationships>();
+        for (com.asi.service.product.client.vo.Relationships rel : relationships) {
+            com.asi.service.product.client.vo.Relationships temp = validateAndFixRelationship(rel, criteriaSetValueIds);
             if (temp != null) {
                 finalRelationships.add(temp);
             }
@@ -472,12 +472,12 @@ public class ProductCompareUtil extends CommonUtilities {
         return finalRelationships.toArray(new Relationships[0]);
     }
 
-    private static Relationships validateAndFixRelationship(Relationships relationship, List<String> criteriaSetValueIds) {
+    private static com.asi.service.product.client.vo.Relationships validateAndFixRelationship(com.asi.service.product.client.vo.Relationships relationship, List<String> criteriaSetValueIds) {
         // If any of the criteriaSetValuePath not exists in the referenceTable we ignore that relation
-        List<CriteriaSetValuePaths> finalCriteriaSetValuePaths = new ArrayList<CriteriaSetValuePaths>();
-        if (relationship.getCriteriaSetValuePaths() != null && relationship.getCriteriaSetValuePaths().length > 0) {
-            CriteriaSetValuePaths[] criteriaSetValuePaths = relationship.getCriteriaSetValuePaths();
-            for (CriteriaSetValuePaths criteriaPath : criteriaSetValuePaths) {
+        List<com.asi.service.product.client.vo.CriteriaSetValuePaths> finalCriteriaSetValuePaths = new ArrayList<com.asi.service.product.client.vo.CriteriaSetValuePaths>();
+        if (relationship.getCriteriaSetValuePaths() != null && !relationship.getCriteriaSetValuePaths().isEmpty()) {
+            List<com.asi.service.product.client.vo.CriteriaSetValuePaths> criteriaSetValuePaths = relationship.getCriteriaSetValuePaths();
+            for (com.asi.service.product.client.vo.CriteriaSetValuePaths criteriaPath : criteriaSetValuePaths) {
                 if (criteriaPath != null) {
                     if (!criteriaSetValueIds.contains(criteriaPath.getCriteriaSetValueId())) {
                         // Invalid Criteria setValue path
@@ -489,7 +489,7 @@ public class ProductCompareUtil extends CommonUtilities {
                 }
             }
             if (!finalCriteriaSetValuePaths.isEmpty()) {
-                relationship.setCriteriaSetValuePaths(finalCriteriaSetValuePaths.toArray(new CriteriaSetValuePaths[0]));
+                relationship.setCriteriaSetValuePaths(finalCriteriaSetValuePaths);
                 return relationship;
             } else {
                 return null;
@@ -772,21 +772,21 @@ public class ProductCompareUtil extends CommonUtilities {
         return options;
     }
 
-    protected static Relationships[] mergeRelationShips1(Map<String, Relationships> currentRelationships, Product existingProduct) {
-        List<Relationships> finalRelationships = new ArrayList<Relationships>();
-        if (existingProduct != null && existingProduct.getRelationships() != null && existingProduct.getRelationships().length > 0) {
+    protected static Relationships[] mergeRelationShips1(Map<String, Relationships> currentRelationships, ProductDetail existingProduct) {
+        List<Relationship> finalRelationships = new ArrayList<Relationship>();
+        if (existingProduct != null && existingProduct.getRelationships() != null && !existingProduct.getRelationships().isEmpty()) {
             Relationships artworkRelationShip = currentRelationships.get(ApplicationConstants.CONST_ARTWORK_CODE);
             Relationships minQtyRelationShip = currentRelationships.get(ApplicationConstants.CONST_MINIMUM_QUANTITY);
 
-            for (Relationships relationship : existingProduct.getRelationships()) {
-                if (artworkRelationShip != null && relationship.getId().equalsIgnoreCase(artworkRelationShip.getId())) {
+            /*for (Relationship relationship : existingProduct.getRelationships()) {
+                if (artworkRelationShip != null && relationship.getID().equalsIgnoreCase(artworkRelationShip.getId())) {
                     finalRelationships.add(artworkRelationShip);
-                } else if (minQtyRelationShip != null && relationship.getId().equalsIgnoreCase(minQtyRelationShip.getId())) {
+                } else if (minQtyRelationShip != null && relationship.getID().equalsIgnoreCase(minQtyRelationShip.getId())) {
                     finalRelationships.add(minQtyRelationShip);
                 } else {
                     finalRelationships.add(relationship);
                 }
-            }
+            }*/
             return finalRelationships.toArray(new Relationships[0]);
         } else if (currentRelationships != null && !currentRelationships.isEmpty()) {
             return getRelationshipsFromCollection(currentRelationships.values());
@@ -813,7 +813,7 @@ public class ProductCompareUtil extends CommonUtilities {
             Relationships artworkRelationShip = currentRelationships.get(ApplicationConstants.CONST_ARTWORK_CODE);
             Relationships minQtyRelationShip = currentRelationships.get(ApplicationConstants.CONST_MINIMUM_QUANTITY);
 
-            for (Relationships relationship : existingProduct.getRelationships()) {
+            /*for (Relationships relationship : existingProduct.getRelationships()) {
                 if (artworkRelationShip != null && relationship.getId().equalsIgnoreCase(artworkRelationShip.getId())) {
                     finalRelationships.add(artworkRelationShip);
                 } else if (minQtyRelationShip != null && relationship.getId().equalsIgnoreCase(minQtyRelationShip.getId())) {
@@ -821,7 +821,7 @@ public class ProductCompareUtil extends CommonUtilities {
                 } else {
                     finalRelationships.add(relationship);
                 }
-            }
+            }*/
             return finalRelationships.toArray(new Relationships[0]);
         } else if (currentRelationships != null && !currentRelationships.isEmpty()) {
             return getRelationshipsFromCollection(currentRelationships.values());
