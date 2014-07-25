@@ -1,13 +1,11 @@
 package com.asi.ext.api.product.criteria.processor;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import com.asi.ext.api.exception.VelocityException;
-import com.asi.ext.api.product.transformers.ProductCompareUtil;
 import com.asi.ext.api.product.transformers.ProductParser;
 import com.asi.ext.api.service.model.Artwork;
 import com.asi.ext.api.service.model.ImprintMethod;
@@ -16,7 +14,6 @@ import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
-import com.asi.service.product.client.vo.Relationships;
 
 /**
  * @author Rahul K

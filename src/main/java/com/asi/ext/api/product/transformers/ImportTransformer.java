@@ -313,13 +313,13 @@ public class ImportTransformer {
         } else {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_PRODUCTION_TIME_CRITERIA_CODE);
         }
-        /*// Product options processing
+        // Product options processing
         if (serviceProdConfigs.getOptions() != null && !serviceProdConfigs.getOptions().isEmpty()) {
             optionsCriteriaSet = optionsProcessor.getOptionCriteriaSets(serviceProdConfigs.getOptions(), rdrProduct, configId,
                     optionsCriteriaSet);
         } else {
             optionsCriteriaSet = null;
-        }*/
+        }
         
         // Merge all updated ProductCriteriaSets into product configuration and set back to list
         ProductConfiguration updatedProductConfiguration = new ProductConfiguration();
