@@ -857,8 +857,8 @@ public class ProductDataStore {
     public static String getSetCodeValueIdForImmdMethod(String method) {
         if (immprintMethodLookupTable == null || immprintMethodLookupTable.isEmpty()) {
             try {
-                String imprintMethodResponse = JersyClientGet.getLookupsResponse(RestAPIProperties
-                        .get(ApplicationConstants.IMPRINT_LOOKUP_URL));
+                LinkedList<?> imprintMethodResponse=lookupRestTemplate.getForObject(RestAPIProperties
+                        .get(ApplicationConstants.IMPRINT_LOOKUP_URL), LinkedList.class);
                 if (imprintMethodResponse == null || imprintMethodResponse.isEmpty()) {
                     LOGGER.error("ImprintMethod Lookup API returned null response");
                     // TODO : Batch Error
@@ -1035,8 +1035,8 @@ public class ProductDataStore {
 
         if (artworkLookupTable == null || artworkLookupTable.isEmpty()) {
             try {
-                String artworkResponse = JersyClientGet.getLookupsResponse(RestAPIProperties
-                        .get(ApplicationConstants.IMPRINT_ARTWORK_LOOKUP_URL));
+                LinkedList<?> artworkResponse=lookupRestTemplate.getForObject(RestAPIProperties
+                        .get(ApplicationConstants.IMPRINT_ARTWORK_LOOKUP_URL), LinkedList.class);
                 if (artworkResponse == null || artworkResponse.isEmpty()) {
                     LOGGER.error("Artwork Lookup API returned null response");
                     // TODO : Batch Error
@@ -1131,9 +1131,15 @@ public class ProductDataStore {
         } else if (ApplicationConstants.CONST_LESS_THAN_MIN_CRT_CODE.equalsIgnoreCase(criteriaCode)) {
 
         } else if (ApplicationConstants.CONST_IMPRINT_METHOD_CODE.equalsIgnoreCase(criteriaCode)) {
-
+        	 if (immprintMethodLookupTable == null || immprintMethodLookupTable.isEmpty()) {
+        		 getSetCodeValueIdForImmdMethod("Pad Print");
+             }
+             return CommonUtilities.getKeysByValueGen(immprintMethodLookupTable, setCodeValueId);        	
         } else if (ApplicationConstants.CONST_ARTWORK_CODE.equalsIgnoreCase(criteriaCode)) {
-
+        	 if (artworkLookupTable == null || artworkLookupTable.isEmpty()) {
+        		 getArtworkSetCodeValueId("artw",true);
+             }
+             return CommonUtilities.getKeysByValueGen(artworkLookupTable, setCodeValueId);         	
         } else if (ApplicationConstants.CONST_MINIMUM_QUANTITY.equalsIgnoreCase(criteriaCode)) {
 
         } else if (ApplicationConstants.CONST_SIZE_GROUP_CAPACITY.equalsIgnoreCase(criteriaCode)) {

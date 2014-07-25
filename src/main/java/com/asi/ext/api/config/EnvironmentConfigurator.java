@@ -10,6 +10,7 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.asi.ext.api.util.CommonUtilities;
+import com.asi.ext.api.integration.lookup.parser.LookupParser;
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.util.JsonToLookupTableConverter;
 import com.asi.ext.api.util.RestAPIProperties;
@@ -54,6 +55,7 @@ public class EnvironmentConfigurator implements InitializingBean {
         isEnvironmentInitialized = true;
 		ProductDataStore.lookupRestTemplate = lookupRestTemplate;
 		JsonToLookupTableConverter.lookupRestTemplate = lookupRestTemplate;
+		LookupParser.lookupRestTemplate=lookupRestTemplate;
     }
 
     /**

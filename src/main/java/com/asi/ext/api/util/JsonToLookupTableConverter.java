@@ -450,23 +450,12 @@ public final class JsonToLookupTableConverter {
     }
 
     @SuppressWarnings("rawtypes")
-    public static Map<String, String> jsonToImprintMethodLookupTable(String imprintMethodResponse) {
-        JSONParser parser = new JSONParser();
-        ContainerFactory containerFactory = new ContainerFactory() {
-            public List<?> creatArrayContainer() {
-                return new LinkedList<Object>();
-            }
-
-            public Map<?, ?> createObjectContainer() {
-                return new LinkedHashMap<Object, Object>();
-            }
-        };
+    public static Map<String, String> jsonToImprintMethodLookupTable(LinkedList<?> imprintMethodList) {
 
         Map<String, String> imprintMethodMap = new HashMap<String, String>();
         try {
-            LinkedList<?> json = (LinkedList<?>) parser.parse(imprintMethodResponse, containerFactory);
-            imprintMethodMap = new HashMap<String, String>(json.size()); // for performance
-            Iterator<?> iter = json.iterator();
+            imprintMethodMap = new HashMap<String, String>(imprintMethodList.size()); // for performance
+            Iterator<?> iter = imprintMethodList.iterator();
             while (iter.hasNext()) {
                 LinkedHashMap crntValue = (LinkedHashMap) iter.next();
                 if (crntValue.get("CodeValue") != null) {
@@ -474,7 +463,7 @@ public final class JsonToLookupTableConverter {
                             String.valueOf(crntValue.get("ID")));
                 }
             }
-        } catch (ParseException pe) {
+        } catch (Exception pe) {
             pe.printStackTrace();
         }
         return imprintMethodMap;
@@ -503,32 +492,21 @@ public final class JsonToLookupTableConverter {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static Map<String, String> jsonToArtworkLookupTable(String jsonData) {
+    public static Map<String, String> jsonToArtworkLookupTable(LinkedList<?> jsonDataList) {
 
-        JSONParser parser = new JSONParser();
-        ContainerFactory containerFactory = new ContainerFactory() {
-            public List<?> creatArrayContainer() {
-                return new LinkedList<Object>();
-            }
-
-            public Map<?, ?> createObjectContainer() {
-                return new LinkedHashMap<Object, Object>();
-            }
-        };
         Map<String, String> artworkLookupTable = new HashMap<String, String>();
         try {
-            LinkedList<?> json = (LinkedList<?>) parser.parse(jsonData, containerFactory);
-            Iterator<?> iter = json.iterator();
+            Iterator<?> iter = jsonDataList.iterator();
             while (iter.hasNext()) {
                 Map<?, ?> crntValue = (LinkedHashMap<?, ?>) iter.next();
                 if (crntValue.get("Code").toString().equalsIgnoreCase(ApplicationConstants.CONST_ARTWORK_CODE)) {
-                    LinkedList<LinkedHashMap> codeValueGrps = (LinkedList<LinkedHashMap>) crntValue.get("CodeValueGroups");
+                    ArrayList<LinkedHashMap> codeValueGrps = (ArrayList<LinkedHashMap>) crntValue.get("CodeValueGroups");
                     Iterator<LinkedHashMap> iterator = codeValueGrps.iterator();
 
                     while (iterator.hasNext()) {
                         Map codeValueGrpsMap = (LinkedHashMap) iterator.next();
 
-                        List finalLst = (LinkedList) codeValueGrpsMap.get("SetCodeValues");
+                        List finalLst = (ArrayList) codeValueGrpsMap.get("SetCodeValues");
                         Iterator finalItr = finalLst.iterator();
                         while (finalItr.hasNext()) {
                             try {
