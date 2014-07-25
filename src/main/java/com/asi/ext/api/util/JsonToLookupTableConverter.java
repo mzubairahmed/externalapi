@@ -500,13 +500,13 @@ public final class JsonToLookupTableConverter {
             while (iter.hasNext()) {
                 Map<?, ?> crntValue = (LinkedHashMap<?, ?>) iter.next();
                 if (crntValue.get("Code").toString().equalsIgnoreCase(ApplicationConstants.CONST_ARTWORK_CODE)) {
-                    LinkedList<LinkedHashMap> codeValueGrps = (LinkedList<LinkedHashMap>) crntValue.get("CodeValueGroups");
+                    ArrayList<LinkedHashMap> codeValueGrps = (ArrayList<LinkedHashMap>) crntValue.get("CodeValueGroups");
                     Iterator<LinkedHashMap> iterator = codeValueGrps.iterator();
 
                     while (iterator.hasNext()) {
                         Map codeValueGrpsMap = (LinkedHashMap) iterator.next();
 
-                        List finalLst = (LinkedList) codeValueGrpsMap.get("SetCodeValues");
+                        List finalLst = (ArrayList) codeValueGrpsMap.get("SetCodeValues");
                         Iterator finalItr = finalLst.iterator();
                         while (finalItr.hasNext()) {
                             try {

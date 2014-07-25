@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestClientException;
 
 import com.asi.ext.api.product.transformers.ProductDataStore;
+import com.asi.ext.api.service.model.Artwork;
 import com.asi.ext.api.service.model.Color;
 import com.asi.ext.api.service.model.ImprintColor;
 import com.asi.ext.api.service.model.ImprintMethod;
@@ -669,14 +670,33 @@ public class ConfigurationsParser {
 				}				
 			}			
 		}
+		// Artworks
+		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_ARTWORK_CODE);
+		
+		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
+				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), ApplicationConstants.CONST_ARTWORK_CODE, Integer.parseInt(currentCriteriaSetValue.getId()), ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_ARTWORK_CODE));
+			}
+		}
+		
+		// MINO
+		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_MINIMUM_QUANTITY);
+		
+		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
+				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), ApplicationConstants.CONST_MINIMUM_QUANTITY, Integer.parseInt(currentCriteriaSetValue.getId()), productLookupParser.getValueInText(currentCriteriaSetValue.getValue()));
+			}
+		}
+		
+		
 		imprintMethodsList=productLookupParser.setServiceImprintMethods(productDetail,imprintMethods,criteriaSetParser);
 		serviceProductConfig.setImprintMethods(imprintMethodsList);
 		
-		// Artworks
 		
 		
 		
-		// MINO
+		
+		
 		
 		
 		
@@ -719,53 +739,7 @@ public class ConfigurationsParser {
 		return criteriaSetValuesList;
 	}
 
-	/*
-	 * private CriteriaSetValues transformCriteriaSetValues(
-	 * com.asi.service.product.vo.CriteriaSetValues currentCriteriaSetValues) {
-	 * CriteriaSetValues clientCriteriaSetValues=new CriteriaSetValues();
-	 * clientCriteriaSetValues
-	 * .setValueTypeCode(currentCriteriaSetValues.getValueTypeCode());
-	 * clientCriteriaSetValues
-	 * .setBaseLookupValue(currentCriteriaSetValues.getBaseLookupValue());
-	 * clientCriteriaSetValues
-	 * .setCriteriaCode(currentCriteriaSetValues.getCriteriaCode());
-	 * clientCriteriaSetValues
-	 * .setCriteriaSetId(currentCriteriaSetValues.getCriteriaSetId());
-	 * clientCriteriaSetValues
-	 * .setCriteriaValueDetail(currentCriteriaSetValues.getCriteriaValueDetail
-	 * ()); clientCriteriaSetValues.setFormatValue(currentCriteriaSetValues.
-	 * getFormatValue());
-	 * clientCriteriaSetValues.setValue(currentCriteriaSetValues.getValue());
-	 * clientCriteriaSetValues.setId(currentCriteriaSetValues.getId());
-	 * clientCriteriaSetValues
-	 * .setIsSetValueMeasurement(currentCriteriaSetValues.
-	 * getIsSetValueMeasurement());
-	 * clientCriteriaSetValues.setIsSubset(currentCriteriaSetValues
-	 * .getIsSubset());
-	 * clientCriteriaSetValues.setDisplaySequence(currentCriteriaSetValues
-	 * .getDisplaySequence());
-	 * clientCriteriaSetValues.setSubSets(currentCriteriaSetValues
-	 * .getSubSets()); CriteriaSetCodeValues currentCriteriaSetCodeValues=new
-	 * CriteriaSetCodeValues(); CriteriaSetCodeValues[]
-	 * clientCriteriaSetCodeValueList=new CriteriaSetCodeValues[1];
-	 * currentCriteriaSetCodeValues
-	 * .setId(currentCriteriaSetValues.getCriteriaSetCodeValues()[0].getId());
-	 * currentCriteriaSetCodeValues
-	 * .setCodeValue(currentCriteriaSetValues.getCriteriaSetCodeValues
-	 * ()[0].getCodeValue());
-	 * currentCriteriaSetCodeValues.setCodeValueDetail(currentCriteriaSetValues
-	 * .getCriteriaSetCodeValues()[0].getCodeValueDetail());
-	 * currentCriteriaSetCodeValues
-	 * .setCriteriaSetValueId(currentCriteriaSetValues
-	 * .getCriteriaSetCodeValues()[0].getCriteriaSetValueId());
-	 * currentCriteriaSetCodeValues
-	 * .setSetCodeValueId(currentCriteriaSetValues.getCriteriaSetCodeValues
-	 * ()[0].getSetCodeValueId());
-	 * clientCriteriaSetCodeValueList[0]=currentCriteriaSetCodeValues;
-	 * clientCriteriaSetValues
-	 * .setCriteriaSetCodeValues(clientCriteriaSetCodeValueList); return
-	 * clientCriteriaSetValues; }
-	 */
+	
 	/*public com.asi.service.product.client.vo.Product setProductWithSizeConfigurations(
 			Product srcProduct, ProductDetail currentProductDetails,
 			com.asi.service.product.client.vo.Product productToUpdate,

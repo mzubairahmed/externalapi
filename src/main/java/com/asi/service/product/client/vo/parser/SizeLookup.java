@@ -54,7 +54,7 @@ public class SizeLookup {
 				}else if(elementName.equalsIgnoreCase("units"))
 				{
 					@SuppressWarnings({ "unchecked" })
-					LinkedList<LinkedHashMap> unitValuesList = (LinkedList<LinkedHashMap>) sizeIndividualLookupMap.get("UnitsOfMeasure");
+					ArrayList<LinkedHashMap> unitValuesList = (ArrayList<LinkedHashMap>) sizeIndividualLookupMap.get("UnitsOfMeasure");
 					Iterator<LinkedHashMap> unitValuesiterator = unitValuesList.iterator();
 					while (unitValuesiterator.hasNext()) {
 						Map codeValueGrpsMap = (LinkedHashMap) unitValuesiterator.next();

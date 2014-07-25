@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.web.client.RestTemplate;
 
 import com.asi.core.utils.JerseyClient;
 import com.asi.ext.api.product.transformers.ProductDataStore;
@@ -25,7 +26,9 @@ import com.asi.ext.api.service.model.Artwork;
 import com.asi.ext.api.service.model.ImprintMethod;
 import com.asi.ext.api.service.model.MinimumOrder;
 import com.asi.ext.api.service.model.ProductConfigurations;
+import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
+import com.asi.ext.api.util.RestAPIProperties;
 import com.asi.service.product.client.vo.CriteriaSetValue;
 import com.asi.service.product.client.vo.ProductConfigurationsList;
 import com.asi.service.product.client.vo.ProductCriteriaSet;
@@ -48,6 +51,7 @@ import com.asi.util.json.JSONParserImpl;
 
 public class LookupParser {
 	private CriteriaSetParser criteriaSetParser=new CriteriaSetParser(); 
+	public static RestTemplate  lookupRestTemplate;
 	private HashMap<String, String> productColorMap = null;
 	private HashMap<Integer, String> productShapeMap = null;
 	private HashMap<Integer, String> productMaterialMap = null;
@@ -468,10 +472,12 @@ public class LookupParser {
 			LinkedHashMap<?, ?> valueMap=(LinkedHashMap<?, ?>)sizeValuesItr.next();
 		 if (null == sizesCriteriaWSResponse) {
              try {
-				sizesCriteriaWSResponse = (LinkedList<LinkedHashMap>) jsonParser
+				sizesCriteriaWSResponse = (LinkedList<LinkedHashMap>) lookupRestTemplate.getForObject(
+	                    RestAPIProperties.get(ApplicationConstants.SIZES_CRITERIA_LOOKUP_URL),LinkedList.class);
+						/*						jsonParser
 							.parseToList(JerseyClient.invoke(new URI(serverURL
-									+ "/api/api/lookup/criteria_attributes")));
-			} catch (URISyntaxException e) {
+									+ "/api/api/lookup/criteria_attributes")));*/
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
