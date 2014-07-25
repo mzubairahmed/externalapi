@@ -573,7 +573,7 @@ public class LookupParser {
           		crntOptionType=optionDetails[0];
           		optionAryList=optionList.get(optionKey);
           		crntOptionType=(crntOptionType.equalsIgnoreCase("PROP"))?"Product Option":crntOptionType.equalsIgnoreCase("SHOP")?"Shipping Option":crntOptionType.equalsIgnoreCase("IMOP")?"Imprint Option":"";
-          		if(null!=optionAryList && optionDetails.length>1 && optionAryList.size()==3)
+          		if(null!=optionAryList && optionDetails.length>1 && optionAryList.size()==4)
           		{
           			currentOption=new Option();
           			currentOption.setOptionType(crntOptionType);
@@ -584,7 +584,7 @@ public class LookupParser {
           			}          			
           			currentOption.setCanOnlyOrderOne(Boolean.valueOf(optionAryList.get(1)));
           			currentOption.setRequiredForOrder(Boolean.valueOf(optionAryList.get(2)));
-          		//	currentOption.setAdditionalInformation(optionAryList.get(3));
+          			currentOption.setAdditionalInformation(optionAryList.get(3));
 	          		if(optionCntr==0)
 	          		{
 	          			optionType=crntOptionType;
