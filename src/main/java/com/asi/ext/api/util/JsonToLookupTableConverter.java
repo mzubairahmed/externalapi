@@ -532,6 +532,48 @@ public final class JsonToLookupTableConverter {
         return artworkLookupTable;
 
     }
+    
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static Map<String, String> jsonToMinQtyLookupTable(LinkedList<?> jsonDataList) {
+
+        Map<String, String> artworkLookupTable = new HashMap<String, String>();
+        try {
+            Iterator<?> iter = jsonDataList.iterator();
+            while (iter.hasNext()) {
+                Map<?, ?> crntValue = (LinkedHashMap<?, ?>) iter.next();
+                if (crntValue.get("Code").toString().equalsIgnoreCase(ApplicationConstants.CONST_MINIMUM_QUANTITY)) {
+                    ArrayList<LinkedHashMap> codeValueGrps = (ArrayList<LinkedHashMap>) crntValue.get("CodeValueGroups");
+                    Iterator<LinkedHashMap> iterator = codeValueGrps.iterator();
+
+                    while (iterator.hasNext()) {
+                        Map codeValueGrpsMap = (LinkedHashMap) iterator.next();
+
+                        List finalLst = (ArrayList) codeValueGrpsMap.get("SetCodeValues");
+                        Iterator finalItr = finalLst.iterator();
+                        while (finalItr.hasNext()) {
+                            try {
+                                Map finalMap = (LinkedHashMap) finalItr.next();
+                                if (finalMap != null) {
+                                    artworkLookupTable.put(String.valueOf(finalMap.get("CodeValue")).toUpperCase(),
+                                            String.valueOf(finalMap.get("ID")));
+                                }
+                            } catch (Exception e) {
+
+                            }
+
+                        }
+
+                        // break;
+                    }
+                    // break;
+                }
+            }
+        } catch (Exception pe) {
+            pe.printStackTrace();
+        }
+        return artworkLookupTable;
+
+    }
 
     public static Map<String, String> generateCriteriaSetAttributeTable(String jsonData) {
         JSONParser parser = new JSONParser();

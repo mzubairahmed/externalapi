@@ -107,7 +107,7 @@ public class ImportTransformer {
     private AdditionalLocationProcessor            additionalLocationProcessor     = new AdditionalLocationProcessor(-1301, "0");
     private ProductSpecSampleProcessor             specSampleProcessor             = new ProductSpecSampleProcessor(-1401, "0");
     private ProductOptionsProcessor                optionsProcessor                = new ProductOptionsProcessor(-1501, "0");
-    private ImprintMethodProcessor                 imprintMethodProcessor          = new ImprintMethodProcessor();//1601, 
+    private ImprintMethodProcessor                 imprintMethodProcessor          = new ImprintMethodProcessor();                 // 1601,
 
     private final static Logger                    LOGGER                          = Logger.getLogger(ImportTransformer.class
                                                                                            .getName());
@@ -322,15 +322,19 @@ public class ImportTransformer {
         } else {
             optionsCriteriaSet = null;
         }
-        
-        if (serviceProdConfigs.getImprintMethods() != null && !serviceProdConfigs.getImprintMethods().isEmpty()) { 
-            existingCriteriaSetMap = imprintMethodProcessor.getImprintCriteriaSet(serviceProdConfigs.getImprintMethods(), rdrProduct, existingCriteriaSetMap, configId);
+        ImprintRelationData imprintRelationData = null;
+        if (serviceProdConfigs.getImprintMethods() != null && !serviceProdConfigs.getImprintMethods().isEmpty()) {
+            imprintRelationData = imprintMethodProcessor.getImprintCriteriaSet(serviceProdConfigs.getImprintMethods(), rdrProduct,
+                    existingCriteriaSetMap, configId);
+
+            existingCriteriaSetMap = imprintRelationData.getExistingCriteriaSetMap();
+            // TODO : Set Relationships back
         } else {
             existingCriteriaSetMap.put(ApplicationConstants.CONST_IMPRINT_METHOD_CODE, null);
             existingCriteriaSetMap.put(ApplicationConstants.CONST_ARTWORK_CODE, null);
             existingCriteriaSetMap.put(ApplicationConstants.CONST_MINIMUM_QUANTITY, null);
         }
-        
+
         // Merge all updated ProductCriteriaSets into product configuration and set back to list
         ProductConfiguration updatedProductConfiguration = new ProductConfiguration();
         updatedProductConfiguration.setConfigId(configId);

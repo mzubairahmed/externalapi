@@ -72,6 +72,7 @@ public class ProductDataStore {
     private static String                                             materialWSResponse             = null;
     public static Map<String, PriceUnitJsonModel>                     priceUnitCollection            = new HashMap<String, PriceUnitJsonModel>();
     public static Map<String, String>                                 artworkLookupTable             = new HashMap<String, String>();
+    public static Map<String, String>                                 minoLookupTable             = new HashMap<String, String>();
 
     private static Map<String, String>                                optionsLookupTable             = new HashMap<String, String>();
 
@@ -1061,6 +1062,35 @@ public class ProductDataStore {
         return setCodeValueId;
     }
 
+    public static String getMinQtySetCodeValueId(String minQty, boolean checkOther) {
+
+        if (minoLookupTable == null || minoLookupTable.isEmpty()) {
+            try {
+                LinkedList<?> minQtyResponse=lookupRestTemplate.getForObject(RestAPIProperties
+                        .get(ApplicationConstants.IMPRINT_ARTWORK_LOOKUP_URL), LinkedList.class);
+                if (minQtyResponse == null || minQtyResponse.isEmpty()) {
+                    LOGGER.error("Min QTY Lookup API returned null response");
+                    // TODO : Batch Error
+                    return null;
+                } else {
+                    minoLookupTable = JsonToLookupTableConverter.jsonToMinQtyLookupTable(minQtyResponse);
+                }
+            } catch (Exception e) {
+                LOGGER.error("Exception while fetching/processing Min QTY lookup data", e);
+                return null;
+            }
+        }
+        String setCodeValueId = null;
+        if (checkOther) {
+            setCodeValueId = minoLookupTable.get(String.valueOf(minQty).toUpperCase());
+            if (setCodeValueId == null) {
+                setCodeValueId = minoLookupTable.get(ApplicationConstants.CONST_STRING_OTHER.toUpperCase());
+            }
+        } else {
+            setCodeValueId = minoLookupTable.get(String.valueOf(minQty).toUpperCase());
+        }
+        return setCodeValueId;
+    }
     /**
      * This method will search for the particular item in the Lookup table of
      * given criteria code using the SetCodeValueId. Its called reverse lookup
@@ -1289,4 +1319,9 @@ public class ProductDataStore {
          }			
 		return prodSpecSampleLookupTable;
 	}
+
+    public static String getSetCodeValueIdForMinQTY() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
