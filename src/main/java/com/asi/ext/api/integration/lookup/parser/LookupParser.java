@@ -5,23 +5,32 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.asi.core.utils.JerseyClient;
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.radar.model.Value;
+import com.asi.ext.api.service.model.Artwork;
+import com.asi.ext.api.service.model.ImprintMethod;
+import com.asi.ext.api.service.model.MinimumOrder;
+import com.asi.ext.api.service.model.ProductConfigurations;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.service.product.client.vo.CriteriaSetValue;
 import com.asi.service.product.client.vo.ProductConfigurationsList;
 import com.asi.service.product.client.vo.ProductCriteriaSet;
+import com.asi.service.product.client.vo.ProductDetail;
+import com.asi.service.product.client.vo.Relationship;
 import com.asi.service.product.client.vo.parser.ColorLookup;
 import com.asi.service.product.client.vo.parser.ImprintLookup;
 import com.asi.service.product.client.vo.parser.ImprintSizeLookup;
@@ -293,18 +302,23 @@ public class LookupParser {
 	    }
 	    return finalKeywordString;
 	}
-
-/*	public ProcessProductsList updateImprintMethod(
-			ProcessProductsList processProductLst) {
+	public List<ImprintMethod> setServiceImprintMethods(
+			ProductDetail productDetail,String imprintMethods,CriteriaSetParser
+			 criteriaSetParserCurnt) {
+		ImprintMethod serviceImprintMethod=new ImprintMethod();
+		List<ImprintMethod> imprintMethodList=new ArrayList<>();
+		Artwork imprntArtwork=new Artwork();
+		MinimumOrder imprintMinOrder=new MinimumOrder();
+		
 		imprintRelationMap=new ConcurrentHashMap<>();
-		String currentImprintMethod=processProductLst.getProductConfigurationsList().getImprintMethod();
+		//String currentImprintMethod=processProductLst.getProductConfigurationsList().getImprintMethod();
 		ArrayList<String> imrintMethodsList=new ArrayList<>();
-		if(null!=currentImprintMethod && currentImprintMethod.contains("||"))
+		if(null!=imprintMethods && imprintMethods.contains("||"))
 		{
-			currentImprintMethod=currentImprintMethod.toLowerCase();
-			imrintMethodsList=new ArrayList<String>(Arrays.asList(currentImprintMethod.split("\\|\\|")));
+			imprintMethods=imprintMethods.toLowerCase();
+			imrintMethodsList=new ArrayList<String>(Arrays.asList(imprintMethods.split("\\|\\|")));
 		}
-		ArrayList<Relationship> relationShipList=(ArrayList<Relationship>) processProductLst.getProduct().getRelationships();
+		ArrayList<Relationship> relationShipList=(ArrayList<Relationship>) productDetail.getRelationships();
 		ImprintParser imprintParser=new ImprintParser();
 		if(null!=relationShipList && relationShipList.size()>0)
 		{
@@ -312,7 +326,7 @@ public class LookupParser {
 		int imprintCntr=0;
 		for(Relationship crntRelationship:relationShipList)
 		{
-		imprintParser.updateCriteriaValuePathsByParent(processProductLst.getProduct().getExternalProductId(),crntRelationship.getCriteriaSetValuePaths());
+		imprintParser.updateCriteriaValuePathsByParent(productDetail.getExternalProductId(),crntRelationship.getCriteriaSetValuePaths());
 		}
 		String imprintMethodKey="",relationValue="",tempImprintMethod="";
 		String[] individualRelations=null;
@@ -326,12 +340,12 @@ public class LookupParser {
 				individualRelations=relationValue.split(",");
 			if(imprintCntr==0)
 			{
-				imprintMethod=criteriaSetParser.findCriteriaSetMapValueById(processProductLst.getProduct().getExternalProductId()).get(imprintMethodKey);
+				imprintMethod=criteriaSetParserCurnt.findCriteriaSetMapValueById(productDetail.getExternalProductId()).get(imprintMethodKey);
 				if(null!=imprintMethod && imprintMethod.substring(0, imprintMethod.indexOf("__")).equalsIgnoreCase("IMMD") && !ArrayUtils.contains(inValidImprintMethods,imprintMethod.substring(imprintMethod.indexOf("__")).toUpperCase()))
 				{
 					imprintMethod=imprintMethod.substring(imprintMethod.indexOf("__")+2);	
 					if(!imrintMethodsList.isEmpty() && imrintMethodsList.contains(imprintMethod.toLowerCase())) imrintMethodsList.remove(imprintMethod.toLowerCase());
-					relationValueAry=imprintParser.getImprintRelations(individualRelations,processProductLst.getProduct().getExternalProductId());
+					relationValueAry=imprintParser.getImprintRelations(individualRelations,productDetail.getExternalProductId());
 					if(null!=relationValueAry && relationValueAry.length==2)
 					{
 						minQty=(null==relationValueAry[0] || relationValueAry[0].equalsIgnoreCase("null"))?"":relationValueAry[0];
@@ -344,13 +358,13 @@ public class LookupParser {
 				}
 			}
 			else{//
-				tempImprintMethod=criteriaSetParser.findCriteriaSetMapValueById(processProductLst.getProduct().getExternalProductId()).get(imprintMethodKey);
+				tempImprintMethod=criteriaSetParserCurnt.findCriteriaSetMapValueById(productDetail.getExternalProductId()).get(imprintMethodKey);
 				if(null!=tempImprintMethod && tempImprintMethod.substring(0, tempImprintMethod.indexOf("__")).equalsIgnoreCase("IMMD") && !ArrayUtils.contains(inValidImprintMethods,tempImprintMethod.substring(tempImprintMethod.indexOf("__")).toUpperCase()))
 				{
 				tempImprintMethod=tempImprintMethod.substring(tempImprintMethod.indexOf("__")+2);
 				if(imrintMethodsList.contains(tempImprintMethod.toLowerCase())) imrintMethodsList.remove(tempImprintMethod.toLowerCase());
 				imprintMethod+="||"+tempImprintMethod;
-				tempRelationValueAry=imprintParser.getImprintRelations(individualRelations,processProductLst.getProduct().getExternalProductId());
+				tempRelationValueAry=imprintParser.getImprintRelations(individualRelations,productDetail.getExternalProductId());
 				if(tempRelationValueAry.length==2)
 				{
 					minQty+="||"+((null==tempRelationValueAry[0] || tempRelationValueAry[0].equalsIgnoreCase("null"))?"":tempRelationValueAry[0]);
@@ -385,26 +399,28 @@ public class LookupParser {
 				}
 			}
 		}
-		if(imprintParser.checkImprintMethod("Unimprinted",processProductLst.getProduct().getExternalProductId())) sold_unimprintedFlag="Y";
-		if(imprintParser.checkImprintMethod("Personalization",processProductLst.getProduct().getExternalProductId())) personalizationFlag="Y";	
-		if(null!=processProductLst.getProductConfigurationsList())
-		{
+	/*	if(imprintParser.checkImprintMethod("Unimprinted",processProductLst.getProduct().getExternalProductId())) sold_unimprintedFlag="Y";
+		if(imprintParser.checkImprintMethod("Personalization",processProductLst.getProduct().getExternalProductId())) personalizationFlag="Y";	*/
+	
 		if(null!=relationValueAry && relationValueAry.length==2)
 		{
-		processProductLst.getProductConfigurationsList().setMinimumQuantity(minQty);
-		processProductLst.getProductConfigurationsList().setArtwork(artwork);
+			imprntArtwork.setValue(artwork);
+			serviceImprintMethod.getArtwork().add(imprntArtwork);
+			imprintMinOrder.setUnit(minQty);
+			serviceImprintMethod.setMinimumOrder(imprintMinOrder);			
+			//processProductLst.getProductConfigurationsList().setMinimumQuantity(minQty);
+			//processProductLst.getProductConfigurationsList().setArtwork(artwork);
 		}
-		processProductLst.getProductConfigurationsList().setPersonalizationAvailable(personalizationFlag);
-		processProductLst.getProductConfigurationsList().setSolidUnimprinted(sold_unimprintedFlag);
-		processProductLst.getProductConfigurationsList().setImprintMethod(imprintMethod);
-		}
-		} else if (currentImprintMethod != null && !currentImprintMethod.isEmpty()) {
-		    String[] temp = currentImprintMethod.split("\\|\\|");
+	/*	processProductLst.getProductConfigurationsList().setPersonalizationAvailable(personalizationFlag);
+		processProductLst.getProductConfigurationsList().setSolidUnimprinted(sold_unimprintedFlag);*/
+		serviceImprintMethod.setType(imprintMethod);
+		} else if (imprintMethods != null && !imprintMethods.isEmpty()) {
+		    String[] temp = imprintMethods.split("\\|\\|");
 		    if (temp != null && temp.length > 0) { 
 		        imrintMethodsList= new ArrayList<String>();
 		        for (int i = 0; i < temp.length; i++) {
 		            String imprintMethod = temp[i];
-		            if (imprintMethod != null && !imprintMethod.isEmpty() && isImprintMethod(imprintMethod)) {
+		            if (imprintMethod != null && !imprintMethod.isEmpty() ) { //&& isImprintMethod(imprintMethod)
 		                imrintMethodsList.add(imprintMethod);
 		            }		            
 		        }
@@ -415,27 +431,28 @@ public class LookupParser {
 		        if (imprintMethod.startsWith("||")) {
 		            imprintMethod = imprintMethod.substring(2);
 		        }
-		        processProductLst.getProductConfigurationsList().setImprintMethod(imprintMethod);
-		        if(imprintParser.checkImprintMethod("Unimprinted",processProductLst.getProduct().getExternalProductId())){
+		        
+		       // processProductLst.getProductConfigurationsList().setImprintMethod(imprintMethod);
+		        /*if(imprintParser.checkImprintMethod("Unimprinted",processProductLst.getProduct().getExternalProductId())){
 		            processProductLst.getProductConfigurationsList().setSolidUnimprinted("Y");
 		        }
 		        if(imprintParser.checkImprintMethod("Personalization",processProductLst.getProduct().getExternalProductId())) {
 		            processProductLst.getProductConfigurationsList().setPersonalizationAvailable("Y");
-		        }
+		        }*/
 		    }
 		    
 		    
 		}
-		return processProductLst;
+		return imprintMethodList;
 	}
-	*/
-	private boolean isImprintMethod(String method) {
+	
+/*	private boolean isImprintMethod(String method) {
 	    if (StringUtils.containsIgnoreCase(method.trim(), "Unimprinted") || StringUtils.containsIgnoreCase(method.trim(), "Personalization")) {
 	        return false;
 	    } else {
 	        return true;
 	    }
-	}
+	}*/
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public String getValueInText(Object value) {
@@ -534,4 +551,6 @@ public class LookupParser {
           productConfigurationsList.setReqForOrder(reqForOrder);
 		return productConfigurationsList;
 	}
+
+	
 }

@@ -14,6 +14,7 @@ import org.springframework.web.client.RestClientException;
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.service.model.Color;
 import com.asi.ext.api.service.model.ImprintColor;
+import com.asi.ext.api.service.model.ImprintMethod;
 import com.asi.ext.api.service.model.ImprintSizeLocation;
 import com.asi.ext.api.service.model.Material;
 import com.asi.ext.api.service.model.ProductionTime;
@@ -45,7 +46,7 @@ public class ConfigurationsParser {
 	private int productCriteriaSetCntr = -1;
 	private int newCriteriaSetCodeValueCntr = -112;
 	private int newCriteriaSetValuesCntr = -1;
-
+	private CriteriaSetParser criteriaSetParser=new CriteriaSetParser();
 	/*public String[] getPriceCriteria(ProductDetail productDetail,
 			String priceGridId) {
 		String[] priceCrterias = null;
@@ -434,6 +435,7 @@ public class ConfigurationsParser {
 			ProductDetail productDetail,
 			com.asi.ext.api.service.model.Product serviceProduct) {
 		com.asi.ext.api.service.model.ProductConfigurations serviceProductConfig=new com.asi.ext.api.service.model.ProductConfigurations(); 
+		
 		// Product Color
 		List<com.asi.service.product.client.vo.CriteriaSetValues> currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_COLORS_CRITERIA_CODE);
 		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
@@ -631,6 +633,7 @@ public class ConfigurationsParser {
 			samples.setSpecSampleAvailable(false);
 			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
 				sampleType=productLookupParser.findSampleType(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId()+"");
+				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), ApplicationConstants.CONST_PRODUCT_SAMPLE_CRITERIA_CODE, Integer.parseInt(currentCriteriaSetValue.getId()), currentCriteriaSetValue.getValue().toString());
 				if(sampleType.equalsIgnoreCase("Spec Sample")){
 					samples.setSpecSampleAvailable(true);
 					samples.setSpecDetails(currentCriteriaSetValue.getValue().toString());
@@ -642,6 +645,44 @@ public class ConfigurationsParser {
 			serviceProductConfig.setSamples(samples);
 		}
 			
+		// Imprint Methods
+		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_IMPRINT_METHOD_CODE);
+		List<ImprintMethod> imprintMethodsList=new ArrayList<>();
+		String imprintMethods="";
+		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+					
+			String currentImprintMethod="";
+			int imprintCntr=0;
+			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
+				currentImprintMethod=ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_IMPRINT_METHOD_CODE);
+				if(currentImprintMethod.equalsIgnoreCase("Other")){
+					currentImprintMethod=currentCriteriaSetValue.getValue().toString();
+				}
+				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), ApplicationConstants.CONST_IMPRINT_METHOD_CODE, Integer.parseInt(currentCriteriaSetValue.getId()), currentImprintMethod);
+				if(null!=currentImprintMethod && !currentImprintMethod.equalsIgnoreCase("Unimprinted") && !currentImprintMethod.equalsIgnoreCase("Personalization")){
+				if(imprintCntr==0){
+					imprintMethods=currentImprintMethod;
+				}else{
+					imprintMethods+="||"+currentImprintMethod;
+				}
+				imprintCntr++;
+				}				
+			}			
+		}
+		imprintMethodsList=productLookupParser.setServiceImprintMethods(productDetail,imprintMethods,criteriaSetParser);
+		serviceProductConfig.setImprintMethods(imprintMethodsList);
+		
+		// Artworks
+		
+		
+		
+		// MINO
+		
+		
+		
+		
+		
+		
 		
 		
 		
