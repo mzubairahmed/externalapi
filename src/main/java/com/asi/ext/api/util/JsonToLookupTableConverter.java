@@ -283,21 +283,11 @@ public final class JsonToLookupTableConverter {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static HashMap<String, String> jsonToProductThemesMap(String productThemesResponse) {
-        JSONParser parser = new JSONParser();
-        ContainerFactory containerFactory = new ContainerFactory() {
-            public List<?> creatArrayContainer() {
-                return new LinkedList<Object>();
-            }
-
-            public Map<?, ?> createObjectContainer() {
-                return new LinkedHashMap<Object, Object>();
-            }
-        };
+    public static HashMap<String, String> jsonToProductThemesMap(LinkedList<?> productThemesResponse) {
+ 
         HashMap<String, String> productThemesLookupTable = new HashMap<String, String>();
         try {
-            LinkedList<?> json = (LinkedList<?>) parser.parse(productThemesResponse, containerFactory);
-            Iterator<?> iter = json.iterator();
+            Iterator<?> iter = productThemesResponse.iterator();
             while (iter.hasNext()) {
                 Map<?, ?> crntValue = (LinkedHashMap<?, ?>) iter.next();
                 LinkedList<LinkedHashMap> codeValueGrps = (LinkedList<LinkedHashMap>) crntValue.get("SetCodeValues");
@@ -318,21 +308,10 @@ public final class JsonToLookupTableConverter {
     }
 
     @SuppressWarnings("unchecked")
-    public static String getSetCodeValueForTradeName(String jsonText, String tradeName) {
+    public static String getSetCodeValueForTradeName(LinkedList<?> jsonList, String tradeName) {
         String setCodeValueId = null;
-        JSONParser parser = new JSONParser();
-        ContainerFactory containerFactory = new ContainerFactory() {
-            public List<?> creatArrayContainer() {
-                return new LinkedList<Object>();
-            }
-
-            public Map<?, ?> createObjectContainer() {
-                return new LinkedHashMap<Object, Object>();
-            }
-        };
         try {
-            LinkedList<?> json = (LinkedList<?>) parser.parse(jsonText, containerFactory);
-            Iterator<?> iter = json.iterator();
+            Iterator<?> iter = jsonList.iterator();
             while (iter.hasNext()) {
                 LinkedHashMap<String, String> crntValue = (LinkedHashMap<String, String>) iter.next();
                 if (crntValue != null) {
@@ -342,7 +321,7 @@ public final class JsonToLookupTableConverter {
                     }
                 }
             }
-        } catch (ParseException pe) {
+        } catch (Exception pe) {
             pe.printStackTrace();
         }
         return setCodeValueId;
@@ -471,10 +450,10 @@ public final class JsonToLookupTableConverter {
         return imprintMethodMap;
     }
 
-    public static Map<String, PriceUnitJsonModel> jsonToPriceUnitLookupTable(String json) {
+    public static Map<String, PriceUnitJsonModel> jsonToPriceUnitLookupTable(LinkedList<?> jsonList) {
         Map<String, PriceUnitJsonModel> priceUnitMap = new HashMap<String, PriceUnitJsonModel>();
         try {
-            List<LinkedHashMap<String, String>> priceUnitJsonModelList = JsonProcessor.convertJsonToBean(json, List.class);
+            List<LinkedHashMap<String, String>> priceUnitJsonModelList = (List<LinkedHashMap<String, String>>) jsonList;//JsonProcessor.convertJsonToBean(jsonList, List.class);
 
             if (priceUnitJsonModelList != null && !priceUnitJsonModelList.isEmpty()) {
                 for (LinkedHashMap<String, String> priceUnitJModel : priceUnitJsonModelList) {
@@ -577,21 +556,11 @@ public final class JsonToLookupTableConverter {
 
     }
 
-    public static Map<String, String> generateCriteriaSetAttributeTable(String jsonData) {
-        JSONParser parser = new JSONParser();
-        ContainerFactory containerFactory = new ContainerFactory() {
-            public List<?> creatArrayContainer() {
-                return new LinkedList<Object>();
-            }
+    public static Map<String, String> generateCriteriaSetAttributeTable(LinkedList<?> jsonDataList) {
 
-            public Map<?, ?> createObjectContainer() {
-                return new LinkedHashMap<Object, Object>();
-            }
-        };
         Map<String, String> criteriaSetAttributeLookupTable = new HashMap<String, String>();
         try {
-            LinkedList<?> json = (LinkedList<?>) parser.parse(jsonData, containerFactory);
-            Iterator<?> iter = json.iterator();
+            Iterator<?> iter = jsonDataList.iterator();
             while (iter.hasNext()) {
                 Map<?, ?> crntValue = (LinkedHashMap<?, ?>) iter.next();
                 if (crntValue != null && !crntValue.isEmpty()) {
@@ -606,21 +575,11 @@ public final class JsonToLookupTableConverter {
 
     }
 
-    public static Map<String, HashMap<String, String>> generateUnitOfMeasureTable(String jsonData) {
-        JSONParser parser = new JSONParser();
-        ContainerFactory containerFactory = new ContainerFactory() {
-            public List<?> creatArrayContainer() {
-                return new LinkedList<Object>();
-            }
-
-            public Map<?, ?> createObjectContainer() {
-                return new LinkedHashMap<Object, Object>();
-            }
-        };
+    public static Map<String, HashMap<String, String>> generateUnitOfMeasureTable(LinkedList<?> jsonDataList) {
+     
         Map<String, HashMap<String, String>> unitOfMeasureMap = new HashMap<String, HashMap<String, String>>();
         try {
-            LinkedList<?> json = (LinkedList<?>) parser.parse(jsonData, containerFactory);
-            Iterator<?> iter = json.iterator();
+            Iterator<?> iter = jsonDataList.iterator();
             while (iter.hasNext()) {
                 Map<?, ?> crntValue = (LinkedHashMap<?, ?>) iter.next();
                 if (crntValue != null && !crntValue.isEmpty()) {
@@ -646,21 +605,10 @@ public final class JsonToLookupTableConverter {
         return unitOfMeasureMap;
     }
 
-    public static Map<String, HashMap<String, String>> generateCriteriaItemTable(String jsonData) {
-        JSONParser parser = new JSONParser();
-        ContainerFactory containerFactory = new ContainerFactory() {
-            public List<?> creatArrayContainer() {
-                return new LinkedList<Object>();
-            }
-
-            public Map<?, ?> createObjectContainer() {
-                return new LinkedHashMap<Object, Object>();
-            }
-        };
+    public static Map<String, HashMap<String, String>> generateCriteriaItemTable(LinkedList<?> jsonDataList) {
         Map<String, HashMap<String, String>> criteriaItemsMap = new HashMap<String, HashMap<String, String>>();
         try {
-            LinkedList<?> json = (LinkedList<?>) parser.parse(jsonData, containerFactory);
-            Iterator<?> iter = json.iterator();
+            Iterator<?> iter = jsonDataList.iterator();
             while (iter.hasNext()) {
                 Map<?, ?> crntValue = (LinkedHashMap<?, ?>) iter.next();
                 if (crntValue != null && !crntValue.isEmpty()) {

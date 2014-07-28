@@ -1,8 +1,5 @@
 package com.asi.ext.api.service.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -13,8 +10,8 @@ public class Size {
 
     @JsonProperty("Type")
     private String       type;
-    @JsonProperty("Values")
-    private List<String> values = new ArrayList<String>();
+    @JsonProperty("Value")
+    private Object value = new Object();
 
     @JsonProperty("Type")
     public String getType() {
@@ -26,14 +23,14 @@ public class Size {
         this.type = type;
     }
 
-    @JsonProperty("Values")
-    public List<String> getValues() {
-        return values;
+    @JsonProperty("Value")
+    public Object getValue() {
+        return value;
     }
 
-    @JsonProperty("Values")
-    public void setValues(List<String> values) {
-        this.values = values;
+    @JsonProperty("Value")
+    public void setValues(Object value) {
+        this.value = value;
     }
 
     @Override
