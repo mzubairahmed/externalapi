@@ -1454,7 +1454,7 @@ public class JsonProcessor {
      * @param priceUnit is the price unit we need to find
      * @return matched {@linkplain PriceUnit} or default {@linkplain PriceUnit}
      */
-    public static PriceUnit getPriceUnitId(String priceUnit) {
+   /* public static PriceUnit getPriceUnitId(String priceUnit) {
         try {
             if (ProductDataStore.priceUnitCollection == null || ProductDataStore.priceUnitCollection.isEmpty()) {
                 ProductDataStore.priceUnitCollection = new HashMap<String, PriceUnitJsonModel>();
@@ -1485,7 +1485,7 @@ public class JsonProcessor {
             // TODO Log error message && add error to batch
             return new PriceUnitJsonModel(ApplicationConstants.CONST_STRING_PRICE_UNIT_DEFAULT_ID, ApplicationConstants.CONST_STRING_PIECE, ApplicationConstants.CONST_STRING_PIECE, "0");
         }
-    }
+    }*/
     
     public static Set<String> getErrorMessageFromJson(String json) {
         

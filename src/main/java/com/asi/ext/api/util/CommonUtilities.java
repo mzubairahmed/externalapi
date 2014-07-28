@@ -978,4 +978,16 @@ public class CommonUtilities {
         }
         return finalString;
     }
+    
+    public static <T> T getElementFromSet(Set<T> source, int index) {
+        Iterator<T> sourceIter = source.iterator();
+        int counter = 1;
+        while (sourceIter.hasNext()) {
+            T t = (T) sourceIter.next();
+            if (counter == index) {
+                return t;
+            }
+        }
+        return null;
+    }
 }

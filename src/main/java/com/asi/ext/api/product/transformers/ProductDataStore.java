@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import com.asi.ext.api.exception.VelocityException;
@@ -25,6 +24,8 @@ import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.JsonToLookupTableConverter;
 import com.asi.ext.api.util.RestAPIProperties;
+import com.asi.service.product.client.vo.Currency;
+import com.asi.service.product.client.vo.DiscountRate;
 
 /**
  * This class is used store elements for product transformation purpose and many
@@ -72,9 +73,13 @@ public class ProductDataStore {
     private static String                                             materialWSResponse             = null;
     public static Map<String, PriceUnitJsonModel>                     priceUnitCollection            = new HashMap<String, PriceUnitJsonModel>();
     public static Map<String, String>                                 artworkLookupTable             = new HashMap<String, String>();
-    public static Map<String, String>                                 minoLookupTable             = new HashMap<String, String>();
+    public static Map<String, String>                                 minoLookupTable                = new HashMap<String, String>();
 
     private static Map<String, String>                                optionsLookupTable             = new HashMap<String, String>();
+    private static Map<String, Currency>                              currencyLookupTable            = new HashMap<String, Currency>();
+    private static Map<String, DiscountRate>                          discountLookupTable            = new HashMap<String, DiscountRate>();
+
+    private static Map<String, CriteriaInfo>                          criteriaInfoLookups            = new HashMap<String, CriteriaInfo>();
 
     public static LinkedList<LinkedHashMap>                           sizeElementsResponse           = null;
 
@@ -430,7 +435,7 @@ public class ProductDataStore {
         try {
 
             if (productMaterialLookupTable == null || productMaterialLookupTable.isEmpty()) {
-            	productMaterialLookupTable = JsonToLookupTableConverter.createProductMaterialMap(RestAPIProperties
+                productMaterialLookupTable = JsonToLookupTableConverter.createProductMaterialMap(RestAPIProperties
                         .get(ApplicationConstants.MATERIALS_LOOKUP_URL));
             }
 
@@ -445,18 +450,20 @@ public class ProductDataStore {
                 if (!CommonUtilities.isValueNull(setCodeValueId)) {
                     return setCodeValueId;
                 }
-                /*// If match not found, try with Medium + <Space> + Color Name
-                key = "Medium " + String.valueOf(materialName).trim();
-                setCodeValueId = ProductDataStore.productColorMap.get(key.toUpperCase());
-                if (!CommonUtilities.isValueNull(setCodeValueId)) {
-                    return setCodeValueId;
-                }
-                // If match not found, try with Color Name + <Space> + Metal
-                key = String.valueOf(colorName).trim() + " Metal";
-                setCodeValueId = ProductDataStore.productColorMap.get(key.toUpperCase());
-                if (!CommonUtilities.isValueNull(setCodeValueId)) {
-                    return setCodeValueId;
-                }*/
+                /*
+                 * // If match not found, try with Medium + <Space> + Color Name
+                 * key = "Medium " + String.valueOf(materialName).trim();
+                 * setCodeValueId = ProductDataStore.productColorMap.get(key.toUpperCase());
+                 * if (!CommonUtilities.isValueNull(setCodeValueId)) {
+                 * return setCodeValueId;
+                 * }
+                 * // If match not found, try with Color Name + <Space> + Metal
+                 * key = String.valueOf(colorName).trim() + " Metal";
+                 * setCodeValueId = ProductDataStore.productColorMap.get(key.toUpperCase());
+                 * if (!CommonUtilities.isValueNull(setCodeValueId)) {
+                 * return setCodeValueId;
+                 * }
+                 */
                 // Last try to get Other Group
                 key = ApplicationConstants.CONST_STRING_OTHER.toUpperCase();
                 setCodeValueId = ProductDataStore.productMaterialLookupTable.get(key.toUpperCase());
@@ -472,7 +479,7 @@ public class ProductDataStore {
         }
         return setCodeValueId;
     }
-    
+
     public static String getSetCodeValueIdForProductOrigin(String origin) {
         if (productOriginsLookupTable == null || productOriginsLookupTable.isEmpty()) {
             // Create Category Lookup table
@@ -513,9 +520,9 @@ public class ProductDataStore {
         if (productShapesLookupTable == null || productShapesLookupTable.isEmpty()) {
             // Create Product shapes Lookup table
             try {
-             
-                LinkedList<?> productShapesResponse=lookupRestTemplate.getForObject(RestAPIProperties
-                        .get(ApplicationConstants.PRODUCT_SHAPES_LOOKUP_URL), LinkedList.class);
+
+                LinkedList<?> productShapesResponse = lookupRestTemplate.getForObject(
+                        RestAPIProperties.get(ApplicationConstants.PRODUCT_SHAPES_LOOKUP_URL), LinkedList.class);
                 if (productShapesResponse == null || productShapesResponse.isEmpty()) {
                     // Report error to API that we are not able to fetch data
                     // for Origin
@@ -613,8 +620,8 @@ public class ProductDataStore {
         if (productPackagesLookupTable == null || productPackagesLookupTable.isEmpty()) {
             // Create Product packages Lookup table
             try {
-                LinkedList<?> productPackagesResponse=lookupRestTemplate.getForObject(RestAPIProperties
-                        .get(ApplicationConstants.PACKAGING_LOOKUP), LinkedList.class);
+                LinkedList<?> productPackagesResponse = lookupRestTemplate.getForObject(
+                        RestAPIProperties.get(ApplicationConstants.PACKAGING_LOOKUP), LinkedList.class);
                 if (productPackagesResponse == null || productPackagesResponse.isEmpty()) {
                     // Report error to API that we are not able to fetch data
                     // for packages
@@ -643,13 +650,14 @@ public class ProductDataStore {
 
         return setCodeValueId;
     }
-   
+
     public static String getSetCodeValueIdForAdditionalColor(String additionalColor) {
         if (additionalColorLookupTable == null || additionalColorLookupTable.isEmpty()) {
             // Create Product additional color Lookup table
             try {
-           
-                LinkedList<?> additionalColorResponse=lookupRestTemplate.getForObject(RestAPIProperties.get(ApplicationConstants.ADDITIONAL_COLOR_LOOKUP), LinkedList.class);
+
+                LinkedList<?> additionalColorResponse = lookupRestTemplate.getForObject(
+                        RestAPIProperties.get(ApplicationConstants.ADDITIONAL_COLOR_LOOKUP), LinkedList.class);
                 if (additionalColorResponse == null || additionalColorResponse.isEmpty()) {
                     // Report error to API that we are not able to fetch data
                     // for additional color
@@ -674,14 +682,14 @@ public class ProductDataStore {
 
         return additionalColorLookupTable.get(ApplicationConstants.CONST_STRING_OTHER.toUpperCase());
     }
-   
+
     public static String getSetCodeValueIdForAdditionalLocation(String trim) {
         if (additionalLocationLookupTable == null || additionalLocationLookupTable.isEmpty()) {
             // Create Product additional location Lookup table
             try {
-                 LinkedList<?> additionalLocationResponse=lookupRestTemplate.getForObject(RestAPIProperties
-                        .get(ApplicationConstants.ADDITIONAL_LOCATION_LOOKUP), LinkedList.class);
-                
+                LinkedList<?> additionalLocationResponse = lookupRestTemplate.getForObject(
+                        RestAPIProperties.get(ApplicationConstants.ADDITIONAL_LOCATION_LOOKUP), LinkedList.class);
+
                 if (additionalLocationResponse == null || additionalLocationResponse.isEmpty()) {
                     // Report error to API that we are not able to fetch data
                     // for additional location
@@ -711,9 +719,9 @@ public class ProductDataStore {
         if (imprintColorLookupTable == null || imprintColorLookupTable.isEmpty()) {
             // Create Product imprint color Lookup table
             try {
-              
-                LinkedList<?> imprintColorResponse=lookupRestTemplate.getForObject(RestAPIProperties
-                        .get(ApplicationConstants.IMPRINT_COLOR_LOOKUP), LinkedList.class);
+
+                LinkedList<?> imprintColorResponse = lookupRestTemplate.getForObject(
+                        RestAPIProperties.get(ApplicationConstants.IMPRINT_COLOR_LOOKUP), LinkedList.class);
                 if (imprintColorResponse == null || imprintColorResponse.isEmpty()) {
                     // Report error to API that we are not able to fetch data
                     // for imprint color
@@ -831,9 +839,9 @@ public class ProductDataStore {
 
     public static String getSetCodeValueIdForProdSpecSample(String value) {
         if (prodSpecSampleLookupTable == null || prodSpecSampleLookupTable.isEmpty()) {
-            try {                
-                LinkedList<?> prodSpecSampleJson = lookupRestTemplate.getForObject(RestAPIProperties
-                        .get(ApplicationConstants.ADDITIONAL_COLOR_LOOKUP),LinkedList.class);
+            try {
+                LinkedList<?> prodSpecSampleJson = lookupRestTemplate.getForObject(
+                        RestAPIProperties.get(ApplicationConstants.ADDITIONAL_COLOR_LOOKUP), LinkedList.class);
                 if (prodSpecSampleJson == null || prodSpecSampleJson.isEmpty()) {
                     // Report error to API that we are not able to fetch data
                     // for Product Spec Sample
@@ -858,8 +866,8 @@ public class ProductDataStore {
     public static String getSetCodeValueIdForImmdMethod(String method) {
         if (immprintMethodLookupTable == null || immprintMethodLookupTable.isEmpty()) {
             try {
-                LinkedList<?> imprintMethodResponse=lookupRestTemplate.getForObject(RestAPIProperties
-                        .get(ApplicationConstants.IMPRINT_LOOKUP_URL), LinkedList.class);
+                LinkedList<?> imprintMethodResponse = lookupRestTemplate.getForObject(
+                        RestAPIProperties.get(ApplicationConstants.IMPRINT_LOOKUP_URL), LinkedList.class);
                 if (imprintMethodResponse == null || imprintMethodResponse.isEmpty()) {
                     LOGGER.error("ImprintMethod Lookup API returned null response");
                     // TODO : Batch Error
@@ -879,8 +887,8 @@ public class ProductDataStore {
     public static String getSetCodeValueIdForProductionTime(String value) {
         if (productionTimeLookupTable == null || productionTimeLookupTable.isEmpty()) {
             try {
-                LinkedList<?> productionTimeResponse=lookupRestTemplate.getForObject(RestAPIProperties
-                        .get(ApplicationConstants.RUSH_TIME_LOOKUP), LinkedList.class);
+                LinkedList<?> productionTimeResponse = lookupRestTemplate.getForObject(
+                        RestAPIProperties.get(ApplicationConstants.RUSH_TIME_LOOKUP), LinkedList.class);
                 if (productionTimeResponse == null || productionTimeResponse.isEmpty()) {
                     LOGGER.error("ProductionTime Lookup API returned null response");
                     // TODO : Batch Error
@@ -902,8 +910,8 @@ public class ProductDataStore {
     public static String getSetCodeValueIdForRushTime(String value) {
         if (rushTimeLookupTable == null || rushTimeLookupTable.isEmpty()) {
             try {
-                LinkedList<?> productionTimeResponse=lookupRestTemplate.getForObject(RestAPIProperties
-                        .get(ApplicationConstants.RUSH_TIME_LOOKUP), LinkedList.class);
+                LinkedList<?> productionTimeResponse = lookupRestTemplate.getForObject(
+                        RestAPIProperties.get(ApplicationConstants.RUSH_TIME_LOOKUP), LinkedList.class);
                 if (productionTimeResponse == null || productionTimeResponse.isEmpty()) {
                     LOGGER.error("RushTime Lookup API returned null response");
                     // TODO : Batch Error
@@ -925,8 +933,8 @@ public class ProductDataStore {
     public static String getSetCodeValueIdForSameDayService(String value) {
         if (sameDayRushServiceLookupTable == null || sameDayRushServiceLookupTable.isEmpty()) {
             try {
-                LinkedList<?> sameDayRushResponse=lookupRestTemplate.getForObject(RestAPIProperties
-                        .get(ApplicationConstants.RUSH_TIME_LOOKUP), LinkedList.class);
+                LinkedList<?> sameDayRushResponse = lookupRestTemplate.getForObject(
+                        RestAPIProperties.get(ApplicationConstants.RUSH_TIME_LOOKUP), LinkedList.class);
                 if (sameDayRushResponse == null || sameDayRushResponse.isEmpty()) {
                     LOGGER.error("SameDayRushService Lookup API returned null response");
                     // TODO : Batch Error
@@ -1001,7 +1009,7 @@ public class ProductDataStore {
      *            is the price unit we need to find
      * @return matched {@linkplain PriceUnit} or default {@linkplain PriceUnit}
      */
-    public static PriceUnit getPriceUnit(String priceUnit) {
+    public static com.asi.service.product.client.vo.PriceUnit getPriceUnit(String priceUnit) {
         try {
             if (ProductDataStore.priceUnitCollection == null || ProductDataStore.priceUnitCollection.isEmpty()) {
                 ProductDataStore.priceUnitCollection = new HashMap<String, PriceUnitJsonModel>();
@@ -1036,8 +1044,8 @@ public class ProductDataStore {
 
         if (artworkLookupTable == null || artworkLookupTable.isEmpty()) {
             try {
-                LinkedList<?> artworkResponse=lookupRestTemplate.getForObject(RestAPIProperties
-                        .get(ApplicationConstants.IMPRINT_ARTWORK_LOOKUP_URL), LinkedList.class);
+                LinkedList<?> artworkResponse = lookupRestTemplate.getForObject(
+                        RestAPIProperties.get(ApplicationConstants.IMPRINT_ARTWORK_LOOKUP_URL), LinkedList.class);
                 if (artworkResponse == null || artworkResponse.isEmpty()) {
                     LOGGER.error("Artwork Lookup API returned null response");
                     // TODO : Batch Error
@@ -1066,8 +1074,8 @@ public class ProductDataStore {
 
         if (minoLookupTable == null || minoLookupTable.isEmpty()) {
             try {
-                LinkedList<?> minQtyResponse=lookupRestTemplate.getForObject(RestAPIProperties
-                        .get(ApplicationConstants.IMPRINT_ARTWORK_LOOKUP_URL), LinkedList.class);
+                LinkedList<?> minQtyResponse = lookupRestTemplate.getForObject(
+                        RestAPIProperties.get(ApplicationConstants.IMPRINT_ARTWORK_LOOKUP_URL), LinkedList.class);
                 if (minQtyResponse == null || minQtyResponse.isEmpty()) {
                     LOGGER.error("Min QTY Lookup API returned null response");
                     // TODO : Batch Error
@@ -1091,6 +1099,7 @@ public class ProductDataStore {
         }
         return setCodeValueId;
     }
+
     /**
      * This method will search for the particular item in the Lookup table of
      * given criteria code using the SetCodeValueId. Its called reverse lookup
@@ -1117,8 +1126,8 @@ public class ProductDataStore {
             return finalValue;
         } else if (ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE.equalsIgnoreCase(criteriaCode)) {
             if (productMaterialLookupTable == null || productMaterialLookupTable.isEmpty()) {
-               // getSetCodeValueIdForProductMaterial("Blend");
-            	getMaterialSetCodeValueId("Blend");
+                // getSetCodeValueIdForProductMaterial("Blend");
+                getMaterialSetCodeValueId("Blend");
             }
             return CommonUtilities.getKeysByValueGen(productMaterialLookupTable, setCodeValueId);
         } else if (ApplicationConstants.CONST_ORIGIN_CRITERIA_CODE.equalsIgnoreCase(criteriaCode)) {
@@ -1161,15 +1170,15 @@ public class ProductDataStore {
         } else if (ApplicationConstants.CONST_LESS_THAN_MIN_CRT_CODE.equalsIgnoreCase(criteriaCode)) {
 
         } else if (ApplicationConstants.CONST_IMPRINT_METHOD_CODE.equalsIgnoreCase(criteriaCode)) {
-        	 if (immprintMethodLookupTable == null || immprintMethodLookupTable.isEmpty()) {
-        		 getSetCodeValueIdForImmdMethod("Pad Print");
-             }
-             return CommonUtilities.getKeysByValueGen(immprintMethodLookupTable, setCodeValueId);        	
+            if (immprintMethodLookupTable == null || immprintMethodLookupTable.isEmpty()) {
+                getSetCodeValueIdForImmdMethod("Pad Print");
+            }
+            return CommonUtilities.getKeysByValueGen(immprintMethodLookupTable, setCodeValueId);
         } else if (ApplicationConstants.CONST_ARTWORK_CODE.equalsIgnoreCase(criteriaCode)) {
-        	 if (artworkLookupTable == null || artworkLookupTable.isEmpty()) {
-        		 getArtworkSetCodeValueId("artw",true);
-             }
-             return CommonUtilities.getKeysByValueGen(artworkLookupTable, setCodeValueId);         	
+            if (artworkLookupTable == null || artworkLookupTable.isEmpty()) {
+                getArtworkSetCodeValueId("artw", true);
+            }
+            return CommonUtilities.getKeysByValueGen(artworkLookupTable, setCodeValueId);
         } else if (ApplicationConstants.CONST_MINIMUM_QUANTITY.equalsIgnoreCase(criteriaCode)) {
 
         } else if (ApplicationConstants.CONST_SIZE_GROUP_CAPACITY.equalsIgnoreCase(criteriaCode)) {
@@ -1201,17 +1210,17 @@ public class ProductDataStore {
         } else if (ApplicationConstants.CONST_IMPRINT_OPTION.equalsIgnoreCase(criteriaCode)) {
 
         } else if (ApplicationConstants.CONST_ADDITIONAL_LOCATION.equalsIgnoreCase(criteriaCode)) {
-        	 if (additionalLocationLookupTable == null || additionalLocationLookupTable.isEmpty()) {
-        		 getSetCodeValueIdForAdditionalLocation("Red");
-             }
-             return CommonUtilities.getKeysByValueGen(additionalLocationLookupTable, setCodeValueId);
+            if (additionalLocationLookupTable == null || additionalLocationLookupTable.isEmpty()) {
+                getSetCodeValueIdForAdditionalLocation("Red");
+            }
+            return CommonUtilities.getKeysByValueGen(additionalLocationLookupTable, setCodeValueId);
         } else if (ApplicationConstants.CONST_ADDITIONAL_COLOR.equalsIgnoreCase(criteriaCode)) {
-        	 if (additionalColorLookupTable == null || additionalColorLookupTable.isEmpty()) {
-        		 getSetCodeValueIdForAdditionalColor("Red");
-             }
-             return CommonUtilities.getKeysByValueGen(additionalColorLookupTable, setCodeValueId);
+            if (additionalColorLookupTable == null || additionalColorLookupTable.isEmpty()) {
+                getSetCodeValueIdForAdditionalColor("Red");
+            }
+            return CommonUtilities.getKeysByValueGen(additionalColorLookupTable, setCodeValueId);
         } else if (ApplicationConstants.CONST_CRITERIA_CODE_LNNM.equalsIgnoreCase(criteriaCode)) {
-        	
+
         } else if (ApplicationConstants.CONST_CRITERIA_CODE_FOBP.equalsIgnoreCase(criteriaCode)) {
 
         }
@@ -1241,6 +1250,18 @@ public class ProductDataStore {
             return criteriaInfo.get(code);
         }
     }
+    
+    public static CriteriaInfo getCriteriaInfoByDescription(String description) {
+        if (criteriaInfo == null || criteriaInfo.isEmpty()) {
+            loadCriteriaInformations();
+        } 
+        for (Map.Entry<String, CriteriaInfo> crtInfo : criteriaInfo.entrySet()) {
+            if (crtInfo.getValue().getDescription().equalsIgnoreCase(description)) {
+                return crtInfo.getValue();
+            }
+        }
+        return null;
+    }
 
     private static boolean loadCriteriaInformations() {
         try {
@@ -1262,7 +1283,7 @@ public class ProductDataStore {
         if (optionsLookupTable == null || optionsLookupTable.isEmpty()) {
             // Create Options Lookup table
             try {
-                
+
                 LinkedList<LinkedHashMap> producOptionResponse = lookupRestTemplate.getForObject(
                         RestAPIProperties.get(ApplicationConstants.OPTION_PRODUCT_LOOKUP), LinkedList.class);
                 if (producOptionResponse != null && !producOptionResponse.isEmpty()) {
@@ -1305,6 +1326,31 @@ public class ProductDataStore {
         return optionsLookupTable.get(optionType);
     }
 
+    public static Currency getCurrencyForCode(String code, boolean getDefult) {
+        try {
+            if (currencyLookupTable == null || currencyLookupTable.isEmpty()) {
+                currencyLookupTable = new HashMap<String, Currency>();
+                String response = JersyClientGet.getLookupsResponse(RestAPIProperties
+                        .get(ApplicationConstants.CURRENCIES_LOOKUP_URL));
+
+                currencyLookupTable = JsonToLookupTableConverter.jsonToCurrencyLookupTable(response);
+            }
+            Currency currencyJsonModel = currencyLookupTable.get(String.valueOf(code).toUpperCase());
+            if (currencyJsonModel == null && getDefult) {
+                return currencyLookupTable.get(String.valueOf("USD").toUpperCase());
+            } else {
+                return currencyJsonModel;
+            }
+            // return new
+            // PriceUnitJsonModel(ApplicationConstants.CONST_STRING_PRICE_UNIT_DEFAULT_ID,
+            // ApplicationConstants.CONST_STRING_PIECE,
+            // ApplicationConstants.CONST_STRING_PIECE, "0");
+        } catch (Exception e) {
+            LOGGER.error("Exception while modeling currencies", e);
+            return null;
+        }
+    }
+
     public RestTemplate getLookupRestTemplate() {
         return lookupRestTemplate;
     }
@@ -1313,12 +1359,37 @@ public class ProductDataStore {
         this.lookupRestTemplate = lookupRestTemplate;
     }
 
-	public HashMap<String, String> getSamplesList() {
-		 if (prodSpecSampleLookupTable == null || prodSpecSampleLookupTable.isEmpty()) {
-			 getSetCodeValueIdForProdSpecSample("spec");
-         }			
-		return prodSpecSampleLookupTable;
-	}
+    public HashMap<String, String> getSamplesList() {
+        if (prodSpecSampleLookupTable == null || prodSpecSampleLookupTable.isEmpty()) {
+            getSetCodeValueIdForProdSpecSample("spec");
+        }
+        return prodSpecSampleLookupTable;
+    }
+
+    public static DiscountRate getDiscountRate(String discountCode, boolean getDefault) {
+        try {
+            if (discountLookupTable == null || discountLookupTable.isEmpty()) {
+                discountLookupTable = new HashMap<String, DiscountRate>();
+                String response = JersyClientGet.getLookupsResponse(RestAPIProperties
+                        .get(ApplicationConstants.DISCOUNT_RATES_LOOKUP_URL));
+
+                discountLookupTable = JsonToLookupTableConverter.jsonToDiscountLookupTable(response);
+            }
+            DiscountRate discountRate = discountLookupTable.get(String.valueOf(discountCode).toUpperCase());
+            if (discountRate == null && getDefault) {
+                return discountLookupTable.get(String.valueOf("Z").toUpperCase());
+            } else {
+                return discountRate;
+            }
+            // return new
+            // PriceUnitJsonModel(ApplicationConstants.CONST_STRING_PRICE_UNIT_DEFAULT_ID,
+            // ApplicationConstants.CONST_STRING_PIECE,
+            // ApplicationConstants.CONST_STRING_PIECE, "0");
+        } catch (Exception e) {
+            LOGGER.error("Exception while modeling currencies", e);
+            return null;
+        }
+    }
 
     public static String getSetCodeValueIdForMinQTY() {
         // TODO Auto-generated method stub

@@ -18,6 +18,8 @@ import org.springframework.web.client.RestTemplate;
 import com.asi.ext.api.radar.lookup.model.PriceUnitJsonModel;
 import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.ext.api.response.JsonProcessor;
+import com.asi.service.product.client.vo.Currency;
+import com.asi.service.product.client.vo.DiscountRate;
 
 public final class JsonToLookupTableConverter {
 
@@ -770,6 +772,47 @@ public final class JsonToLookupTableConverter {
 	        }
 
 	}
+
+    public static Map<String, Currency> jsonToCurrencyLookupTable(String response) {
+        Map<String, Currency> currencyMap = new HashMap<String, Currency>();
+        try {
+            List<LinkedHashMap<String, String>> currencyJsonModelList = JsonProcessor.convertJsonToBean(response, List.class);
+
+            if (currencyJsonModelList != null && !currencyJsonModelList.isEmpty()) {
+                for (LinkedHashMap<String, String> currencyJModel : currencyJsonModelList) {
+                    Currency currency = new Currency();
+                    currency.setCode(String.valueOf(currencyJModel.get("Code")));
+                    currency.setName(String.valueOf(currencyJModel.get("Name")));
+                    currency.setNumber(String.valueOf(currencyJModel.get("Number")));
+                    currencyMap.put(String.valueOf(currencyJModel.get("Code")).toUpperCase(), currency);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return currencyMap;
+    }
+
+    public static Map<String, DiscountRate> jsonToDiscountLookupTable(String response) {
+        Map<String, DiscountRate> currencyMap = new HashMap<String, DiscountRate>();
+        try {
+            List<LinkedHashMap<String, String>> currencyJsonModelList = JsonProcessor.convertJsonToBean(response, List.class);
+
+            if (currencyJsonModelList != null && !currencyJsonModelList.isEmpty()) {
+                for (LinkedHashMap<String, String> discountJModel : currencyJsonModelList) {
+                    DiscountRate currency = new DiscountRate();
+                    currency.setCode(String.valueOf(discountJModel.get("Code")));
+                    currency.setDescription(String.valueOf(discountJModel.get("Description")));
+                    currency.setDiscountPercent(String.valueOf(discountJModel.get("DiscountPercent")));
+                    currency.setIndustryDiscountCode(String.valueOf(discountJModel.get("IndustryDiscountCode")));
+                    currencyMap.put(String.valueOf(discountJModel.get("IndustryDiscountCode")).toUpperCase(), currency);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return currencyMap;
+    }
 
 
 }

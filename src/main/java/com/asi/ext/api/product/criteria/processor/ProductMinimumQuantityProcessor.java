@@ -25,7 +25,7 @@ public class ProductMinimumQuantityProcessor extends SimpleCriteriaProcessor {
 
             criteriaSetValue.setId(String.valueOf(--uniqueSetValueId));
             criteriaSetValue.setCriteriaCode(ApplicationConstants.CONST_MINIMUM_QUANTITY);
-            criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_LOOK);
+            criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_CUST);
             criteriaSetValue.setIsSubset(ApplicationConstants.CONST_STRING_FALSE_SMALL);
             criteriaSetValue.setIsSetValueMeasurement(ApplicationConstants.CONST_STRING_FALSE_SMALL);
             criteriaSetValue.setCriteriaSetId(criteriaSetId);

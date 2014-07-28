@@ -31,7 +31,7 @@ public class ProductImprintMethodProcessor extends SimpleCriteriaProcessor {
             criteriaSetValue = new CriteriaSetValues();
 
             criteriaSetValue.setId(String.valueOf(--uniqueSetValueId));
-            criteriaSetValue.setCriteriaCode(ApplicationConstants.CONST_ORIGIN_CRITERIA_CODE);
+            criteriaSetValue.setCriteriaCode(ApplicationConstants.CONST_IMPRINT_METHOD_CODE);
             if (customValue) { 
                 criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_CUST);
             } else {

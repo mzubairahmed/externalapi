@@ -134,7 +134,7 @@ public class PriceGridUtil extends CommonUtilities {
 
     }
 
-    private static String getPriceGridSubTypeCode(String criteriaCode, boolean basePrice) {
+    public static String getPriceGridSubTypeCode(String criteriaCode, boolean basePrice) {
         if (isValueNull(criteriaCode) || basePrice) {
             return basePrice ? ApplicationConstants.CONST_BASE_PRICE_GRID_CODE
                     : ApplicationConstants.CONST_UPCHARGE_PRICE_GRID_CODE;

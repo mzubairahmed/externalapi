@@ -474,7 +474,7 @@ public class ProductParser {
                             if (dscntCntr == 3) discountRate.setDisplayValue(crntDiscountElements[dscntCntr]);
 
                         }
-                        crntPrices.setPriceUnit(ProductDataStore.getPriceUnit(priceUnit));
+                        //crntPrices.setPriceUnit(ProductDataStore.getPriceUnit(priceUnit));
                         crntPrices.setDiscountRate(discountRate);
                         crntPrices.setSequenceNumber(++sequenceNum + "");
 

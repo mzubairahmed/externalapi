@@ -278,7 +278,7 @@ public class ImprintMethodProcessor extends SimpleCriteriaProcessor {
                         parentValuePath = valuePath;
                     }
                 } else {
-                    if (!valuePath.getIsParent() && valuePath.getID().equals(parentValuePath.getID())
+                    if (parentValuePath != null && !valuePath.getIsParent() && valuePath.getID().equals(parentValuePath.getID())
                             && childId.equals(valuePath.getCriteriaSetValueId())) {
                         crtValuePaths.add(parentValuePath);
                         crtValuePaths.add(valuePath);
@@ -309,7 +309,7 @@ public class ImprintMethodProcessor extends SimpleCriteriaProcessor {
         crtValuePath.add(parentPath);
 
         CriteriaSetValuePath childPath = new CriteriaSetValuePath();
-        childPath.setID(--valuePathUniqId);
+        childPath.setID(valuePathUniqId);
         childPath.setIsParent(false);
         childPath.setCriteriaSetValueId(child);
         childPath.setProductId(rel.getProductId());
