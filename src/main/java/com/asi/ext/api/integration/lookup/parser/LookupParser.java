@@ -26,11 +26,12 @@ import com.asi.ext.api.service.model.Artwork;
 import com.asi.ext.api.service.model.ImprintMethod;
 import com.asi.ext.api.service.model.MinimumOrder;
 import com.asi.ext.api.service.model.Option;
+import com.asi.ext.api.service.model.Size;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.RestAPIProperties;
 import com.asi.service.product.client.vo.CriteriaSetValue;
-import com.asi.service.product.client.vo.ProductConfigurationsList;
+import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.Relationship;
@@ -41,7 +42,6 @@ import com.asi.service.product.client.vo.parser.MaterialLookup;
 import com.asi.service.product.client.vo.parser.OptionLookup;
 import com.asi.service.product.client.vo.parser.OriginLookup;
 import com.asi.service.product.client.vo.parser.PackagingLookup;
-import com.asi.service.product.client.vo.parser.SampleLookup;
 import com.asi.service.product.client.vo.parser.ShapeLookup;
 import com.asi.service.product.client.vo.parser.SizeLookup;
 import com.asi.service.product.client.vo.parser.ThemeLookup;
@@ -177,24 +177,21 @@ public class LookupParser {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public ProductConfigurationsList findSizeValueDetails(ProductConfigurationsList productConfigurationsList,String criteriaCode,
-			List<CriteriaSetValue> criteriaSetValueLst,String externalProductId) {
+	public Size findSizeValueDetails(Size size,String criteriaCode,
+			List<CriteriaSetValues> criteriaSetValueLst,String externalProductId) {
 		SizeLookup sizeLookup = new SizeLookup();
 		String response;
 		try {
 			if(sizeElementsResponse==null)
 			{
-				response = JerseyClient.invoke(new URI(serverURL
-						+ "/api/api/lookup/criteria_attributes"));
-				sizeElementsResponse = (LinkedList<LinkedHashMap>) jsonParser
-						.parseToList(response);
+				sizeElementsResponse=lookupRestTemplate.getForObject(RestAPIProperties.get(ApplicationConstants.SIZES_CRITERIA_LOOKUP_URL), LinkedList.class);
 			}
 			
 		} catch (Exception e) {
 			_LOGGER.error("Exception while processing Product Size Group JSON - size value parsing",
 					e);
 		}
-		return sizeLookup.findSizeValueDetails(productConfigurationsList,criteriaCode,
+		return sizeLookup.findSizeValueDetails(size,criteriaCode,
 				sizeElementsResponse, criteriaSetValueLst,externalProductId);
 	}
 
@@ -223,19 +220,12 @@ public class LookupParser {
 		return imprintColorLookup.findImprintSizeDetails(criteriaSetValues,externalId);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public String findSampleType(String setCodeValueId) {
-		SampleLookup sampleLookup=new SampleLookup();
 		
 		try {
 			if(SamplesElementsResponse==null)
 			{
 				SamplesElementsResponse=productDataStore.getSamplesList();
-				
-				/*String response = JerseyClient.invoke(new URI(serverURL
-						+ "/api/api/lookup/criteria?code=IMPR"));
-				SamplesElementsResponse = (LinkedList<LinkedHashMap>) jsonParser
-						.parseToList(response);*/
 			}
 			
 		} catch (Exception e) {
@@ -324,7 +314,7 @@ public class LookupParser {
 		ImprintParser imprintParser=new ImprintParser();
 		if(null!=relationShipList && relationShipList.size()>0)
 		{
-		String imprintMethod="",minQty="",artwork="",sold_unimprintedFlag="",personalizationFlag="";
+		String imprintMethod="",minQty="",artwork="";//,sold_unimprintedFlag="",personalizationFlag="";
 		int imprintCntr=0;
 		for(Relationship crntRelationship:relationShipList)
 		{
@@ -445,20 +435,6 @@ public class LookupParser {
 				}
 			}
 		}
-	/*	if(imprintParser.checkImprintMethod("Unimprinted",processProductLst.getProduct().getExternalProductId())) sold_unimprintedFlag="Y";
-		if(imprintParser.checkImprintMethod("Personalization",processProductLst.getProduct().getExternalProductId())) personalizationFlag="Y";	*/
-	
-	/*	if(null!=relationValueAry && relationValueAry.length==2)
-		{
-			imprntArtwork.setValue(artwork);
-			serviceImprintMethod.getArtwork().add(imprntArtwork);
-			imprintMinOrder.setUnit(minQty);
-			serviceImprintMethod.setMinimumOrder(imprintMinOrder);			
-			//processProductLst.getProductConfigurationsList().setMinimumQuantity(minQty);
-			//processProductLst.getProductConfigurationsList().setArtwork(artwork);
-		}*/
-	/*	processProductLst.getProductConfigurationsList().setPersonalizationAvailable(personalizationFlag);
-		processProductLst.getProductConfigurationsList().setSolidUnimprinted(sold_unimprintedFlag);*/
 		
 		} else if (imprintMethods != null && !imprintMethods.isEmpty()) {
 		    String[] temp = imprintMethods.split("\\|\\|");
@@ -477,28 +453,12 @@ public class LookupParser {
 		        if (imprintMethod.startsWith("||")) {
 		            imprintMethod = imprintMethod.substring(2);
 		        }
-		        
-		       // processProductLst.getProductConfigurationsList().setImprintMethod(imprintMethod);
-		        /*if(imprintParser.checkImprintMethod("Unimprinted",processProductLst.getProduct().getExternalProductId())){
-		            processProductLst.getProductConfigurationsList().setSolidUnimprinted("Y");
-		        }
-		        if(imprintParser.checkImprintMethod("Personalization",processProductLst.getProduct().getExternalProductId())) {
-		            processProductLst.getProductConfigurationsList().setPersonalizationAvailable("Y");
-		        }*/
 		    }
 		    
 		    
 		}
 		return imprintMethodList;
 	}
-	
-/*	private boolean isImprintMethod(String method) {
-	    if (StringUtils.containsIgnoreCase(method.trim(), "Unimprinted") || StringUtils.containsIgnoreCase(method.trim(), "Personalization")) {
-	        return false;
-	    } else {
-	        return true;
-	    }
-	}*/
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public String getValueInText(Object value) {
@@ -516,11 +476,7 @@ public class LookupParser {
              try {
 				sizesCriteriaWSResponse = (LinkedList<LinkedHashMap>) lookupRestTemplate.getForObject(
 	                    RestAPIProperties.get(ApplicationConstants.SIZES_CRITERIA_LOOKUP_URL),LinkedList.class);
-						/*						jsonParser
-							.parseToList(JerseyClient.invoke(new URI(serverURL
-									+ "/api/api/lookup/criteria_attributes")));*/
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
          }
@@ -532,27 +488,6 @@ public class LookupParser {
 		else
 		return null;
 	}
-
-	/*public String updateSafetyWarnings(
-			ProcessProductsList processProductLst) {
-		ArrayList<SelectedSafetyWarnings> safetyWarningsList=(ArrayList<SelectedSafetyWarnings>) processProductLst.getProduct().getSelectedSafetyWarnings();
-		String safetyWarning="";
-		int cntr=0;
-		for(SelectedSafetyWarnings crntSafetyWarning:safetyWarningsList)
-		{
-			if (productWarningMap == null || productWarningMap.isEmpty()) {
-				SafetyWarningLookup safetyWarningLookup=new SafetyWarningLookup();
-				productWarningMap = safetyWarningLookup.createProductWarningMap(serverURL
-						+ "/api/api/lookup/safetywarnings");
-			}
-			if(cntr==0)
-				safetyWarning=productWarningMap.get(crntSafetyWarning.getCode());
-			else
-				safetyWarning+=","+productWarningMap.get(crntSafetyWarning.getCode());
-			 cntr++;
-		}		
-		return safetyWarning;
-	}*/
 	
 	public com.asi.ext.api.service.model.ProductConfigurations setOptionList(
 			com.asi.ext.api.service.model.ProductConfigurations serviceConfigurations,
@@ -560,9 +495,8 @@ public class LookupParser {
 			List<Option> optionsList=new ArrayList<>();
 			Option currentOption=null;
 		  String[] optionDetails=null;
-		  int optionCntr=0;
-		  String optionName="",optionType="",optionValue="",crntOptionType="";
-		  String canOrderOnlyOne="",reqForOrder="";
+		  String crntOptionType="";
+	
 		  String[] optionValueAry={};
 		  ArrayList<String> optionAryList=null;
           for(String optionKey:optionList.keySet())
@@ -572,7 +506,7 @@ public class LookupParser {
           		optionDetails=optionKey.split("_");
           		crntOptionType=optionDetails[0];
           		optionAryList=optionList.get(optionKey);
-          		crntOptionType=(crntOptionType.equalsIgnoreCase("PROP"))?"Product Option":crntOptionType.equalsIgnoreCase("SHOP")?"Shipping Option":crntOptionType.equalsIgnoreCase("IMOP")?"Imprint Option":"";
+          		crntOptionType=(crntOptionType.equalsIgnoreCase("PROP"))?"Product":crntOptionType.equalsIgnoreCase("SHOP")?"Shipping":crntOptionType.equalsIgnoreCase("IMOP")?"Imprint":"";
           		if(null!=optionAryList && optionDetails.length>1 && optionAryList.size()==4)
           		{
           			currentOption=new Option();
@@ -585,35 +519,13 @@ public class LookupParser {
           			currentOption.setCanOnlyOrderOne(Boolean.valueOf(optionAryList.get(1)));
           			currentOption.setRequiredForOrder(Boolean.valueOf(optionAryList.get(2)));
           			currentOption.setAdditionalInformation(optionAryList.get(3));
-	          		if(optionCntr==0)
-	          		{
-	          			optionType=crntOptionType;
-	          			optionName=optionDetails[1];
-	          			optionValue=optionAryList.get(0);
-	          			canOrderOnlyOne=optionAryList.get(1);
-	          			reqForOrder=optionAryList.get(2);
-	          		}
-	          		else
-	          		{
-	          			optionType+="||"+crntOptionType;
-	          			optionName+="||"+optionDetails[1];
-	          			optionValue+="||"+optionAryList.get(0);
-	          			canOrderOnlyOne+="||"+optionAryList.get(1);
-	          			reqForOrder+="||"+optionAryList.get(2);
-	          		}
+	          	
           		}
           		optionsList.add(currentOption);
           	}
-          	optionCntr++;
           }
-      /*    productConfigurationsList.setOptionName(optionName);
-          productConfigurationsList.setOptionType(optionType);
-          productConfigurationsList.setOptionValue(optionValue);
-          productConfigurationsList.setCanOrderOnlyOne(canOrderOnlyOne);
-          productConfigurationsList.setReqForOrder(reqForOrder);*/
           serviceConfigurations.setOptions(optionsList);
 		return serviceConfigurations;
 	}
-
-	
+		
 }

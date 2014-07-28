@@ -13,8 +13,9 @@ import org.json.simple.parser.ContainerFactory;
 import org.json.simple.parser.JSONParser;
 
 import com.asi.ext.api.integration.lookup.parser.CriteriaSetParser;
+import com.asi.ext.api.service.model.Size;
 import com.asi.service.product.client.vo.CriteriaSetValue;
-import com.asi.service.product.client.vo.ProductConfigurationsList;
+import com.asi.service.product.client.vo.CriteriaSetValues;
 
 
 
@@ -77,30 +78,30 @@ public class SizeLookup {
 		}
 		return ElementValue;
 	}
-	public ProductConfigurationsList findSizeValueDetails(ProductConfigurationsList productConfigurationsList,String criteriaCode,@SuppressWarnings("rawtypes") LinkedList<LinkedHashMap> criteriaAttributes,
-			List<CriteriaSetValue> criteriaSetValueLst,String externalProductId) {
+	public Size findSizeValueDetails(Size size,String criteriaCode,@SuppressWarnings("rawtypes") LinkedList<LinkedHashMap> criteriaAttributes,
+			List<CriteriaSetValues> criteriaSetValueLst,String externalProductId) {
 		//String[] stringAry=new String[2];
 	
 			if(criteriaCode.equalsIgnoreCase("DIMS"))
-				productConfigurationsList.setSizeGroup("Dimension");
+				size.setType("Dimension");
 			else if(criteriaCode.equalsIgnoreCase("CAPS"))
-				productConfigurationsList.setSizeGroup("Capacity");
+				size.setType("Capacity");
 			else if(criteriaCode.equalsIgnoreCase("SVWT"))
-				productConfigurationsList.setSizeGroup("Volume/Weight");
+				size.setType("Volume/Weight");
 			else if(criteriaCode.equalsIgnoreCase("SABR"))
-				productConfigurationsList.setSizeGroup("Apparel - Bra Sizes");
+				size.setType("Apparel - Bra Sizes");
 			else if(criteriaCode.equalsIgnoreCase("SAHU"))
-				productConfigurationsList.setSizeGroup("Apparel - Hosiery/Uniform Sizes");
+				size.setType("Apparel - Hosiery/Uniform Sizes");
 			else if(criteriaCode.equalsIgnoreCase("SAIT"))
-				productConfigurationsList.setSizeGroup("Apparel - Infant & Toddler");
+				size.setType("Apparel - Infant & Toddler");
 			else if(criteriaCode.equalsIgnoreCase("SANS"))
-				productConfigurationsList.setSizeGroup("Apparel - Dress Shirt Sizes");
+				size.setType("Apparel - Dress Shirt Sizes");
 			else if(criteriaCode.equalsIgnoreCase("SAWI"))
-				productConfigurationsList.setSizeGroup("Apparel - Pants Sizes");
+				size.setType("Apparel - Pants Sizes");
 			else if(criteriaCode.equalsIgnoreCase("SSNM"))
-				productConfigurationsList.setSizeGroup("Standard & Numbered");
+				size.setType("Standard & Numbered");
 			else if(criteriaCode.equalsIgnoreCase("SOTH"))
-				productConfigurationsList.setSizeGroup("Other");
+				size.setType("Other");
 			
 	
 			String sizeValue="",finalSizeValue="",delim="";
@@ -108,7 +109,7 @@ public class SizeLookup {
 			//int noOfSizes=criteriaSetValueLst.size();
 			int elementsCntr=0;
 			String unitOfmeasureCode="";
-			for(CriteriaSetValue criteriaSetValue:criteriaSetValueLst)
+			for(CriteriaSetValues criteriaSetValue:criteriaSetValueLst)
 			{
 				int sizeCntr=0;
 				if(criteriaSetValue.getValue() instanceof List)
@@ -167,13 +168,13 @@ public class SizeLookup {
 						sizeElementValue+=sizeValue;
 					sizeCntr++;
 				}		
-				criteriaSetParser.addReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getID(),sizeElementValue);
+				criteriaSetParser.addReferenceSet(externalProductId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),sizeElementValue);
 				}else
 				{
 						sizeValue=criteriaSetValue.getBaseLookupValue();
 						if(null==sizeValue)
 							sizeValue=criteriaSetValue.getFormatValue();
-						criteriaSetParser.addReferenceSet(externalProductId,criteriaSetValue.getCriteriaCode(),criteriaSetValue.getID(),sizeValue);
+						criteriaSetParser.addReferenceSet(externalProductId,criteriaSetValue.getCriteriaCode(),Integer.parseInt(criteriaSetValue.getId()),sizeValue);
 						sizeElementValue+=sizeValue;
 					sizeCntr++;
 				}
@@ -185,13 +186,8 @@ public class SizeLookup {
 				sizeElementValue="";
 				elementsCntr++;
 			}
-			if(criteriaCode.equalsIgnoreCase("SHWT"))
-				productConfigurationsList.setShippingWeight(finalSizeValue);
-			else if(criteriaCode.equalsIgnoreCase("SDIM"))
-				productConfigurationsList.setShippingDimension(finalSizeValue);
-			else 
-				productConfigurationsList.setSizeValue(finalSizeValue);	
-		return productConfigurationsList;
+			size.setValues(finalSizeValue);	
+		return size;
 	}	
 	/**
      * 

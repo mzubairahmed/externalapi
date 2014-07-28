@@ -9,9 +9,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Price {
 
     @JsonProperty("Sequence")
-    private String    sequence;
+    private Integer    sequence;
     @JsonProperty("Qty")
-    private String    qty;
+    private Integer    qty;
     @JsonProperty("ListPrice")
     private String    listPrice;
     @JsonProperty("DiscountCode")
@@ -20,22 +20,22 @@ public class Price {
     private PriceUnit priceUnit;
 
     @JsonProperty("Sequence")
-    public String getSequence() {
+    public Integer getSequence() {
         return sequence;
     }
 
     @JsonProperty("Sequence")
-    public void setSequence(String sequence) {
+    public void setSequence(Integer sequence) {
         this.sequence = sequence;
     }
 
     @JsonProperty("Qty")
-    public String getQty() {
+    public Integer getQty() {
         return qty;
     }
 
     @JsonProperty("Qty")
-    public void setQty(String qty) {
+    public void setQty(Integer qty) {
         this.qty = qty;
     }
 

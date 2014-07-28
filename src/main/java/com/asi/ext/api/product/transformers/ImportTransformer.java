@@ -31,9 +31,13 @@ import com.asi.ext.api.product.criteria.processor.RushTimeProcessor;
 import com.asi.ext.api.response.JsonProcessor;
 import com.asi.ext.api.rest.JersyClientGet;
 import com.asi.ext.api.service.model.Image;
+import com.asi.ext.api.service.model.PriceGrid;
+import com.asi.ext.api.service.model.Product;
+import com.asi.ext.api.service.model.ProductConfigurations;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.ProductParserUtil;
+import com.asi.service.product.client.vo.PriceGrids;
 import com.asi.service.product.client.vo.ProductConfiguration;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
@@ -107,7 +111,8 @@ public class ImportTransformer {
     private AdditionalLocationProcessor            additionalLocationProcessor     = new AdditionalLocationProcessor(-1301, "0");
     private ProductSpecSampleProcessor             specSampleProcessor             = new ProductSpecSampleProcessor(-1401, "0");
     private ProductOptionsProcessor                optionsProcessor                = new ProductOptionsProcessor(-1501, "0");
-    private ImprintMethodProcessor                 imprintMethodProcessor          = new ImprintMethodProcessor();//1601, 
+    private ImprintMethodProcessor                 imprintMethodProcessor          = new ImprintMethodProcessor();                // 1601,
+    // private PriceGridParser priceGridParser = new PriceGridParser();
 
     private final static Logger                    LOGGER                          = Logger.getLogger(ImportTransformer.class
                                                                                            .getName());
@@ -166,9 +171,38 @@ public class ImportTransformer {
         productToSave.setProductMediaItems(getProductMediaItems(companyId, productId, serviceProduct.getImages(),
                 productToSave.getProductMediaItems()));
 
+        Map<String, ProductCriteriaSets> existingCriteriaSetMap = new HashMap<>();
+        Map<String, List<ProductCriteriaSets>> optionsCriteriaSet = new HashMap<>();
+        // Get all existing criteria set from productConfiguartions
+        if (!isNewProduct) {
+            existingCriteriaSetMap = ProductCompareUtil.getExistingProductCriteriaSets(productToSave.getProductConfigurations(),
+                    true);
+            optionsCriteriaSet = ProductCompareUtil.getOptionCriteriaSets(productToSave.getProductConfigurations());
+        }
+
+        ImprintRelationData imprintRelationData = null;
+        if (serviceProduct != null && serviceProduct.getProductConfigurations().getImprintMethods() != null
+                && !serviceProduct.getProductConfigurations().getImprintMethods().isEmpty()) {
+            imprintRelationData = imprintMethodProcessor.getImprintCriteriaSet(serviceProduct.getProductConfigurations()
+                    .getImprintMethods(), productToSave, existingCriteriaSetMap, configId);
+
+            existingCriteriaSetMap = imprintRelationData.getExistingCriteriaSetMap();
+            productToSave.setRelationships(imprintRelationData.getRelationships());
+        } else {
+            existingCriteriaSetMap.put(ApplicationConstants.CONST_IMPRINT_METHOD_CODE, null);
+            existingCriteriaSetMap.put(ApplicationConstants.CONST_ARTWORK_CODE, null);
+            existingCriteriaSetMap.put(ApplicationConstants.CONST_MINIMUM_QUANTITY, null);
+        }
+
+        optionsCriteriaSet = processProductOptions(optionsCriteriaSet, productToSave, serviceProduct.getProductConfigurations(),
+                configId);
+
         // Process Product Configurations
-        productToSave.setProductConfigurations(processProductConfigurations(configId, serviceProduct.getProductConfigurations(),
-                productToSave, isNewProduct));
+
+        productToSave.setProductConfigurations(processProductConfigurations(configId, existingCriteriaSetMap, optionsCriteriaSet,
+                serviceProduct.getProductConfigurations(), productToSave, isNewProduct));
+
+        productToSave.setPriceGrids(getPriceGrids(serviceProduct.getPriceGrids(), productToSave));
 
         // Return product model
         return productToSave;
@@ -181,6 +215,7 @@ public class ImportTransformer {
     }
 
     private List<ProductConfiguration> processProductConfigurations(String configId,
+            Map<String, ProductCriteriaSets> existingCriteriaSetMap, Map<String, List<ProductCriteriaSets>> optionsCriteriaSet,
             com.asi.ext.api.service.model.ProductConfigurations serviceProdConfigs, ProductDetail rdrProduct, boolean isNewProduct) {
         List<ProductConfiguration> updatedProductConfigurationList = new ArrayList<>();
 
@@ -188,13 +223,14 @@ public class ImportTransformer {
             return new ArrayList<ProductConfiguration>();
         }
 
-        Map<String, ProductCriteriaSets> existingCriteriaSetMap = new HashMap<>();
-        Map<String, List<ProductCriteriaSets>> optionsCriteriaSet = new HashMap<>();
+        // Map<String, List<ProductCriteriaSets>> optionsCriteriaSet = new HashMap<>();
         // Get all existing criteria set from productConfiguartions
-        if (!isNewProduct) {
-            existingCriteriaSetMap = ProductCompareUtil.getExistingProductCriteriaSets(rdrProduct.getProductConfigurations(), true);
-            optionsCriteriaSet = ProductCompareUtil.getOptionCriteriaSets(rdrProduct.getProductConfigurations());
-        }
+        /*
+         * if (!isNewProduct) {
+         * existingCriteriaSetMap = ProductCompareUtil.getExistingProductCriteriaSets(rdrProduct.getProductConfigurations(), true);
+         * optionsCriteriaSet = ProductCompareUtil.getOptionCriteriaSets(rdrProduct.getProductConfigurations());
+         * }
+         */
         ProductCriteriaSets tempCriteriaSet = null;
         // Product Origin processing
 
@@ -316,21 +352,29 @@ public class ImportTransformer {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_PRODUCTION_TIME_CRITERIA_CODE);
         }
         // Product options processing
-        if (serviceProdConfigs.getOptions() != null && !serviceProdConfigs.getOptions().isEmpty()) {
-            optionsCriteriaSet = optionsProcessor.getOptionCriteriaSets(serviceProdConfigs.getOptions(), rdrProduct, configId,
-                    optionsCriteriaSet);
-        } else {
-            optionsCriteriaSet = null;
-        }
-        
-        if (serviceProdConfigs.getImprintMethods() != null && !serviceProdConfigs.getImprintMethods().isEmpty()) { 
-            existingCriteriaSetMap = imprintMethodProcessor.getImprintCriteriaSet(serviceProdConfigs.getImprintMethods(), rdrProduct, existingCriteriaSetMap, configId);
-        } else {
-            existingCriteriaSetMap.put(ApplicationConstants.CONST_IMPRINT_METHOD_CODE, null);
-            existingCriteriaSetMap.put(ApplicationConstants.CONST_ARTWORK_CODE, null);
-            existingCriteriaSetMap.put(ApplicationConstants.CONST_MINIMUM_QUANTITY, null);
-        }
-        
+        /*
+         * if (serviceProdConfigs.getOptions() != null && !serviceProdConfigs.getOptions().isEmpty()) {
+         * optionsCriteriaSet = optionsProcessor.getOptionCriteriaSets(serviceProdConfigs.getOptions(), rdrProduct, configId,
+         * optionsCriteriaSet);
+         * } else {
+         * optionsCriteriaSet = null;
+         * }
+         */
+        /*
+         * ImprintRelationData imprintRelationData = null;
+         * if (serviceProdConfigs.getImprintMethods() != null && !serviceProdConfigs.getImprintMethods().isEmpty()) {
+         * imprintRelationData = imprintMethodProcessor.getImprintCriteriaSet(serviceProdConfigs.getImprintMethods(), rdrProduct,
+         * existingCriteriaSetMap, configId);
+         * 
+         * existingCriteriaSetMap = imprintRelationData.getExistingCriteriaSetMap();
+         * // TODO : Set Relationships back
+         * } else {
+         * existingCriteriaSetMap.put(ApplicationConstants.CONST_IMPRINT_METHOD_CODE, null);
+         * existingCriteriaSetMap.put(ApplicationConstants.CONST_ARTWORK_CODE, null);
+         * existingCriteriaSetMap.put(ApplicationConstants.CONST_MINIMUM_QUANTITY, null);
+         * }
+         */
+
         // Merge all updated ProductCriteriaSets into product configuration and set back to list
         ProductConfiguration updatedProductConfiguration = new ProductConfiguration();
         updatedProductConfiguration.setConfigId(configId);
@@ -343,6 +387,29 @@ public class ImportTransformer {
         updatedProductConfigurationList.add(updatedProductConfiguration);
 
         return updatedProductConfigurationList;
+    }
+
+    private Map<String, List<ProductCriteriaSets>> processProductOptions(Map<String, List<ProductCriteriaSets>> optionsCriteriaSet,
+            ProductDetail rdrProduct, ProductConfigurations serviceProdConfigs, String configId) {
+        // Product options processing
+        if (serviceProdConfigs != null && serviceProdConfigs.getOptions() != null && !serviceProdConfigs.getOptions().isEmpty()) {
+            optionsCriteriaSet = optionsProcessor.getOptionCriteriaSets(serviceProdConfigs.getOptions(), rdrProduct, configId,
+                    optionsCriteriaSet);
+        } else {
+            optionsCriteriaSet = null;
+        }
+
+        return optionsCriteriaSet;
+    }
+
+    @SuppressWarnings("unused")
+    private void processImprintMethodRelations() {
+
+    }
+
+    private List<com.asi.service.product.client.vo.PriceGrid> getPriceGrids(List<PriceGrid> priceGrids, ProductDetail product) {
+        return priceGridParser.getPriceGrids(priceGrids, product);
+
     }
 
     /*

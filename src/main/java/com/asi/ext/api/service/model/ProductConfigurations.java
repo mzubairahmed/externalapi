@@ -20,7 +20,7 @@ public class ProductConfigurations {
     @JsonProperty("Materials")
     private List<Material>            materials            = new ArrayList<Material>();
     @JsonProperty("Sizes")
-    private List<Size>                sizes                = new ArrayList<Size>();
+    private Size                sizes                = new Size();
     @JsonProperty("Shapes")
     private List<String>              shapes               = new ArrayList<String>();
     @JsonProperty("Options")
@@ -67,12 +67,12 @@ public class ProductConfigurations {
     }
 
     @JsonProperty("Sizes")
-    public List<Size> getSizes() {
+    public Size getSizes() {
         return sizes;
     }
 
     @JsonProperty("Sizes")
-    public void setSizes(List<Size> sizes) {
+    public void setSizes(Size sizes) {
         this.sizes = sizes;
     }
 

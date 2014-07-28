@@ -57,8 +57,8 @@ public class Product {
     private List<ProductNumber>   productNumbers  = new ArrayList<ProductNumber>();
     @JsonProperty("ProductConfigurations")
     private ProductConfigurations productConfigurations;
-
-    public String getExternalProductId() {
+  
+	public String getExternalProductId() {
         return externalProductId;
     }
 

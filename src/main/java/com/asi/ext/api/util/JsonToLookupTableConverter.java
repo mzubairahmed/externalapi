@@ -18,6 +18,8 @@ import org.springframework.web.client.RestTemplate;
 import com.asi.ext.api.radar.lookup.model.PriceUnitJsonModel;
 import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.ext.api.response.JsonProcessor;
+import com.asi.service.product.client.vo.Currency;
+import com.asi.service.product.client.vo.DiscountRate;
 
 public final class JsonToLookupTableConverter {
 
@@ -281,21 +283,11 @@ public final class JsonToLookupTableConverter {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static HashMap<String, String> jsonToProductThemesMap(String productThemesResponse) {
-        JSONParser parser = new JSONParser();
-        ContainerFactory containerFactory = new ContainerFactory() {
-            public List<?> creatArrayContainer() {
-                return new LinkedList<Object>();
-            }
-
-            public Map<?, ?> createObjectContainer() {
-                return new LinkedHashMap<Object, Object>();
-            }
-        };
+    public static HashMap<String, String> jsonToProductThemesMap(LinkedList<?> productThemesResponse) {
+ 
         HashMap<String, String> productThemesLookupTable = new HashMap<String, String>();
         try {
-            LinkedList<?> json = (LinkedList<?>) parser.parse(productThemesResponse, containerFactory);
-            Iterator<?> iter = json.iterator();
+            Iterator<?> iter = productThemesResponse.iterator();
             while (iter.hasNext()) {
                 Map<?, ?> crntValue = (LinkedHashMap<?, ?>) iter.next();
                 LinkedList<LinkedHashMap> codeValueGrps = (LinkedList<LinkedHashMap>) crntValue.get("SetCodeValues");
@@ -316,21 +308,10 @@ public final class JsonToLookupTableConverter {
     }
 
     @SuppressWarnings("unchecked")
-    public static String getSetCodeValueForTradeName(String jsonText, String tradeName) {
+    public static String getSetCodeValueForTradeName(LinkedList<?> jsonList, String tradeName) {
         String setCodeValueId = null;
-        JSONParser parser = new JSONParser();
-        ContainerFactory containerFactory = new ContainerFactory() {
-            public List<?> creatArrayContainer() {
-                return new LinkedList<Object>();
-            }
-
-            public Map<?, ?> createObjectContainer() {
-                return new LinkedHashMap<Object, Object>();
-            }
-        };
         try {
-            LinkedList<?> json = (LinkedList<?>) parser.parse(jsonText, containerFactory);
-            Iterator<?> iter = json.iterator();
+            Iterator<?> iter = jsonList.iterator();
             while (iter.hasNext()) {
                 LinkedHashMap<String, String> crntValue = (LinkedHashMap<String, String>) iter.next();
                 if (crntValue != null) {
@@ -340,7 +321,7 @@ public final class JsonToLookupTableConverter {
                     }
                 }
             }
-        } catch (ParseException pe) {
+        } catch (Exception pe) {
             pe.printStackTrace();
         }
         return setCodeValueId;
@@ -469,10 +450,10 @@ public final class JsonToLookupTableConverter {
         return imprintMethodMap;
     }
 
-    public static Map<String, PriceUnitJsonModel> jsonToPriceUnitLookupTable(String json) {
+    public static Map<String, PriceUnitJsonModel> jsonToPriceUnitLookupTable(LinkedList<?> jsonList) {
         Map<String, PriceUnitJsonModel> priceUnitMap = new HashMap<String, PriceUnitJsonModel>();
         try {
-            List<LinkedHashMap<String, String>> priceUnitJsonModelList = JsonProcessor.convertJsonToBean(json, List.class);
+            List<LinkedHashMap<String, String>> priceUnitJsonModelList = (List<LinkedHashMap<String, String>>) jsonList;//JsonProcessor.convertJsonToBean(jsonList, List.class);
 
             if (priceUnitJsonModelList != null && !priceUnitJsonModelList.isEmpty()) {
                 for (LinkedHashMap<String, String> priceUnitJModel : priceUnitJsonModelList) {
@@ -532,22 +513,54 @@ public final class JsonToLookupTableConverter {
         return artworkLookupTable;
 
     }
+    
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static Map<String, String> jsonToMinQtyLookupTable(LinkedList<?> jsonDataList) {
 
-    public static Map<String, String> generateCriteriaSetAttributeTable(String jsonData) {
-        JSONParser parser = new JSONParser();
-        ContainerFactory containerFactory = new ContainerFactory() {
-            public List<?> creatArrayContainer() {
-                return new LinkedList<Object>();
-            }
+        Map<String, String> artworkLookupTable = new HashMap<String, String>();
+        try {
+            Iterator<?> iter = jsonDataList.iterator();
+            while (iter.hasNext()) {
+                Map<?, ?> crntValue = (LinkedHashMap<?, ?>) iter.next();
+                if (crntValue.get("Code").toString().equalsIgnoreCase(ApplicationConstants.CONST_MINIMUM_QUANTITY)) {
+                    ArrayList<LinkedHashMap> codeValueGrps = (ArrayList<LinkedHashMap>) crntValue.get("CodeValueGroups");
+                    Iterator<LinkedHashMap> iterator = codeValueGrps.iterator();
 
-            public Map<?, ?> createObjectContainer() {
-                return new LinkedHashMap<Object, Object>();
+                    while (iterator.hasNext()) {
+                        Map codeValueGrpsMap = (LinkedHashMap) iterator.next();
+
+                        List finalLst = (ArrayList) codeValueGrpsMap.get("SetCodeValues");
+                        Iterator finalItr = finalLst.iterator();
+                        while (finalItr.hasNext()) {
+                            try {
+                                Map finalMap = (LinkedHashMap) finalItr.next();
+                                if (finalMap != null) {
+                                    artworkLookupTable.put(String.valueOf(finalMap.get("CodeValue")).toUpperCase(),
+                                            String.valueOf(finalMap.get("ID")));
+                                }
+                            } catch (Exception e) {
+
+                            }
+
+                        }
+
+                        // break;
+                    }
+                    // break;
+                }
             }
-        };
+        } catch (Exception pe) {
+            pe.printStackTrace();
+        }
+        return artworkLookupTable;
+
+    }
+
+    public static Map<String, String> generateCriteriaSetAttributeTable(LinkedList<?> jsonDataList) {
+
         Map<String, String> criteriaSetAttributeLookupTable = new HashMap<String, String>();
         try {
-            LinkedList<?> json = (LinkedList<?>) parser.parse(jsonData, containerFactory);
-            Iterator<?> iter = json.iterator();
+            Iterator<?> iter = jsonDataList.iterator();
             while (iter.hasNext()) {
                 Map<?, ?> crntValue = (LinkedHashMap<?, ?>) iter.next();
                 if (crntValue != null && !crntValue.isEmpty()) {
@@ -562,21 +575,11 @@ public final class JsonToLookupTableConverter {
 
     }
 
-    public static Map<String, HashMap<String, String>> generateUnitOfMeasureTable(String jsonData) {
-        JSONParser parser = new JSONParser();
-        ContainerFactory containerFactory = new ContainerFactory() {
-            public List<?> creatArrayContainer() {
-                return new LinkedList<Object>();
-            }
-
-            public Map<?, ?> createObjectContainer() {
-                return new LinkedHashMap<Object, Object>();
-            }
-        };
+    public static Map<String, HashMap<String, String>> generateUnitOfMeasureTable(LinkedList<?> jsonDataList) {
+     
         Map<String, HashMap<String, String>> unitOfMeasureMap = new HashMap<String, HashMap<String, String>>();
         try {
-            LinkedList<?> json = (LinkedList<?>) parser.parse(jsonData, containerFactory);
-            Iterator<?> iter = json.iterator();
+            Iterator<?> iter = jsonDataList.iterator();
             while (iter.hasNext()) {
                 Map<?, ?> crntValue = (LinkedHashMap<?, ?>) iter.next();
                 if (crntValue != null && !crntValue.isEmpty()) {
@@ -602,21 +605,10 @@ public final class JsonToLookupTableConverter {
         return unitOfMeasureMap;
     }
 
-    public static Map<String, HashMap<String, String>> generateCriteriaItemTable(String jsonData) {
-        JSONParser parser = new JSONParser();
-        ContainerFactory containerFactory = new ContainerFactory() {
-            public List<?> creatArrayContainer() {
-                return new LinkedList<Object>();
-            }
-
-            public Map<?, ?> createObjectContainer() {
-                return new LinkedHashMap<Object, Object>();
-            }
-        };
+    public static Map<String, HashMap<String, String>> generateCriteriaItemTable(LinkedList<?> jsonDataList) {
         Map<String, HashMap<String, String>> criteriaItemsMap = new HashMap<String, HashMap<String, String>>();
         try {
-            LinkedList<?> json = (LinkedList<?>) parser.parse(jsonData, containerFactory);
-            Iterator<?> iter = json.iterator();
+            Iterator<?> iter = jsonDataList.iterator();
             while (iter.hasNext()) {
                 Map<?, ?> crntValue = (LinkedHashMap<?, ?>) iter.next();
                 if (crntValue != null && !crntValue.isEmpty()) {
@@ -728,6 +720,47 @@ public final class JsonToLookupTableConverter {
 	        }
 
 	}
+
+    public static Map<String, Currency> jsonToCurrencyLookupTable(String response) {
+        Map<String, Currency> currencyMap = new HashMap<String, Currency>();
+        try {
+            List<LinkedHashMap<String, String>> currencyJsonModelList = JsonProcessor.convertJsonToBean(response, List.class);
+
+            if (currencyJsonModelList != null && !currencyJsonModelList.isEmpty()) {
+                for (LinkedHashMap<String, String> currencyJModel : currencyJsonModelList) {
+                    Currency currency = new Currency();
+                    currency.setCode(String.valueOf(currencyJModel.get("Code")));
+                    currency.setName(String.valueOf(currencyJModel.get("Name")));
+                    currency.setNumber(String.valueOf(currencyJModel.get("Number")));
+                    currencyMap.put(String.valueOf(currencyJModel.get("Code")).toUpperCase(), currency);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return currencyMap;
+    }
+
+    public static Map<String, DiscountRate> jsonToDiscountLookupTable(String response) {
+        Map<String, DiscountRate> currencyMap = new HashMap<String, DiscountRate>();
+        try {
+            List<LinkedHashMap<String, String>> currencyJsonModelList = JsonProcessor.convertJsonToBean(response, List.class);
+
+            if (currencyJsonModelList != null && !currencyJsonModelList.isEmpty()) {
+                for (LinkedHashMap<String, String> discountJModel : currencyJsonModelList) {
+                    DiscountRate currency = new DiscountRate();
+                    currency.setCode(String.valueOf(discountJModel.get("Code")));
+                    currency.setDescription(String.valueOf(discountJModel.get("Description")));
+                    currency.setDiscountPercent(String.valueOf(discountJModel.get("DiscountPercent")));
+                    currency.setIndustryDiscountCode(String.valueOf(discountJModel.get("IndustryDiscountCode")));
+                    currencyMap.put(String.valueOf(discountJModel.get("IndustryDiscountCode")).toUpperCase(), currency);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return currencyMap;
+    }
 
 
 }

@@ -2,9 +2,7 @@ package com.asi.ext.api.radar.lookup.model;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
-import com.asi.ext.api.radar.model.PriceUnit;
-
-public class PriceUnitJsonModel extends PriceUnit implements java.io.Serializable {
+public class PriceUnitJsonModel extends com.asi.service.product.client.vo.PriceUnit implements java.io.Serializable {
 
     /**
      * 
