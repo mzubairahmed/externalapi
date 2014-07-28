@@ -1,6 +1,8 @@
 package com.asi.ext.api.product.transformers;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -28,12 +30,14 @@ import com.asi.ext.api.service.model.Price;
 import com.asi.ext.api.service.model.PriceConfiguration;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
+import com.asi.ext.api.util.PriceCriteriaComparator;
 import com.asi.ext.api.util.PriceGridUtil;
 import com.asi.ext.api.util.RestAPIProperties;
 import com.asi.service.product.client.vo.Currency;
 import com.asi.service.product.client.vo.DiscountRate;
 import com.asi.service.product.client.vo.PriceGrid;
 import com.asi.service.product.client.vo.PriceUnit;
+import com.asi.service.product.client.vo.PricingItem;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.BasePriceDetails;
 import com.asi.service.product.client.vo.UpChargePriceDetails;
@@ -52,6 +56,7 @@ public class PriceGridParser extends ProductParser {
 	public static RestTemplate  lookupRestTemplate;
     public ProductDataStore productDataStore = new ProductDataStore();
     protected JerseyClientPost                                                  orgnCall                    = new JerseyClientPost();
+    
     private String getUsageLevelCode(boolean priceType) {
         return ApplicationConstants.CONST_STRING_NONE_CAP;
     }
@@ -199,9 +204,25 @@ public class PriceGridParser extends ProductParser {
             } 
             newPGrid.setPrices(getPrices(serPGrid.getPrices(), newPGrid.getID()));
             // Pricing Item configs
+            Collections.sort(serPGrid.getPriceConfigurations(), new PriceCriteriaComparator());
+            
             finalPGrids.add(newPGrid);
         }
         return finalPGrids;
+    }
+    
+    private List<PricingItem> getPricingItems(List<PriceConfiguration> priceConfigs) {
+        List<PricingItem> finalPricingItems = new ArrayList<PricingItem>();
+        
+        for(PriceConfiguration pConfig : priceConfigs) {
+            CriteriaInfo criteriaInfo = ProductDataStore.getCriteriaInfoByDescription(pConfig.getCriteria());
+            if (criteriaInfo == null) {
+                // LOG Validation ERROR
+                continue;
+            }
+            
+        }
+        return finalPricingItems;
     }
 
     protected ProductCriteriaSets getLessThanMinimumCriteriaSet(Product product) throws VelocityException {
