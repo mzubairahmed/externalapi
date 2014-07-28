@@ -43,7 +43,7 @@ public class OptionLookup {
 					tempArrayList.add(0,crntOptionVal);
 					tempArrayList.add(1,canOrderOnlyOne);
 					tempArrayList.add(2,reqForOrder);
-				//	tempArrayList.add(3,productCriteriaSet.getDescription());
+					tempArrayList.add(3,productCriteriaSet.getDescription());
 					optionList.put(checkOption,tempArrayList);
 					//optionList.put(checkOption,(null!=optionList.get(checkOption))?optionList.get(checkOption)+","+crntOptionVal:crntOptionVal);
 				}
@@ -54,7 +54,7 @@ public class OptionLookup {
 						tempArrayList.add(0, optionList.get(checkOption).get(0)+","+crntOptionVal);
 						tempArrayList.add(1,canOrderOnlyOne);
 						tempArrayList.add(2,reqForOrder);
-					//	tempArrayList.add(3,productCriteriaSet.getDescription());
+						tempArrayList.add(3,productCriteriaSet.getDescription());
 						optionList.put(checkOption,tempArrayList);
 					}
 					else
@@ -63,7 +63,7 @@ public class OptionLookup {
 						tempArrayList.add(0, crntOptionVal);
 						tempArrayList.add(1,canOrderOnlyOne);
 						tempArrayList.add(2,reqForOrder);
-					//	tempArrayList.add(3,productCriteriaSet.getDescription());
+						tempArrayList.add(3,productCriteriaSet.getDescription());
 						optionList.put(checkOption,tempArrayList);
 					}
 				}
@@ -76,7 +76,7 @@ public class OptionLookup {
 				tempArrayList.add(0, optionValue);
 				tempArrayList.add(1,canOrderOnlyOne);
 				tempArrayList.add(2,reqForOrder);
-				//tempArrayList.add(3,productCriteriaSet.getDescription());
+				tempArrayList.add(3,productCriteriaSet.getDescription());
 				optionList.put(optionTyp+"_"+optionName, tempArrayList);
 			}
 			cntr++;
