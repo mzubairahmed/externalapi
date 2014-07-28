@@ -2,6 +2,7 @@ package com.asi.ext.api.integration.lookup.parser;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -21,8 +22,10 @@ import com.asi.ext.api.service.model.Material;
 import com.asi.ext.api.service.model.ProductionTime;
 import com.asi.ext.api.service.model.RushTime;
 import com.asi.ext.api.service.model.Samples;
+import com.asi.ext.api.service.model.Size;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.service.product.client.vo.CriteriaSetCodeValues;
+import com.asi.service.product.client.vo.CriteriaSetValue;
 import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.ProductConfiguration;
 import com.asi.service.product.client.vo.ProductConfigurations;
@@ -41,6 +44,7 @@ public class ConfigurationsParser {
 		this.productLookupParser = productLookupParser;
 	}
 
+	public static final String[] SIZE_GROUP_CRITERIACODES={"CAPS","DIMS","SABR","SAHU","SAIT","SANS","SAWI","SSNM","SVWT","SOTH"};
 	private final static Logger _LOGGER = Logger
 			.getLogger(ConfigurationsParser.class.getName());
 //	private HashMap<String, HashMap<String, String>> criteriaSet = new HashMap<>();
@@ -698,15 +702,31 @@ public class ConfigurationsParser {
 		for(ProductCriteriaSets currentProductCriteriaSet:productCriteriaSetsList){
 			optionList=productLookupParser.findOptionValueDetails(optionList,currentProductCriteriaSet.getCriteriaCode(),currentProductCriteriaSet,productDetail.getExternalProductId());
 		}
+		if(null!=optionList) serviceProductConfig=productLookupParser.setOptionList(serviceProductConfig,optionList);
+		
+		// Sizes
+		serviceProductConfig.setSizes(getCriteriaSetValuesListBySizeCode(productDetail.getExternalProductId(),productDetail.getProductConfigurations().get(0),SIZE_GROUP_CRITERIACODES));
 		
 		
-		 if(null!=optionList) serviceProductConfig=productLookupParser.setOptionList(serviceProductConfig,optionList);
 		
-		serviceProduct.setPriceGrids(productLookupParser.setPriceGrids(productDetail));
 		
-				
 		serviceProduct.setProductConfigurations(serviceProductConfig);
 		return serviceProduct;
+	}
+
+	private Size getCriteriaSetValuesListBySizeCode(String externalProductId,
+			ProductConfiguration productConfiguration,
+			String[] size) {
+		List<ProductCriteriaSets> productCriteriaSetsList=productConfiguration.getProductCriteriaSets();
+		List<CriteriaSetValues> productCriteriaSetValuesList=null;
+		Size currentSize=new Size();
+		for(ProductCriteriaSets currentProductCriteriaSets:productCriteriaSetsList){
+			if(Arrays.asList(SIZE_GROUP_CRITERIACODES).contains(currentProductCriteriaSets.getCriteriaCode().toString())){
+				productCriteriaSetValuesList=currentProductCriteriaSets.getCriteriaSetValues();
+					currentSize=productLookupParser.findSizeValueDetails(currentSize, currentProductCriteriaSets.getCriteriaCode(), productCriteriaSetValuesList, externalProductId);
+			}			
+		}
+		return currentSize;
 	}
 
 	private HashMap<String, String> getImprintColorsByTypeCode(

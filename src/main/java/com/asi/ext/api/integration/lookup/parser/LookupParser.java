@@ -26,12 +26,12 @@ import com.asi.ext.api.service.model.Artwork;
 import com.asi.ext.api.service.model.ImprintMethod;
 import com.asi.ext.api.service.model.MinimumOrder;
 import com.asi.ext.api.service.model.Option;
-import com.asi.ext.api.service.model.PriceGrid;
+import com.asi.ext.api.service.model.Size;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.RestAPIProperties;
 import com.asi.service.product.client.vo.CriteriaSetValue;
-import com.asi.service.product.client.vo.ProductConfigurationsList;
+import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.Relationship;
@@ -42,7 +42,6 @@ import com.asi.service.product.client.vo.parser.MaterialLookup;
 import com.asi.service.product.client.vo.parser.OptionLookup;
 import com.asi.service.product.client.vo.parser.OriginLookup;
 import com.asi.service.product.client.vo.parser.PackagingLookup;
-import com.asi.service.product.client.vo.parser.SampleLookup;
 import com.asi.service.product.client.vo.parser.ShapeLookup;
 import com.asi.service.product.client.vo.parser.SizeLookup;
 import com.asi.service.product.client.vo.parser.ThemeLookup;
@@ -178,24 +177,21 @@ public class LookupParser {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public ProductConfigurationsList findSizeValueDetails(ProductConfigurationsList productConfigurationsList,String criteriaCode,
-			List<CriteriaSetValue> criteriaSetValueLst,String externalProductId) {
+	public Size findSizeValueDetails(Size size,String criteriaCode,
+			List<CriteriaSetValues> criteriaSetValueLst,String externalProductId) {
 		SizeLookup sizeLookup = new SizeLookup();
 		String response;
 		try {
 			if(sizeElementsResponse==null)
 			{
-				response = JerseyClient.invoke(new URI(serverURL
-						+ "/api/api/lookup/criteria_attributes"));
-				sizeElementsResponse = (LinkedList<LinkedHashMap>) jsonParser
-						.parseToList(response);
+				sizeElementsResponse=lookupRestTemplate.getForObject(RestAPIProperties.get(ApplicationConstants.SIZES_CRITERIA_LOOKUP_URL), LinkedList.class);
 			}
 			
 		} catch (Exception e) {
 			_LOGGER.error("Exception while processing Product Size Group JSON - size value parsing",
 					e);
 		}
-		return sizeLookup.findSizeValueDetails(productConfigurationsList,criteriaCode,
+		return sizeLookup.findSizeValueDetails(size,criteriaCode,
 				sizeElementsResponse, criteriaSetValueLst,externalProductId);
 	}
 
@@ -510,7 +506,7 @@ public class LookupParser {
           		optionDetails=optionKey.split("_");
           		crntOptionType=optionDetails[0];
           		optionAryList=optionList.get(optionKey);
-          		crntOptionType=(crntOptionType.equalsIgnoreCase("PROP"))?"Product Option":crntOptionType.equalsIgnoreCase("SHOP")?"Shipping Option":crntOptionType.equalsIgnoreCase("IMOP")?"Imprint Option":"";
+          		crntOptionType=(crntOptionType.equalsIgnoreCase("PROP"))?"Product":crntOptionType.equalsIgnoreCase("SHOP")?"Shipping":crntOptionType.equalsIgnoreCase("IMOP")?"Imprint":"";
           		if(null!=optionAryList && optionDetails.length>1 && optionAryList.size()==4)
           		{
           			currentOption=new Option();
@@ -531,13 +527,5 @@ public class LookupParser {
           serviceConfigurations.setOptions(optionsList);
 		return serviceConfigurations;
 	}
-
-	public List<PriceGrid> setPriceGrids(ProductDetail productDetail) {
 		
-		
-		
-		return null;
-	}
-
-	
 }
