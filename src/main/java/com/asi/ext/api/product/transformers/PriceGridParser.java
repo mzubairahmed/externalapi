@@ -3,12 +3,17 @@ package com.asi.ext.api.product.transformers;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.client.RestTemplate;
+
 import com.asi.ext.api.exception.AmbiguousPriceCriteriaException;
 import com.asi.ext.api.exception.VelocityException;
+import com.asi.ext.api.integration.lookup.parser.PricesParser;
 import com.asi.ext.api.radar.lookup.model.SetCodeValueJsonModel;
 import com.asi.ext.api.radar.model.CriteriaSetCodeValues;
 import com.asi.ext.api.radar.model.CriteriaSetValues;
@@ -18,21 +23,31 @@ import com.asi.ext.api.radar.model.PricingItems;
 import com.asi.ext.api.radar.model.Product;
 import com.asi.ext.api.radar.model.ProductConfigurations;
 import com.asi.ext.api.radar.model.ProductCriteriaSets;
+import com.asi.ext.api.service.model.Price;
+import com.asi.ext.api.service.model.PriceConfiguration;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.PriceGridUtil;
 import com.asi.ext.api.util.RestAPIProperties;
+import com.asi.service.product.client.vo.BasePriceDetails;
+import com.asi.service.product.client.vo.PriceGrid;
+import com.asi.service.product.client.vo.ProductDetail;
+import com.asi.service.product.client.vo.UpChargePriceDetails;
+import com.asi.service.product.client.vo.parser.UpChargeLookup;
 
 public class PriceGridParser extends ProductParser {
 
     private final String                                            CAN_ORDER_LESS_THAN_MINIMUM    = "Can order less than minimum";
 
     private static ConcurrentHashMap<String, SetCodeValueJsonModel> lessThanMinimumSetCodeValueMap = null;
-
-    private static String                                           validCriteriaValues            = "";
-
-    // public ProductDataStore productDataStore = new ProductDataStore();
-
+    @Autowired
+    private UpChargeLookup      upChargeLookup=new UpChargeLookup();
+   
+	private static String                                           validCriteriaValues            = "";
+    private LinkedList<?>                                                              currenciesWSList        = null;
+	public static RestTemplate  lookupRestTemplate;
+    public ProductDataStore productDataStore = new ProductDataStore();
+    protected JerseyClientPost                                                  orgnCall                    = new JerseyClientPost();
     protected ProductCriteriaSets getLessThanMinimumCriteriaSet(Product product) throws VelocityException {
 
         if (lessThanMinimumSetCodeValueMap == null || lessThanMinimumSetCodeValueMap.isEmpty()) {
@@ -600,4 +615,131 @@ public class PriceGridParser extends ProductParser {
         }
         return false;
     }
+
+	public com.asi.ext.api.service.model.Product setProductWithPriceGrids(
+			ProductDetail productDetail,
+			com.asi.ext.api.service.model.Product serviceProduct) {
+		List<PriceGrid> pricegridsList=productDetail.getPriceGrids();
+		List<com.asi.service.product.client.vo.Price> pricesList=new ArrayList<>();
+		List<Price> servicePricesList=null;
+		com.asi.ext.api.service.model.Price currentPrices=null;
+		com.asi.ext.api.service.model.PriceUnit currentPriceUnit=null;
+		List<com.asi.ext.api.service.model.PriceGrid> servicePriceGrids=null;
+		com.asi.ext.api.service.model.PriceGrid currentPriceGrid=null;
+		pricegridsList=productDetail.getPriceGrids();
+		if(null!=pricegridsList && pricegridsList.size()>0){
+			servicePriceGrids=new ArrayList<>();
+			for(PriceGrid radarPriceGrid:pricegridsList){
+				currentPriceGrid=new com.asi.ext.api.service.model.PriceGrid();
+				currentPriceGrid.setIsBasePrice(radarPriceGrid.getIsBasePrice());
+				currentPriceGrid.setIsQUR(radarPriceGrid.getIsQUR());
+				currentPriceGrid.setDescription(radarPriceGrid.getDescription());
+				currentPriceGrid.setPriceIncludes(radarPriceGrid.getPriceIncludes());
+				currentPriceGrid.setSequence(radarPriceGrid.getDisplaySequence());
+				//
+				if (null == currenciesWSList) {
+					currenciesWSList = lookupRestTemplate.getForObject(RestAPIProperties
+                        .get(ApplicationConstants.CURRENCIES_LOOKUP_URL), LinkedList.class);
+				}
+				currentPriceGrid.setCurrency(jsonProcessorObj.checkCurrencyValueKeyPair(productDetail.getExternalProductId().trim(), currenciesWSList,
+						radarPriceGrid.getCurrency().getCode()));
+				// Product Number - TBD
+				pricesList=radarPriceGrid.getPrices();
+				if(null!=pricesList && pricesList.size()>0){
+					 servicePricesList=new ArrayList<>();
+					for(com.asi.service.product.client.vo.Price currentPrice:pricesList){
+						currentPrices=new com.asi.ext.api.service.model.Price();
+						currentPrices.setSequence(String.valueOf(currentPrice.getSequenceNumber()));
+						currentPrices.setQty(String.valueOf(currentPrice.getQuantity()));
+						currentPrices.setListPrice(String.valueOf(currentPrice.getListPrice()));
+						
+						currentPrices.setDiscountCode(currentPrice.getDiscountRate().getIndustryDiscountCode());
+						if(null!=currentPrice.getPriceUnit()){
+							currentPriceUnit=new com.asi.ext.api.service.model.PriceUnit();
+							currentPriceUnit.setItemsPerUnit(currentPrice.getPriceUnit().getItemsPerUnit());
+							currentPriceUnit.setName(currentPrice.getPriceUnit().getDisplayName());
+							if(ProductDataStore.isOtherPriceUnit(currentPrice.getPriceUnit().getDisplayName())){
+								currentPriceUnit.setPriceUnitName(currentPrice.getPriceUnit().getDescription());
+							}else currentPriceUnit.setPriceUnitName("");
+							
+							currentPrices.setPriceUnit(currentPriceUnit);
+						}						
+						servicePricesList.add(currentPrices);
+					}
+					currentPriceGrid.setPrices(servicePricesList);
+					currentPriceGrid.setPriceConfigurations(setPriceGridWithItsPriceCriteria(radarPriceGrid,productDetail));
+				}				
+				servicePriceGrids.add(currentPriceGrid);
+			}
+			serviceProduct.setPriceGrids(servicePriceGrids);
+		}
+		
+		return serviceProduct;
+	}
+
+	private List<PriceConfiguration> setPriceGridWithItsPriceCriteria(
+			com.asi.service.product.client.vo.PriceGrid currentPriceGrid,
+			ProductDetail productDetail) {
+		List<PriceConfiguration> pricingConfigurations=new ArrayList<>();
+		PriceConfiguration currentPriceConfig=null;
+		upChargeLookup.setUpchargeTypelookupAPI(RestAPIProperties
+                .get(ApplicationConstants.PRICING_SUBTYPECODE_LOOKUP));
+		upChargeLookup.setUsageLevelLookupAPI(RestAPIProperties
+                .get(ApplicationConstants.PRICING_USAGELEVEL_LOOKUP));
+		  PricesParser pricesParser = new PricesParser();
+          String firstCriteria="";
+          String secondCriteria="";
+          UpChargePriceDetails upchargePriceDetail=new UpChargePriceDetails();
+          boolean checkNeeded = false;
+              boolean setCurrency = true;
+                  if (currentPriceGrid != null) {
+                      if (currentPriceGrid.getIsBasePrice()) {
+                    	 
+                      	BasePriceDetails bpDetails  = pricesParser.getBasePriceDetails(productDetail.getExternalProductId(), currentPriceGrid, setCurrency, firstCriteria, secondCriteria);
+                      	
+                      	if (bpDetails.getBasePriceCriteria1() != null && !bpDetails.getBasePriceCriteria1().isEmpty() && !checkNeeded) {
+                      		firstCriteria = getCriteriaCode(bpDetails.getBasePriceCriteria1());
+                      		secondCriteria = getCriteriaCode(bpDetails.getBasePriceCriteria2());
+                      		checkNeeded = true;
+                      	}
+                      	//   basePriceDetailsList.add(bpDetails);
+                      	if(firstCriteria!=null && !firstCriteria.trim().isEmpty()){
+                      		 currentPriceConfig=new PriceConfiguration();
+                      		currentPriceConfig.setCriteria(getCriteriaCode(bpDetails.getBasePriceCriteria1()));
+                      		currentPriceConfig.setValue(bpDetails.getBasePriceCriteria1().substring(bpDetails.getBasePriceCriteria1().lastIndexOf(":")+1));
+                      		pricingConfigurations.add(currentPriceConfig);
+                      	}
+                      	if(secondCriteria!=null && !secondCriteria.trim().isEmpty()){
+                      		 currentPriceConfig=new PriceConfiguration();
+                      		currentPriceConfig.setCriteria(getCriteriaCode(bpDetails.getBasePriceCriteria2()));
+                      		currentPriceConfig.setValue(bpDetails.getBasePriceCriteria2().substring(bpDetails.getBasePriceCriteria2().lastIndexOf(":")+1));
+                      		pricingConfigurations.add(currentPriceConfig);
+                      	}                      	
+                          setCurrency = false;
+                      } else {
+                    	  upchargePriceDetail=pricesParser.getUpChargePriceDetails(productDetail
+                                  .getExternalProductId(), currentPriceGrid, upChargeLookup);
+                    	  if(upchargePriceDetail.getUpChargeCriteria1()!=null && !upchargePriceDetail.getUpChargeCriteria1().isEmpty()){
+                    		  currentPriceConfig=new PriceConfiguration();
+                    		  currentPriceConfig.setCriteria(getCriteriaCode(upchargePriceDetail.getUpChargeCriteria1()));
+                    		  currentPriceConfig.setValue(upchargePriceDetail.getUpChargeCriteria1().substring(upchargePriceDetail.getUpChargeCriteria1().lastIndexOf(":")+1));
+                    		  pricingConfigurations.add(currentPriceConfig);
+                    	  }
+                    	  if(upchargePriceDetail.getUpChargeCriteria2()!=null && !upchargePriceDetail.getUpChargeCriteria2().isEmpty()){
+                    		  currentPriceConfig=new PriceConfiguration();
+                    		  currentPriceConfig.setCriteria(getCriteriaCode(upchargePriceDetail.getUpChargeCriteria2()));
+                    		  currentPriceConfig.setValue(upchargePriceDetail.getUpChargeCriteria2().substring(upchargePriceDetail.getUpChargeCriteria2().lastIndexOf(":")+1));
+                    		  pricingConfigurations.add(currentPriceConfig);
+                    	  }
+                      }
+          }
+		return pricingConfigurations;
+	}
+	public String getCriteriaCode(String source) {
+    	if (source != null && !source.isEmpty() && source.contains(":")) {
+    		return source.substring(0, source.indexOf(":"));
+    	}
+    	return null;
+    }
+	
 }

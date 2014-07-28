@@ -69,7 +69,6 @@ public class ProductDataStore {
     public static Map<String, HashMap<String, String>>                unitOfMeasureCodes             = new HashMap<>();
     public static Map<String, HashMap<String, String>>                criteriaItemLookups            = new HashMap<>();
 
-    private static String                                             materialWSResponse             = null;
     public static Map<String, PriceUnitJsonModel>                     priceUnitCollection            = new HashMap<String, PriceUnitJsonModel>();
     public static Map<String, String>                                 artworkLookupTable             = new HashMap<String, String>();
 
@@ -540,9 +539,10 @@ public class ProductDataStore {
     }
 
     // TODO : Change to Lookuptable HIGH Priority
-    public static String getSetCodeValueIdForProductMaterial(String value) {
+/*    public static String getSetCodeValueIdForProductMaterial(String value) {
         if (null == materialWSResponse) {
             try {
+            	
                 materialWSResponse = JersyClientGet.getLookupsResponse(RestAPIProperties
                         .get(ApplicationConstants.MATERIALS_LOOKUP_URL));
             } catch (VelocityException e) {
@@ -553,13 +553,15 @@ public class ProductDataStore {
         }
         return JsonToLookupTableConverter.checkMaterialValueKeyPair(materialWSResponse, value.trim());
     }
-
+*/
     public static String getSetCodeValueIdForProductTheme(String theme) {
         if (productThemesLookupTable == null || productThemesLookupTable.isEmpty()) {
             // Create Product themes Lookup table
             try {
-                String productThemesResponse = JersyClientGet.getLookupsResponse(RestAPIProperties
-                        .get(ApplicationConstants.PRODUCT_THEMES_URL));
+                LinkedList<?> productThemesResponse = lookupRestTemplate.getForObject(RestAPIProperties
+                        .get(ApplicationConstants.PRODUCT_THEMES_URL), LinkedList.class);
+                
+             
                 if (productThemesResponse == null || productThemesResponse.isEmpty()) {
                     // throw new
                     // VelocityException("Unable to get response from themes API",
@@ -589,7 +591,9 @@ public class ProductDataStore {
         try {
             String lookupUrl = RestAPIProperties.get(ApplicationConstants.PRODUCT_TRADENAMES_LOOKUP);
             lookupUrl += CommonUtilities.getURLEncodedValue(tradeName);
-            String productTradeNameResponse = JersyClientGet.getLookupsResponse(lookupUrl);
+          
+            LinkedList<?> productTradeNameResponse = lookupRestTemplate.getForObject(RestAPIProperties
+                    .get(ApplicationConstants.PRODUCT_TRADENAMES_LOOKUP), LinkedList.class);
             if (productTradeNameResponse == null || productTradeNameResponse.isEmpty()) {
                 // Report error to API that we are not able to fetch data for
                 // Origin
@@ -949,8 +953,8 @@ public class ProductDataStore {
     private static boolean loadAllCriteriaSetAttributes() {
         LOGGER.info("Loading criteriaSet Attribute values");
         try {
-            String criteriaAttributeWSResponse = JersyClientGet.getLookupsResponse(RestAPIProperties
-                    .get(ApplicationConstants.SIZES_CRITERIA_LOOKUP_URL));
+            LinkedList<?> criteriaAttributeWSResponse = lookupRestTemplate.getForObject(RestAPIProperties
+                    .get(ApplicationConstants.SIZES_CRITERIA_LOOKUP_URL), LinkedList.class);
             if (criteriaAttributeWSResponse == null || criteriaAttributeWSResponse.isEmpty()) {
                 LOGGER.error("Failed to load CriteriaAttribute values from Lookup API, API returned null response");
                 // TODO : Batch Error
@@ -1004,10 +1008,10 @@ public class ProductDataStore {
         try {
             if (ProductDataStore.priceUnitCollection == null || ProductDataStore.priceUnitCollection.isEmpty()) {
                 ProductDataStore.priceUnitCollection = new HashMap<String, PriceUnitJsonModel>();
-                String response = JersyClientGet.getLookupsResponse(RestAPIProperties
-                        .get(ApplicationConstants.PRICE_UNIT_LOOKUP_URL));
-
-                priceUnitCollection = JsonToLookupTableConverter.jsonToPriceUnitLookupTable(response);
+                LinkedList<?> responseList = lookupRestTemplate.getForObject(RestAPIProperties
+                        .get(ApplicationConstants.PRICE_UNIT_LOOKUP_URL),LinkedList.class);
+                
+                priceUnitCollection = JsonToLookupTableConverter.jsonToPriceUnitLookupTable(responseList);
             }
             PriceUnitJsonModel priceUnitJsonModel = ProductDataStore.priceUnitCollection.get(String.valueOf(priceUnit)
                     .toUpperCase());
@@ -1030,7 +1034,15 @@ public class ProductDataStore {
                     ApplicationConstants.CONST_STRING_PIECE, ApplicationConstants.CONST_STRING_PIECE, "0");
         }
     }
-
+  public static boolean isOtherPriceUnit(String priceUnit)
+  {
+	  boolean otherpriceUnitChk=false;
+	  PriceUnit curentPriceUnit=getPriceUnit(priceUnit);
+	  if(curentPriceUnit.getDisplayName().equalsIgnoreCase("other"))
+		  otherpriceUnitChk=true;
+	  
+	  return otherpriceUnitChk;
+  }
     public static String getArtworkSetCodeValueId(String artworkName, boolean checkOther) {
 
         if (artworkLookupTable == null || artworkLookupTable.isEmpty()) {

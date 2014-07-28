@@ -23,6 +23,7 @@ import com.asi.ext.api.integration.lookup.parser.ConfigurationsParser;
 import com.asi.ext.api.integration.lookup.parser.ImprintParser;
 import com.asi.ext.api.integration.lookup.parser.LookupParser;
 import com.asi.ext.api.product.transformers.ImportTransformer;
+import com.asi.ext.api.product.transformers.PriceGridParser;
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.service.model.Image;
 import com.asi.ext.api.util.ApplicationConstants;
@@ -105,7 +106,7 @@ public class ProductRepo {
     ConfigurationsParser configurationParser;
     @Autowired
     ImprintParser        imprintParser;
-
+    PriceGridParser priceGridParser=new PriceGridParser();
     public ConfigurationsParser getConfigurationParser() {
         return configurationParser;
     }
@@ -248,8 +249,9 @@ public class ProductRepo {
                 BeanUtils.copyProperties(productDetail, serviceProduct);
                 serviceProduct = setBasicProductDetails(productDetail, serviceProduct);
                 serviceProduct=configurationParser.setProductWithConfigurations(productDetail, serviceProduct);
-                List<com.asi.ext.api.service.model.PriceGrid> priceGridList = new ArrayList<>();
-                serviceProduct.setPriceGrids(priceGridList);
+                serviceProduct=priceGridParser.setProductWithPriceGrids(productDetail,serviceProduct);
+/*                List<com.asi.ext.api.service.model.PriceGrid> priceGridList = new ArrayList<>();
+                serviceProduct.setPriceGrids(priceGridList);*/
                 // serviceProduct.setName(productDetail.getName());
             }
 

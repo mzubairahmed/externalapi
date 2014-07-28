@@ -283,6 +283,47 @@ public class JsonProcessor {
 		}
 		return currency;
 	}
+	public String checkCurrencyValueKeyPair(String externalProductId, LinkedList<?> jsonList, String srchValue) { 
+		// LOGGER.info("JsonTxt"+jsonText);
+		 String currncyCode="NON";
+		if(srchValue.trim().isEmpty() 
+		        || srchValue.equalsIgnoreCase(ApplicationConstants.CONST_STRING_NULL_SMALL) 
+		        || srchValue.trim().equalsIgnoreCase("NON")) {
+		    //ProductParser.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD, "Currency code empty for Pricing");
+		    srchValue="USD";
+		}
+		Currency currency = new Currency();
+		// String returnValue="NON";
+		
+		boolean matchFound = false;
+		try {
+		
+			Iterator<?> iter = jsonList.iterator();// entrySet().iterator();
+
+			while (iter.hasNext()) {
+				@SuppressWarnings({  "rawtypes" })
+				LinkedHashMap crntValue = (LinkedHashMap) iter.next();
+				// LOGGER.info.println(crntValue.get("Name")+"==iterate result=="+crntValue);
+				// srchValue="NON";
+				if (srchValue.equalsIgnoreCase(crntValue.get("Code").toString())) {
+					currncyCode=crntValue.get("Code").toString();
+					/*currency.setCode(crntValue.get("Code").toString());
+					currency.setName(crntValue.get("Name").toString());
+					currency.setIsActive(crntValue.get("IsActive").toString());*/
+					return crntValue.get("Code").toString();
+				}
+			}
+			if (!matchFound) {
+			    LOGGER.warn("Ext-PRD-ID : "+externalProductId+", Invalid Currency Code " +srchValue+" for Pricing");
+			    dataStore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Invalid Currency Code " +srchValue+" for Pricing");
+			}
+			// LOGGER.info(JSONValue.toJSONString(com.asi.util.json));
+			return currncyCode;
+		} catch (Exception pe) {
+			LOGGER.error("Exception while processing Currency JSON : \n"+jsonList, pe);
+		}
+		return currncyCode;
+	}
     /**
      * Search for a particular <b>Discount Value</b> in given JSON string. 
      * If a match found then we find the corresponding Discount Group then return data in a format like this <br /> 

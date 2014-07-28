@@ -702,7 +702,7 @@ public class ConfigurationsParser {
 		
 		 if(null!=optionList) serviceProductConfig=productLookupParser.setOptionList(serviceProductConfig,optionList);
 		
-		
+		serviceProduct.setPriceGrids(productLookupParser.setPriceGrids(productDetail));
 		
 				
 		serviceProduct.setProductConfigurations(serviceProductConfig);
