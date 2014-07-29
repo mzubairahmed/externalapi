@@ -134,11 +134,7 @@ public class SizeLookup {
 							sizeValue=getSizesElementValue("ID", criteriaAttributes, valueMap.get("CriteriaAttributeId").toString())+":"+valueMap.get("UnitValue")+":"
 									+unitOfmeasureCode;
 							valueElements=sizeValue.split(":");
-							if(valueElements.length>2){
-							valueObj.setAttribute(valueElements[0]);
-							valueObj.setUnit(valueElements[2]);
-							valueObj.setValue(valueElements[1]);
-							}
+							
 						}
 						else{
 						sizeValue=valueMap.get("UnitValue")+":"+unitOfmeasureCode;
@@ -156,11 +152,6 @@ public class SizeLookup {
 						sizeValue=valueMap.get("UnitValue")+":"
 								+unitOfmeasureCode;
 						valueElements=sizeValue.split(":");
-						if(valueElements.length>2){
-						valueObj.setAttribute(valueElements[1]);
-						valueObj.setUnit("");
-						valueObj.setValue(valueElements[0]);
-						}
 						delim=": ";
 						}
 					else 
@@ -169,24 +160,18 @@ public class SizeLookup {
 						{
 							if(getSizesElementValue("ID", criteriaAttributes, valueMap.get("CriteriaAttributeId").toString()).equals("Waist")) {
 								sizeValue=valueMap.get("UnitValue").toString();
-								valueObj.setValue(sizeValue);
 							}
 							else if(getSizesElementValue("ID", criteriaAttributes, valueMap.get("CriteriaAttributeId").toString()).equals("Inseam")){
 								sizeValue="x"+valueMap.get("UnitValue").toString();
-								valueObj.setValue(valueMap.get("UnitValue").toString());
 							}
 						}
 						else
 							if(criteriaCode.equalsIgnoreCase("SAIT")){  
 								if(unitOfmeasureCode.length()==1){
 									sizeValue=valueMap.get("UnitValue").toString()+unitOfmeasureCode;
-									valueObj.setValue(valueMap.get("UnitValue").toString());
-									valueObj.setUnit(unitOfmeasureCode);
 								}
 								else{
 									sizeValue=valueMap.get("UnitValue").toString()+" "+unitOfmeasureCode;	
-									valueObj.setValue(valueMap.get("UnitValue").toString());
-									valueObj.setUnit(unitOfmeasureCode);
 								}									
 							}
 					}
@@ -195,11 +180,9 @@ public class SizeLookup {
 					{
 						if(criteriaCode.equalsIgnoreCase("SANS")){
 							sizeElementValue+="("+sizeValue.trim()+")";
-							valueObj.setValue(sizeValue);
 						}
 							else {
 								sizeElementValue+=delim+sizeValue;
-								valueObj.setValue(sizeValue);
 							}
 					}
 					
@@ -226,11 +209,25 @@ public class SizeLookup {
 					finalSizeValue=finalSizeValue+","+sizeElementValue.trim();
 				}else
 					finalSizeValue=sizeElementValue.trim();
+				valueElements=sizeElementValue.split(":");
+				if(valueElements.length>2){
+					valueObj.setAttribute(valueElements[0]);
+					valueObj.setUnit(valueElements[2]);
+					valueObj.setValue(valueElements[1]);
+					}else{
+						if(valueElements.length>1){
+							valueObj.setAttribute(valueElements[1]);
+							valueObj.setUnit("");
+							valueObj.setValue(valueElements[0]);
+							}else{
+								valueObj.setValue(valueElements[0]);
+							}
+					}
 				sizeElementValue="";
 				elementsCntr++;
 			}
 			//size.setValues(finalSizeValue);
-			size.setValues(valueObjList);
+			size.setValue(valueObjList);
 		return size;
 	}	
 	/**
