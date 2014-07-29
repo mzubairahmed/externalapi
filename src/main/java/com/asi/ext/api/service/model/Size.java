@@ -12,7 +12,6 @@ public class Size {
     private String       type;
     @JsonProperty("Value")
     private Object value = new Object();
-
     @JsonProperty("Type")
     public String getType() {
         return type;
