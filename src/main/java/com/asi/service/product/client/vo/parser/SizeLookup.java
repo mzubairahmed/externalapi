@@ -14,7 +14,7 @@ import org.json.simple.parser.JSONParser;
 
 import com.asi.ext.api.integration.lookup.parser.CriteriaSetParser;
 import com.asi.ext.api.service.model.Size;
-import com.asi.service.product.client.vo.CriteriaSetValue;
+import com.asi.ext.api.service.model.Value;
 import com.asi.service.product.client.vo.CriteriaSetValues;
 
 
@@ -108,10 +108,14 @@ public class SizeLookup {
 			String sizeElementValue="";
 			//int noOfSizes=criteriaSetValueLst.size();
 			int elementsCntr=0;
+			Value valueObj;
+			List<Value> valueObjList=new ArrayList<>();
 			String unitOfmeasureCode="";
+			String[] valueElements={};
 			for(CriteriaSetValues criteriaSetValue:criteriaSetValueLst)
 			{
 				int sizeCntr=0;
+				valueObj =new Value();
 				if(criteriaSetValue.getValue() instanceof List)
 				{
 				ArrayList<?> valueList=(ArrayList<?>)criteriaSetValue.getValue();
@@ -125,26 +129,41 @@ public class SizeLookup {
 					if(unitOfmeasureCode.equals("'")) unitOfmeasureCode="ft";
 					if(criteriaCode.equalsIgnoreCase("DIMS") || criteriaCode.equalsIgnoreCase("SDIM"))
 					{
-						if(criteriaCode.equalsIgnoreCase("DIMS"))
-						sizeValue=getSizesElementValue("ID", criteriaAttributes, valueMap.get("CriteriaAttributeId").toString())+":"+valueMap.get("UnitValue")+":"
-								+unitOfmeasureCode;
-						else
+						if(criteriaCode.equalsIgnoreCase("DIMS")){
+							
+							sizeValue=getSizesElementValue("ID", criteriaAttributes, valueMap.get("CriteriaAttributeId").toString())+":"+valueMap.get("UnitValue")+":"
+									+unitOfmeasureCode;
+							valueElements=sizeValue.split(":");
+							
+						}
+						else{
 						sizeValue=valueMap.get("UnitValue")+":"+unitOfmeasureCode;
+						valueElements=sizeValue.split(":");
+						if(valueElements.length>1){
+						valueObj.setAttribute(valueElements[1]);
+						valueObj.setUnit("");
+						valueObj.setValue(valueElements[0]);
+						}
 						delim="; ";
+						}
 					}
 					else if(criteriaCode.equalsIgnoreCase("CAPS") || criteriaCode.equalsIgnoreCase("SVWT") || criteriaCode.equalsIgnoreCase("SHWT"))
 						{
 						sizeValue=valueMap.get("UnitValue")+":"
 								+unitOfmeasureCode;
+						valueElements=sizeValue.split(":");
 						delim=": ";
 						}
 					else 
 					{
 						if(criteriaCode.equalsIgnoreCase("SAWI"))
 						{
-							if(getSizesElementValue("ID", criteriaAttributes, valueMap.get("CriteriaAttributeId").toString()).equals("Waist")) 
+							if(getSizesElementValue("ID", criteriaAttributes, valueMap.get("CriteriaAttributeId").toString()).equals("Waist")) {
 								sizeValue=valueMap.get("UnitValue").toString();
-							else if(getSizesElementValue("ID", criteriaAttributes, valueMap.get("CriteriaAttributeId").toString()).equals("Inseam")) sizeValue="x"+valueMap.get("UnitValue").toString();
+							}
+							else if(getSizesElementValue("ID", criteriaAttributes, valueMap.get("CriteriaAttributeId").toString()).equals("Inseam")){
+								sizeValue="x"+valueMap.get("UnitValue").toString();
+							}
 						}
 						else
 							if(criteriaCode.equalsIgnoreCase("SAIT")){  
@@ -152,20 +171,26 @@ public class SizeLookup {
 									sizeValue=valueMap.get("UnitValue").toString()+unitOfmeasureCode;
 								}
 								else{
-									sizeValue=valueMap.get("UnitValue").toString()+" "+unitOfmeasureCode;							
+									sizeValue=valueMap.get("UnitValue").toString()+" "+unitOfmeasureCode;	
 								}									
 							}
 					}
 					
 					if(sizeCntr!=0)
 					{
-						if(criteriaCode.equalsIgnoreCase("SANS"))
+						if(criteriaCode.equalsIgnoreCase("SANS")){
 							sizeElementValue+="("+sizeValue.trim()+")";
-							else sizeElementValue+=delim+sizeValue;
+						}
+							else {
+								sizeElementValue+=delim+sizeValue;
+							}
 					}
 					
-					else
+					else{
 						sizeElementValue+=sizeValue;
+						//valueObj.setValue(sizeValue);
+					}
+					valueObjList.add(valueObj);
 					sizeCntr++;
 				}		
 				criteriaSetParser.addReferenceSet(externalProductId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),sizeElementValue);
@@ -175,6 +200,7 @@ public class SizeLookup {
 						if(null==sizeValue)
 							sizeValue=criteriaSetValue.getFormatValue();
 						criteriaSetParser.addReferenceSet(externalProductId,criteriaSetValue.getCriteriaCode(),Integer.parseInt(criteriaSetValue.getId()),sizeValue);
+						//valueObj.setValue(sizeValue);
 						sizeElementValue+=sizeValue;
 					sizeCntr++;
 				}
@@ -183,10 +209,25 @@ public class SizeLookup {
 					finalSizeValue=finalSizeValue+","+sizeElementValue.trim();
 				}else
 					finalSizeValue=sizeElementValue.trim();
+				valueElements=sizeElementValue.split(":");
+				if(valueElements.length>2){
+					valueObj.setAttribute(valueElements[0]);
+					valueObj.setUnit(valueElements[2]);
+					valueObj.setValue(valueElements[1]);
+					}else{
+						if(valueElements.length>1){
+							valueObj.setAttribute(valueElements[1]);
+							valueObj.setUnit("");
+							valueObj.setValue(valueElements[0]);
+							}else{
+								valueObj.setValue(valueElements[0]);
+							}
+					}
 				sizeElementValue="";
 				elementsCntr++;
 			}
-			size.setValues(finalSizeValue);	
+			//size.setValues(finalSizeValue);
+			size.setValue(valueObjList);
 		return size;
 	}	
 	/**
