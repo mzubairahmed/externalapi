@@ -220,8 +220,8 @@ public class SizeLookup {
 					valueObj.setValue(valueElements[1]);
 					}else{
 						if(valueElements.length>1){
-							valueObj.setAttribute(valueElements[1]);
-							valueObj.setUnit("");
+							valueObj.setUnit(valueElements[1]);
+							valueObj.setValue("");
 							valueObj.setValue(valueElements[0]);
 							}else{
 								valueObj.setValue(valueElements[0]);
@@ -230,7 +230,7 @@ public class SizeLookup {
 				sizeElementValue="";
 				elementsCntr++;
 			}
-			//size.setValue(valueObjList);
+			size.setValue(valueObjList);
 		return size;
 	}	
 	/**

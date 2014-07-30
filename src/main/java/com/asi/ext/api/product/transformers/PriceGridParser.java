@@ -1,7 +1,6 @@
 package com.asi.ext.api.product.transformers;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,13 +33,12 @@ import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.PriceCriteriaComparator;
 import com.asi.ext.api.util.PriceGridUtil;
 import com.asi.ext.api.util.RestAPIProperties;
+import com.asi.service.product.client.vo.BasePriceDetails;
 import com.asi.service.product.client.vo.Currency;
 import com.asi.service.product.client.vo.DiscountRate;
 import com.asi.service.product.client.vo.PriceGrid;
 import com.asi.service.product.client.vo.PriceUnit;
-import com.asi.service.product.client.vo.PricingItem;
 import com.asi.service.product.client.vo.ProductDetail;
-import com.asi.service.product.client.vo.BasePriceDetails;
 import com.asi.service.product.client.vo.UpChargePriceDetails;
 import com.asi.service.product.client.vo.parser.UpChargeLookup;
 
@@ -212,7 +210,7 @@ public class PriceGridParser extends ProductParser {
         return finalPGrids;
     }
     
-    private List<PricingItem> getPricingItems(List<PriceConfiguration> priceConfigs) {
+/*    private List<PricingItem> getPricingItems(List<PriceConfiguration> priceConfigs) {
         List<PricingItem> finalPricingItems = new ArrayList<PricingItem>();
         
         for(PriceConfiguration pConfig : priceConfigs) {
@@ -224,7 +222,7 @@ public class PriceGridParser extends ProductParser {
             
         }
         return finalPricingItems;
-    }
+    }*/
 
     protected ProductCriteriaSets getLessThanMinimumCriteriaSet(Product product) throws VelocityException {
 

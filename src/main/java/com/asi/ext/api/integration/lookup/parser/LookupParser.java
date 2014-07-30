@@ -64,8 +64,7 @@ public class LookupParser {
 	private HashMap<Integer, String> imprintMethodsMap = null;
 	private HashMap<Integer, String> imprintArtworkMap = null;
 	public static ConcurrentHashMap<String, String> imprintRelationMap = null;
-	private HashMap<String, String> productWarningMap=null;
-	@SuppressWarnings("rawtypes")
+//	private HashMap<String, String> productWarningMap=null;
 	public static  HashMap<String,String>  SamplesElementsResponse=null;
 	@SuppressWarnings("rawtypes")
 	public static LinkedList<LinkedHashMap> sizeElementsResponse = null;
@@ -178,11 +177,10 @@ public class LookupParser {
 
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	public Size findSizeValueDetails(Size size,String criteriaCode,
 			List<CriteriaSetValues> criteriaSetValueLst,String externalProductId) {
 		SizeLookup sizeLookup = new SizeLookup();
-		String response;
 		try {
 			if(sizeElementsResponse==null)
 			{
@@ -197,11 +195,10 @@ public class LookupParser {
 				sizeElementsResponse, criteriaSetValueLst,externalProductId);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({  "unchecked" })
 	public ConcurrentHashMap<String,ArrayList<String>> findOptionValueDetails(ConcurrentHashMap<String,ArrayList<String>> optionsList,String criteriaCode,
 			ProductCriteriaSets productCriteriaSet,String externalProductId) {
 		OptionLookup optionLookup=new OptionLookup();
-		String response;
 		try {
 			if(optionElementsResponse==null)
 			{
@@ -464,25 +461,34 @@ public class LookupParser {
 	
 	public List<com.asi.ext.api.service.model.ProductNumber> setSeriviceProductWithProductNumbers(
 			ProductDetail productDetail) {
-		ArrayList<Relationship> relationShipList=(ArrayList<Relationship>) productDetail.getRelationships();
+		//ArrayList<Relationship> relationShipList=(ArrayList<Relationship>) productDetail.getRelationships();
 		List<com.asi.ext.api.service.model.ProductNumber> productNumberList=new ArrayList<>();
 		com.asi.ext.api.service.model.ProductNumber currentServiceProductNumber=null;
 		com.asi.ext.api.service.model.Criteria currentCriteria=null;
-		List<com.asi.ext.api.service.model.Criteria> criteriaList=new ArrayList<>();
+		List<com.asi.ext.api.service.model.Criteria> criteriaList=null;
 		String currentCriteriaSetvalueId="";
-		String tempValuePathId="";
+		//String tempValuePathId="";
 		List<ProductNumber> productNumbers=productDetail.getProductNumbers();
 		String tempCriteria="";
 		if(null!=productNumbers && productNumbers.size()>0){
+			
 			for(ProductNumber crntProductNumber:productNumbers){
+				criteriaList=new ArrayList<>();
+				currentCriteria=new com.asi.ext.api.service.model.Criteria();
 				currentServiceProductNumber=new com.asi.ext.api.service.model.ProductNumber();
 				currentServiceProductNumber.setProductNumber(crntProductNumber.getValue());
 				//currentCriteria.setType(String.valueOf(crntProductNumber.getProductNumberConfigurations().get(0).getCriteriaSetValueId()), crntProductNumber.getValue());
 				currentCriteriaSetvalueId=String.valueOf(crntProductNumber.getProductNumberConfigurations().get(0).getCriteriaSetValueId());
-				for(Relationship crntRelationShip:relationShipList){
+				tempCriteria=criteriaSetParser.findCriteriaSetValueById(productDetail.getExternalProductId(), currentCriteriaSetvalueId);
+				
+				currentCriteria.setType(ProductDataStore.findProdTypeNameByCriteriaCode(tempCriteria.substring(0,tempCriteria.indexOf("_"))));
+				currentCriteria.setValue(tempCriteria.substring(tempCriteria.indexOf("__")+2));
+				criteriaList.add(currentCriteria);
+				
+				/*for(Relationship crntRelationShip:relationShipList){
 					int curntCriteria=0;
 				for(CriteriaSetValuePath currentCriteriaSetValuePath:crntRelationShip.getCriteriaSetValuePaths()){
-					currentCriteria=new com.asi.ext.api.service.model.Criteria();
+					
 					if(currentCriteriaSetValuePath.getCriteriaSetValueId().toString().equals(currentCriteriaSetvalueId) && currentCriteriaSetValuePath.getIsParent() && curntCriteria==0){
 						tempValuePathId=String.valueOf(currentCriteriaSetValuePath.getID());
 						tempCriteria=criteriaSetParser.findCriteriaSetValueById(productDetail.getExternalProductId(), String.valueOf(currentCriteriaSetValuePath.getCriteriaSetValueId()));
@@ -499,7 +505,7 @@ public class LookupParser {
 						curntCriteria++;
 					}
 				 }					
-				}
+				}*/
 				currentServiceProductNumber.setCriteria(criteriaList);
 				productNumberList.add(currentServiceProductNumber);
 			}

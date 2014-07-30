@@ -25,7 +25,6 @@ import com.asi.ext.api.service.model.Samples;
 import com.asi.ext.api.service.model.Size;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.service.product.client.vo.CriteriaSetCodeValues;
-import com.asi.service.product.client.vo.CriteriaSetValue;
 import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.ProductConfiguration;
 import com.asi.service.product.client.vo.ProductConfigurations;
@@ -508,9 +507,11 @@ public class ConfigurationsParser {
 			String[] imprintColrsAry;
 			List<String> imprColrValues=null;
 			HashMap<String,String> imprintColorByValueTypeCode=getImprintColorsByTypeCode(currentCriteriaSetValueList,productDetail.getExternalProductId());
+			@SuppressWarnings("rawtypes")
 			Iterator itr = imprintColorByValueTypeCode.entrySet().iterator();
 		    while (itr.hasNext()) {
-		        Map.Entry pairs = (Map.Entry)itr.next();
+		        @SuppressWarnings("rawtypes")
+				Map.Entry pairs = (Map.Entry)itr.next();
 		        currentImprintcolor.setType(pairs.getKey().toString());
 		       currentImprintColorValue=(pairs.getValue()==null)?"":pairs.getValue().toString();
 		        if(currentImprintColorValue.contains(",")){
@@ -630,6 +631,7 @@ public class ConfigurationsParser {
 				_LOGGER.error("Trade Name is Invalid - Unsupported Encoding Exception");
 			}*/			
 			}
+		_LOGGER.info(tradeNamesList);
 			serviceProductConfig.setTradeNames(tradeNamesList);
 		}
 		// Production Time
@@ -724,7 +726,7 @@ public class ConfigurationsParser {
 		if(null!=optionList) serviceProductConfig=productLookupParser.setOptionList(serviceProductConfig,optionList);
 		
 		// Sizes
-	//	serviceProductConfig.setSizes(getCriteriaSetValuesListBySizeCode(productDetail.getExternalProductId(),productDetail.getProductConfigurations().get(0),SIZE_GROUP_CRITERIACODES));
+		serviceProductConfig.setSizes(getCriteriaSetValuesListBySizeCode(productDetail.getExternalProductId(),productDetail.getProductConfigurations().get(0),SIZE_GROUP_CRITERIACODES));
 		
 		// Product Numbers
 		serviceProduct.setProductNumbers(productLookupParser.setSeriviceProductWithProductNumbers(productDetail));
@@ -734,7 +736,7 @@ public class ConfigurationsParser {
 		return serviceProduct;
 	}
 
-/*	private Size getCriteriaSetValuesListBySizeCode(String externalProductId,
+	private Size getCriteriaSetValuesListBySizeCode(String externalProductId,
 			ProductConfiguration productConfiguration,
 			String[] size) {
 		List<ProductCriteriaSets> productCriteriaSetsList=productConfiguration.getProductCriteriaSets();
@@ -747,7 +749,7 @@ public class ConfigurationsParser {
 			}			
 		}
 		return currentSize;
-	}*/
+	}
 
 	private HashMap<String, String> getImprintColorsByTypeCode(
 			List<CriteriaSetValues> currentCriteriaSetValueList,String xid) {
