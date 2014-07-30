@@ -133,11 +133,13 @@ public class SizeLookup {
 							
 							sizeValue=getSizesElementValue("ID", criteriaAttributes, valueMap.get("CriteriaAttributeId").toString())+":"+valueMap.get("UnitValue")+":"
 									+unitOfmeasureCode;
+							criteriaSetParser.addReferenceSet(externalProductId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),sizeValue);
 							valueElements=sizeValue.split(":");
 							
 						}
 						else{
 						sizeValue=valueMap.get("UnitValue")+":"+unitOfmeasureCode;
+						criteriaSetParser.addReferenceSet(externalProductId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),sizeValue);
 						valueElements=sizeValue.split(":");
 						if(valueElements.length>1){
 						valueObj.setAttribute(valueElements[1]);
@@ -151,6 +153,7 @@ public class SizeLookup {
 						{
 						sizeValue=valueMap.get("UnitValue")+":"
 								+unitOfmeasureCode;
+						criteriaSetParser.addReferenceSet(externalProductId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),sizeValue);
 						valueElements=sizeValue.split(":");
 						delim=": ";
 						}
@@ -164,6 +167,7 @@ public class SizeLookup {
 							else if(getSizesElementValue("ID", criteriaAttributes, valueMap.get("CriteriaAttributeId").toString()).equals("Inseam")){
 								sizeValue="x"+valueMap.get("UnitValue").toString();
 							}
+							
 						}
 						else
 							if(criteriaCode.equalsIgnoreCase("SAIT")){  
@@ -193,17 +197,17 @@ public class SizeLookup {
 					valueObjList.add(valueObj);
 					sizeCntr++;
 				}		
-				criteriaSetParser.addReferenceSet(externalProductId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),sizeElementValue);
+				
 				}else
 				{
 						sizeValue=criteriaSetValue.getBaseLookupValue();
 						if(null==sizeValue)
 							sizeValue=criteriaSetValue.getFormatValue();
-						criteriaSetParser.addReferenceSet(externalProductId,criteriaSetValue.getCriteriaCode(),Integer.parseInt(criteriaSetValue.getId()),sizeValue);
 						//valueObj.setValue(sizeValue);
 						sizeElementValue+=sizeValue;
 					sizeCntr++;
 				}
+				//criteriaSetParser.addReferenceSet(externalProductId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),sizeValue);
 				if(elementsCntr!=0)
 				{
 					finalSizeValue=finalSizeValue+","+sizeElementValue.trim();
@@ -226,8 +230,7 @@ public class SizeLookup {
 				sizeElementValue="";
 				elementsCntr++;
 			}
-			//size.setValues(finalSizeValue);
-			size.setValue(valueObjList);
+			//size.setValue(valueObjList);
 		return size;
 	}	
 	/**

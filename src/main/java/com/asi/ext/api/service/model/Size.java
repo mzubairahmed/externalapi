@@ -11,7 +11,7 @@ public class Size {
     @JsonProperty("Type")
     private String       type;
     @JsonProperty("Value")
-    private Object value = new Object();
+    private String value;
     @JsonProperty("Type")
     public String getType() {
         return type;
@@ -23,12 +23,12 @@ public class Size {
     }
 
     @JsonProperty("Value")
-    public Object getValue() {
+    public String getValue() {
         return value;
     }
 
     @JsonProperty("Value")
-    public void setValue(Object value) {
+    public void setValue(String value) {
         this.value = value;
     }
 
