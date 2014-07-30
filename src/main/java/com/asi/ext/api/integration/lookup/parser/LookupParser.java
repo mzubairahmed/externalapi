@@ -37,6 +37,7 @@ import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductNumber;
 import com.asi.service.product.client.vo.Relationship;
+import com.asi.service.product.client.vo.SelectedLineNames;
 import com.asi.service.product.client.vo.parser.ColorLookup;
 import com.asi.service.product.client.vo.parser.ImprintLookup;
 import com.asi.service.product.client.vo.parser.ImprintSizeLookup;
@@ -581,6 +582,16 @@ public class LookupParser {
           }
           serviceConfigurations.setOptions(optionsList);
 		return serviceConfigurations;
+	}
+
+	public List<String> setServiceProductLineNames(ProductDetail productDetail) {
+		List<String> lineNamesList=new ArrayList<>();
+		List<SelectedLineNames> selectedNamesList=productDetail.getSelectedLineNames();
+		for(SelectedLineNames crntSelectedLineName:selectedNamesList){
+			if(null!=ProductDataStore.getSetCodeValueIdForSelectedLineName(crntSelectedLineName.getName(),productDetail.getCompanyId()))
+				lineNamesList.add(crntSelectedLineName.getName());
+		}
+		return lineNamesList;
 	}
 		
 }

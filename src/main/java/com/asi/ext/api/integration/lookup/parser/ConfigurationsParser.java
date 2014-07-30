@@ -731,7 +731,20 @@ public class ConfigurationsParser {
 		// Product Numbers
 		serviceProduct.setProductNumbers(productLookupParser.setSeriviceProductWithProductNumbers(productDetail));
 		
+		// Line Names
+		serviceProduct.setLineNames(productLookupParser.setServiceProductLineNames(productDetail));
 		
+		// FOB Points
+		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_CRITERIA_CODE_FOBP);
+		List<String> fobPointsList=new ArrayList<>();
+		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
+				if(null!=ProductDataStore.getSetCodeValueIdForFobPoints(currentCriteriaSetValue.getValue().toString(),productDetail.getCompanyId())){
+					fobPointsList.add(currentCriteriaSetValue.getValue().toString());
+				}
+			}
+		}		
+		serviceProduct.setFobPoints(fobPointsList);
 		serviceProduct.setProductConfigurations(serviceProductConfig);
 		return serviceProduct;
 	}

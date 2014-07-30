@@ -73,7 +73,9 @@ public class ApplicationConstants {
     public static final String                       IMPRINT_SIZE_LOOKUP                         = "lookup.imprintsize.url";
     public static final String                       LESS_THAN_MIN_LOOKUP                        = "lookup.pricing.less.than.min.url";
     public static final String                       PRODUCT_TYPECODE_LOOKUP_URL              	 = "lookup.product.typecodes.url";
-
+    public static final String 						 SELECTED_LINES_LOOKUP 						 = "lookup.product.selected.lines.url";;
+    public static final String 						FOBP_POINTS_LOOKUP 							 = "lookup.product.fob.points.url";
+    
     public static final int                          PRD_DESCRIPTION_MAX_LENGTH                  = 800;
 
     // Application Constants - CODE
@@ -266,6 +268,9 @@ public class ApplicationConstants {
     private static final String[]                    UPCHARGE_PRICE_CRITERIA_CODES               = { "ADCL", "ADLN", "CAPS",
             "DIMS", "IMCL", "IMMD", "IMOP", "IMSZ", "LMIN", "MTRL", "ORGN", "PCKG", "FOBP", "PRCL", "PROP", "RUSH", "SABR", "SAHU",
             "SAIT", "SANS", "SAWI", "SDRU", "SHAP", "SHOP", "SMPL", "SOTH", "SSNM", "SVWT"      };
+	public static final String CONST_SELECTED_LINE_NAMES = "LNNM";
+	
+	
 
     // Load required elements at the startup
     static {
