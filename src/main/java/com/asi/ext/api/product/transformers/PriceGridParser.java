@@ -1,7 +1,6 @@
 package com.asi.ext.api.product.transformers;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,18 +27,18 @@ import com.asi.ext.api.radar.model.ProductConfigurations;
 import com.asi.ext.api.radar.model.ProductCriteriaSets;
 import com.asi.ext.api.service.model.Price;
 import com.asi.ext.api.service.model.PriceConfiguration;
+import com.asi.ext.api.service.model.Value;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.PriceCriteriaComparator;
 import com.asi.ext.api.util.PriceGridUtil;
 import com.asi.ext.api.util.RestAPIProperties;
+import com.asi.service.product.client.vo.BasePriceDetails;
 import com.asi.service.product.client.vo.Currency;
 import com.asi.service.product.client.vo.DiscountRate;
 import com.asi.service.product.client.vo.PriceGrid;
 import com.asi.service.product.client.vo.PriceUnit;
-import com.asi.service.product.client.vo.PricingItem;
 import com.asi.service.product.client.vo.ProductDetail;
-import com.asi.service.product.client.vo.BasePriceDetails;
 import com.asi.service.product.client.vo.UpChargePriceDetails;
 import com.asi.service.product.client.vo.parser.UpChargeLookup;
 
@@ -211,7 +210,7 @@ public class PriceGridParser extends ProductParser {
         return finalPGrids;
     }
     
-    private List<PricingItem> getPricingItems(List<PriceConfiguration> priceConfigs) {
+/*    private List<PricingItem> getPricingItems(List<PriceConfiguration> priceConfigs) {
         List<PricingItem> finalPricingItems = new ArrayList<PricingItem>();
         
         for(PriceConfiguration pConfig : priceConfigs) {
@@ -223,7 +222,7 @@ public class PriceGridParser extends ProductParser {
             
         }
         return finalPricingItems;
-    }
+    }*/
 
     protected ProductCriteriaSets getLessThanMinimumCriteriaSet(Product product) throws VelocityException {
 
@@ -882,14 +881,14 @@ public class PriceGridParser extends ProductParser {
                       	//   basePriceDetailsList.add(bpDetails);
                       	if(firstCriteria!=null && !firstCriteria.trim().isEmpty()){
                       		 currentPriceConfig=new PriceConfiguration();
-                      		currentPriceConfig.setCriteria(getCriteriaCode(bpDetails.getBasePriceCriteria1()));
-                      		currentPriceConfig.setValue(bpDetails.getBasePriceCriteria1().substring(bpDetails.getBasePriceCriteria1().lastIndexOf(":")+1));
+                      		currentPriceConfig.setCriteria(ProductDataStore.findProdTypeNameByCriteriaCode(getCriteriaCode(bpDetails.getBasePriceCriteria1())));
+                      		currentPriceConfig.setValue(getCriteriaValueByCriteria(bpDetails.getBasePriceCriteria1()));
                       		pricingConfigurations.add(currentPriceConfig);
                       	}
                       	if(secondCriteria!=null && !secondCriteria.trim().isEmpty()){
                       		 currentPriceConfig=new PriceConfiguration();
-                      		currentPriceConfig.setCriteria(getCriteriaCode(bpDetails.getBasePriceCriteria2()));
-                      		currentPriceConfig.setValue(bpDetails.getBasePriceCriteria2().substring(bpDetails.getBasePriceCriteria2().lastIndexOf(":")+1));
+                      		currentPriceConfig.setCriteria(ProductDataStore.findProdTypeNameByCriteriaCode(getCriteriaCode(bpDetails.getBasePriceCriteria2())));
+                      		currentPriceConfig.setValue(getCriteriaValueByCriteria(bpDetails.getBasePriceCriteria2()));
                       		pricingConfigurations.add(currentPriceConfig);
                       	}                      	
                           setCurrency = false;
@@ -898,14 +897,14 @@ public class PriceGridParser extends ProductParser {
                                   .getExternalProductId(), currentPriceGrid, upChargeLookup);
                     	  if(upchargePriceDetail.getUpChargeCriteria1()!=null && !upchargePriceDetail.getUpChargeCriteria1().isEmpty()){
                     		  currentPriceConfig=new PriceConfiguration();
-                    		  currentPriceConfig.setCriteria(getCriteriaCode(upchargePriceDetail.getUpChargeCriteria1()));
-                    		  currentPriceConfig.setValue(upchargePriceDetail.getUpChargeCriteria1().substring(upchargePriceDetail.getUpChargeCriteria1().lastIndexOf(":")+1));
+                    		  currentPriceConfig.setCriteria(ProductDataStore.findProdTypeNameByCriteriaCode(getCriteriaCode(upchargePriceDetail.getUpChargeCriteria1())));
+                    		  currentPriceConfig.setValue(getCriteriaValueByCriteria(upchargePriceDetail.getUpChargeCriteria1()));
                     		  pricingConfigurations.add(currentPriceConfig);
                     	  }
                     	  if(upchargePriceDetail.getUpChargeCriteria2()!=null && !upchargePriceDetail.getUpChargeCriteria2().isEmpty()){
                     		  currentPriceConfig=new PriceConfiguration();
-                    		  currentPriceConfig.setCriteria(getCriteriaCode(upchargePriceDetail.getUpChargeCriteria2()));
-                    		  currentPriceConfig.setValue(upchargePriceDetail.getUpChargeCriteria2().substring(upchargePriceDetail.getUpChargeCriteria2().lastIndexOf(":")+1));
+                    		  currentPriceConfig.setCriteria(ProductDataStore.findProdTypeNameByCriteriaCode(getCriteriaCode(upchargePriceDetail.getUpChargeCriteria2())));
+                    		  currentPriceConfig.setValue(getCriteriaValueByCriteria(upchargePriceDetail.getUpChargeCriteria2()));
                     		  pricingConfigurations.add(currentPriceConfig);
                     	  }
                       }
@@ -918,5 +917,27 @@ public class PriceGridParser extends ProductParser {
     	}
     	return null;
     }
-	
+	public Object getCriteriaValueByCriteria(String source) {
+		String criteriaValue="";
+		String[] valueElements={};
+    	if (source != null && !source.isEmpty() && source.contains(":")) {
+    		criteriaValue=source.substring(source.indexOf(":")+1);
+    	if(!criteriaValue.contains(":"))	
+    		return criteriaValue;
+    	else{
+    		valueElements=criteriaValue.split(":");
+    		Value valueObj=new Value();
+    		if(valueElements.length==2){
+    			valueObj.setValue(valueElements[0]);
+    			valueObj.setUnit(valueElements[1]);
+    		}else{
+    			valueObj.setAttribute(valueElements[0]);
+    			valueObj.setValue(valueElements[1]);
+    			valueObj.setUnit(valueElements[2]);
+    		}
+    		return valueObj;
+    	}
+    	}
+    	return null;
+    }
 }

@@ -156,7 +156,7 @@ public final class JsonToLookupTableConverter {
                 LinkedHashMap<String, String> crntValue = (LinkedHashMap<String, String>) iter.next();
                 if (crntValue != null) {
                     try {
-                        originMap.put(crntValue.get("CodeValue").toUpperCase(), String.valueOf(crntValue.get("ID")));
+                        originMap.put(crntValue.get("CodeValue"), String.valueOf(crntValue.get("ID")));
                     } catch (Exception e) {
                     }
                 }
@@ -761,6 +761,31 @@ public final class JsonToLookupTableConverter {
         }
         return currencyMap;
     }
+
+	public static ConcurrentHashMap<String, String> jsonToProductCriteriaListLookupTable(
+			LinkedList<?> prodCriteriaListResponse) {
+
+		
+		
+		 ConcurrentHashMap<String, String> criteriaCodeLookupData = null;
+	        try {
+	            LinkedList<?> json = prodCriteriaListResponse;
+	            Iterator<?> iter = json.iterator();
+	            criteriaCodeLookupData = new ConcurrentHashMap<String, String>(json.size() + 2);
+	            while (iter.hasNext()) {
+	                try {
+	                    LinkedHashMap crntValue = (LinkedHashMap) iter.next();
+	                    criteriaCodeLookupData.put(String.valueOf(crntValue.get("Description")).toUpperCase(),
+	                            String.valueOf(crntValue.get("Code")));
+	                } catch (Exception e) {
+	                } // Collecting maximum elements
+	            }
+	            return criteriaCodeLookupData;
+	        } catch (Exception pe) {
+	            pe.printStackTrace();
+	        }
+	        return criteriaCodeLookupData;		
+	}
 
 
 }

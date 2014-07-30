@@ -30,6 +30,14 @@ public String getIsPrimary() {
 public void setIsPrimary(String isPrimary) {
 	this.isPrimary = isPrimary;
 }
+public MediaCitationReference getMediaCitationReference() {
+	return mediaCitationReference;
+}
+public void setMediaCitationReference(MediaCitationReference mediaCitationReference) {
+	this.mediaCitationReference = mediaCitationReference;
+}
+@JsonProperty("MediaCitationReference")
+private MediaCitationReference mediaCitationReference;
 @JsonProperty("MediaCitationReferenceId")
 private String mediaCitationReferenceId;
 @JsonProperty("MediaCitationId")

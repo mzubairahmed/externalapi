@@ -1,5 +1,7 @@
 package com.asi.ext.api.service.model;
 
+import java.util.List;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -11,9 +13,8 @@ public class ProductNumber {
     @JsonProperty("ProductNumber")
     private String productNumber;
     @JsonProperty("Criteria")
-    private String criteria;
-    @JsonProperty("Value")
-    private String value;
+    private List<Criteria> criteria;
+    
 
     @JsonProperty("ProductNumber")
     public String getProductNumber() {
@@ -26,25 +27,16 @@ public class ProductNumber {
     }
 
     @JsonProperty("Criteria")
-    public String getCriteria() {
+    public List<Criteria> getCriteria() {
         return criteria;
     }
 
     @JsonProperty("Criteria")
-    public void setCriteria(String criteria) {
+    public void setCriteria(List<Criteria> criteria) {
         this.criteria = criteria;
     }
 
-    @JsonProperty("Value")
-    public String getValue() {
-        return value;
-    }
-
-    @JsonProperty("Value")
-    public void setValue(String value) {
-        this.value = value;
-    }
-
+    
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
