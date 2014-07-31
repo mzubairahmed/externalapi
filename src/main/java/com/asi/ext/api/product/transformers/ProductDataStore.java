@@ -331,7 +331,7 @@ public class ProductDataStore {
 
     }
 
-    public static String findProdTypeNameByCriteriaCode(String typeCode) { // throws
+    public static String findCriteriaNameByCriteriaCode(String typeCode) { // throws
         // VelocityException
         // {
         if (criteriaListLookups == null || criteriaListLookups.isEmpty()) {
@@ -1383,7 +1383,7 @@ public class ProductDataStore {
 
     private static boolean loadCriteriaInformations() {
         try {
-            String wsResponse = JersyClientGet.getLookupsResponse(RestAPIProperties.get(ApplicationConstants.CRITERIA_INFO_URL));
+            LinkedList<?> wsResponse = lookupRestTemplate.getForObject(RestAPIProperties.get(ApplicationConstants.CRITERIA_INFO_URL),LinkedList.class);
             if (wsResponse != null) {
                 criteriaInfo = JsonToLookupTableConverter.createCriteriaInfoLookup(wsResponse);
                 return (criteriaInfo != null && !criteriaInfo.isEmpty());

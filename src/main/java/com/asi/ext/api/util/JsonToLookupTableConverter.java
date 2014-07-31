@@ -664,9 +664,9 @@ public final class JsonToLookupTableConverter {
         return criteriaItemsMap;
     }
 
-    public static Map<String, CriteriaInfo> createCriteriaInfoLookup(String wsResponse) {
+    public static Map<String, CriteriaInfo> createCriteriaInfoLookup(LinkedList<?> wsResponseList) {
         Map<String, CriteriaInfo> criteriaInfoMap = new HashMap<String, CriteriaInfo>();
-        List<CriteriaInfo> criteriaInfoList = JsonProcessor.convertJsonToBeanCollection(wsResponse, CriteriaInfo.class);
+        List<CriteriaInfo> criteriaInfoList = (List<CriteriaInfo>) wsResponseList;//JsonProcessor.convertJsonToBeanCollection(wsResponse, CriteriaInfo.class);
         if (criteriaInfoList != null) {
             criteriaInfoMap = new HashMap<String, CriteriaInfo>(criteriaInfoList.size());
             for (CriteriaInfo info : criteriaInfoList) {

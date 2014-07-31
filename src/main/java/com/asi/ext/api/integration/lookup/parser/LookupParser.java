@@ -21,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.asi.core.utils.JerseyClient;
 import com.asi.ext.api.product.transformers.ProductDataStore;
+import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.ext.api.radar.model.Value;
 import com.asi.ext.api.service.model.Artwork;
 import com.asi.ext.api.service.model.ImprintMethod;
@@ -31,7 +32,6 @@ import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.RestAPIProperties;
 import com.asi.service.product.client.vo.CriteriaSetValue;
-import com.asi.service.product.client.vo.CriteriaSetValuePath;
 import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
@@ -471,6 +471,7 @@ public class LookupParser {
 		//String tempValuePathId="";
 		List<ProductNumber> productNumbers=productDetail.getProductNumbers();
 		String tempCriteria="";
+		CriteriaInfo criteriaInfo=null;
 		if(null!=productNumbers && productNumbers.size()>0){
 			
 			for(ProductNumber crntProductNumber:productNumbers){
@@ -481,8 +482,8 @@ public class LookupParser {
 				//currentCriteria.setType(String.valueOf(crntProductNumber.getProductNumberConfigurations().get(0).getCriteriaSetValueId()), crntProductNumber.getValue());
 				currentCriteriaSetvalueId=String.valueOf(crntProductNumber.getProductNumberConfigurations().get(0).getCriteriaSetValueId());
 				tempCriteria=criteriaSetParser.findCriteriaSetValueById(productDetail.getExternalProductId(), currentCriteriaSetvalueId);
-				
-				currentCriteria.setType(ProductDataStore.findProdTypeNameByCriteriaCode(tempCriteria.substring(0,tempCriteria.indexOf("_"))));
+				criteriaInfo=ProductDataStore.getCriteriaInfoByDescription(tempCriteria.substring(0,tempCriteria.indexOf("_")));
+				currentCriteria.setType(criteriaInfo.getDescription());
 				currentCriteria.setValue(tempCriteria.substring(tempCriteria.indexOf("__")+2));
 				criteriaList.add(currentCriteria);
 				
