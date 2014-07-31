@@ -828,11 +828,12 @@ public class PriceGridParser extends ProductParser {
 						currentPrices.setSequence(currentPrice.getSequenceNumber());
 						currentPrices.setQty(currentPrice.getQuantity());
 						currentPrices.setListPrice(String.valueOf(currentPrice.getListPrice()));
-						
+						if(isValidDiscountCode(currentPrice.getDiscountRate().getIndustryDiscountCode()))
 						currentPrices.setDiscountCode(currentPrice.getDiscountRate().getIndustryDiscountCode());
 						if(null!=currentPrice.getPriceUnit()){
 							currentPriceUnit=new com.asi.ext.api.service.model.PriceUnit();
 							currentPriceUnit.setItemsPerUnit(currentPrice.getPriceUnit().getItemsPerUnit());
+							
 							currentPriceUnit.setName(currentPrice.getPriceUnit().getDisplayName());
 							if(ProductDataStore.isOtherPriceUnit(currentPrice.getPriceUnit().getDisplayName())){
 								currentPriceUnit.setPriceUnitName(currentPrice.getPriceUnit().getDescription());
@@ -851,6 +852,14 @@ public class PriceGridParser extends ProductParser {
 		}
 		
 		return serviceProduct;
+	}
+
+	private boolean isValidDiscountCode(String code) {
+		DiscountRate currentDiscountRate=ProductDataStore.getDiscountRate(code,true);
+		if(null!=currentDiscountRate && currentDiscountRate.getIndustryDiscountCode().equalsIgnoreCase(code))
+			return true;
+		else 
+			return false;
 	}
 
 	private List<PriceConfiguration> setPriceGridWithItsPriceCriteria(

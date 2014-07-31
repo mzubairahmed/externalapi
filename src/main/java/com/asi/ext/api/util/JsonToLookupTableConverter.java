@@ -381,6 +381,27 @@ public final class JsonToLookupTableConverter {
         }
         return customLookupTable;
     }
+    public static HashMap<String, String> jsonToSelectedLinesNamesLookupTable(LinkedList<?> jsonList) {
+
+        HashMap<String, String> selectedLineNamesLookupTable = new HashMap<>();
+        try {
+        	selectedLineNamesLookupTable = new HashMap<>(jsonList.size());
+            Iterator<?> iter = jsonList.iterator();
+            while (iter.hasNext()) {
+                @SuppressWarnings("unchecked")
+                LinkedHashMap<String, ?> crntValue = (LinkedHashMap<String, ?>) iter.next();
+                try {
+                	selectedLineNamesLookupTable.put(String.valueOf(crntValue.get("ID")).toUpperCase(),
+                            String.valueOf(crntValue.get("Name")));
+                } catch (Exception e) {
+                    // Trying to get maximum data so no exception need to process now
+                }
+            }
+        } catch (Exception pe) {
+            pe.printStackTrace();
+        }
+        return selectedLineNamesLookupTable;
+    }
 
     public static HashMap<String, String> jsonToComplianceCertLookupTable(LinkedList<?> jsonList) {
 
@@ -741,11 +762,11 @@ public final class JsonToLookupTableConverter {
         return currencyMap;
     }
 
-    public static Map<String, DiscountRate> jsonToDiscountLookupTable(String response) {
+    public static Map<String, DiscountRate> jsonToDiscountLookupTable(LinkedList<?> responseList) {
         Map<String, DiscountRate> currencyMap = new HashMap<String, DiscountRate>();
         try {
-            List<LinkedHashMap<String, String>> currencyJsonModelList = JsonProcessor.convertJsonToBean(response, List.class);
-
+            List<LinkedHashMap<String, String>> currencyJsonModelList = (List<LinkedHashMap<String, String>>) responseList;//JsonProcessor.convertJsonToBean(response, List.class);
+            
             if (currencyJsonModelList != null && !currencyJsonModelList.isEmpty()) {
                 for (LinkedHashMap<String, String> discountJModel : currencyJsonModelList) {
                     DiscountRate currency = new DiscountRate();

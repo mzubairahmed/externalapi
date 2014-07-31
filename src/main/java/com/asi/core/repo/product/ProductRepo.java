@@ -247,6 +247,7 @@ public class ProductRepo {
             if (null != productDetail) {
                 serviceProduct = new com.asi.ext.api.service.model.Product();
                 BeanUtils.copyProperties(productDetail, serviceProduct);
+                serviceProduct.setShipperBillsBy(productDetail.getShipperBillsByCode());
                 serviceProduct = setBasicProductDetails(productDetail, serviceProduct);
                 serviceProduct=configurationParser.setProductWithConfigurations(productDetail, serviceProduct);
                 serviceProduct=priceGridParser.setProductWithPriceGrids(productDetail,serviceProduct);
