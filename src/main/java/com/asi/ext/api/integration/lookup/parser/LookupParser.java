@@ -482,7 +482,7 @@ public class LookupParser {
 				//currentCriteria.setType(String.valueOf(crntProductNumber.getProductNumberConfigurations().get(0).getCriteriaSetValueId()), crntProductNumber.getValue());
 				currentCriteriaSetvalueId=String.valueOf(crntProductNumber.getProductNumberConfigurations().get(0).getCriteriaSetValueId());
 				tempCriteria=criteriaSetParser.findCriteriaSetValueById(productDetail.getExternalProductId(), currentCriteriaSetvalueId);
-				criteriaInfo=ProductDataStore.getCriteriaInfoByDescription(tempCriteria.substring(0,tempCriteria.indexOf("_")));
+				criteriaInfo=ProductDataStore.getCriteriaInfoForCriteriaCode(tempCriteria.substring(0,tempCriteria.indexOf("_")));
 				currentCriteria.setType(criteriaInfo.getDescription());
 				currentCriteria.setValue(tempCriteria.substring(tempCriteria.indexOf("__")+2));
 				criteriaList.add(currentCriteria);
