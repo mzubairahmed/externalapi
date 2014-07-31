@@ -1488,10 +1488,10 @@ public class ProductDataStore {
         try {
             if (discountLookupTable == null || discountLookupTable.isEmpty()) {
                 discountLookupTable = new HashMap<String, DiscountRate>();
-                String response = JersyClientGet.getLookupsResponse(RestAPIProperties
-                        .get(ApplicationConstants.DISCOUNT_RATES_LOOKUP_URL));
+                LinkedList<?> responseList = lookupRestTemplate.getForObject((RestAPIProperties
+                        .get(ApplicationConstants.DISCOUNT_RATES_LOOKUP_URL)),LinkedList.class);
 
-                discountLookupTable = JsonToLookupTableConverter.jsonToDiscountLookupTable(response);
+                discountLookupTable = JsonToLookupTableConverter.jsonToDiscountLookupTable(responseList);
             }
             DiscountRate discountRate = discountLookupTable.get(String.valueOf(discountCode).toUpperCase());
             if (discountRate == null && getDefault) {

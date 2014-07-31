@@ -15,6 +15,7 @@ import org.springframework.web.client.RestClientException;
 
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.service.model.Color;
+import com.asi.ext.api.service.model.Combo;
 import com.asi.ext.api.service.model.ImprintColor;
 import com.asi.ext.api.service.model.ImprintMethod;
 import com.asi.ext.api.service.model.ImprintSizeLocation;
@@ -445,13 +446,32 @@ public class ConfigurationsParser {
 		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
 			Color currentColor;
 			String crntColor;
+			List<Combo> comboList=new ArrayList<>();
+			Combo currentCombo=null;
 			List<Color> colorsList=new ArrayList<>();
 			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
 				currentColor=new Color();
+				if(currentCriteriaSetValue.getCriteriaSetCodeValues().length>1){
+					// Combo
+					for(com.asi.service.product.client.vo.CriteriaSetCodeValues currentCriteriaSetCodeValue:currentCriteriaSetValue.getCriteriaSetCodeValues()){
+						if(currentCriteriaSetCodeValue.getCodeValueDetail().equalsIgnoreCase("main")){
+							currentColor.setAlias(currentCriteriaSetValue.getValue().toString());
+							currentColor.setName(ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetCodeValue.getSetCodeValueId(),ApplicationConstants.CONST_COLORS_CRITERIA_CODE));
+						}else{
+							currentCombo=new Combo();
+							currentCombo.setName(ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetCodeValue.getSetCodeValueId(),ApplicationConstants.CONST_COLORS_CRITERIA_CODE));
+							currentCombo.setType(currentCriteriaSetCodeValue.getCodeValueDetail());
+							comboList.add(currentCombo);
+						}
+					}
+					currentColor.setCombos(comboList);				
+					criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), currentCriteriaSetValue.getValue().toString());
+				}else{
 				currentColor.setAlias(currentCriteriaSetValue.getValue().toString());
 				crntColor=ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_COLORS_CRITERIA_CODE);
 						criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), crntColor);		
 				currentColor.setName(crntColor);
+				}
 				colorsList.add(currentColor);
 			}
 			serviceProductConfig.setColors(colorsList);
@@ -714,6 +734,7 @@ public class ConfigurationsParser {
 		}
 
 		imprintMethodsList=productLookupParser.setServiceImprintMethods(productDetail,imprintMethods,criteriaSetParser);
+		if(null!=imprintMethodsList && imprintMethodsList.size()>0 && imprintMethodsList.get(0).getType()!=null)
 		serviceProductConfig.setImprintMethods(imprintMethodsList);
 		
 		
