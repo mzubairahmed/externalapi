@@ -83,8 +83,14 @@ public final class ProductParserUtil {
         }
     }
     
-    public static String getCriteriaSetValueId(String xid, String criteriaCode, String value) {
-        return ProductDataStore.findCriteriaSetValueIdForValue(xid, criteriaCode, value);
+    public static Integer getCriteriaSetValueId(String xid, String criteriaCode, Object value) {
+        String result = ProductDataStore.findCriteriaSetValueIdForValue(xid, criteriaCode, String.valueOf(value));
+        if (result != null) {
+            return Integer.parseInt(result);
+        } else {
+            return null;
+        }
+        
     }
     
     public static String getCriteriaCodeFromCriteria(String criteria) {

@@ -42,6 +42,7 @@ import com.asi.service.product.client.vo.ProductConfiguration;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductMediaItems;
+import com.asi.service.product.client.vo.ProductNumber;
 
 /*
  * import com.asi.ext.api.radar.model.PriceGrids;
@@ -112,6 +113,7 @@ public class ImportTransformer {
     private ProductSpecSampleProcessor             specSampleProcessor             = new ProductSpecSampleProcessor(-1401, "0");
     private ProductOptionsProcessor                optionsProcessor                = new ProductOptionsProcessor(-1501, "0");
     private ImprintMethodProcessor                 imprintMethodProcessor          = new ImprintMethodProcessor();                // 1601,
+    private ProductNumberCriteriaParser            productNumberProcessor          = new ProductNumberCriteriaParser();
     // private PriceGridParser priceGridParser = new PriceGridParser();
 
     private final static Logger                    LOGGER                          = Logger.getLogger(ImportTransformer.class
@@ -201,9 +203,12 @@ public class ImportTransformer {
 
         productToSave.setProductConfigurations(processProductConfigurations(configId, existingCriteriaSetMap, optionsCriteriaSet,
                 serviceProduct.getProductConfigurations(), productToSave, isNewProduct));
-
+        
+        // PriceGrid processing
         productToSave.setPriceGrids(getPriceGrids(serviceProduct.getPriceGrids(), productToSave));
 
+        // Product Number Processing
+        productToSave.setProductNumbers(getProductNumbers(serviceProduct, productToSave));
         // Return product model
         return productToSave;
     }
@@ -400,6 +405,14 @@ public class ImportTransformer {
         }
 
         return optionsCriteriaSet;
+    }
+    
+    private List<ProductNumber> getProductNumbers(Product serviceProduct, ProductDetail product) {
+        if (serviceProduct.getProductNumbers() != null && !serviceProduct.getProductNumbers().isEmpty()) {
+            return productNumberProcessor.generateProductNumbers(serviceProduct.getProductNumbers(), product);
+        } else { 
+            return new ArrayList<ProductNumber>();
+        }
     }
 
     @SuppressWarnings("unused")
