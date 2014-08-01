@@ -465,8 +465,8 @@ public class LookupParser {
 		//ArrayList<Relationship> relationShipList=(ArrayList<Relationship>) productDetail.getRelationships();
 		List<com.asi.ext.api.service.model.ProductNumber> productNumberList=new ArrayList<>();
 		com.asi.ext.api.service.model.ProductNumber currentServiceProductNumber=null;
-		com.asi.ext.api.service.model.Criteria currentCriteria=null;
-		List<com.asi.ext.api.service.model.Criteria> criteriaList=null;
+		com.asi.ext.api.service.model.Configurations currentCriteria=null;
+		List<com.asi.ext.api.service.model.Configurations> criteriaList=new ArrayList<>();
 		String currentCriteriaSetvalueId="";
 		//String tempValuePathId="";
 		List<ProductNumber> productNumbers=productDetail.getProductNumbers();
@@ -475,15 +475,14 @@ public class LookupParser {
 		if(null!=productNumbers && productNumbers.size()>0){
 			
 			for(ProductNumber crntProductNumber:productNumbers){
-				criteriaList=new ArrayList<>();
-				currentCriteria=new com.asi.ext.api.service.model.Criteria();
+				currentCriteria=new com.asi.ext.api.service.model.Configurations();
 				currentServiceProductNumber=new com.asi.ext.api.service.model.ProductNumber();
 				currentServiceProductNumber.setProductNumber(crntProductNumber.getValue());
 				//currentCriteria.setType(String.valueOf(crntProductNumber.getProductNumberConfigurations().get(0).getCriteriaSetValueId()), crntProductNumber.getValue());
 				currentCriteriaSetvalueId=String.valueOf(crntProductNumber.getProductNumberConfigurations().get(0).getCriteriaSetValueId());
 				tempCriteria=criteriaSetParser.findCriteriaSetValueById(productDetail.getExternalProductId(), currentCriteriaSetvalueId);
 				criteriaInfo=ProductDataStore.getCriteriaInfoForCriteriaCode(tempCriteria.substring(0,tempCriteria.indexOf("_")));
-				currentCriteria.setType(criteriaInfo.getDescription());
+				currentCriteria.setCriteria(criteriaInfo.getDescription());
 				currentCriteria.setValue(tempCriteria.substring(tempCriteria.indexOf("__")+2));
 				criteriaList.add(currentCriteria);
 				
@@ -508,7 +507,7 @@ public class LookupParser {
 					}
 				 }					
 				}*/
-				currentServiceProductNumber.setCriteria(criteriaList);
+				currentServiceProductNumber.setConfigurations(criteriaList);
 				productNumberList.add(currentServiceProductNumber);
 			}
 			

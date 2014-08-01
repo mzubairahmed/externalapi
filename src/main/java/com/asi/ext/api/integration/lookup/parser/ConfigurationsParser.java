@@ -782,6 +782,8 @@ public class ConfigurationsParser {
 					currentSize=productLookupParser.findSizeValueDetails(currentSize, currentProductCriteriaSets.getCriteriaCode(), productCriteriaSetValuesList, externalProductId);
 			}			
 		}
+		if(currentSize.getType()==null)
+			return null;
 		return currentSize;
 	}
 
