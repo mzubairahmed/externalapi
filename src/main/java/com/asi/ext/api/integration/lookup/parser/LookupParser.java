@@ -31,10 +31,13 @@ import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.RestAPIProperties;
 import com.asi.service.product.client.vo.CriteriaSetValue;
+import com.asi.service.product.client.vo.CriteriaSetValuePath;
 import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
+import com.asi.service.product.client.vo.ProductNumber;
 import com.asi.service.product.client.vo.Relationship;
+import com.asi.service.product.client.vo.SelectedLineNames;
 import com.asi.service.product.client.vo.parser.ColorLookup;
 import com.asi.service.product.client.vo.parser.ImprintLookup;
 import com.asi.service.product.client.vo.parser.ImprintSizeLookup;
@@ -62,8 +65,7 @@ public class LookupParser {
 	private HashMap<Integer, String> imprintMethodsMap = null;
 	private HashMap<Integer, String> imprintArtworkMap = null;
 	public static ConcurrentHashMap<String, String> imprintRelationMap = null;
-	private HashMap<String, String> productWarningMap=null;
-	@SuppressWarnings("rawtypes")
+//	private HashMap<String, String> productWarningMap=null;
 	public static  HashMap<String,String>  SamplesElementsResponse=null;
 	@SuppressWarnings("rawtypes")
 	public static LinkedList<LinkedHashMap> sizeElementsResponse = null;
@@ -176,11 +178,10 @@ public class LookupParser {
 
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	public Size findSizeValueDetails(Size size,String criteriaCode,
 			List<CriteriaSetValues> criteriaSetValueLst,String externalProductId) {
 		SizeLookup sizeLookup = new SizeLookup();
-		String response;
 		try {
 			if(sizeElementsResponse==null)
 			{
@@ -195,11 +196,10 @@ public class LookupParser {
 				sizeElementsResponse, criteriaSetValueLst,externalProductId);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({  "unchecked" })
 	public ConcurrentHashMap<String,ArrayList<String>> findOptionValueDetails(ConcurrentHashMap<String,ArrayList<String>> optionsList,String criteriaCode,
 			ProductCriteriaSets productCriteriaSet,String externalProductId) {
 		OptionLookup optionLookup=new OptionLookup();
-		String response;
 		try {
 			if(optionElementsResponse==null)
 			{
@@ -401,7 +401,7 @@ public class LookupParser {
 					imprintCntr--;
 				}
 			}
-			if(imprntArtwork.getValue().contains(",")){
+			if(null!=imprntArtwork && null!=imprntArtwork.getValue() && imprntArtwork.getValue().contains(",")){
 				artworkValueAry=imprntArtwork.getValue().split(",");
 				for(String currentArtwork:artworkValueAry){
 					tempImprntArtwork=new Artwork();
@@ -460,6 +460,62 @@ public class LookupParser {
 		return imprintMethodList;
 	}
 	
+	public List<com.asi.ext.api.service.model.ProductNumber> setSeriviceProductWithProductNumbers(
+			ProductDetail productDetail) {
+		//ArrayList<Relationship> relationShipList=(ArrayList<Relationship>) productDetail.getRelationships();
+		List<com.asi.ext.api.service.model.ProductNumber> productNumberList=new ArrayList<>();
+		com.asi.ext.api.service.model.ProductNumber currentServiceProductNumber=null;
+		com.asi.ext.api.service.model.Criteria currentCriteria=null;
+		List<com.asi.ext.api.service.model.Criteria> criteriaList=null;
+		String currentCriteriaSetvalueId="";
+		//String tempValuePathId="";
+		List<ProductNumber> productNumbers=productDetail.getProductNumbers();
+		String tempCriteria="";
+		if(null!=productNumbers && productNumbers.size()>0){
+			
+			for(ProductNumber crntProductNumber:productNumbers){
+				criteriaList=new ArrayList<>();
+				currentCriteria=new com.asi.ext.api.service.model.Criteria();
+				currentServiceProductNumber=new com.asi.ext.api.service.model.ProductNumber();
+				currentServiceProductNumber.setProductNumber(crntProductNumber.getValue());
+				//currentCriteria.setType(String.valueOf(crntProductNumber.getProductNumberConfigurations().get(0).getCriteriaSetValueId()), crntProductNumber.getValue());
+				currentCriteriaSetvalueId=String.valueOf(crntProductNumber.getProductNumberConfigurations().get(0).getCriteriaSetValueId());
+				tempCriteria=criteriaSetParser.findCriteriaSetValueById(productDetail.getExternalProductId(), currentCriteriaSetvalueId);
+				
+				currentCriteria.setType(ProductDataStore.findProdTypeNameByCriteriaCode(tempCriteria.substring(0,tempCriteria.indexOf("_"))));
+				currentCriteria.setValue(tempCriteria.substring(tempCriteria.indexOf("__")+2));
+				criteriaList.add(currentCriteria);
+				
+				/*for(Relationship crntRelationShip:relationShipList){
+					int curntCriteria=0;
+				for(CriteriaSetValuePath currentCriteriaSetValuePath:crntRelationShip.getCriteriaSetValuePaths()){
+					
+					if(currentCriteriaSetValuePath.getCriteriaSetValueId().toString().equals(currentCriteriaSetvalueId) && currentCriteriaSetValuePath.getIsParent() && curntCriteria==0){
+						tempValuePathId=String.valueOf(currentCriteriaSetValuePath.getID());
+						tempCriteria=criteriaSetParser.findCriteriaSetValueById(productDetail.getExternalProductId(), String.valueOf(currentCriteriaSetValuePath.getCriteriaSetValueId()));
+						currentCriteria.setType(ProductDataStore.findProdTypeNameByCriteriaCode(tempCriteria.substring(0,tempCriteria.indexOf("_"))));
+						currentCriteria.setValue(tempCriteria.substring(tempCriteria.indexOf("__")+2));
+						criteriaList.add(currentCriteria);
+						curntCriteria++;
+					}
+					if(tempValuePathId.equals(String.valueOf(currentCriteriaSetValuePath.getID())) && !currentCriteriaSetValuePath.getIsParent() && curntCriteria==1){
+						tempCriteria=criteriaSetParser.findCriteriaSetValueById(productDetail.getExternalProductId(), String.valueOf(currentCriteriaSetValuePath.getCriteriaSetValueId()));
+						currentCriteria.setType(ProductDataStore.findProdTypeNameByCriteriaCode(tempCriteria.substring(0,tempCriteria.indexOf("_"))));
+						currentCriteria.setValue(tempCriteria.substring(tempCriteria.indexOf("__")+2));
+						criteriaList.add(currentCriteria);
+						curntCriteria++;
+					}
+				 }					
+				}*/
+				currentServiceProductNumber.setCriteria(criteriaList);
+				productNumberList.add(currentServiceProductNumber);
+			}
+			
+		}
+		
+		return productNumberList;
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public String getValueInText(Object value) {
 		String valueText=null;
@@ -521,11 +577,21 @@ public class LookupParser {
           			currentOption.setAdditionalInformation(optionAryList.get(3));
 	          	
           		}
-          		optionsList.add(currentOption);
+          		if(null!=currentOption) optionsList.add(currentOption);
           	}
           }
           serviceConfigurations.setOptions(optionsList);
 		return serviceConfigurations;
+	}
+
+	public List<String> setServiceProductLineNames(ProductDetail productDetail) {
+		List<String> lineNamesList=new ArrayList<>();
+		List<SelectedLineNames> selectedNamesList=productDetail.getSelectedLineNames();
+		for(SelectedLineNames crntSelectedLineName:selectedNamesList){
+			if(null!=ProductDataStore.getSetCodeValueIdForSelectedLineName(crntSelectedLineName.getName(),productDetail.getCompanyId()))
+				lineNamesList.add(crntSelectedLineName.getName());
+		}
+		return lineNamesList;
 	}
 		
 }

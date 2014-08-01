@@ -18,18 +18,19 @@ public class OptionLookup {
 			String criteriaCode,
 			@SuppressWarnings("rawtypes") LinkedList<LinkedHashMap> optionElementsResponse,
 			ProductCriteriaSets productCriteriaSet,String externalId) {
-		if(optionList==null)
-			optionList=new ConcurrentHashMap<>();
+		
 		String canOrderOnlyOne = "", reqForOrder = "", optionName = "", optionValue = "";
 		ArrayList<CriteriaSetValues> criteriaSetValueLst = (ArrayList<CriteriaSetValues>) productCriteriaSet
 				.getCriteriaSetValues();
 		int cntr=0;
 		ArrayList<String> tempArrayList=new ArrayList<>();
 		String optionTyp="",checkOption="",crntOptionVal="";
+		if(optionList==null)
+			optionList=new ConcurrentHashMap<>();
 		for (CriteriaSetValues criteriaSetValue : criteriaSetValueLst) {
 			tempArrayList=new ArrayList<>();
 			optionTyp=criteriaCode;
-			criteriaSetParser.addReferenceSet(externalId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),(criteriaSetValue.getValue() instanceof String)?productCriteriaSet.getCriteriaDetail()+":"+criteriaSetValue.getValue().toString():"");
+//			criteriaSetParser.addReferenceSet(externalId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),(criteriaSetValue.getValue() instanceof String)?productCriteriaSet.getCriteriaDetail()+":"+criteriaSetValue.getValue().toString():"");
 				canOrderOnlyOne = (productCriteriaSet.getIsMultipleChoiceAllowed().equalsIgnoreCase("true"))?"Y":"N";
 				reqForOrder = (productCriteriaSet.getIsRequiredForOrder().equalsIgnoreCase("true"))?"Y":"N";
 			optionName = productCriteriaSet.getCriteriaDetail();

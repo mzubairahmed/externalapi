@@ -40,8 +40,19 @@ public class Product {
     private String                shipperBillsBy;
     @JsonProperty("ProductBreakoutBy")
     private String                productBreakoutBy;
+    @JsonProperty("LineNames")
+    private List<String> 	lineNames=new ArrayList<String>();
+    public List<String> getLineNames() {
+		return lineNames;
+	}
 
-    @JsonProperty("ProductKeywords")
+	public void setLineNames(List<String> lineNames) {
+		this.lineNames = lineNames;
+	}
+	@JsonProperty("FOBPoints")
+    private List<String> 	fobPoints=new ArrayList<String>();
+    
+	@JsonProperty("ProductKeywords")
     private List<String>          productKeywords = new ArrayList<String>();
     @JsonProperty("Categories")
     private List<String>          categories      = new ArrayList<String>();
@@ -239,5 +250,13 @@ public class Product {
     public boolean equals(Object other) {
         return EqualsBuilder.reflectionEquals(this, other);
     }
+
+	public List<String> getFobPoints() {
+		return fobPoints;
+	}
+
+	public void setFobPoints(List<String> fobPoints) {
+		this.fobPoints = fobPoints;
+	}
 
 }

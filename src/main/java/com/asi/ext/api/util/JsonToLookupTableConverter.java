@@ -156,7 +156,7 @@ public final class JsonToLookupTableConverter {
                 LinkedHashMap<String, String> crntValue = (LinkedHashMap<String, String>) iter.next();
                 if (crntValue != null) {
                     try {
-                        originMap.put(crntValue.get("CodeValue").toUpperCase(), String.valueOf(crntValue.get("ID")));
+                        originMap.put(crntValue.get("CodeValue"), String.valueOf(crntValue.get("ID")));
                     } catch (Exception e) {
                     }
                 }
@@ -380,6 +380,27 @@ public final class JsonToLookupTableConverter {
             pe.printStackTrace();
         }
         return customLookupTable;
+    }
+    public static HashMap<String, String> jsonToSelectedLinesNamesLookupTable(LinkedList<?> jsonList) {
+
+        HashMap<String, String> selectedLineNamesLookupTable = new HashMap<>();
+        try {
+        	selectedLineNamesLookupTable = new HashMap<>(jsonList.size());
+            Iterator<?> iter = jsonList.iterator();
+            while (iter.hasNext()) {
+                @SuppressWarnings("unchecked")
+                LinkedHashMap<String, ?> crntValue = (LinkedHashMap<String, ?>) iter.next();
+                try {
+                	selectedLineNamesLookupTable.put(String.valueOf(crntValue.get("ID")).toUpperCase(),
+                            String.valueOf(crntValue.get("Name")));
+                } catch (Exception e) {
+                    // Trying to get maximum data so no exception need to process now
+                }
+            }
+        } catch (Exception pe) {
+            pe.printStackTrace();
+        }
+        return selectedLineNamesLookupTable;
     }
 
     public static HashMap<String, String> jsonToComplianceCertLookupTable(LinkedList<?> jsonList) {
@@ -741,11 +762,11 @@ public final class JsonToLookupTableConverter {
         return currencyMap;
     }
 
-    public static Map<String, DiscountRate> jsonToDiscountLookupTable(String response) {
+    public static Map<String, DiscountRate> jsonToDiscountLookupTable(LinkedList<?> responseList) {
         Map<String, DiscountRate> currencyMap = new HashMap<String, DiscountRate>();
         try {
-            List<LinkedHashMap<String, String>> currencyJsonModelList = JsonProcessor.convertJsonToBean(response, List.class);
-
+            List<LinkedHashMap<String, String>> currencyJsonModelList = (List<LinkedHashMap<String, String>>) responseList;//JsonProcessor.convertJsonToBean(response, List.class);
+            
             if (currencyJsonModelList != null && !currencyJsonModelList.isEmpty()) {
                 for (LinkedHashMap<String, String> discountJModel : currencyJsonModelList) {
                     DiscountRate currency = new DiscountRate();
@@ -761,6 +782,31 @@ public final class JsonToLookupTableConverter {
         }
         return currencyMap;
     }
+
+	public static ConcurrentHashMap<String, String> jsonToProductCriteriaListLookupTable(
+			LinkedList<?> prodCriteriaListResponse) {
+
+		
+		
+		 ConcurrentHashMap<String, String> criteriaCodeLookupData = null;
+	        try {
+	            LinkedList<?> json = prodCriteriaListResponse;
+	            Iterator<?> iter = json.iterator();
+	            criteriaCodeLookupData = new ConcurrentHashMap<String, String>(json.size() + 2);
+	            while (iter.hasNext()) {
+	                try {
+	                    LinkedHashMap crntValue = (LinkedHashMap) iter.next();
+	                    criteriaCodeLookupData.put(String.valueOf(crntValue.get("Description")).toUpperCase(),
+	                            String.valueOf(crntValue.get("Code")));
+	                } catch (Exception e) {
+	                } // Collecting maximum elements
+	            }
+	            return criteriaCodeLookupData;
+	        } catch (Exception pe) {
+	            pe.printStackTrace();
+	        }
+	        return criteriaCodeLookupData;		
+	}
 
 
 }

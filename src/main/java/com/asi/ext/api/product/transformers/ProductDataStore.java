@@ -61,11 +61,12 @@ public class ProductDataStore {
     private static HashMap<String, String>                            prodSpecSampleLookupTable      = new HashMap<>();
     private static Map<String, String>                                immprintMethodLookupTable      = new HashMap<>();
     private static Map<String, String>                                productMaterialLookupTable     = new HashMap<>();
-
+    private static HashMap<String, String> 							  selectedNamesLookupTable		 = new HashMap<>();
     private static HashMap<String, String>                            productionTimeLookupTable      = new HashMap<>();
     private static HashMap<String, String>                            rushTimeLookupTable            = new HashMap<>();
     private static HashMap<String, String>                            sameDayRushServiceLookupTable  = new HashMap<>();
-
+    private static HashMap<String, String> 							  fobPointsLookupTable			 = new HashMap<>();
+    
     public static Map<String, String>                                 criteriatAttributeIds          = new HashMap<>();
     public static Map<String, HashMap<String, String>>                unitOfMeasureCodes             = new HashMap<>();
     public static Map<String, HashMap<String, String>>                criteriaItemLookups            = new HashMap<>();
@@ -81,7 +82,7 @@ public class ProductDataStore {
     private static Map<String, CriteriaInfo>                          criteriaInfoLookups            = new HashMap<String, CriteriaInfo>();
 
     public static LinkedList<LinkedHashMap>                           sizeElementsResponse           = null;
-
+    private static ConcurrentHashMap<String, String>                                criteriaListLookups             = new ConcurrentHashMap<String, String>();
     public ProductDataStore() {
 
         if (GLOBAL_BATCH_LOG_COLLECTION == null) {
@@ -293,7 +294,53 @@ public class ProductDataStore {
         }
         return productTypeCodeLookupTable;
     }
+//
+    public static ConcurrentHashMap<String, String> setProductCriteriaList() {
+        try {
+            LinkedList<?> prodCriteriaListResponse = lookupRestTemplate.getForObject(
+                    RestAPIProperties.get(ApplicationConstants.CRITERIA_INFO_URL), LinkedList.class);
+            if (prodCriteriaListResponse == null || prodCriteriaListResponse.size() <= 0) {
+                // Report error to API that we are not able to fetch data for
+                // Product Type Code
+                // throw new
+                // VelocityException("Unable to get response from Product Type Code API",
+                // null);
+                LOGGER.error("Product Criteria Code Lookup API returned null response");
+                // TODO : Batch Error
+                return null;
+            } else {
+            	criteriaListLookups = JsonToLookupTableConverter.jsonToProductCriteriaListLookupTable(prodCriteriaListResponse);
+                if (criteriaListLookups == null) {
+                    return null; // TODO : LOG Batch Error
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Exception while fetching/processing product Criteria Code lookup data", e);
+            return null;
+        }
+        return criteriaListLookups;
+    }
+    public static String findProdCriteriaCodeByName(String prodTypeName) { // throws
+        // VelocityException
+        // {
+        if (criteriaListLookups == null || criteriaListLookups.isEmpty()) {
+            // Create Product Type Code Lookup table
+        	criteriaListLookups = setProductCriteriaList();
+        }
+        return criteriaListLookups.get(prodTypeName.toUpperCase());
 
+    }
+
+    public static String findProdTypeNameByCriteriaCode(String typeCode) { // throws
+        // VelocityException
+        // {
+        if (criteriaListLookups == null || criteriaListLookups.isEmpty()) {
+            // Create Category Lookup table
+        	criteriaListLookups = setProductCriteriaList();
+        }
+        return CommonUtilities.getKeysByValueGen(criteriaListLookups, typeCode);
+
+    }
     public static String findProdTypeCodeByName(String prodTypeName) { // throws
         // VelocityException
         // {
@@ -1231,7 +1278,7 @@ public class ProductDataStore {
                 getSetCodeValueIdForAdditionalColor("Red");
             }
             return CommonUtilities.getKeysByValueGen(additionalColorLookupTable, setCodeValueId);
-        } else if (ApplicationConstants.CONST_CRITERIA_CODE_LNNM.equalsIgnoreCase(criteriaCode)) {
+        }  else if (ApplicationConstants.CONST_CRITERIA_CODE_LNNM.equalsIgnoreCase(criteriaCode)) {
 
         } else if (ApplicationConstants.CONST_CRITERIA_CODE_FOBP.equalsIgnoreCase(criteriaCode)) {
 
@@ -1240,7 +1287,66 @@ public class ProductDataStore {
         return value;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static String getSetCodeValueIdForSelectedLineName(String setCodeValueId,String companyId) {
+    	 if (selectedNamesLookupTable == null || selectedNamesLookupTable.isEmpty()) {
+             // Create Product additional color Lookup table
+             try {
+
+                 LinkedList<?> selectedNamesResponse = lookupRestTemplate.getForObject(
+                         RestAPIProperties.get(ApplicationConstants.SELECTED_LINES_LOOKUP)+companyId, LinkedList.class);
+                 if (selectedNamesResponse == null || selectedNamesResponse.isEmpty()) {
+                     // Report error to API that we are not able to fetch data
+                     // for additional color
+                     // throw new
+                     // VelocityException("Unable to get response from additional color API",
+                     // null);
+                     LOGGER.error("Product Selected Names Lookup API returned null response");
+                     // TODO : Batch Error
+                     return null;
+                 } else {
+                	 selectedNamesLookupTable = JsonToLookupTableConverter.jsonToSelectedLinesNamesLookupTable(selectedNamesResponse);
+                     if (selectedNamesLookupTable == null) {
+                         return null; // TODO : LOG Batch Error
+                     }
+                 }
+             } catch (Exception e) {
+                 LOGGER.error("Exception while fetching/processing Selected Line Names lookup data", e);
+                 return null;
+             }
+         }
+    	 return CommonUtilities.getKeysByValueGen(selectedNamesLookupTable, setCodeValueId);    		
+	}
+    public static String getSetCodeValueIdForFobPoints(String setCodeValueId,String companyId) {
+   	 if (fobPointsLookupTable == null || fobPointsLookupTable.isEmpty()) {
+            // Create Product additional color Lookup table
+            try {
+
+                LinkedList<?> selectedNamesResponse = lookupRestTemplate.getForObject(
+                        RestAPIProperties.get(ApplicationConstants.FOBP_POINTS_LOOKUP)+companyId, LinkedList.class);
+                if (selectedNamesResponse == null || selectedNamesResponse.isEmpty()) {
+                    // Report error to API that we are not able to fetch data
+                    // for additional color
+                    // throw new
+                    // VelocityException("Unable to get response from additional color API",
+                    // null);
+                    LOGGER.error("Product Selected Names Lookup API returned null response");
+                    // TODO : Batch Error
+                    return null;
+                } else {
+                	fobPointsLookupTable = JsonToLookupTableConverter.jsonToSelectedLinesNamesLookupTable(selectedNamesResponse);
+                    if (fobPointsLookupTable == null) {
+                        return null; // TODO : LOG Batch Error
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.error("Exception while fetching/processing Selected Line Names lookup data", e);
+                return null;
+            }
+        }
+   	 return CommonUtilities.getKeysByValueGen(fobPointsLookupTable, setCodeValueId);    		
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
     public static LinkedList<LinkedHashMap> getLookupResponse() {
         String response;
         try {
@@ -1382,10 +1488,10 @@ public class ProductDataStore {
         try {
             if (discountLookupTable == null || discountLookupTable.isEmpty()) {
                 discountLookupTable = new HashMap<String, DiscountRate>();
-                String response = JersyClientGet.getLookupsResponse(RestAPIProperties
-                        .get(ApplicationConstants.DISCOUNT_RATES_LOOKUP_URL));
+                LinkedList<?> responseList = lookupRestTemplate.getForObject((RestAPIProperties
+                        .get(ApplicationConstants.DISCOUNT_RATES_LOOKUP_URL)),LinkedList.class);
 
-                discountLookupTable = JsonToLookupTableConverter.jsonToDiscountLookupTable(response);
+                discountLookupTable = JsonToLookupTableConverter.jsonToDiscountLookupTable(responseList);
             }
             DiscountRate discountRate = discountLookupTable.get(String.valueOf(discountCode).toUpperCase());
             if (discountRate == null && getDefault) {
