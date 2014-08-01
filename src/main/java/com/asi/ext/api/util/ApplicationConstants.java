@@ -54,7 +54,8 @@ public class ApplicationConstants {
     public static final String                       PACKAGING_LOOKUP                            = "lookup.packaging.url";
     public static final String                       BATCH_PROCESSING                            = "lookup.batch.processing";
     public static final String                       BATCH_PROCESSING_FINALIZE                   = "lookup.batch.processing.finalize";
-
+    public static final String 						PRODUCT_MEDIA_CITATION						=	"lookup.media.citation.url";
+    
     public static final String                       OPTION_PRODUCT_LOOKUP                       = "lookup.options.product.url";
     public static final String                       OPTION_SHIPPING_LOOKUP                      = "lookup.options.shipping.url";
     public static final String                       OPTION_IMPRINT_LOOKUP                       = "lookup.options.imprint.url";

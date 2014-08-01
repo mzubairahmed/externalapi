@@ -832,12 +832,13 @@ public class PriceGridParser extends ProductParser {
 						currentPrices.setDiscountCode(currentPrice.getDiscountRate().getIndustryDiscountCode());
 						if(null!=currentPrice.getPriceUnit()){
 							currentPriceUnit=new com.asi.ext.api.service.model.PriceUnit();
+							if(Integer.parseInt(currentPrice.getPriceUnit().getItemsPerUnit())>0)
 							currentPriceUnit.setItemsPerUnit(currentPrice.getPriceUnit().getItemsPerUnit());
 							
 							currentPriceUnit.setName(currentPrice.getPriceUnit().getDisplayName());
 							if(ProductDataStore.isOtherPriceUnit(currentPrice.getPriceUnit().getDisplayName())){
 								currentPriceUnit.setPriceUnitName(currentPrice.getPriceUnit().getDescription());
-							}else currentPriceUnit.setPriceUnitName("");
+							}
 							
 							currentPrices.setPriceUnit(currentPriceUnit);
 						}						

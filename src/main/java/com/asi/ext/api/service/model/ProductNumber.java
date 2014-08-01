@@ -12,8 +12,8 @@ public class ProductNumber {
 
     @JsonProperty("ProductNumber")
     private String productNumber;
-    @JsonProperty("Criteria")
-    private List<Criteria> criteria;
+    @JsonProperty("Configurations")
+    private List<Configurations> criteria;
     
 
     @JsonProperty("ProductNumber")
@@ -26,13 +26,13 @@ public class ProductNumber {
         this.productNumber = productNumber;
     }
 
-    @JsonProperty("Criteria")
-    public List<Criteria> getCriteria() {
+    @JsonProperty("Configurations")
+    public List<Configurations> getConfigurations() {
         return criteria;
     }
 
-    @JsonProperty("Criteria")
-    public void setCriteria(List<Criteria> criteria) {
+    @JsonProperty("Configurations")
+    public void setConfigurations(List<Configurations> criteria) {
         this.criteria = criteria;
     }
 
