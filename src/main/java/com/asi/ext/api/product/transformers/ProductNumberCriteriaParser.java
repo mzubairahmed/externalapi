@@ -15,6 +15,19 @@ import com.asi.service.product.client.vo.ProductNumberConfiguration;
 public class ProductNumberCriteriaParser {
     private final static Logger LOGGER           = Logger.getLogger(ProductNumberCriteriaParser.class.getName());
     public ProductDataStore     productDataStore = new ProductDataStore();
+    
+    
+    public boolean generateProductNumbers(List<com.asi.ext.api.service.model.ProductNumber> serviceProductNumbers, ProductDetail product) {
+        
+        List<ProductNumber> productNumbers = new ArrayList<ProductNumber>();
+        for (com.asi.ext.api.service.model.ProductNumber serPno : serviceProductNumbers) {
+            
+        }
+        
+        return false;
+    }
+    
+    
 
     public ProductDetail geProductNumbers(ProductDetail product,
             List<com.asi.ext.api.service.model.ProductNumber> serviceProductNumbers, List<String> criteriaSetValueIds) {

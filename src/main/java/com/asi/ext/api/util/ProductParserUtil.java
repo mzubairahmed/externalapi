@@ -5,6 +5,8 @@ package com.asi.ext.api.util;
 
 import java.util.List;
 
+import com.asi.ext.api.product.transformers.ProductDataStore;
+import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.service.product.client.vo.ProductConfiguration;
 import com.asi.service.product.client.vo.ProductConfigurations;
 import com.asi.service.product.client.vo.ProductDataSheet;
@@ -66,19 +68,6 @@ public final class ProductParserUtil {
         return prodDataSheet;
     }
 
-    private ProductKeywords[] getProductKeywords(List<String> productKeywords) {
-        String keywords = CommonUtilities.convertStringListToCSV(productKeywords);
-        if (!CommonUtilities.isValueNull(keywords)) {
-            ProductKeywords keyword = new ProductKeywords();
-            keyword.setId(ID);
-            keyword.setProductId(PRODUCT_ID);
-            keyword.setValue(keywords);
-            return new ProductKeywords[] { keyword };
-        } else {
-            return new ProductKeywords[] {};
-        }
-    }
-
     public static String getCodeFromOptionType(String type) {
         if (type == null || type.isEmpty()) {
             return null;
@@ -92,6 +81,15 @@ public final class ProductParserUtil {
         } else {
             return null;
         }
+    }
+    
+    public static String getCriteriaSetValueId(String xid, String criteriaCode, String value) {
+        return ProductDataStore.findCriteriaSetValueIdForValue(xid, criteriaCode, value);
+    }
+    
+    public static String getCriteriaCodeFromCriteria(String criteria) {
+        CriteriaInfo criteriaInfo = ProductDataStore.getCriteriaInfoByDescription(criteria);
+        return criteria != null ? criteriaInfo.getCode() : null;
     }
     /*
      * private SelectedProductCategories[] getProductCategories(List<String> productCategories) {

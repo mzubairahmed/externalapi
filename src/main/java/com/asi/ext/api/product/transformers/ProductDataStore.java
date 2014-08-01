@@ -130,7 +130,7 @@ public class ProductDataStore {
         return;
     }
 
-    public String findCriteriaSetValueIdForValue(String extPrdId, String criteriaCode, String value) {
+    public static String findCriteriaSetValueIdForValue(String extPrdId, String criteriaCode, String value) {
         if (criteriaSetValueReferenceTable == null || criteriaSetValueReferenceTable.isEmpty()) {
             return null;
         }
