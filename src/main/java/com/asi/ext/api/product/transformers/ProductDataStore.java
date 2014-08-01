@@ -82,7 +82,6 @@ public class ProductDataStore {
     private static Map<String, CriteriaInfo>                          criteriaInfoLookups            = new HashMap<String, CriteriaInfo>();
 
     public static LinkedList<LinkedHashMap>                           sizeElementsResponse           = null;
-    private static ConcurrentHashMap<String, String>                                criteriaListLookups             = new ConcurrentHashMap<String, String>();
     public ProductDataStore() {
 
         if (GLOBAL_BATCH_LOG_COLLECTION == null) {
@@ -131,7 +130,7 @@ public class ProductDataStore {
         return;
     }
 
-    public String findCriteriaSetValueIdForValue(String extPrdId, String criteriaCode, String value) {
+    public static String findCriteriaSetValueIdForValue(String extPrdId, String criteriaCode, String value) {
         if (criteriaSetValueReferenceTable == null || criteriaSetValueReferenceTable.isEmpty()) {
             return null;
         }
@@ -294,53 +293,7 @@ public class ProductDataStore {
         }
         return productTypeCodeLookupTable;
     }
-//
-    public static ConcurrentHashMap<String, String> setProductCriteriaList() {
-        try {
-            LinkedList<?> prodCriteriaListResponse = lookupRestTemplate.getForObject(
-                    RestAPIProperties.get(ApplicationConstants.CRITERIA_INFO_URL), LinkedList.class);
-            if (prodCriteriaListResponse == null || prodCriteriaListResponse.size() <= 0) {
-                // Report error to API that we are not able to fetch data for
-                // Product Type Code
-                // throw new
-                // VelocityException("Unable to get response from Product Type Code API",
-                // null);
-                LOGGER.error("Product Criteria Code Lookup API returned null response");
-                // TODO : Batch Error
-                return null;
-            } else {
-            	criteriaListLookups = JsonToLookupTableConverter.jsonToProductCriteriaListLookupTable(prodCriteriaListResponse);
-                if (criteriaListLookups == null) {
-                    return null; // TODO : LOG Batch Error
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error("Exception while fetching/processing product Criteria Code lookup data", e);
-            return null;
-        }
-        return criteriaListLookups;
-    }
-    public static String findProdCriteriaCodeByName(String prodTypeName) { // throws
-        // VelocityException
-        // {
-        if (criteriaListLookups == null || criteriaListLookups.isEmpty()) {
-            // Create Product Type Code Lookup table
-        	criteriaListLookups = setProductCriteriaList();
-        }
-        return criteriaListLookups.get(prodTypeName.toUpperCase());
 
-    }
-
-    public static String findProdTypeNameByCriteriaCode(String typeCode) { // throws
-        // VelocityException
-        // {
-        if (criteriaListLookups == null || criteriaListLookups.isEmpty()) {
-            // Create Category Lookup table
-        	criteriaListLookups = setProductCriteriaList();
-        }
-        return CommonUtilities.getKeysByValueGen(criteriaListLookups, typeCode);
-
-    }
     public static String findProdTypeCodeByName(String prodTypeName) { // throws
         // VelocityException
         // {
@@ -1383,7 +1336,7 @@ public class ProductDataStore {
 
     private static boolean loadCriteriaInformations() {
         try {
-            String wsResponse = JersyClientGet.getLookupsResponse(RestAPIProperties.get(ApplicationConstants.CRITERIA_INFO_URL));
+            LinkedList<?> wsResponse = lookupRestTemplate.getForObject(RestAPIProperties.get(ApplicationConstants.CRITERIA_INFO_URL),LinkedList.class);
             if (wsResponse != null) {
                 criteriaInfo = JsonToLookupTableConverter.createCriteriaInfoLookup(wsResponse);
                 return (criteriaInfo != null && !criteriaInfo.isEmpty());

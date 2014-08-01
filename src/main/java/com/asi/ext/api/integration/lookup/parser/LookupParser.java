@@ -21,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.asi.core.utils.JerseyClient;
 import com.asi.ext.api.product.transformers.ProductDataStore;
+import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.ext.api.radar.model.Value;
 import com.asi.ext.api.service.model.Artwork;
 import com.asi.ext.api.service.model.ImprintMethod;
@@ -31,11 +32,11 @@ import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.RestAPIProperties;
 import com.asi.service.product.client.vo.CriteriaSetValue;
-import com.asi.service.product.client.vo.CriteriaSetValuePath;
 import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductNumber;
+import com.asi.service.product.client.vo.ProductNumberConfiguration;
 import com.asi.service.product.client.vo.Relationship;
 import com.asi.service.product.client.vo.SelectedLineNames;
 import com.asi.service.product.client.vo.parser.ColorLookup;
@@ -465,49 +466,31 @@ public class LookupParser {
 		//ArrayList<Relationship> relationShipList=(ArrayList<Relationship>) productDetail.getRelationships();
 		List<com.asi.ext.api.service.model.ProductNumber> productNumberList=new ArrayList<>();
 		com.asi.ext.api.service.model.ProductNumber currentServiceProductNumber=null;
-		com.asi.ext.api.service.model.Criteria currentCriteria=null;
-		List<com.asi.ext.api.service.model.Criteria> criteriaList=null;
+		com.asi.ext.api.service.model.Configurations currentCriteria=null;
+		List<com.asi.ext.api.service.model.Configurations> criteriaList=null;
 		String currentCriteriaSetvalueId="";
 		//String tempValuePathId="";
 		List<ProductNumber> productNumbers=productDetail.getProductNumbers();
 		String tempCriteria="";
+		CriteriaInfo criteriaInfo=null;
 		if(null!=productNumbers && productNumbers.size()>0){
 			
 			for(ProductNumber crntProductNumber:productNumbers){
-				criteriaList=new ArrayList<>();
-				currentCriteria=new com.asi.ext.api.service.model.Criteria();
+				
 				currentServiceProductNumber=new com.asi.ext.api.service.model.ProductNumber();
 				currentServiceProductNumber.setProductNumber(crntProductNumber.getValue());
 				//currentCriteria.setType(String.valueOf(crntProductNumber.getProductNumberConfigurations().get(0).getCriteriaSetValueId()), crntProductNumber.getValue());
-				currentCriteriaSetvalueId=String.valueOf(crntProductNumber.getProductNumberConfigurations().get(0).getCriteriaSetValueId());
-				tempCriteria=criteriaSetParser.findCriteriaSetValueById(productDetail.getExternalProductId(), currentCriteriaSetvalueId);
-				
-				currentCriteria.setType(ProductDataStore.findProdTypeNameByCriteriaCode(tempCriteria.substring(0,tempCriteria.indexOf("_"))));
-				currentCriteria.setValue(tempCriteria.substring(tempCriteria.indexOf("__")+2));
-				criteriaList.add(currentCriteria);
-				
-				/*for(Relationship crntRelationShip:relationShipList){
-					int curntCriteria=0;
-				for(CriteriaSetValuePath currentCriteriaSetValuePath:crntRelationShip.getCriteriaSetValuePaths()){
-					
-					if(currentCriteriaSetValuePath.getCriteriaSetValueId().toString().equals(currentCriteriaSetvalueId) && currentCriteriaSetValuePath.getIsParent() && curntCriteria==0){
-						tempValuePathId=String.valueOf(currentCriteriaSetValuePath.getID());
-						tempCriteria=criteriaSetParser.findCriteriaSetValueById(productDetail.getExternalProductId(), String.valueOf(currentCriteriaSetValuePath.getCriteriaSetValueId()));
-						currentCriteria.setType(ProductDataStore.findProdTypeNameByCriteriaCode(tempCriteria.substring(0,tempCriteria.indexOf("_"))));
-						currentCriteria.setValue(tempCriteria.substring(tempCriteria.indexOf("__")+2));
-						criteriaList.add(currentCriteria);
-						curntCriteria++;
-					}
-					if(tempValuePathId.equals(String.valueOf(currentCriteriaSetValuePath.getID())) && !currentCriteriaSetValuePath.getIsParent() && curntCriteria==1){
-						tempCriteria=criteriaSetParser.findCriteriaSetValueById(productDetail.getExternalProductId(), String.valueOf(currentCriteriaSetValuePath.getCriteriaSetValueId()));
-						currentCriteria.setType(ProductDataStore.findProdTypeNameByCriteriaCode(tempCriteria.substring(0,tempCriteria.indexOf("_"))));
-						currentCriteria.setValue(tempCriteria.substring(tempCriteria.indexOf("__")+2));
-						criteriaList.add(currentCriteria);
-						curntCriteria++;
-					}
-				 }					
-				}*/
-				currentServiceProductNumber.setCriteria(criteriaList);
+				criteriaList=new ArrayList<>();
+				for(ProductNumberConfiguration productNumberConfig:crntProductNumber.getProductNumberConfigurations()){
+					currentCriteria=new com.asi.ext.api.service.model.Configurations();
+					currentCriteriaSetvalueId=String.valueOf(productNumberConfig.getCriteriaSetValueId());
+					tempCriteria=criteriaSetParser.findCriteriaSetValueById(productDetail.getExternalProductId(), currentCriteriaSetvalueId);
+					criteriaInfo=ProductDataStore.getCriteriaInfoForCriteriaCode(tempCriteria.substring(0,tempCriteria.indexOf("_")));
+					currentCriteria.setCriteria(criteriaInfo.getDescription());
+					currentCriteria.setValue(tempCriteria.substring(tempCriteria.indexOf("__")+2));
+					criteriaList.add(currentCriteria);	
+				}
+				currentServiceProductNumber.setConfigurations(criteriaList);
 				productNumberList.add(currentServiceProductNumber);
 			}
 			

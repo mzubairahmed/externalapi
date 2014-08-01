@@ -1,7 +1,14 @@
 package com.asi.ext.api.service.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonInclude(Include.NON_NULL)
 public class Value {
+ @JsonProperty("Attribute")
  private String attribute;
+ @JsonProperty("Value")
  private String value;
  public String getAttribute() {
 	return attribute;
@@ -21,5 +28,6 @@ public String getUnit() {
 public void setUnit(String unit) {
 	this.unit = unit;
 }
+@JsonProperty("Unit")
 private String unit;
 }
