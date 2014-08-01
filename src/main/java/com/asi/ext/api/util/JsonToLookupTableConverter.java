@@ -12,7 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 import org.json.simple.parser.ContainerFactory;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.web.client.RestTemplate;
 
 import com.asi.ext.api.radar.lookup.model.PriceUnitJsonModel;
@@ -664,12 +663,22 @@ public final class JsonToLookupTableConverter {
         return criteriaItemsMap;
     }
 
-    public static Map<String, CriteriaInfo> createCriteriaInfoLookup(String wsResponse) {
+    public static Map<String, CriteriaInfo> createCriteriaInfoLookup(LinkedList<?> wsResponseList) {
+        Map<String, LinkedHashMap> criteriaLinkedHashMap = new HashMap<String, LinkedHashMap>();
         Map<String, CriteriaInfo> criteriaInfoMap = new HashMap<String, CriteriaInfo>();
-        List<CriteriaInfo> criteriaInfoList = JsonProcessor.convertJsonToBeanCollection(wsResponse, CriteriaInfo.class);
+        List<LinkedHashMap> criteriaInfoList = (List<LinkedHashMap>) wsResponseList;//JsonProcessor.convertJsonToBeanCollection(wsResponse, CriteriaInfo.class);
+        CriteriaInfo info=null;
         if (criteriaInfoList != null) {
-            criteriaInfoMap = new HashMap<String, CriteriaInfo>(criteriaInfoList.size());
-            for (CriteriaInfo info : criteriaInfoList) {
+        	criteriaLinkedHashMap = new HashMap<String, LinkedHashMap>(criteriaInfoList.size());
+            for (LinkedHashMap infoMap : criteriaInfoList) {
+            	info=new CriteriaInfo();
+            	info.setCode(infoMap.get("Code").toString());
+            	//info.setCriteriaTypeCode(infoMap.get("CriteriaTypeCode").toString());
+            //	info.setCriteriaTypeDescription(infoMap.get("CriteriaTypeDescription").toString());
+            	if(infoMap.containsKey("DefaultPriceGridSubTypeCode"))
+            	info.setDefaultPriceGridSubTypeCode(infoMap.get("DefaultPriceGridSubTypeCode").toString());
+            	//info.setCriteriaTypeDisplayName(infoMap.get("DisplayName").toString()); 
+            	info.setDescription(infoMap.get("Description").toString());
                 criteriaInfoMap.put(info.getCode(), info);
             }
         }
