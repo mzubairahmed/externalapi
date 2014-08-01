@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.asi.ext.api.product.criteria.processor.AdditionalColorProcessor;
 import com.asi.ext.api.product.criteria.processor.AdditionalLocationProcessor;
+import com.asi.ext.api.product.criteria.processor.FOBPointProcessor;
 import com.asi.ext.api.product.criteria.processor.ImprintMethodProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductCategoriesProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductColorProcessor;
@@ -28,6 +29,7 @@ import com.asi.ext.api.product.criteria.processor.ProductSpecSampleProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductTradeNameProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductionTimeProcessor;
 import com.asi.ext.api.product.criteria.processor.RushTimeProcessor;
+import com.asi.ext.api.product.criteria.processor.SelectedLineProcessor;
 import com.asi.ext.api.response.JsonProcessor;
 import com.asi.ext.api.rest.JersyClientGet;
 import com.asi.ext.api.service.model.Image;
@@ -114,8 +116,10 @@ public class ImportTransformer {
     private ProductOptionsProcessor                optionsProcessor                = new ProductOptionsProcessor(-1501, "0");
     private ImprintMethodProcessor                 imprintMethodProcessor          = new ImprintMethodProcessor();                // 1601,
     private ProductNumberCriteriaParser            productNumberProcessor          = new ProductNumberCriteriaParser();
-    // private PriceGridParser priceGridParser = new PriceGridParser();
 
+    private FOBPointProcessor                      fobPointProcessor               = new FOBPointProcessor(1901, "0");
+    private SelectedLineProcessor                  selectedLineProcessor           = new SelectedLineProcessor();
+    
     private final static Logger                    LOGGER                          = Logger.getLogger(ImportTransformer.class
                                                                                            .getName());
 
@@ -356,6 +360,15 @@ public class ImportTransformer {
         } else {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_PRODUCTION_TIME_CRITERIA_CODE);
         }
+        
+        /*if (serviceProdConfigs.getF != null && !serviceProdConfigs.getMaterials().isEmpty()) {
+            tempCriteriaSet = materialProcessor.getProductMaterialCriteriaSet(serviceProdConfigs.getMaterials(), rdrProduct,
+                    existingCriteriaSetMap.get(ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE), configId);
+            existingCriteriaSetMap.put(ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE, tempCriteriaSet);
+        } else {
+            existingCriteriaSetMap.remove(ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE);
+        }*/
+        
         // Product options processing
         /*
          * if (serviceProdConfigs.getOptions() != null && !serviceProdConfigs.getOptions().isEmpty()) {

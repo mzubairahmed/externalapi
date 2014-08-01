@@ -390,8 +390,7 @@ public final class JsonToLookupTableConverter {
                 @SuppressWarnings("unchecked")
                 LinkedHashMap<String, ?> crntValue = (LinkedHashMap<String, ?>) iter.next();
                 try {
-                	selectedLineNamesLookupTable.put(String.valueOf(crntValue.get("ID")).toUpperCase(),
-                            String.valueOf(crntValue.get("Name")));
+                	selectedLineNamesLookupTable.put(String.valueOf(crntValue.get("Name")), String.valueOf(crntValue.get("ID")).toUpperCase());
                 } catch (Exception e) {
                     // Trying to get maximum data so no exception need to process now
                 }
@@ -816,6 +815,27 @@ public final class JsonToLookupTableConverter {
 	        }
 	        return criteriaCodeLookupData;		
 	}
+
+    public static HashMap<String, String> jsonToFOBPointookupTable(LinkedList<?> fobPoints) {
+
+        HashMap<String, String> fobPointsLookupTable = new HashMap<>();
+        try {
+            fobPointsLookupTable = new HashMap<>(fobPoints.size());
+            Iterator<?> iter = fobPoints.iterator();
+            while (iter.hasNext()) {
+                @SuppressWarnings("unchecked")
+                LinkedHashMap<String, ?> crntValue = (LinkedHashMap<String, ?>) iter.next();
+                try {
+                    fobPointsLookupTable.put(String.valueOf(crntValue.get("Name")), String.valueOf(crntValue.get("ID")).toUpperCase());
+                } catch (Exception e) {
+                    // Trying to get maximum data so no exception need to process now
+                }
+            }
+        } catch (Exception pe) {
+            pe.printStackTrace();
+        }
+        return fobPointsLookupTable;
+    }
 
 
 }
