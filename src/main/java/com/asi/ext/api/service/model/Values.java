@@ -1,5 +1,7 @@
 package com.asi.ext.api.service.model;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,7 +10,7 @@ public class Values {
 	  @JsonProperty("Type")
 	    private String       type;
 	    @JsonProperty("Value")
-	    private Object value;
+	    private List<Value> value;
 	    @JsonProperty("Type")
 	    public String getType() {
 	        return type;
@@ -20,12 +22,12 @@ public class Values {
 	    }
 
 	    @JsonProperty("Value")
-	    public Object getValue() {
+	    public List<Value> getValue() {
 	        return value;
 	    }
 
 	    @JsonProperty("Value")
-	    public void setValue(Object value) {
+	    public void setValue(List<Value> value) {
 	        this.value = value;
 	    }
 

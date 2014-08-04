@@ -13,6 +13,7 @@ import org.json.simple.parser.ContainerFactory;
 import org.json.simple.parser.JSONParser;
 
 import com.asi.ext.api.integration.lookup.parser.CriteriaSetParser;
+import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.service.model.Apparel;
 import com.asi.ext.api.service.model.Capacity;
 import com.asi.ext.api.service.model.Dimension;
@@ -108,7 +109,9 @@ public class SizeLookup {
 				//int noOfSizes=criteriaSetValueLst.size();
 				int elementsCntr=0;
 				Value valueObj;
+				Value apperalObj;
 				List<Value> valueObjList=null;
+				List<Value> apperalValueObjList=new ArrayList<>();
 				List<String> valueStringList=null;
 				List<Values> valuesList=new ArrayList<>();
 				String unitOfmeasureCode="";
@@ -118,6 +121,7 @@ public class SizeLookup {
 				for(CriteriaSetValues criteriaSetValue:criteriaSetValueLst)
 				{
 					int sizeCntr=0;
+					apperalObj=new Value();
 					currentValues=new Values();	
 					if(criteriaSetValue.getValue() instanceof List)
 					{
@@ -165,7 +169,7 @@ public class SizeLookup {
 							sizeValue=valueMap.get("UnitValue")+":"
 									+unitOfmeasureCode;
 							criteriaSetParser.addReferenceSet(externalProductId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),sizeValue);
-							if(criteriaCode.equalsIgnoreCase("SVWT")){
+							if(criteriaCode.equalsIgnoreCase("SVWT") ||criteriaCode.equalsIgnoreCase("CAPS")){
 							valueElements=sizeValue.split(":");
 							if(valueElements.length>1){
 								valueObj.setUnit(valueElements[0]);
@@ -197,7 +201,7 @@ public class SizeLookup {
 										sizeValue=valueMap.get("UnitValue").toString()+" "+unitOfmeasureCode;	
 									}									
 								}
-							valueStringList.add(sizeValue);
+							apperalObj.setValue(sizeValue);							
 						}
 						
 						if(sizeCntr!=0)
@@ -216,6 +220,7 @@ public class SizeLookup {
 						}
 						//valueObjList.add(valueObj);
 						sizeCntr++;
+						apperalValueObjList.add(apperalObj);
 					}		
 					
 					}else
@@ -225,6 +230,8 @@ public class SizeLookup {
 								sizeValue=criteriaSetValue.getFormatValue();
 							valueStringList.add(sizeValue);//valueObj.setValue(sizeValue);
 							sizeElementValue+=sizeValue;
+							apperalObj.setValue(sizeValue);
+							apperalValueObjList.add(apperalObj);
 						sizeCntr++;
 					}
 					//criteriaSetParser.addReferenceSet(externalProductId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),sizeValue);
@@ -252,11 +259,14 @@ public class SizeLookup {
 					if(criteriaCode.equalsIgnoreCase("DIMS") || criteriaCode.equalsIgnoreCase("SVWT")){
 						currentValues.setValue(valueObjList);
 						valuesList.add(currentValues);
-					}else if(criteriaCode.equalsIgnoreCase("SAIT")){
-						currentValues.setValue(valueStringList);
+					}
+					
+					
+						/*else if(criteriaCode.equalsIgnoreCase("SAIT")){
+						
 						valuesList.add(currentValues);
 						valueStringList=new ArrayList<>();
-					}
+					}*/
 					
 				}
 				switch(criteriaCode){
@@ -269,9 +279,13 @@ public class SizeLookup {
 					size.setVolume(volume);
 					break;
 				case "SAIT":
-					apparel.setValues(valuesList);
+					apparel.setType(ProductDataStore.getCriteriaInfoForCriteriaCode(criteriaCode).getDescription());
+					apparel.setValues(apperalValueObjList);
 					size.setApparel(apparel);
 					break;
+				case "CAPS":
+					capacity.setValues(valueObjList);
+					size.setCapacity(capacity);
 				default: 
 					break;
 				}
