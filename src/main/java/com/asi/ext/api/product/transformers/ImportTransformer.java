@@ -41,6 +41,7 @@ import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.ProductParserUtil;
 import com.asi.service.product.client.vo.PriceGrids;
 import com.asi.service.product.client.vo.ProductConfiguration;
+import com.asi.service.product.client.vo.ProductCriteriaSet;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductMediaItems;
@@ -185,7 +186,8 @@ public class ImportTransformer {
                     true);
             optionsCriteriaSet = ProductCompareUtil.getOptionCriteriaSets(productToSave.getProductConfigurations());
         }
-
+        
+        // Imprint, Artwork, Minimum Quantity processing
         ImprintRelationData imprintRelationData = null;
         if (serviceProduct != null && serviceProduct.getProductConfigurations().getImprintMethods() != null
                 && !serviceProduct.getProductConfigurations().getImprintMethods().isEmpty()) {
@@ -199,10 +201,24 @@ public class ImportTransformer {
             existingCriteriaSetMap.put(ApplicationConstants.CONST_ARTWORK_CODE, null);
             existingCriteriaSetMap.put(ApplicationConstants.CONST_MINIMUM_QUANTITY, null);
         }
-
+        
+        // Product, Imprint, Shipping Options processing
         optionsCriteriaSet = processProductOptions(optionsCriteriaSet, productToSave, serviceProduct.getProductConfigurations(),
                 configId);
-
+        
+        // FOB points processing
+        if (serviceProduct.getFobPoints() != null && !serviceProduct.getFobPoints().isEmpty()) {
+            ProductCriteriaSets tempCriteriaSet = fobPointProcessor.getFOBPCriteriaSet(serviceProduct.getFobPoints(), productToSave,
+                existingCriteriaSetMap.get(ApplicationConstants.CONST_CRITERIA_CODE_FOBP), configId);
+            existingCriteriaSetMap.put(ApplicationConstants.CONST_CRITERIA_CODE_FOBP, tempCriteriaSet);
+        } else {
+            existingCriteriaSetMap.remove(ApplicationConstants.CONST_CRITERIA_CODE_FOBP);
+        }
+        
+        // Selected Line name processing
+        if (serviceProduct.getLineNames() != null && !serviceProduct.getLineNames().isEmpty()) {
+            productToSave.setSelectedLineNames(selectedLineProcessor.getSelectedLines(serviceProduct.getLineNames(), existingRadarModel));
+        }
         // Process Product Configurations
 
         productToSave.setProductConfigurations(processProductConfigurations(configId, existingCriteriaSetMap, optionsCriteriaSet,
@@ -360,38 +376,6 @@ public class ImportTransformer {
         } else {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_PRODUCTION_TIME_CRITERIA_CODE);
         }
-        
-        /*if (serviceProdConfigs.getF != null && !serviceProdConfigs.getMaterials().isEmpty()) {
-            tempCriteriaSet = materialProcessor.getProductMaterialCriteriaSet(serviceProdConfigs.getMaterials(), rdrProduct,
-                    existingCriteriaSetMap.get(ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE), configId);
-            existingCriteriaSetMap.put(ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE, tempCriteriaSet);
-        } else {
-            existingCriteriaSetMap.remove(ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE);
-        }*/
-        
-        // Product options processing
-        /*
-         * if (serviceProdConfigs.getOptions() != null && !serviceProdConfigs.getOptions().isEmpty()) {
-         * optionsCriteriaSet = optionsProcessor.getOptionCriteriaSets(serviceProdConfigs.getOptions(), rdrProduct, configId,
-         * optionsCriteriaSet);
-         * } else {
-         * optionsCriteriaSet = null;
-         * }
-         */
-        /*
-         * ImprintRelationData imprintRelationData = null;
-         * if (serviceProdConfigs.getImprintMethods() != null && !serviceProdConfigs.getImprintMethods().isEmpty()) {
-         * imprintRelationData = imprintMethodProcessor.getImprintCriteriaSet(serviceProdConfigs.getImprintMethods(), rdrProduct,
-         * existingCriteriaSetMap, configId);
-         * 
-         * existingCriteriaSetMap = imprintRelationData.getExistingCriteriaSetMap();
-         * // TODO : Set Relationships back
-         * } else {
-         * existingCriteriaSetMap.put(ApplicationConstants.CONST_IMPRINT_METHOD_CODE, null);
-         * existingCriteriaSetMap.put(ApplicationConstants.CONST_ARTWORK_CODE, null);
-         * existingCriteriaSetMap.put(ApplicationConstants.CONST_MINIMUM_QUANTITY, null);
-         * }
-         */
 
         // Merge all updated ProductCriteriaSets into product configuration and set back to list
         ProductConfiguration updatedProductConfiguration = new ProductConfiguration();
