@@ -352,8 +352,17 @@ public class ProductRepo {
         	}        	
         	serviceProduct.setCatalogs(catalogsList);
         }
-        
 
+        // Misclenious
+        serviceProduct.setDistributorOnly(radProduct.getIncludeAppOfferList());
+        serviceProduct.setDistributorOnlyComments(radProduct.getDistributorComments());
+        serviceProduct.setProductDisclaimer(radProduct.getDisclaimer());
+        serviceProduct.setAdditionalProductInfo(radProduct.getAdditionalInfo());
+        serviceProduct.setAdditionalShippingInfo(radProduct.getAdditionalShippingInfo());
+        serviceProduct.setPriceConfirmedThru(radProduct.getPriceConfirmationDate());
+        serviceProduct.setCanOrderLessThanMimimum(String.valueOf(radProduct.getIsOrderLessThanMinimumAllowed()));
+        
+        
         return serviceProduct;
     }
 

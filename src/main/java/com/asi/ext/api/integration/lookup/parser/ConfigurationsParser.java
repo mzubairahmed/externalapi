@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestClientException;
 
 import com.asi.ext.api.product.transformers.ProductDataStore;
+import com.asi.ext.api.service.model.BlendMaterial;
 import com.asi.ext.api.service.model.Color;
 import com.asi.ext.api.service.model.Combo;
 import com.asi.ext.api.service.model.ImprintColor;
@@ -25,6 +26,7 @@ import com.asi.ext.api.service.model.RushTime;
 import com.asi.ext.api.service.model.Samples;
 import com.asi.ext.api.service.model.Size;
 import com.asi.ext.api.util.ApplicationConstants;
+import com.asi.service.product.client.vo.ChildCriteriaSetCodeValues;
 import com.asi.service.product.client.vo.CriteriaSetCodeValues;
 import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.ProductConfiguration;
@@ -51,6 +53,7 @@ public class ConfigurationsParser {
 	private int productCriteriaSetCntr = -1;
 	private int newCriteriaSetCodeValueCntr = -112;
 	private int newCriteriaSetValuesCntr = -1;
+	private String breakoutBy=null;
 	private CriteriaSetParser criteriaSetParser=new CriteriaSetParser();
 	/*public String[] getPriceCriteria(ProductDetail productDetail,
 			String priceGridId) {
@@ -402,12 +405,17 @@ public class ConfigurationsParser {
 	private com.asi.service.product.client.vo.ProductCriteriaSets getProductCriteriaSetByCodeIfExist(
 			com.asi.service.product.client.vo.ProductConfiguration productConfiguration,
 			String criteriaCode) {
+		String[] breakoutCritierias={"PRCL","SHAP","MTRL","CAPS","DIMS","SABR","SAHU","SAIT","SANS","SAWI","SSNM","SVWT","SOTH","PROP","IMOP","SHOP"};
 		com.asi.service.product.client.vo.ProductCriteriaSets imprintProductCriteriaSet = null;
 		List<com.asi.service.product.client.vo.ProductCriteriaSets> productCriteriaSetsAry = new ArrayList<>();
 		if (null != productConfiguration) {
 			productCriteriaSetsAry = productConfiguration
 					.getProductCriteriaSets();
+		
 			for (com.asi.service.product.client.vo.ProductCriteriaSets currentProductCriteriaSet : productCriteriaSetsAry) {
+				if(Arrays.asList(breakoutCritierias).contains(currentProductCriteriaSet.getCriteriaCode()) && currentProductCriteriaSet.getIsBrokenOutOn().equalsIgnoreCase("true")){
+					breakoutBy=ProductDataStore.getCriteriaInfoForCriteriaCode(currentProductCriteriaSet.getCriteriaCode()).getDescription();
+				}
 				if (currentProductCriteriaSet.getCriteriaCode()
 						.equalsIgnoreCase(criteriaCode)) {
 					imprintProductCriteriaSet = currentProductCriteriaSet;
@@ -442,8 +450,9 @@ public class ConfigurationsParser {
 		com.asi.ext.api.service.model.ProductConfigurations serviceProductConfig=new com.asi.ext.api.service.model.ProductConfigurations(); 
 		// Break out check
 		 if(productDetail.getIsPriceBreakoutFlag()){
-		 			serviceProduct.setBreakOutByPrice("true");
+			 breakoutBy="Product Number";		 			
 		 		}
+		 serviceProduct.setBreakOutByPrice(String.valueOf(productDetail.getIsPriceBreakoutFlag()));
 		// Product Color
 		List<com.asi.service.product.client.vo.CriteriaSetValues> currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_COLORS_CRITERIA_CODE);
 		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
@@ -595,19 +604,44 @@ public class ConfigurationsParser {
 		// Materials
 		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE);
 		String materialName="";
+		
 		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
 			Material material;
 			List<Material> materialList=new ArrayList<>();
+			Combo currentCombo=null;
+			boolean firstElement=false;
+			List<Combo> comboList=null;
 			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
-			material=new Material();
-			material.setAlias(currentCriteriaSetValue.getValue().toString());
-			materialName=ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE);
-			material.setName(materialName);
-			criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), materialName);
-			materialList.add(material);
+				material=new Material();
+				firstElement=true;
+				comboList=new ArrayList<>();
+				if(currentCriteriaSetValue.getCriteriaSetCodeValues().length>1){
+					// Combo
+					for(com.asi.service.product.client.vo.CriteriaSetCodeValues currentCriteriaSetCodeValue:currentCriteriaSetValue.getCriteriaSetCodeValues()){
+						if(firstElement){
+							material.setAlias(currentCriteriaSetValue.getValue().toString());
+							material.setName(ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetCodeValue.getSetCodeValueId(),ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE));
+							firstElement=false;
+						}else{
+							currentCombo=new Combo();
+							currentCombo.setName(ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetCodeValue.getSetCodeValueId(),ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE));
+							comboList.add(currentCombo);
+						}
+						material.setBlendMaterials(checkAndSetMaterialBlendInfo(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getChildCriteriaSetCodeValues()));
+					}
+					material.setCombos(comboList);
+				}else{
+					material.setAlias(currentCriteriaSetValue.getValue().toString());
+					materialName=ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE);
+					material.setName(materialName);
+					criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), materialName);
+					material.setBlendMaterials(checkAndSetMaterialBlendInfo(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getChildCriteriaSetCodeValues()));
+				}
+				materialList.add(material);
 		}
 		serviceProductConfig.setMaterials(materialList);
 		}
+
 				
 		// Additional Colors
 		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_ADDITIONAL_COLOR);
@@ -768,6 +802,8 @@ public class ConfigurationsParser {
 				}
 			}
 		}		
+		
+		serviceProduct.setBreakOutByPrice(breakoutBy);
 		serviceProduct.setFobPoints(fobPointsList);
 		serviceProduct.setProductConfigurations(serviceProductConfig);
 		return serviceProduct;
@@ -818,7 +854,20 @@ public class ConfigurationsParser {
 		if(null!=productCriteriaSets) criteriaSetValuesList=productCriteriaSets.getCriteriaSetValues();
 		return criteriaSetValuesList;
 	}
-
+	private List<BlendMaterial> checkAndSetMaterialBlendInfo(
+			ChildCriteriaSetCodeValues[] childCriteriaSetCodeValues) {
+		BlendMaterial blendMaterial=null;
+		List<BlendMaterial> finalBlendMaterial=new ArrayList<>();
+		if(null!=childCriteriaSetCodeValues && childCriteriaSetCodeValues.length>0){
+			for(ChildCriteriaSetCodeValues currentSetCodeValue:childCriteriaSetCodeValues){
+				blendMaterial=new BlendMaterial();
+				blendMaterial.setName(ProductDataStore.reverseLookupFindAttribute(currentSetCodeValue.getChildCriteriaSetCodeValue().getSetCodeValueId(),ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE));
+				blendMaterial.setPercentage(currentSetCodeValue.getChildCriteriaSetCodeValue().getCodeValue());
+				finalBlendMaterial.add(blendMaterial);
+			}			
+		}		
+		return finalBlendMaterial;
+	}
 	
 	/*public com.asi.service.product.client.vo.Product setProductWithSizeConfigurations(
 			Product srcProduct, ProductDetail currentProductDetails,

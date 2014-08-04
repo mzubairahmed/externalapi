@@ -90,7 +90,7 @@ public class SizeLookup {
 		Dimension dimension=null;
 		Capacity capacity=null;
 		Apparel apparel=null;
-		OtherSize other=null;
+		OtherSize otherSize=null;
 		Volume volume=null;
 				if(criteriaCode.equalsIgnoreCase("DIMS"))
 					dimension=new Dimension();
@@ -101,7 +101,7 @@ public class SizeLookup {
 				else if(criteriaCode.equalsIgnoreCase("SABR") || criteriaCode.equalsIgnoreCase("SAHU") || criteriaCode.equalsIgnoreCase("SAIT") || criteriaCode.equalsIgnoreCase("SANS") || criteriaCode.equalsIgnoreCase("SAWI") || criteriaCode.equalsIgnoreCase("SSNM"))
 					apparel=new Apparel();
 				else if(criteriaCode.equalsIgnoreCase("SOTH"))
-					other=new OtherSize();
+					otherSize=new OtherSize();
 				
 		
 				String sizeValue="",finalSizeValue="",delim="";
@@ -110,8 +110,11 @@ public class SizeLookup {
 				int elementsCntr=0;
 				Value valueObj;
 				Value apperalObj;
+				Value capacityObj;
 				List<Value> valueObjList=null;
+				List<Value> capacityValueObjList=new ArrayList<>();
 				List<Value> apperalValueObjList=new ArrayList<>();
+				List<Value> otherValueObjList=new ArrayList<>();
 				List<String> valueStringList=null;
 				List<Values> valuesList=new ArrayList<>();
 				String unitOfmeasureCode="";
@@ -122,6 +125,7 @@ public class SizeLookup {
 				{
 					int sizeCntr=0;
 					apperalObj=new Value();
+					capacityObj=new Value();
 					currentValues=new Values();	
 					if(criteriaSetValue.getValue() instanceof List)
 					{
@@ -172,10 +176,12 @@ public class SizeLookup {
 							if(criteriaCode.equalsIgnoreCase("SVWT") ||criteriaCode.equalsIgnoreCase("CAPS")){
 							valueElements=sizeValue.split(":");
 							if(valueElements.length>1){
-								valueObj.setUnit(valueElements[0]);
-								valueObj.setValue(valueElements[1]);
+								valueObj.setValue(valueElements[0]);
+								valueObj.setUnit(valueElements[1]);
 							}
-							valueObjList.add(valueObj);}else{
+							valueObjList.add(valueObj);
+							
+							capacityValueObjList.add(valueObj);}else{
 								valueStringList.add(sizeValue);
 							}
 							delim=": ";
@@ -225,13 +231,27 @@ public class SizeLookup {
 					
 					}else
 					{
+						valueStringList=new ArrayList<>();
+						valueObj=new Value();
+							sizeValue=criteriaSetValue.getValue().toString();
+							if(null==sizeValue || sizeValue.trim().isEmpty())
 							sizeValue=criteriaSetValue.getBaseLookupValue();
-							if(null==sizeValue)
-								sizeValue=criteriaSetValue.getFormatValue();
+							if(null==sizeValue || sizeValue.trim().isEmpty())
+							sizeValue=criteriaSetValue.getFormatValue();
 							valueStringList.add(sizeValue);//valueObj.setValue(sizeValue);
 							sizeElementValue+=sizeValue;
+							if(null!=apparel){
 							apperalObj.setValue(sizeValue);
 							apperalValueObjList.add(apperalObj);
+							}else if(criteriaCode.equalsIgnoreCase("CAPS")){
+							capacityObj.setValue(sizeValue.substring(0,sizeValue.indexOf(" ")));
+							capacityObj.setUnit(sizeValue.substring(sizeValue.indexOf(" ")+1));
+							capacityValueObjList.add(capacityObj);
+							}else{
+								valueObj.setValue(sizeValue);
+								otherValueObjList.add(valueObj);
+							}
+								
 						sizeCntr++;
 					}
 					//criteriaSetParser.addReferenceSet(externalProductId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),sizeValue);
@@ -284,8 +304,13 @@ public class SizeLookup {
 					size.setApparel(apparel);
 					break;
 				case "CAPS":
-					capacity.setValues(valueObjList);
+					capacity.setValues(capacityValueObjList);
 					size.setCapacity(capacity);
+					break;
+				case "SOTH":
+					otherSize.setValues(otherValueObjList);
+					size.setOther(otherSize);
+					break;
 				default: 
 					break;
 				}
