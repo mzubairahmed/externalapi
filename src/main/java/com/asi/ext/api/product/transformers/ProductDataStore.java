@@ -15,11 +15,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 import org.springframework.web.client.RestTemplate;
 
-import com.asi.ext.api.exception.VelocityException;
 import com.asi.ext.api.radar.lookup.model.PriceUnitJsonModel;
 import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.ext.api.radar.model.PriceUnit;
 import com.asi.ext.api.rest.JersyClientGet;
+import com.asi.ext.api.service.model.Catalog;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.JsonToLookupTableConverter;
@@ -81,6 +81,7 @@ public class ProductDataStore {
 
     private static Map<String, CriteriaInfo>                          criteriaInfoLookups            = new HashMap<String, CriteriaInfo>();
 
+    public static LinkedList<LinkedHashMap>							sizelookupsResponse		= null;
     public static LinkedList<LinkedHashMap>                           sizeElementsResponse           = null;
     public ProductDataStore() {
 
@@ -1316,6 +1317,19 @@ public class ProductDataStore {
         return sizeElementsResponse;
     }
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	    private static LinkedList<LinkedHashMap> getSizeLookupResponse() {
+	        try {
+	            if (sizelookupsResponse == null) {
+	            	sizelookupsResponse = lookupRestTemplate.getForObject(RestAPIProperties.get(ApplicationConstants.SIZES_LOOKUP_URL),LinkedList.class);
+	               // sizeElementsResponse = (LinkedList<LinkedHashMap>) JersyClientGet.parseToList(response);
+	            }
+	 
+	        } catch (Exception e) {
+	            LOGGER.error("Exception while processing Product Size Group JSON - size value parsing", e);
+	        }
+	        return sizelookupsResponse;
+	    }
     public static CriteriaInfo getCriteriaInfoForCriteriaCode(String code) {
         if (criteriaInfo == null || criteriaInfo.isEmpty()) {
             return loadCriteriaInformations() ? criteriaInfo.get(code) : null;
@@ -1468,4 +1482,12 @@ public class ProductDataStore {
         // TODO Auto-generated method stub
         return null;
     }
+
+	public static Catalog getMediaCitationById(String mediaCitationId,
+			String mediaCitationReferenceId,String companyId) {
+        LinkedList<?> responseList = lookupRestTemplate.getForObject((RestAPIProperties
+                .get(ApplicationConstants.PRODUCT_MEDIA_CITATION)+companyId),LinkedList.class);
+        Catalog currentCatalogs= JsonToLookupTableConverter.jsonToCatalogs(responseList,mediaCitationId,mediaCitationReferenceId);
+	return currentCatalogs;
+	}
 }

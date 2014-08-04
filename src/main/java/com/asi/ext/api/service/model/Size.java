@@ -1,50 +1,51 @@
 package com.asi.ext.api.service.model;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+@JsonInclude(Include.NON_NULL)
 public class Size {
 
-    @JsonProperty("Type")
-    private String       type;
-    @JsonProperty("Value")
-    private Object value;
-    @JsonProperty("Type")
-    public String getType() {
-        return type;
-    }
-
-    @JsonProperty("Type")
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    @JsonProperty("Value")
-    public Object getValue() {
-        return value;
-    }
-
-    @JsonProperty("Value")
-    public void setValue(Object value) {
-        this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        return EqualsBuilder.reflectionEquals(this, other);
-    }
+	@JsonProperty("Apparel")
+	private Apparel apparel;
+	@JsonProperty("Capacity")
+	private Capacity capacity;
+	@JsonProperty("Dimension")
+	private Dimension dimension;
+	@JsonProperty("Volume")
+	private Volume volume;
+	@JsonProperty("Other")
+	private OtherSize other;
+	public Apparel getApparel() {
+		return apparel;
+	}
+	public void setApparel(Apparel apparel) {
+		this.apparel = apparel;
+	}
+	public Capacity getCapacity() {
+		return capacity;
+	}
+	public void setCapacity(Capacity capacity) {
+		this.capacity = capacity;
+	}
+	public Dimension getDimension() {
+		return dimension;
+	}
+	public void setDimension(Dimension dimension) {
+		this.dimension = dimension;
+	}
+	public Volume getVolume() {
+		return volume;
+	}
+	public void setVolume(Volume volume) {
+		this.volume = volume;
+	}
+	public OtherSize getOther() {
+		return other;
+	}
+	public void setOther(OtherSize other) {
+		this.other = other;
+	}
+	
 
 }
