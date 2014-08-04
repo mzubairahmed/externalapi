@@ -58,7 +58,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
         this.criteriaSetId = criteriaSetId;
     }
 
-    public ProductCriteriaSets getProductCriteriaSet(Size size, ProductDetail product) {
+    public Map<String, ProductCriteriaSets> getProductCriteriaSet(Size size, ProductDetail product, Map<String, ProductCriteriaSets> existingCriteriaSetMap) {
         this.productId = product.getID();
         this.companyId = product.getCompanyId();
         
