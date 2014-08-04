@@ -1,50 +1,61 @@
 package com.asi.ext.api.service.model;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@JsonInclude(Include.NON_NULL)
 public class Size {
 
-    @JsonProperty("Type")
-    private String       type;
-    @JsonProperty("Value")
-    private Object value;
-    @JsonProperty("Type")
-    public String getType() {
-        return type;
+    @JsonProperty("Apparel")
+    private Apparel   apparel;
+    @JsonProperty("Capacity")
+    private Capacity  capacity;
+    @JsonProperty("Dimension")
+    private Dimension dimension;
+    @JsonProperty("Volume")
+    private Volume    volume;
+    @JsonProperty("Other")
+    private OtherSize other;
+
+    public Apparel getApparel() {
+        return apparel;
     }
 
-    @JsonProperty("Type")
-    public void setType(String type) {
-        this.type = type;
+    public void setApparel(Apparel apparel) {
+        this.apparel = apparel;
     }
 
-    @JsonProperty("Value")
-    public Object getValue() {
-        return value;
+    public Capacity getCapacity() {
+        return capacity;
     }
 
-    @JsonProperty("Value")
-    public void setValue(Object value) {
-        this.value = value;
+    public void setCapacity(Capacity capacity) {
+        this.capacity = capacity;
     }
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+    public Dimension getDimension() {
+        return dimension;
     }
 
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+    public void setDimension(Dimension dimension) {
+        this.dimension = dimension;
     }
 
-    @Override
-    public boolean equals(Object other) {
-        return EqualsBuilder.reflectionEquals(this, other);
+    public Volume getVolume() {
+        return volume;
+    }
+
+    public void setVolume(Volume volume) {
+        this.volume = volume;
+    }
+
+    public OtherSize getOther() {
+        return other;
+    }
+
+    public void setOther(OtherSize other) {
+        this.other = other;
     }
 
 }

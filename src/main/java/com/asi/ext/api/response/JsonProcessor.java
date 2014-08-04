@@ -686,7 +686,7 @@ public class JsonProcessor {
      * @param DimensionType is the type of dimension
      */
 	@SuppressWarnings("rawtypes")
-	public HashMap getSizesResponse(String sizesWSResponse, String attribute,String DimensionType) {
+	public static HashMap getSizesResponse(String sizesWSResponse, String attribute,String DimensionType) {
 		DimensionType=DimensionType.trim();
 		attribute=attribute.trim();
 		HashMap returnValue = null;
@@ -738,7 +738,7 @@ public class JsonProcessor {
 	 * @param attribute is the value
 	 * @return Criteria code of the give size value
 	 */
-	public String getSizesElementValue(String elementName,
+	public static String getSizesElementValue(String elementName,
 			@SuppressWarnings("rawtypes") HashMap sizeElementsResponse, String attribute) {
 		attribute=attribute.trim();
 		elementName=elementName.trim();
@@ -830,7 +830,7 @@ public class JsonProcessor {
 	 * @param sizeGroup
 	 * @return
 	 */
-	public String checkSizesKeyValuePair(String sizesWSResponse,
+	public static String checkSizesKeyValuePair(String sizesWSResponse,
 			String curntCriteria,String sizeGroup) {
 		String criteriaCode=ApplicationConstants.CONST_STRING_NULL_CAP;
 		sizeGroup=sizeGroup.trim();
@@ -897,7 +897,7 @@ public class JsonProcessor {
 	 * @param sizeGroup
 	 * @return
 	 */
-	public String checkOtherSizesKeyValuePair(String sizesWSResponse,
+	public static String checkOtherSizesKeyValuePair(String sizesWSResponse,
 			String curntCriteria,String sizeGroup) {
 		String criteriaCode=ApplicationConstants.CONST_STRING_NULL_CAP;
 		sizeGroup=sizeGroup.trim();
@@ -1003,7 +1003,7 @@ public class JsonProcessor {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public String checkImprintArtWorkValueKeyPair(String jsonText, String srchValue,String criteriaCode) {
+	public static String checkImprintArtWorkValueKeyPair(String jsonText, String srchValue,String criteriaCode) {
 		//String criteriaCode = "NULL";
 		srchValue = srchValue.toLowerCase();
 		srchValue = srchValue.substring(0, 1).toUpperCase()

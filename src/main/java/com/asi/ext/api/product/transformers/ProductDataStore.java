@@ -15,11 +15,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 import org.springframework.web.client.RestTemplate;
 
-import com.asi.ext.api.exception.VelocityException;
 import com.asi.ext.api.radar.lookup.model.PriceUnitJsonModel;
 import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.ext.api.radar.model.PriceUnit;
 import com.asi.ext.api.rest.JersyClientGet;
+import com.asi.ext.api.service.model.Catalog;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.JsonToLookupTableConverter;
@@ -81,6 +81,7 @@ public class ProductDataStore {
 
     private static Map<String, CriteriaInfo>                          criteriaInfoLookups            = new HashMap<String, CriteriaInfo>();
 
+    public static LinkedList<LinkedHashMap>							sizelookupsResponse		= null;
     public static LinkedList<LinkedHashMap>                           sizeElementsResponse           = null;
     public ProductDataStore() {
 
@@ -1112,6 +1113,9 @@ public class ProductDataStore {
         return setCodeValueId;
     }
 
+    public static String reverseLookupFindAttribute(String setCodeValueId, String criteriaCode) {
+        return reverseLookupFindAttribute(setCodeValueId, criteriaCode, null);
+    }
     /**
      * This method will search for the particular item in the Lookup table of
      * given criteria code using the SetCodeValueId. Its called reverse lookup
@@ -1123,7 +1127,7 @@ public class ProductDataStore {
      * @param criteriaCode
      * @return value matches with the SetCodeValueId or null
      */
-    public static String reverseLookupFindAttribute(String setCodeValueId, String criteriaCode) {
+    public static String reverseLookupFindAttribute(String setCodeValueId, String criteriaCode, String companyId) {
 
         if (CommonUtilities.isValueNull(criteriaCode) || CommonUtilities.isValueNull(setCodeValueId)) {
             return null;
@@ -1232,71 +1236,70 @@ public class ProductDataStore {
             }
             return CommonUtilities.getKeysByValueGen(additionalColorLookupTable, setCodeValueId);
         }  else if (ApplicationConstants.CONST_CRITERIA_CODE_LNNM.equalsIgnoreCase(criteriaCode)) {
-
+            getSetCodeValueIdForSelectedLineName("LNNM", companyId);
+            
+            return CommonUtilities.getKeysByValueGen(selectedNamesLookupTable, setCodeValueId);
         } else if (ApplicationConstants.CONST_CRITERIA_CODE_FOBP.equalsIgnoreCase(criteriaCode)) {
-
+            getSetCodeValueIdForFobPoints("FOBP", companyId);
+            
+            return CommonUtilities.getKeysByValueGen(fobPointsLookupTable, setCodeValueId);
         }
 
         return value;
     }
 
-    public static String getSetCodeValueIdForSelectedLineName(String setCodeValueId,String companyId) {
-    	 if (selectedNamesLookupTable == null || selectedNamesLookupTable.isEmpty()) {
-             // Create Product additional color Lookup table
-             try {
+    public static String getSetCodeValueIdForSelectedLineName(String value, String companyId) {
+    	 
+        try {
 
-                 LinkedList<?> selectedNamesResponse = lookupRestTemplate.getForObject(
-                         RestAPIProperties.get(ApplicationConstants.SELECTED_LINES_LOOKUP)+companyId, LinkedList.class);
-                 if (selectedNamesResponse == null || selectedNamesResponse.isEmpty()) {
-                     // Report error to API that we are not able to fetch data
-                     // for additional color
-                     // throw new
-                     // VelocityException("Unable to get response from additional color API",
-                     // null);
-                     LOGGER.error("Product Selected Names Lookup API returned null response");
-                     // TODO : Batch Error
-                     return null;
-                 } else {
-                	 selectedNamesLookupTable = JsonToLookupTableConverter.jsonToSelectedLinesNamesLookupTable(selectedNamesResponse);
-                     if (selectedNamesLookupTable == null) {
-                         return null; // TODO : LOG Batch Error
-                     }
-                 }
-             } catch (Exception e) {
-                 LOGGER.error("Exception while fetching/processing Selected Line Names lookup data", e);
-                 return null;
-             }
-         }
-    	 return CommonUtilities.getKeysByValueGen(selectedNamesLookupTable, setCodeValueId);    		
+            LinkedList<?> selectedNamesResponse = lookupRestTemplate.getForObject(
+                    RestAPIProperties.get(ApplicationConstants.SELECTED_LINES_LOOKUP) + companyId, LinkedList.class);
+            if (selectedNamesResponse == null || selectedNamesResponse.isEmpty()) {
+                // Report error to API that we are not able to fetch data
+                // for additional color
+                // throw new
+                // VelocityException("Unable to get response from additional color API",
+                // null);
+                LOGGER.error("Product Selected Names Lookup API returned null response");
+                // TODO : Batch Error
+                return null;
+            } else {
+                selectedNamesLookupTable = JsonToLookupTableConverter.jsonToSelectedLinesNamesLookupTable(selectedNamesResponse);
+                if (selectedNamesLookupTable == null) {
+                    return null; // TODO : LOG Batch Error
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Exception while fetching/processing Selected Line Names lookup data", e);
+            return null;
+        }
+    	 return selectedNamesLookupTable.get(value);    		
 	}
-    public static String getSetCodeValueIdForFobPoints(String setCodeValueId,String companyId) {
-   	 if (fobPointsLookupTable == null || fobPointsLookupTable.isEmpty()) {
-            // Create Product additional color Lookup table
+    public static String getSetCodeValueIdForFobPoints(String value, String companyId) {
+            // Create FOBPoint Lookup table
             try {
 
-                LinkedList<?> selectedNamesResponse = lookupRestTemplate.getForObject(
+                LinkedList<?> fobPointsResponse = lookupRestTemplate.getForObject(
                         RestAPIProperties.get(ApplicationConstants.FOBP_POINTS_LOOKUP)+companyId, LinkedList.class);
-                if (selectedNamesResponse == null || selectedNamesResponse.isEmpty()) {
+                if (fobPointsResponse == null || fobPointsResponse.isEmpty()) {
                     // Report error to API that we are not able to fetch data
-                    // for additional color
-                    // throw new
-                    // VelocityException("Unable to get response from additional color API",
+                    // for fob points throw new
+                    // VelocityException("Unable to get response from fob points API",
                     // null);
-                    LOGGER.error("Product Selected Names Lookup API returned null response");
+                    LOGGER.error("FOBPoint Lookup API returned null response");
                     // TODO : Batch Error
                     return null;
                 } else {
-                	fobPointsLookupTable = JsonToLookupTableConverter.jsonToSelectedLinesNamesLookupTable(selectedNamesResponse);
+                	fobPointsLookupTable = JsonToLookupTableConverter.jsonToFOBPointookupTable(fobPointsResponse);
                     if (fobPointsLookupTable == null) {
                         return null; // TODO : LOG Batch Error
                     }
                 }
             } catch (Exception e) {
-                LOGGER.error("Exception while fetching/processing Selected Line Names lookup data", e);
+                LOGGER.error("Exception while fetching/processing FOBPoint lookup data", e);
                 return null;
             }
-        }
-   	 return CommonUtilities.getKeysByValueGen(fobPointsLookupTable, setCodeValueId);    		
+            return fobPointsLookupTable.get(value);   		
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1314,6 +1317,19 @@ public class ProductDataStore {
         return sizeElementsResponse;
     }
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	    private static LinkedList<LinkedHashMap> getSizeLookupResponse() {
+	        try {
+	            if (sizelookupsResponse == null) {
+	            	sizelookupsResponse = lookupRestTemplate.getForObject(RestAPIProperties.get(ApplicationConstants.SIZES_LOOKUP_URL),LinkedList.class);
+	               // sizeElementsResponse = (LinkedList<LinkedHashMap>) JersyClientGet.parseToList(response);
+	            }
+	 
+	        } catch (Exception e) {
+	            LOGGER.error("Exception while processing Product Size Group JSON - size value parsing", e);
+	        }
+	        return sizelookupsResponse;
+	    }
     public static CriteriaInfo getCriteriaInfoForCriteriaCode(String code) {
         if (criteriaInfo == null || criteriaInfo.isEmpty()) {
             return loadCriteriaInformations() ? criteriaInfo.get(code) : null;
@@ -1466,4 +1482,12 @@ public class ProductDataStore {
         // TODO Auto-generated method stub
         return null;
     }
+
+	public static Catalog getMediaCitationById(String mediaCitationId,
+			String mediaCitationReferenceId,String companyId) {
+        LinkedList<?> responseList = lookupRestTemplate.getForObject((RestAPIProperties
+                .get(ApplicationConstants.PRODUCT_MEDIA_CITATION)+companyId),LinkedList.class);
+        Catalog currentCatalogs= JsonToLookupTableConverter.jsonToCatalogs(responseList,mediaCitationId,mediaCitationReferenceId);
+	return currentCatalogs;
+	}
 }

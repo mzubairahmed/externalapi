@@ -25,6 +25,7 @@ import com.asi.ext.api.integration.lookup.parser.LookupParser;
 import com.asi.ext.api.product.transformers.ImportTransformer;
 import com.asi.ext.api.product.transformers.PriceGridParser;
 import com.asi.ext.api.product.transformers.ProductDataStore;
+import com.asi.ext.api.service.model.Catalog;
 import com.asi.ext.api.service.model.Image;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.service.product.client.LookupValuesClient;
@@ -35,6 +36,7 @@ import com.asi.service.product.client.vo.ProductDataSheet;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductInventoryLink;
 import com.asi.service.product.client.vo.ProductKeywords;
+import com.asi.service.product.client.vo.ProductMediaCitations;
 import com.asi.service.product.client.vo.ProductMediaItems;
 import com.asi.service.product.client.vo.SelectedComplianceCert;
 import com.asi.service.product.client.vo.SelectedProductCategory;
@@ -339,6 +341,27 @@ public class ProductRepo {
         	}
         	serviceProduct.setImages(imagesList);
         }
+
+        // Catalog
+        if(null!=radProduct.getProductMediaCitations() && radProduct.getProductMediaCitations().size()>0){
+        	List<Catalog> catalogsList=new ArrayList<>();
+        	Catalog catalog=null;
+        	for(ProductMediaCitations currentMediaCitation:radProduct.getProductMediaCitations()){
+        		catalog=new Catalog();
+        		catalogsList.add(ProductDataStore.getMediaCitationById(currentMediaCitation.getMediaCitationId(),currentMediaCitation.getProductMediaCitationReferences()[0].getMediaCitationReferenceId(),radProduct.getCompanyId()));
+        	}        	
+        	serviceProduct.setCatalogs(catalogsList);
+        }
+
+        // Misclenious
+        serviceProduct.setDistributorOnly(radProduct.getIncludeAppOfferList());
+        serviceProduct.setDistributorOnlyComments(radProduct.getDistributorComments());
+        serviceProduct.setProductDisclaimer(radProduct.getDisclaimer());
+        serviceProduct.setAdditionalProductInfo(radProduct.getAdditionalInfo());
+        serviceProduct.setAdditionalShippingInfo(radProduct.getAdditionalShippingInfo());
+        serviceProduct.setPriceConfirmedThru(radProduct.getPriceConfirmationDate());
+        serviceProduct.setCanOrderLessThanMimimum(String.valueOf(radProduct.getIsOrderLessThanMinimumAllowed()));
+        
         
         return serviceProduct;
     }

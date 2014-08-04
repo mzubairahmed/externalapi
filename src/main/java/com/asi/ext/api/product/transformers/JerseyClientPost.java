@@ -135,7 +135,7 @@ public class JerseyClientPost {
      * @throws VelocityException
      * 
      */
-    public String getLookupsResponse(String url) throws VelocityException {
+    public static String getLookupsResponse(String url) throws VelocityException {
         String response = ApplicationConstants.CONST_STRING_NULL_CAP;
         try {
             Client client = Client.create();

@@ -1,46 +1,112 @@
 package com.asi.service.product.client.vo;
 
+import com.asi.ext.api.radar.model.ChildCriteriaSetCodeValue;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ChildCriteriaSetCodeValues {
-	@JsonProperty("CriteriaSetValueId")
-private String criteriaSetValueId="";
-	@JsonProperty("SetCodeValueId")
-private String setCodeValueId="";
-	@JsonProperty("CodeValue")
-private String codeValue="";
-	@JsonProperty("ID")
-private String id="";
+	@JsonProperty("ParentCriteriaSetCodeValueId")
+	private String parentCriteriaSetCodeValueId = "";
+	@JsonProperty("ChildCriteriaSetCodeValueId")
+	private String childCriteriaSetCodeValueId = "";
+	@JsonProperty("ProductId")
+	private String productId = "";
+	@JsonProperty("ChildCriteriaSetCodeValue")
+	private ChildCriteriaSetCodeValue childCriteriaSetCodeValue = null;
 
-public String getCriteriaSetValueId() {
-	return criteriaSetValueId;
-}
+	public ChildCriteriaSetCodeValues() {
+		// Default constructor
+	}
 
-public void setCriteriaSetValueId(String criteriaSetValueId) {
-	this.criteriaSetValueId = criteriaSetValueId;
-}
+	/**
+	 * @param parentCriteriaSetCodeValueId
+	 * @param childCriteriaSetCodeValueId
+	 * @param productId
+	 * @param childCriteriaSetCodeValue
+	 */
+	public ChildCriteriaSetCodeValues(String parentCriteriaSetCodeValueId,
+			String childCriteriaSetCodeValueId, String productId,
+			ChildCriteriaSetCodeValue childCriteriaSetCodeValue) {
+		this.parentCriteriaSetCodeValueId = parentCriteriaSetCodeValueId;
+		this.childCriteriaSetCodeValueId = childCriteriaSetCodeValueId;
+		this.productId = productId;
+		this.childCriteriaSetCodeValue = childCriteriaSetCodeValue;
+	}
 
-public String getSetCodeValueId() {
-	return setCodeValueId;
-}
+	/**
+	 * @return the parentCriteriaSetCodeValueId
+	 */
+	public String getParentCriteriaSetCodeValueId() {
+		return parentCriteriaSetCodeValueId;
+	}
 
-public void setSetCodeValueId(String setCodeValueId) {
-	this.setCodeValueId = setCodeValueId;
-}
+	/**
+	 * @param parentCriteriaSetCodeValueId
+	 *            the parentCriteriaSetCodeValueId to set
+	 */
+	public void setParentCriteriaSetCodeValueId(
+			String parentCriteriaSetCodeValueId) {
+		this.parentCriteriaSetCodeValueId = parentCriteriaSetCodeValueId;
+	}
 
-public String getCodeValue() {
-	return codeValue;
-}
+	/**
+	 * @return the childCriteriaSetCodeValueId
+	 */
+	public String getChildCriteriaSetCodeValueId() {
+		return childCriteriaSetCodeValueId;
+	}
 
-public void setCodeValue(String codeValue) {
-	this.codeValue = codeValue;
-}
+	/**
+	 * @param childCriteriaSetCodeValueId
+	 *            the childCriteriaSetCodeValueId to set
+	 */
+	public void setChildCriteriaSetCodeValueId(
+			String childCriteriaSetCodeValueId) {
+		this.childCriteriaSetCodeValueId = childCriteriaSetCodeValueId;
+	}
 
-public String getId() {
-	return id;
-}
+	/**
+	 * @return the productId
+	 */
+	public String getProductId() {
+		return productId;
+	}
 
-public void setId(String id) {
-	this.id = id;
-}
+	/**
+	 * @param productId
+	 *            the productId to set
+	 */
+	public void setProductId(String productId) {
+		this.productId = productId;
+	}
+
+	/**
+	 * @return the childCriteriaSetCodeValue
+	 */
+	public ChildCriteriaSetCodeValue getChildCriteriaSetCodeValue() {
+		return childCriteriaSetCodeValue;
+	}
+
+	/**
+	 * @param childCriteriaSetCodeValue
+	 *            the childCriteriaSetCodeValue to set
+	 */
+	public void setChildCriteriaSetCodeValue(
+			ChildCriteriaSetCodeValue childCriteriaSetCodeValue) {
+		this.childCriteriaSetCodeValue = childCriteriaSetCodeValue;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "ChildCriteriaSetCodeValues [parentCriteriaSetCodeValueId="
+				+ parentCriteriaSetCodeValueId
+				+ ", childCriteriaSetCodeValueId="
+				+ childCriteriaSetCodeValueId + ", productId=" + productId
+				+ ", childCriteriaSetCodeValue=" + childCriteriaSetCodeValue
+				+ "]";
+	}
 }

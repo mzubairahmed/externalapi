@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import com.asi.ext.api.radar.lookup.model.PriceUnitJsonModel;
 import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.ext.api.response.JsonProcessor;
+import com.asi.ext.api.service.model.Catalog;
 import com.asi.service.product.client.vo.Currency;
 import com.asi.service.product.client.vo.DiscountRate;
 
@@ -390,8 +391,7 @@ public final class JsonToLookupTableConverter {
                 @SuppressWarnings("unchecked")
                 LinkedHashMap<String, ?> crntValue = (LinkedHashMap<String, ?>) iter.next();
                 try {
-                	selectedLineNamesLookupTable.put(String.valueOf(crntValue.get("ID")).toUpperCase(),
-                            String.valueOf(crntValue.get("Name")));
+                	selectedLineNamesLookupTable.put(String.valueOf(crntValue.get("Name")), String.valueOf(crntValue.get("ID")).toUpperCase());
                 } catch (Exception e) {
                     // Trying to get maximum data so no exception need to process now
                 }
@@ -815,6 +815,51 @@ public final class JsonToLookupTableConverter {
 	            pe.printStackTrace();
 	        }
 	        return criteriaCodeLookupData;		
+	}
+
+    public static HashMap<String, String> jsonToFOBPointookupTable(LinkedList<?> fobPoints) {
+
+        HashMap<String, String> fobPointsLookupTable = new HashMap<>();
+        try {
+            fobPointsLookupTable = new HashMap<>(fobPoints.size());
+            Iterator<?> iter = fobPoints.iterator();
+            while (iter.hasNext()) {
+                @SuppressWarnings("unchecked")
+                LinkedHashMap<String, ?> crntValue = (LinkedHashMap<String, ?>) iter.next();
+                try {
+                    fobPointsLookupTable.put(String.valueOf(crntValue.get("Name")), String.valueOf(crntValue.get("ID")).toUpperCase());
+                } catch (Exception e) {
+                    // Trying to get maximum data so no exception need to process now
+                }
+            }
+        } catch (Exception pe) {
+            pe.printStackTrace();
+        }
+        return fobPointsLookupTable;
+    }
+
+	@SuppressWarnings("unchecked")
+	public static Catalog jsonToCatalogs(LinkedList<?> responseList,String mediaCitationId,String mediaCitationReferenceId) {
+		Catalog returnCatalog=new Catalog();
+		try {
+            Iterator<?> iter = responseList.iterator();
+            LinkedHashMap crntValue=null;
+            ArrayList<LinkedHashMap> productCitationReferences=null;
+            while(iter.hasNext()){
+            	    crntValue = (LinkedHashMap) iter.next();
+            	    if(crntValue.get("ID").toString().equals(mediaCitationId)){
+                    returnCatalog.setCatalogName(crntValue.get("Name").toString());
+                    productCitationReferences = (ArrayList<LinkedHashMap>) crntValue.get("MediaCitationReferences");
+                    for(LinkedHashMap citationReference:productCitationReferences){
+                    		if(mediaCitationReferenceId.equals(citationReference.get("ID").toString()))
+                    			returnCatalog.setCatalogPage(citationReference.get("Number").toString());
+                    	}                                                    	
+            	    }
+            }            
+	    } catch (Exception pe) {
+            pe.printStackTrace();
+        }		
+		return returnCatalog;
 	}
 
 
