@@ -206,6 +206,9 @@ public class SizeLookup {
 									else{
 										sizeValue=valueMap.get("UnitValue").toString()+" "+unitOfmeasureCode;	
 									}									
+								}else
+								{
+									sizeValue=valueMap.get("UnitValue").toString()+unitOfmeasureCode;
 								}
 							apperalObj.setValue(sizeValue);							
 						}
@@ -218,6 +221,7 @@ public class SizeLookup {
 								else {
 									sizeElementValue+=delim+sizeValue;
 								}
+							apperalObj.setValue(sizeElementValue);
 						}
 						
 						else{
@@ -225,8 +229,13 @@ public class SizeLookup {
 							//valueObj.setValue(sizeValue);
 						}
 						//valueObjList.add(valueObj);
+						if(sizeCntr==0){
+							if(criteriaCode.equalsIgnoreCase("SANS") || criteriaCode.equalsIgnoreCase("SAWI")){
+						}else		apperalValueObjList.add(apperalObj);
+						}else{
+							apperalValueObjList.add(apperalObj);
+						}
 						sizeCntr++;
-						apperalValueObjList.add(apperalObj);
 					}		
 					
 					}else
@@ -299,6 +308,11 @@ public class SizeLookup {
 					size.setVolume(volume);
 					break;
 				case "SAIT":
+				case "SABR":
+				case "SAHU":
+				case "SANS":
+				case "SAWI":
+				case "SSNM":
 					apparel.setType(ProductDataStore.getCriteriaInfoForCriteriaCode(criteriaCode).getDescription());
 					apparel.setValues(apperalValueObjList);
 					size.setApparel(apparel);
