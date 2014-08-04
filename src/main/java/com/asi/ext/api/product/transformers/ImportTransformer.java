@@ -47,26 +47,6 @@ import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductMediaItems;
 import com.asi.service.product.client.vo.ProductNumber;
 
-/*
- * import com.asi.ext.api.radar.model.PriceGrids;
- * import com.asi.ext.api.radar.model.Prices;
- * import com.asi.ext.api.radar.model.PricingItems;
- * import com.asi.ext.api.radar.model.Product;
- * import com.asi.ext.api.radar.model.ProductConfigurations;
- * import com.asi.ext.api.radar.model.ProductCriteriaSets;
- * import com.asi.ext.api.radar.model.ProductMediaCitations;
- * import com.asi.ext.api.radar.model.ProductMediaItems;
- * import com.asi.ext.api.radar.model.ProductNumbers;
- * import com.asi.ext.api.radar.model.Relationships;
- */
-
-/*
- * import org.mule.api.MuleMessage;
- * import org.mule.api.transformer.TransformerException;
- * import org.mule.api.transport.PropertyScope;
- * import org.mule.transformer.AbstractMessageTransformer;
- */
-
 /**
  * ImportTransformer consist logic for processing each individual Product,
  * and convert each product com.asi.util.json to actual {@linkplain com.mule.velocity.bean.Product} object.
@@ -91,7 +71,6 @@ public class ImportTransformer {
     private ProductParser                          productParser                   = new ProductParser();
     private PriceGridParser                        priceGridParser                 = new PriceGridParser();
 
-    private ProductImprintMethodProcessor          productImprintMethodProcessor   = new ProductImprintMethodProcessor();
 
     private ProductSelectedSafetyWarningProcessor  safetyWarningProcessor          = new ProductSelectedSafetyWarningProcessor();
     private ProductKeywordProcessor                keywordProcessor                = new ProductKeywordProcessor();
