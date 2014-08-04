@@ -440,7 +440,10 @@ public class ConfigurationsParser {
 			ProductDetail productDetail,
 			com.asi.ext.api.service.model.Product serviceProduct) {
 		com.asi.ext.api.service.model.ProductConfigurations serviceProductConfig=new com.asi.ext.api.service.model.ProductConfigurations(); 
-		
+		// Break out check
+		 if(productDetail.getIsPriceBreakoutFlag()){
+		 			serviceProduct.setBreakOutByPrice("true");
+		 		}
 		// Product Color
 		List<com.asi.service.product.client.vo.CriteriaSetValues> currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_COLORS_CRITERIA_CODE);
 		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
@@ -782,8 +785,6 @@ public class ConfigurationsParser {
 					currentSize=productLookupParser.findSizeValueDetails(currentSize, currentProductCriteriaSets.getCriteriaCode(), productCriteriaSetValuesList, externalProductId);
 			}			
 		}
-		if(currentSize.getType()==null)
-			return null;
 		return currentSize;
 	}
 
