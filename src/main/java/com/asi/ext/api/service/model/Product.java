@@ -50,7 +50,76 @@ public class Product {
 	private List<String> lineNames = new ArrayList<String>();
 	@JsonProperty("Catalogs")
     private List<Catalog> 	catalogs=null;
+	@JsonProperty("DistributorOnly")
+	private String distributorOnly=null;
+	@JsonProperty("DistributorOnlyComments")
+	private String distributorOnlyComments=null;
+	@JsonProperty("ProductDisclaimer")
+	private String productDisclaimer=null;
+	@JsonProperty("AdditionalProductInfo")
+	private String additionalProductInfo=null;
+	@JsonProperty("AdditionalShippingInfo")
+	private String additionalShippingInfo=null;
+	@JsonProperty("PriceConfirmedThru")
+	private String priceConfirmedThru=null;
+	@JsonProperty("CanOrderLessThanMimimum")
+	private String canOrderLessThanMimimum=null;
 	
+	public String getDistributorOnlyComments() {
+		return distributorOnlyComments;
+	}
+
+	public void setDistributorOnlyComments(String distributorOnlyComments) {
+		this.distributorOnlyComments = distributorOnlyComments;
+	}
+
+	public String getProductDisclaimer() {
+		return productDisclaimer;
+	}
+
+	public void setProductDisclaimer(String productDisclaimer) {
+		this.productDisclaimer = productDisclaimer;
+	}
+
+	public String getAdditionalProductInfo() {
+		return additionalProductInfo;
+	}
+
+	public void setAdditionalProductInfo(String additionalProductInfo) {
+		this.additionalProductInfo = additionalProductInfo;
+	}
+
+	public String getAdditionalShippingInfo() {
+		return additionalShippingInfo;
+	}
+
+	public void setAdditionalShippingInfo(String additionalShippingInfo) {
+		this.additionalShippingInfo = additionalShippingInfo;
+	}
+
+	public String getPriceConfirmedThru() {
+		return priceConfirmedThru;
+	}
+
+	public void setPriceConfirmedThru(String priceConfirmedThru) {
+		this.priceConfirmedThru = priceConfirmedThru;
+	}
+
+	public String getCanOrderLessThanMimimum() {
+		return canOrderLessThanMimimum;
+	}
+
+	public void setCanOrderLessThanMimimum(String canOrderLessThanMimimum) {
+		this.canOrderLessThanMimimum = canOrderLessThanMimimum;
+	}
+
+	public String getDistributorOnly() {
+		return distributorOnly;
+	}
+
+	public void setDistributorOnly(String distributorOnly) {
+		this.distributorOnly = distributorOnly;
+	}
 
 	public String getBreakOutByPrice() {
 		return breakOutByPrice;
