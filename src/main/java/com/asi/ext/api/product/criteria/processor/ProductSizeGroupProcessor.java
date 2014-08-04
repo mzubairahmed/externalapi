@@ -58,18 +58,23 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
         this.criteriaSetId = criteriaSetId;
     }
 
-    public Map<String, ProductCriteriaSets> getProductCriteriaSet(Size size, ProductDetail product, Map<String, ProductCriteriaSets> existingCriteriaSetMap) {
+    public Map<String, ProductCriteriaSets> getProductCriteriaSet(Size size, ProductDetail product,
+            Map<String, ProductCriteriaSets> existingCriteriaSetMap, String configId) {
         this.productId = product.getID();
         this.companyId = product.getCompanyId();
-        
-        
-        String citeriaCode = findCriteriaCodeForSizeModel(size, product.getExternalProductId());
+        this.configId = configId;
 
-        ProductCriteriaSets tempCriteriaSet = getSizeCriteriaSet(null, null, null, null, null, null);
+        String criteriaCode = findCriteriaCodeForSizeModel(size, product.getExternalProductId());
+
+        if (CommonUtilities.isValueNull(criteriaCode)) {
+            productDataStore.addErrorToBatchLogCollection(product.getExternalProductId(),
+                    ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Unable to identify the give size details");
+        }
+
+        ProductCriteriaSets tempCriteriaSet = getSizeCriteriaSet(null, criteriaCode, existingCriteriaSetMap.get(criteriaCode), product);
 
         if (tempCriteriaSet != null && tempCriteriaSet.getCriteriaSetValues() != null
                 && !tempCriteriaSet.getCriteriaSetValues().isEmpty()) {
-            String criteriaCode = tempCriteriaSet.getCriteriaCode();
             ProductCriteriaSets exisitingCriteriaSet = existingCriteriaSetMap.get(criteriaCode);
             if (exisitingCriteriaSet == null) {
                 existingCriteriaSetMap = removeSizeRelatedCriteriaSetFromExisting(existingCriteriaSetMap);
@@ -80,9 +85,12 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
             if (exisitingCriteriaSet != null) {
                 existingCriteriaSetMap.put(criteriaCode, exisitingCriteriaSet);
             }
+        } else {
+            //for clean up
+            existingCriteriaSetMap = removeSizeRelatedCriteriaSetFromExisting(existingCriteriaSetMap);
         }
 
-        return null;
+        return existingCriteriaSetMap;
     }
 
     private String findCriteriaCodeForSizeModel(Size size, String xid) {
@@ -118,7 +126,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                 return criteriaCode;
             }
         }
-        
+
         if (size.getVolume() != null && size.getVolume().getValues() != null && !size.getVolume().getValues().isEmpty()) {
             if (!sizeCodeFound) {
                 criteriaCode = ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI;
@@ -129,16 +137,18 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                 return criteriaCode;
             }
         }
-        
-        /*if (size.getOther() != null && size.getOther().getValues() != null && !size.getVolume().getValues().isEmpty()) {
-            if (!sizeCodeFound) {
-                criteriaCode = ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI;
-            } else {
-                productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
-                        "Morethan one size group specified");
-                return criteriaCode;
-            }
-        }*/
+
+        /*
+         * if (size.getOther() != null && size.getOther().getValues() != null && !size.getVolume().getValues().isEmpty()) {
+         * if (!sizeCodeFound) {
+         * criteriaCode = ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI;
+         * } else {
+         * productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+         * "Morethan one size group specified");
+         * return criteriaCode;
+         * }
+         * }
+         */
         return criteriaCode;
     }
 
@@ -177,15 +187,16 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
         }
         return criteriaCode;
     }
-    
-    private ProductCriteriaSets getSizeCriteriaSet(String sizeGroup, String sizeValues, String sizeCriteriaCode,
-            ProductCriteriaSets matchedCriteriaSet, ProductDetail product, String configId) {
+
+    private ProductCriteriaSets getSizeCriteriaSet(String sizeValues, String sizeCriteriaCode,
+            ProductCriteriaSets matchedCriteriaSet, ProductDetail product) {
         boolean checkForExisting = (matchedCriteriaSet == null);
 
         if (!checkForExisting) {
             // Create new one
             matchedCriteriaSet = new ProductCriteriaSets();
             matchedCriteriaSet.setProductId(product.getID());
+            matchedCriteriaSet.setConfigId(configId);
             matchedCriteriaSet.setCriteriaSetId(criteriaSetId);
             matchedCriteriaSet.setCriteriaCode(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY);
             matchedCriteriaSet.setCompanyId(companyId);
@@ -196,42 +207,41 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
             this.criteriaSetId = matchedCriteriaSet.getCriteriaSetId();
         }
 
-        matchedCriteriaSet.setCriteriaSetValues(getCriteriaSetValues(product, null, null));
+        matchedCriteriaSet.setCriteriaSetValues(getCriteriaSetValues(product, sizeCriteriaCode, sizeValues));
 
         return matchedCriteriaSet;
     }
 
-    private List<CriteriaSetValues> getCriteriaSetValues(ProductDetail product, String sizeGroups, String sizeValues) {
+    private List<CriteriaSetValues> getCriteriaSetValues(ProductDetail product, String sizeCriteriaCode, String sizeValues) {
 
         List<CriteriaSetValues> criteriaSetValues = new ArrayList<CriteriaSetValues>();
         // Dimensions Parsing Starts Here
         try {
-            if (CommonUtilities.isValueNull(sizeGroups) || CommonUtilities.isValueNull(sizeValues)) {
-                // Remove from existing collection
-            } else if (null != sizeGroups && !sizeGroups.trim().equals("")
-                    && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_NULL_SMALL)) {
-                LOGGER.info("SizeGroups Transformation Starts :" + sizeGroups);
-                if (!sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_DIMENSION)
-                        && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_CAPACITY)
-                        && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_VOLUME_WEIGHT)) {
-                    if (!sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_HOSIERY_UNIFORM)
-                            && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_INFANT_TODDLER)
-                            && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_DRESS_SHIRT_SIZES)
-                            && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_PANTS_SIZES)
-                            && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_BRA_SIZES)
-                            && !sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_STANDARD_NUMBERED))
-                        sizeGroups = ApplicationConstants.CONST_SIZE_OTHER_CODE;
-                    if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_HOSIERY_UNIFORM))
+            if (null != sizeCriteriaCode && !sizeCriteriaCode.trim().equals("")
+                    && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_NULL_SMALL)) {
+                LOGGER.info("SizeGroups Transformation Starts :" + sizeCriteriaCode);
+                if (!sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_DIMENSION)
+                        && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_CAPACITY)
+                        && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_VOLUME_WEIGHT)) {
+                    if (!sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_HOSIERY_UNIFORM)
+                            && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_INFANT_TODDLER)
+                            && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_DRESS_SHIRT_SIZES)
+                            && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_PANTS_SIZES)
+                            && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_BRA_SIZES)
+                            && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_STANDARD_NUMBERED))
+                        sizeCriteriaCode = ApplicationConstants.CONST_SIZE_OTHER_CODE;
+                    if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_HOSIERY_UNIFORM))
                         sizeValues = sizeValues.toUpperCase();
                     if (null != sizeValues && !sizeValues.trim().equals("")) {
-                        criteriaSetValues = addCriteriaSetForApparals(product, sizeGroups, sizeValues);
+                        criteriaSetValues = addCriteriaSetForApparals(product, sizeCriteriaCode, sizeValues);
                     }
-                } else if (!sizeGroups.equals("")) {
+                } else if (!sizeCriteriaCode.equals("")) {
                     String[] tmpSizeValuesAry = sizeValues.split(":");
-                    if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_DIMENSION) && tmpSizeValuesAry.length > 3) {
-                        criteriaSetValues = addCriteriaSetForSizes(sizeValues, product, sizeGroups);
+                    if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_DIMENSION)
+                            && tmpSizeValuesAry.length > 3) {
+                        criteriaSetValues = addCriteriaSetForSizes(sizeValues, product, sizeCriteriaCode);
                     } else if (tmpSizeValuesAry.length > 1) {
-                        criteriaSetValues = addCriteriaSetForSizes(sizeValues, product, sizeGroups);
+                        criteriaSetValues = addCriteriaSetForSizes(sizeValues, product, sizeCriteriaCode);
                     }
 
                 }
@@ -245,38 +255,12 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
 
     }
 
-    public List<CriteriaSetValues> addCriteriaSetForSizes(String productSizes, ProductDetail product, String sizeGroups)
+    public List<CriteriaSetValues> addCriteriaSetForSizes(String productSizes, ProductDetail product, String sizeCriteriaCode)
             throws VelocityException {
 
         List<CriteriaSetValues> criteriaSetValuesAry = new ArrayList<CriteriaSetValues>();
 
         Value[] valueAry = null;
-
-        if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_SHIPPING_WEIGHT))
-            sizeGroups = ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT;
-        else if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_SHIPPING_DIMENSION))
-            sizeGroups = ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION;
-        else if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_DIMENSION))
-            sizeGroups = ApplicationConstants.CONST_SIZE_GROUP_DIMENSION;
-        else if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_VOLUME_WEIGHT))
-            sizeGroups = ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI;
-        else if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_CAPACITY))
-            sizeGroups = ApplicationConstants.CONST_SIZE_GROUP_CAPACITY;
-        else if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_INFANT_TODDLER))
-            sizeGroups = ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_INF_TLDR;
-        else if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_DRESS_SHIRT_SIZES))
-            sizeGroups = ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_DRS_SHRT_SIZE;
-        else if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_PANTS_SIZES))
-            sizeGroups = ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_PANT_SIZE;
-        else if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_HOSIERY_UNIFORM)) {
-            sizeGroups = ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_HSR_UNIFORM;
-            productSizes = productSizes.toUpperCase();
-        } else if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_BRA_SIZES))
-            sizeGroups = ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_BRA;
-        else if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_STRING_STANDARD_NUMBERED))
-            sizeGroups = ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_STD_NUM;
-        else
-            sizeGroups = ApplicationConstants.CONST_SIZE_OTHER_CODE;
 
         if (null != productSizes && !productSizes.trim().equals("")) {
             // If Product has any Size Groups
@@ -294,15 +278,15 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
 
             for (int criteriaSetValuesCntr = 0; criteriaSetValuesCntr < individualSizes.length; criteriaSetValuesCntr++) {
 
-                if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_DIMENSION)
+                if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_DIMENSION)
                         && !CommonUtilities.isValidDimension(individualSizes[criteriaSetValuesCntr])) {
                     productDataStore.addErrorToBatchLogCollection(product.getExternalProductId().trim(),
                             ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Invalid format/value for Dimension ");
                     continue;
-                } else if ((sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI) || sizeGroups
+                } else if ((sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI) || sizeCriteriaCode
                         .equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY))
                         && !CommonUtilities.isValidCapacity(individualSizes[criteriaSetValuesCntr].trim())) {
-                    String temp = sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY) ? "Capacity"
+                    String temp = sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY) ? "Capacity"
                             : ApplicationConstants.CONST_STRING_VOLUME_WEIGHT;
                     productDataStore.addErrorToBatchLogCollection(product.getExternalProductId().trim(),
                             ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Invalid format/value for " + temp);
@@ -324,8 +308,9 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                             else if (sizeElemntCntr == 2) units = valueElements[sizeElemntCntr];
                         }
                     } // End of : tokens
-                    if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY)) initialUnits = sizeValue;
-                    if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI)) {
+                    if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY))
+                        initialUnits = sizeValue;
+                    if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI)) {
                         initialUnits = sizeValue;
                         sizeValue = attribute;
                         if (null == sizesCriteriaWSResponse) {
@@ -333,20 +318,20 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                                     .get(ApplicationConstants.SIZES_CRITERIA_LOOKUP_URL));
                         }
                         sizeElementsResponse = JsonProcessor.getSizesResponse(sizesCriteriaWSResponse,
-                                ApplicationConstants.CONST_STRING_VOLUME, sizeGroups);
+                                ApplicationConstants.CONST_STRING_VOLUME, sizeCriteriaCode);
                         attribute = JsonProcessor.getSizesElementValue("ID", sizeElementsResponse, attribute);
                         units = JsonProcessor.getSizesElementValue(ApplicationConstants.CONST_STRING_UNITS, sizeElementsResponse,
                                 initialUnits.trim());
                         if (units.equals("")) {
                             sizeElementsResponse = JsonProcessor.getSizesResponse(sizesCriteriaWSResponse,
-                                    ApplicationConstants.CONST_STRING_WEIGHT, sizeGroups);
+                                    ApplicationConstants.CONST_STRING_WEIGHT, sizeCriteriaCode);
                             attribute = JsonProcessor.getSizesElementValue("ID", sizeElementsResponse, attribute);
                             units = JsonProcessor.getSizesElementValue(ApplicationConstants.CONST_STRING_UNITS,
                                     sizeElementsResponse, initialUnits.trim());
 
                         }
-                    } else if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_DIMENSION)
-                            || sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION)) {
+                    } else if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_DIMENSION)
+                            || sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION)) {
 
                         if (null != attribute && null != sizeValue && null != units) {
 
@@ -354,7 +339,8 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                                 sizesCriteriaWSResponse = JerseyClientPost.getLookupsResponse(RestAPIProperties
                                         .get(ApplicationConstants.SIZES_CRITERIA_LOOKUP_URL));
                             }
-                            sizeElementsResponse = JsonProcessor.getSizesResponse(sizesCriteriaWSResponse, attribute, sizeGroups);
+                            sizeElementsResponse = JsonProcessor.getSizesResponse(sizesCriteriaWSResponse, attribute,
+                                    sizeCriteriaCode);
 
                             attribute = JsonProcessor.getSizesElementValue("ID", sizeElementsResponse, attribute);
                             if (units.equalsIgnoreCase(ApplicationConstants.CONST_STRING_INCH_SHORT_SMALL)
@@ -364,13 +350,13 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                             units = JsonProcessor.getSizesElementValue(ApplicationConstants.CONST_STRING_UNITS,
                                     sizeElementsResponse, units.trim());
                         }
-                    } else if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY)) {
+                    } else if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY)) {
                         if (null == sizesCriteriaWSResponse) {
                             sizesCriteriaWSResponse = JerseyClientPost.getLookupsResponse(RestAPIProperties
                                     .get(ApplicationConstants.SIZES_CRITERIA_LOOKUP_URL));
                         }
                         sizeElementsResponse = JsonProcessor.getSizesResponse(sizesCriteriaWSResponse,
-                                ApplicationConstants.CONST_STRING_CAPACITY, sizeGroups);
+                                ApplicationConstants.CONST_STRING_CAPACITY, sizeCriteriaCode);
                         if (null != sizeValue) {
                             units = JsonProcessor.getSizesElementValue("UNITS", sizeElementsResponse, sizeValue.trim());
                             sizeValue = attribute;
@@ -387,7 +373,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
 
                 CriteriaSetCodeValues criteriaSetCodeValuesNew = new CriteriaSetCodeValues();
                 String criteriaSetValueId = "";
-                if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION)) {
+                if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION)) {
                     if (null == sizesShippingDimsWSResponse) {
                         sizesShippingDimsWSResponse = JerseyClientPost.getLookupsResponse(RestAPIProperties
                                 .get(ApplicationConstants.SIZE_GROUP_SHIPPING_DIMENSION_LOOKUP));
@@ -401,10 +387,10 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                 criteriaSetCodeValuesNew.setSetCodeValueId(criteriaSetValueId);
                 CriteriaSetValues criteriaSetValueNew = new CriteriaSetValues();
                 criteriaSetValueNew.setId(ApplicationConstants.CONST_STRING_ZERO);
-                criteriaSetValueNew.setCriteriaCode(sizeGroups);
-                if (sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_DIMENSION)
-                        || sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY)
-                        || sizeGroups.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION))
+                criteriaSetValueNew.setCriteriaCode(sizeCriteriaCode);
+                if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_DIMENSION)
+                        || sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY)
+                        || sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION))
                     criteriaSetValueNew.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_CUST);
                 else
                     criteriaSetValueNew.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_LOOK);
@@ -426,8 +412,8 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                 criteriaSetValueNew.setCriteriaSetId(criteriaSetId);
                 // TODO : Set ReferenceTable
                 // Adding a this criteriaSet entry details to reference table, so later can be referenced easily
-                productDataStore.updateCriteriaSetValueReferenceTable(product.getExternalProductId().trim(), sizeGroups,
-                        processSourceCriteriaValueByCriteriaCode(individualSizes[criteriaSetValuesCntr], sizeGroups),
+                productDataStore.updateCriteriaSetValueReferenceTable(product.getExternalProductId().trim(), sizeCriteriaCode,
+                        processSourceCriteriaValueByCriteriaCode(individualSizes[criteriaSetValuesCntr], sizeCriteriaCode),
                         criteriaSetValueNew.getId());
                 if (criteriaSetValueNew != null) {
                     criteriaSetValuesAry.add(criteriaSetValueNew);
@@ -449,20 +435,22 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
         boolean isCustomValue = false;
         boolean isOtherSize = false;
 
-        if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_INFANT_TODDLER)) {
-            criteriaCode = ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_INF_TLDR;
-        } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_DRESS_SHIRT_SIZES)) {
-            criteriaCode = ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_DRS_SHRT_SIZE;
-        } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_PANTS_SIZES)) {
-            criteriaCode = ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_PANT_SIZE;
-        } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_HOSIERY_UNIFORM)) {
-            criteriaCode = ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_HSR_UNIFORM;
-            srcCriteria = srcCriteria.toUpperCase();
-        } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_BRA_SIZES)) {
-            criteriaCode = ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_BRA;
-        } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_STANDARD_NUMBERED)) {
-            criteriaCode = ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_STD_NUM;
-        }
+        /*
+         * if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_INFANT_TODDLER)) {
+         * criteriaCode = ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_INF_TLDR;
+         * } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_DRESS_SHIRT_SIZES)) {
+         * criteriaCode = ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_DRS_SHRT_SIZE;
+         * } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_PANTS_SIZES)) {
+         * criteriaCode = ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_PANT_SIZE;
+         * } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_HOSIERY_UNIFORM)) {
+         * criteriaCode = ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_HSR_UNIFORM;
+         * srcCriteria = srcCriteria.toUpperCase();
+         * } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_BRA_SIZES)) {
+         * criteriaCode = ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_BRA;
+         * } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_STANDARD_NUMBERED)) {
+         * criteriaCode = ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_STD_NUM;
+         * }
+         */
 
         List<CriteriaSetValues> criteriaSetValuesList = new ArrayList<CriteriaSetValues>();
         CriteriaSetCodeValues[] criteriaSetCodeValues = null;
