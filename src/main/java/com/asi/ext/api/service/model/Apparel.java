@@ -8,7 +8,7 @@ public class Apparel {
 	@JsonProperty("Type")
 	private String type;
 	@JsonProperty("Values")
-	private List<Values> values;
+	private List<Value> values;
 	
 	public String getType() {
 		return type;
@@ -18,11 +18,11 @@ public class Apparel {
 		this.type = type;
 	}
 
-	public List<Values> getValues() {
+	public List<Value> getValues() {
 		return values;
 	}
 
-	public void setValues(List<Values> values) {
+	public void setValues(List<Value> values) {
 		this.values = values;
 	}
 
