@@ -1,5 +1,7 @@
 package com.asi.service.product.client.vo;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
@@ -33,12 +35,12 @@ public void setIsInitMediaCitation(String isInitMediaCitation) {
 	this.isInitMediaCitation = isInitMediaCitation;
 }
 
-public ProductMediaCitationReferences[] getProductMediaCitationReferences() {
+public List<ProductMediaCitationReferences> getProductMediaCitationReferences() {
 	return productMediaCitationReferences;
 }
 
 public void setProductMediaCitationReferences(
-		ProductMediaCitationReferences[] productMediaCitationReferences) {
+		List<ProductMediaCitationReferences> productMediaCitationReferences) {
 	this.productMediaCitationReferences = productMediaCitationReferences;
 }
 @JsonProperty("MediaCitationId")
@@ -55,7 +57,7 @@ public void setInitMediaCitationId(String initMediaCitationId) {
 	this.initMediaCitationId = initMediaCitationId;
 }
 @JsonProperty("ProductMediaCitationReferences")
-private ProductMediaCitationReferences[] productMediaCitationReferences;
+private List<ProductMediaCitationReferences> productMediaCitationReferences;
 public String getId() {
 	return id;
 }

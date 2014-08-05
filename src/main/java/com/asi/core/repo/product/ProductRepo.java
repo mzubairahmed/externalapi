@@ -348,7 +348,7 @@ public class ProductRepo {
         	Catalog catalog=null;
         	for(ProductMediaCitations currentMediaCitation:radProduct.getProductMediaCitations()){
         		catalog=new Catalog();
-        		catalogsList.add(ProductDataStore.getMediaCitationById(currentMediaCitation.getMediaCitationId(),currentMediaCitation.getProductMediaCitationReferences()[0].getMediaCitationReferenceId(),radProduct.getCompanyId()));
+        		catalogsList.add(ProductDataStore.getMediaCitationById(currentMediaCitation.getMediaCitationId(), currentMediaCitation.getProductMediaCitationReferences().get(0).getMediaCitationReferenceId(), radProduct.getCompanyId()));
         	}        	
         	serviceProduct.setCatalogs(catalogsList);
         }

@@ -1,6 +1,7 @@
 package com.asi.ext.api.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -20,6 +21,9 @@ import com.asi.ext.api.response.JsonProcessor;
 import com.asi.ext.api.service.model.Catalog;
 import com.asi.service.product.client.vo.Currency;
 import com.asi.service.product.client.vo.DiscountRate;
+import com.asi.service.product.client.vo.MediaCitationReference;
+import com.asi.service.product.client.vo.ProductMediaCitationReferences;
+import com.asi.service.product.client.vo.ProductMediaCitations;
 
 public final class JsonToLookupTableConverter {
 
@@ -860,6 +864,79 @@ public final class JsonToLookupTableConverter {
             pe.printStackTrace();
         }		
 		return returnCatalog;
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	public static ProductMediaCitations jsonToMediaCitation(LinkedList<?> responseList, String productID, String catalogName, String catalogPageNumber) {
+
+		ProductMediaCitations mediaCitation = new ProductMediaCitations();
+		List<ProductMediaCitationReferences> productMediaCitationReferences;
+		ProductMediaCitationReferences productMediaCitationReference;
+		MediaCitationReference mediaCitationReference;
+		LinkedHashMap current;
+        ArrayList<LinkedHashMap> productCitationReferences;
+        
+        Integer newMediaCitationReferenceID = -1;
+		
+		try {
+
+			for(Iterator<?> iter = responseList.iterator(); iter.hasNext(); ) {
+
+            	current = (LinkedHashMap) iter.next();
+            	
+            	if(current.get("Name").toString().equalsIgnoreCase(catalogName)) {
+            		
+            		mediaCitation.setId("-1");
+            		mediaCitation.setProductId(productID);
+            		mediaCitation.setMediaCitationId(current.get("ID").toString());
+            		mediaCitation.setIsInitMediaCitation("false");
+            		
+            		productCitationReferences = (ArrayList<LinkedHashMap>) current.get("MediaCitationReferences");
+
+            		if(productCitationReferences != null && !productCitationReferences.isEmpty()) {
+            			boolean pageNumberFound = false;
+            			productMediaCitationReferences = new ArrayList<ProductMediaCitationReferences>();
+
+                		productMediaCitationReference = new ProductMediaCitationReferences();
+                		productMediaCitationReference.setProductId(productID);
+                		
+                		productMediaCitationReference.setMediaCitationId(mediaCitation.getMediaCitationId());
+                		productMediaCitationReference.setIsPrimary("false");
+                		
+                		mediaCitationReference = new MediaCitationReference();
+
+            			for(LinkedHashMap citationReference : productCitationReferences) {
+
+            				pageNumberFound = catalogPageNumber.equals(citationReference.get("Number").toString());
+                    		if(pageNumberFound) {
+                    			productMediaCitationReference.setMediaCitationReferenceId(citationReference.get("ID").toString());
+                        		mediaCitationReference.setId(productMediaCitationReference.getMediaCitationReferenceId());
+	                    		mediaCitationReference.setSequence(citationReference.get("Sequence").toString());
+	                    		break;
+	                    	}
+	                    }
+            			
+            			if(!pageNumberFound) {
+                    		mediaCitationReference.setId(String.valueOf(--newMediaCitationReferenceID));
+                    		productMediaCitationReference.setMediaCitationReferenceId(String.valueOf(newMediaCitationReferenceID));
+            			}
+            			
+                		mediaCitationReference.setNumber(catalogPageNumber);
+                		mediaCitationReference.setMediaCitationId(productMediaCitationReference.getMediaCitationId());
+                		productMediaCitationReference.setMediaCitationReference(mediaCitationReference);
+                		
+                		productMediaCitationReferences.add(productMediaCitationReference);
+            			
+            			mediaCitation.setProductMediaCitationReferences(productMediaCitationReferences);
+            			
+            		}
+            		break;
+            	}
+            }
+		} catch (Exception pe) {
+			pe.printStackTrace();
+		}		
+		return mediaCitation;
 	}
 
 
