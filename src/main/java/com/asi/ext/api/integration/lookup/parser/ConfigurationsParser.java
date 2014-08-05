@@ -24,6 +24,7 @@ import com.asi.ext.api.service.model.Material;
 import com.asi.ext.api.service.model.ProductionTime;
 import com.asi.ext.api.service.model.RushTime;
 import com.asi.ext.api.service.model.Samples;
+import com.asi.ext.api.service.model.ShippingEstimate;
 import com.asi.ext.api.service.model.Size;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.service.product.client.vo.ChildCriteriaSetCodeValues;
@@ -803,6 +804,17 @@ public class ConfigurationsParser {
 			}
 		}		
 		
+		// Shipping Items
+		ShippingEstimate shippingEstimate=null;
+		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE);
+		List<String> shippingItemList=new ArrayList<>();
+		Size shippingSize=new Size();
+		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+			shippingEstimate=new ShippingEstimate();
+			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
+				shippingSize=productLookupParser.findSizeValueDetails(shippingSize, currentCriteriaSetValue.getCriteriaCode(), currentCriteriaSetValueList, productDetail.getExternalProductId());
+			}
+		}
 		serviceProduct.setBreakOutByPrice(breakoutBy);
 		serviceProduct.setFobPoints(fobPointsList);
 		serviceProduct.setProductConfigurations(serviceProductConfig);
