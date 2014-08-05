@@ -53,7 +53,8 @@ public class ProductSearchService {
 		try {
 			productResponse = repository.getServiceProduct(companyId, xid);
 		} catch (Exception e) {
-			throw new UnhandledException(e.getMessage());
+			e.printStackTrace();
+			//throw new UnhandledException(e.getMessage());
 		}
 		return new ResponseEntity<Product>(productResponse, null, HttpStatus.OK);
 	}

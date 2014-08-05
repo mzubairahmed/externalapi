@@ -46,7 +46,7 @@ public class ProductConfigurations {
     @JsonProperty("ImprintSizeLocations")
     private List<ImprintSizeLocation> imprintSizeLocations = new ArrayList<ImprintSizeLocation>();
     @JsonProperty("ShippingEstimates")
-    private List<ShippingEstimate>    shippingEstimates    = new ArrayList<ShippingEstimate>();
+    private ShippingEstimate    shippingEstimates    = null;
 
     @JsonProperty("Colors")
     public List<Color> getColors() {
@@ -216,12 +216,12 @@ public class ProductConfigurations {
     }
 
     @JsonProperty("ShippingEstimates")
-    public List<ShippingEstimate> getShippingEstimates() {
+    public ShippingEstimate getShippingEstimates() {
         return shippingEstimates;
     }
 
     @JsonProperty("ShippingEstimates")
-    public void setShippingEstimates(List<ShippingEstimate> shippingEstimates) {
+    public void setShippingEstimates(ShippingEstimate shippingEstimates) {
         this.shippingEstimates = shippingEstimates;
     }
 

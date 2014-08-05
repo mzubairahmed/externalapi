@@ -14,8 +14,37 @@ public class Dimensions {
     private String width;
     @JsonProperty("Height")
     private String height;
+    @JsonProperty("LengthUnit")
+    private String lengthUnit;
+    @JsonProperty("WidthUnit")
+    private String widthUnit;
+    @JsonProperty("HeightUnit")
+    private String heightUnit;
+    public String getLengthUnit() {
+		return lengthUnit;
+	}
 
-    @JsonProperty("Length")
+	public void setLengthUnit(String lengthUnit) {
+		this.lengthUnit = lengthUnit;
+	}
+
+	public String getWidthUnit() {
+		return widthUnit;
+	}
+
+	public void setWidthUnit(String widthUnit) {
+		this.widthUnit = widthUnit;
+	}
+
+	public String getHeightUnit() {
+		return heightUnit;
+	}
+
+	public void setHeightUnit(String heightUnit) {
+		this.heightUnit = heightUnit;
+	}
+
+	@JsonProperty("Length")
     public String getLength() {
         return length;
     }

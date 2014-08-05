@@ -85,6 +85,25 @@ public class SizeLookup {
 		}
 		return ElementValue;
 	}
+	public List<Value> findSizeValueListDetails(Value size,String criteriaCode,@SuppressWarnings("rawtypes") LinkedList<LinkedHashMap> criteriaAttributes,
+			Object srcValueObj,String externalProductId) {
+		List<Value> valuesList=null;
+		Value valueObj=null;
+		if(srcValueObj instanceof List){
+			valuesList=new ArrayList<>();
+
+			ArrayList<?> valueList=(ArrayList<?>)srcValueObj;
+			Iterator<?> sizeValuesItr=valueList.iterator();
+			while(sizeValuesItr.hasNext()){
+			valueObj=new Value();
+			LinkedHashMap<?, ?> valueMap=(LinkedHashMap<?, ?>)sizeValuesItr.next();
+			valueObj.setUnit(getSizesElementValue("UNITS", criteriaAttributes,valueMap.get("UnitOfMeasureCode").toString()).replaceAll("\"", "in"));
+			valueObj.setValue(valueMap.get("UnitValue").toString());
+			valuesList.add(valueObj);
+			}
+		}
+		return valuesList;
+	}
 	public Size findSizeValueDetails(Size size,String criteriaCode,@SuppressWarnings("rawtypes") LinkedList<LinkedHashMap> criteriaAttributes,
 			List<CriteriaSetValues> criteriaSetValueLst,String externalProductId) {
 		Dimension dimension=null;
