@@ -25,6 +25,7 @@ import com.asi.ext.api.product.criteria.processor.ProductPackageProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductSelectedComplianceCertProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductSelectedSafetyWarningProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductShapeProcessor;
+import com.asi.ext.api.product.criteria.processor.ProductSizeGroupProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductSpecSampleProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductTradeNameProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductionTimeProcessor;
@@ -99,6 +100,7 @@ public class ImportTransformer {
 
     private FOBPointProcessor                      fobPointProcessor               = new FOBPointProcessor(1901, "0");
     private SelectedLineProcessor                  selectedLineProcessor           = new SelectedLineProcessor();
+    private ProductSizeGroupProcessor              sizeProcessor                   = new ProductSizeGroupProcessor("-2001");
     
     private final static Logger                    LOGGER                          = Logger.getLogger(ImportTransformer.class
                                                                                            .getName());
@@ -194,6 +196,7 @@ public class ImportTransformer {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_CRITERIA_CODE_FOBP);
         }
         
+        
         // Selected Line name processing
         if (serviceProduct.getLineNames() != null && !serviceProduct.getLineNames().isEmpty()) {
             productToSave.setSelectedLineNames(selectedLineProcessor.getSelectedLines(serviceProduct.getLineNames(), existingRadarModel));
@@ -227,15 +230,9 @@ public class ImportTransformer {
             return new ArrayList<ProductConfiguration>();
         }
 
-        // Map<String, List<ProductCriteriaSets>> optionsCriteriaSet = new HashMap<>();
-        // Get all existing criteria set from productConfiguartions
-        /*
-         * if (!isNewProduct) {
-         * existingCriteriaSetMap = ProductCompareUtil.getExistingProductCriteriaSets(rdrProduct.getProductConfigurations(), true);
-         * optionsCriteriaSet = ProductCompareUtil.getOptionCriteriaSets(rdrProduct.getProductConfigurations());
-         * }
-         */
+       
         ProductCriteriaSets tempCriteriaSet = null;
+        
         // Product Origin processing
 
         if (serviceProdConfigs.getOrigins() != null && !serviceProdConfigs.getOrigins().isEmpty()) {
@@ -356,6 +353,14 @@ public class ImportTransformer {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_PRODUCTION_TIME_CRITERIA_CODE);
         }
 
+        
+        // Product Size processing
+        if (serviceProdConfigs.getSizes() != null) {
+            existingCriteriaSetMap =  sizeProcessor.getProductCriteriaSet(serviceProdConfigs.getSizes(), rdrProduct, existingCriteriaSetMap, configId);
+        } else {
+            existingCriteriaSetMap = sizeProcessor.removeSizeRelatedCriteriaSetFromExisting(existingCriteriaSetMap);
+        }
+        
         // Merge all updated ProductCriteriaSets into product configuration and set back to list
         ProductConfiguration updatedProductConfiguration = new ProductConfiguration();
         updatedProductConfiguration.setConfigId(configId);

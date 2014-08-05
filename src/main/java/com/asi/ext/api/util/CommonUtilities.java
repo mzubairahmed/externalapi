@@ -972,13 +972,19 @@ public class CommonUtilities {
         if (source != null && !source.isEmpty()) {
             for (String s : source) {
                 if (s != null) {
-                    finalString = finalString.isEmpty() ? finalString + s : finalString + "," + s;
+                    finalString = finalString.isEmpty() ? finalString + getValidCsvValue(s) : finalString + "," + getValidCsvValue(s);
                 }
             }
         }
         return finalString;
     }
     
+    public static String getValidCsvValue(String value) {
+        if (value.contains(",")) {
+            value = "\"" + value +"\"";
+        }
+        return value;
+    }
     public static <T> T getElementFromSet(Set<T> source, int index) {
         Iterator<T> sourceIter = source.iterator();
         int counter = 1;
