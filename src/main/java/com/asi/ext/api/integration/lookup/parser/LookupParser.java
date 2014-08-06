@@ -485,12 +485,12 @@ public class LookupParser {
 					currentCriteria=new com.asi.ext.api.service.model.Configurations();
 					currentCriteriaSetvalueId=String.valueOf(productNumberConfig.getCriteriaSetValueId());
 					tempCriteria=criteriaSetParser.findCriteriaSetValueById(productDetail.getExternalProductId(), currentCriteriaSetvalueId);
-					if(tempCriteria != null) {
+//					if(tempCriteria != null) {
 						criteriaInfo=ProductDataStore.getCriteriaInfoForCriteriaCode(tempCriteria.substring(0,tempCriteria.indexOf("_")));
 						currentCriteria.setCriteria(criteriaInfo.getDescription());
 						currentCriteria.setValue(tempCriteria.substring(tempCriteria.indexOf("__")+2));
 						criteriaList.add(currentCriteria);
-					}
+//					}
 				}
 				currentServiceProductNumber.setConfigurations(criteriaList);
 				productNumberList.add(currentServiceProductNumber);

@@ -231,6 +231,7 @@ public class ProductRepo {
         LinkedHashMap<String, String> batchDetails = productRestTemplate.postForObject(batchProcessingURL, batchData,
                 LinkedHashMap.class);
         String batchId = String.valueOf(batchDetails.get("BatchId"));
+        _LOGGER.debug("Batch ID: " + batchId);
         if (null != batchId && !batchId.equals("0")) {
             LinkedHashMap<Object, ArrayList<LinkedHashMap<String, String>>> crntObj = productRestTemplate.getForObject(
                     batchProcessingURL + "/" + batchId, LinkedHashMap.class);
