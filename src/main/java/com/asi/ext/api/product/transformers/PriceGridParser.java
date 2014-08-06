@@ -118,7 +118,11 @@ public class PriceGridParser extends ProductParser {
             veloPrice.setPriceGridId(pGridId);;
             veloPrice.setSequenceNumber(serPrice.getSequence());
             veloPrice.setQuantity(serPrice.getQty());
-            veloPrice.setItemsPerUnit(serPrice.getPriceUnit() != null ? Integer.parseInt(serPrice.getPriceUnit().getItemsPerUnit()) : 1);
+            if (serPrice.getPriceUnit() != null && serPrice.getPriceUnit().getItemsPerUnit() != null) {
+            	veloPrice.setItemsPerUnit(serPrice.getPriceUnit() != null && serPrice.getPriceUnit().getItemsPerUnit()!=null ? Integer.parseInt(serPrice.getPriceUnit().getItemsPerUnit()) : 1);
+            } else {
+                veloPrice.setItemsPerUnit(1);
+            }
             
             veloPrice.setListPrice(Double.parseDouble(serPrice.getListPrice()));
             

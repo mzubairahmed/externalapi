@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.log4j.Logger;
 
 import com.asi.ext.api.exception.VelocityException;
@@ -19,9 +20,12 @@ import com.asi.ext.api.radar.model.Product;
 import com.asi.ext.api.response.JsonProcessor;
 import com.asi.ext.api.service.model.Apparel;
 import com.asi.ext.api.service.model.Capacity;
+import com.asi.ext.api.service.model.ProductionTime;
+import com.asi.ext.api.service.model.ShippingEstimate;
 import com.asi.ext.api.service.model.Size;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
+import com.asi.ext.api.util.ProductParserUtil;
 import com.asi.ext.api.util.RestAPIProperties;
 import com.asi.service.product.client.vo.CriteriaSetCodeValues;
 import com.asi.service.product.client.vo.CriteriaSetValues;
@@ -69,9 +73,18 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
         if (CommonUtilities.isValueNull(criteriaCode)) {
             productDataStore.addErrorToBatchLogCollection(product.getExternalProductId(),
                     ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Unable to identify the give size details");
+            return existingCriteriaSetMap;
+        }
+        String sizeValues = ProductParserUtil.getSizeValuesFromSize(size, criteriaCode);
+
+        if (CommonUtilities.isValueNull(sizeValues)) {
+            productDataStore.addErrorToBatchLogCollection(product.getExternalProductId(),
+                    ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Unable to read the give size details");
+            return existingCriteriaSetMap;
         }
 
-        ProductCriteriaSets tempCriteriaSet = getSizeCriteriaSet(null, criteriaCode, existingCriteriaSetMap.get(criteriaCode), product);
+        ProductCriteriaSets tempCriteriaSet = getSizeCriteriaSet(sizeValues, criteriaCode,
+                existingCriteriaSetMap.get(criteriaCode), product);
 
         if (tempCriteriaSet != null && tempCriteriaSet.getCriteriaSetValues() != null
                 && !tempCriteriaSet.getCriteriaSetValues().isEmpty()) {
@@ -86,7 +99,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                 existingCriteriaSetMap.put(criteriaCode, exisitingCriteriaSet);
             }
         } else {
-            //for clean up
+            // for clean up
             existingCriteriaSetMap = removeSizeRelatedCriteriaSetFromExisting(existingCriteriaSetMap);
         }
 
@@ -138,17 +151,16 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
             }
         }
 
-        /*
-         * if (size.getOther() != null && size.getOther().getValues() != null && !size.getVolume().getValues().isEmpty()) {
-         * if (!sizeCodeFound) {
-         * criteriaCode = ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI;
-         * } else {
-         * productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
-         * "Morethan one size group specified");
-         * return criteriaCode;
-         * }
-         * }
-         */
+        if (size.getOther() != null && size.getOther().getValues() != null && !size.getVolume().getValues().isEmpty()) {
+            if (!sizeCodeFound) {
+                criteriaCode = ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI;
+            } else {
+                productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+                        "Morethan one size group specified");
+                return criteriaCode;
+            }
+        }
+
         return criteriaCode;
     }
 
@@ -190,26 +202,35 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
 
     private ProductCriteriaSets getSizeCriteriaSet(String sizeValues, String sizeCriteriaCode,
             ProductCriteriaSets matchedCriteriaSet, ProductDetail product) {
-        boolean checkForExisting = (matchedCriteriaSet == null);
-
+        boolean checkForExisting = (matchedCriteriaSet != null);
+        ProductCriteriaSets newCriteriaSet = new ProductCriteriaSets();
         if (!checkForExisting) {
             // Create new one
-            matchedCriteriaSet = new ProductCriteriaSets();
-            matchedCriteriaSet.setProductId(product.getID());
-            matchedCriteriaSet.setConfigId(configId);
-            matchedCriteriaSet.setCriteriaSetId(criteriaSetId);
-            matchedCriteriaSet.setCriteriaCode(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY);
-            matchedCriteriaSet.setCompanyId(companyId);
-            matchedCriteriaSet.setIsBase(ApplicationConstants.CONST_STRING_FALSE_SMALL);
-            matchedCriteriaSet.setIsRequiredForOrder(ApplicationConstants.CONST_STRING_FALSE_SMALL);
-            matchedCriteriaSet.setIsDefaultConfiguration(ApplicationConstants.CONST_STRING_FALSE_SMALL);
+            newCriteriaSet = new ProductCriteriaSets();
+            newCriteriaSet.setProductId(product.getID());
+            newCriteriaSet.setConfigId(configId);
+            newCriteriaSet.setCriteriaSetId(criteriaSetId);
+            newCriteriaSet.setCriteriaCode(sizeCriteriaCode);
+            newCriteriaSet.setCompanyId(companyId);
+            newCriteriaSet.setIsBase(ApplicationConstants.CONST_STRING_FALSE_SMALL);
+            newCriteriaSet.setIsRequiredForOrder(ApplicationConstants.CONST_STRING_FALSE_SMALL);
+            newCriteriaSet.setIsDefaultConfiguration(ApplicationConstants.CONST_STRING_FALSE_SMALL);
         } else {
             this.criteriaSetId = matchedCriteriaSet.getCriteriaSetId();
+
+            newCriteriaSet.setProductId(product.getID());
+            newCriteriaSet.setConfigId(configId);
+            newCriteriaSet.setCriteriaSetId(criteriaSetId);
+            newCriteriaSet.setCriteriaCode(sizeCriteriaCode);
+            newCriteriaSet.setCompanyId(companyId);
+            newCriteriaSet.setIsBase(matchedCriteriaSet.getIsBase());
+            newCriteriaSet.setIsRequiredForOrder(matchedCriteriaSet.getIsRequiredForOrder());
+            newCriteriaSet.setIsDefaultConfiguration(matchedCriteriaSet.getIsDefaultConfiguration());
         }
 
-        matchedCriteriaSet.setCriteriaSetValues(getCriteriaSetValues(product, sizeCriteriaCode, sizeValues));
+        newCriteriaSet.setCriteriaSetValues(getCriteriaSetValues(product, sizeCriteriaCode, sizeValues));
 
-        return matchedCriteriaSet;
+        return newCriteriaSet;
     }
 
     private List<CriteriaSetValues> getCriteriaSetValues(ProductDetail product, String sizeCriteriaCode, String sizeValues) {
@@ -220,24 +241,26 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
             if (null != sizeCriteriaCode && !sizeCriteriaCode.trim().equals("")
                     && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_NULL_SMALL)) {
                 LOGGER.info("SizeGroups Transformation Starts :" + sizeCriteriaCode);
-                if (!sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_DIMENSION)
-                        && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_CAPACITY)
-                        && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_VOLUME_WEIGHT)) {
-                    if (!sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_HOSIERY_UNIFORM)
-                            && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_INFANT_TODDLER)
-                            && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_DRESS_SHIRT_SIZES)
-                            && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_PANTS_SIZES)
-                            && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_BRA_SIZES)
-                            && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_STANDARD_NUMBERED))
+                if (!sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_DIMENSION)
+                        && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY)
+                        && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI)
+                        && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION)
+                        && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT)) {
+                    if (!sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_HSR_UNIFORM)
+                            && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_INF_TLDR)
+                            && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_DRS_SHRT_SIZE)
+                            && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_PANT_SIZE)
+                            && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_BRA)
+                            && !sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_STD_NUM))
                         sizeCriteriaCode = ApplicationConstants.CONST_SIZE_OTHER_CODE;
-                    if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_HOSIERY_UNIFORM))
+                    if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_HSR_UNIFORM))
                         sizeValues = sizeValues.toUpperCase();
                     if (null != sizeValues && !sizeValues.trim().equals("")) {
                         criteriaSetValues = addCriteriaSetForApparals(product, sizeCriteriaCode, sizeValues);
                     }
                 } else if (!sizeCriteriaCode.equals("")) {
                     String[] tmpSizeValuesAry = sizeValues.split(":");
-                    if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_STRING_DIMENSION)
+                    if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_DIMENSION)
                             && tmpSizeValuesAry.length > 3) {
                         criteriaSetValues = addCriteriaSetForSizes(sizeValues, product, sizeCriteriaCode);
                     } else if (tmpSizeValuesAry.length > 1) {
@@ -297,6 +320,14 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                 for (int valueElementsCntr = 0; valueElementsCntr < sizeValueElements.length; valueElementsCntr++) {
                     tempValueElement = sizeValueElements[valueElementsCntr];
                     // For Single Size Element(attribute:value:units) it will iterate once
+                    if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION)) {
+                        if (valueElementsCntr == 0)
+                            tempValueElement = "Length:" + tempValueElement;
+                        else if (valueElementsCntr == 1)
+                            tempValueElement = "Width:" + tempValueElement;
+                        else if (valueElementsCntr == 2) tempValueElement = "Height:" + tempValueElement;
+
+                    }
                     if (tempValueElement.contains(":")) {
                         String[] valueElements = tempValueElement.split(":");
 
@@ -350,13 +381,19 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                             units = JsonProcessor.getSizesElementValue(ApplicationConstants.CONST_STRING_UNITS,
                                     sizeElementsResponse, units.trim());
                         }
-                    } else if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY)) {
+                    } else if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY)
+                            || sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT)) {
                         if (null == sizesCriteriaWSResponse) {
                             sizesCriteriaWSResponse = JerseyClientPost.getLookupsResponse(RestAPIProperties
                                     .get(ApplicationConstants.SIZES_CRITERIA_LOOKUP_URL));
                         }
-                        sizeElementsResponse = JsonProcessor.getSizesResponse(sizesCriteriaWSResponse,
-                                ApplicationConstants.CONST_STRING_CAPACITY, sizeCriteriaCode);
+                        if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT)) {
+                            sizeElementsResponse = JsonProcessor
+                                    .getSizesResponse(sizesCriteriaWSResponse, "Unit", sizeCriteriaCode);
+                        } else {
+                            sizeElementsResponse = JsonProcessor.getSizesResponse(sizesCriteriaWSResponse,
+                                    ApplicationConstants.CONST_STRING_CAPACITY, sizeCriteriaCode);
+                        }
                         if (null != sizeValue) {
                             units = JsonProcessor.getSizesElementValue("UNITS", sizeElementsResponse, sizeValue.trim());
                             sizeValue = attribute;
@@ -378,10 +415,19 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                         sizesShippingDimsWSResponse = JerseyClientPost.getLookupsResponse(RestAPIProperties
                                 .get(ApplicationConstants.SIZE_GROUP_SHIPPING_DIMENSION_LOOKUP));
                     }
-                    criteriaSetValueId = JsonProcessor.checkImprintArtWorkValueKeyPair(optionsProdWSResponse, "Other",
+                    criteriaSetValueId = JsonProcessor.checkImprintArtWorkValueKeyPair(sizesShippingDimsWSResponse, "Other",
                             ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION);
 
                     // criteriaSetValueId=ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION_VAL_ID;
+                } else if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT)) { // SIZE_GROUP_SHIPPING_WGHT_LOOKUP
+                    // criteriaSetValueId=ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT_VAL_ID;
+                    if (null == sizesShippingDimsWSResponse) {
+                        sizesShippingDimsWSResponse = JerseyClientPost.getLookupsResponse(RestAPIProperties
+                                .get(ApplicationConstants.SIZE_GROUP_SHIPPING_DIMENSION_LOOKUP));
+                    }
+                    criteriaSetValueId = JsonProcessor.checkImprintArtWorkValueKeyPair(sizesShippingDimsWSResponse, "Other",
+                            ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT);
+
                 } else
                     criteriaSetValueId = JsonProcessor.getSizesElementValue("CRITERIASETID", sizeElementsResponse, initialUnits);
                 criteriaSetCodeValuesNew.setSetCodeValueId(criteriaSetValueId);
@@ -390,18 +436,19 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                 criteriaSetValueNew.setCriteriaCode(sizeCriteriaCode);
                 if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_DIMENSION)
                         || sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY)
-                        || sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION))
+                        || sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION)
+                        || sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT))
                     criteriaSetValueNew.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_CUST);
                 else
                     criteriaSetValueNew.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_LOOK);
                 criteriaSetValueNew.setCriteriaValueDetail(ApplicationConstants.CONST_STRING_NONE_SMALL);
                 criteriaSetCodeValuesNew.setId(ApplicationConstants.CONST_STRING_ZERO);
 
+                criteriaSetValueNew.setId(--uniqueSetValueId + "");
+
                 criteriaSetCodeValuesNew.setCriteriaSetValueId(uniqueSetValueId + "");
 
-                criteriaSetValueNew.setId(uniqueSetValueId + "");
-                // criteriaSetCodeValues.setCriteriaSetValueId(criteriaSetValue.getId());
-                criteriaSetValueNew.setCriteriaSetId(ApplicationConstants.CONST_STRING_ZERO);
+                criteriaSetValueNew.setCriteriaSetId(criteriaSetId);
                 CriteriaSetCodeValues[] criteriaSetCodeValuesAryNew = new CriteriaSetCodeValues[1];
                 criteriaSetCodeValuesAryNew[0] = criteriaSetCodeValuesNew;
                 // criteriaSetCodeValuesAry[0].setCriteriaSetValueId(criteriaSetValue.getId());
@@ -409,7 +456,6 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                 criteriaSetValueNew.setIsSubset(ApplicationConstants.CONST_STRING_FALSE_SMALL);
                 criteriaSetValueNew.setIsSetValueMeasurement(ApplicationConstants.CONST_STRING_FALSE_SMALL);
                 criteriaSetValueNew.setValue(valueAry);
-                criteriaSetValueNew.setCriteriaSetId(criteriaSetId);
                 // TODO : Set ReferenceTable
                 // Adding a this criteriaSet entry details to reference table, so later can be referenced easily
                 productDataStore.updateCriteriaSetValueReferenceTable(product.getExternalProductId().trim(), sizeCriteriaCode,
@@ -701,11 +747,13 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
 
             if (!existingMap.isEmpty()) {
                 for (CriteriaSetValues criteriaSetValue : newlyCreatedCriteriaSet.getCriteriaSetValues()) {
-                    String key = newlyCreatedCriteriaSet.getCriteriaCode() + "_" + getKeyFromValue(criteriaSetValue);
+                    String key = newlyCreatedCriteriaSet.getCriteriaCode() + "_" + getKeyFromValue(criteriaSetValue.getValue());
                     if (existingMap.containsKey(key)) {
                         finalValues.add(existingMap.get(key));
-                        findSizeValueDetails(criteriaSetValue.getCriteriaCode(), getSizeElementResponse(), existingMap.get(key),
-                                existingProduct.getExternalProductId());
+                        /*
+                         * findSizeValueDetails(criteriaSetValue.getCriteriaCode(), getSizeElementResponse(), existingMap.get(key),
+                         * existingProduct.getExternalProductId());
+                         */
                     } else {
                         criteriaSetValue.setCriteriaSetId(existingCriteriaSet.getCriteriaSetId());
                         finalValues.add(criteriaSetValue);
@@ -737,7 +785,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
         Map<String, CriteriaSetValues> existing = new HashMap<String, CriteriaSetValues>();
         for (CriteriaSetValues criteriaSetValue : existingCriteriaSetValues) {
             if (criteriaSetValue != null) {
-                existing.put(criteriaCode + "_" + getKeyFromValue(criteriaSetValue), criteriaSetValue);
+                existing.put(criteriaCode + "_" + getKeyFromValue(criteriaSetValue.getValue()), criteriaSetValue);
             }
         }
         return existing;
@@ -862,7 +910,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
     @Override
     public String getSetCodeValueId(String value) {
         // TODO Auto-generated method stub
-        return null;
+        return ProductDataStore.getSetCodeValueIdForShippingItem(value);
     }
 
     @Override
@@ -901,7 +949,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
      * return false;
      * }
      */
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unused" })
     private void findSizeValueDetails(String criteriaCode, LinkedList<LinkedHashMap> criteriaAttributes,
             CriteriaSetValues criteriaSetValue, String externalProductId) {
         // String[] stringAry=new String[2];
@@ -1003,4 +1051,196 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
         }
         sizeElementValue = "";
     }
+
+    public Map<String, ProductCriteriaSets> processShippingItem(ProductDetail product,
+            Map<String, ProductCriteriaSets> existingCriteriaSetMap, String configId, ShippingEstimate shippingEstimate,
+            int criteriaSetId) {
+        this.configId = configId;
+        this.productId = product.getID();
+        this.companyId = product.getCompanyId();
+
+        if (shippingEstimate == null) {
+            existingCriteriaSetMap.remove(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION);
+            existingCriteriaSetMap.remove(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT);
+            existingCriteriaSetMap.remove(ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE);
+        }
+        // Shipping Dimensions and Weight
+        String[] dimnsAry = {};
+        if (shippingEstimate.getDimensions() == null) {
+            // Remove Previous SDIM from the criteria set
+            existingCriteriaSetMap.remove(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION);
+
+        } else {
+            this.criteriaSetId = String.valueOf(--criteriaSetId);
+            String shippingDimensions = ProductParserUtil.getShippingDimension(shippingEstimate);
+
+            LOGGER.info("Shipping Dimensions Transformation Starts :" + shippingDimensions);
+            dimnsAry = shippingDimensions.split(";");
+            if (dimnsAry.length == 3) {
+
+                ProductCriteriaSets tempCriteriaSet = getSizeCriteriaSet(shippingDimensions,
+                        ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION,
+                        existingCriteriaSetMap.get(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION), product);
+                // compare and update
+                if (tempCriteriaSet != null && tempCriteriaSet.getCriteriaSetValues().size() > 0) {
+                    tempCriteriaSet = compareAndUpdateSizeGroup(product, tempCriteriaSet,
+                            existingCriteriaSetMap.get(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION));
+                    existingCriteriaSetMap.put(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION, tempCriteriaSet);
+                } else {
+                    existingCriteriaSetMap.remove(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION);
+                }
+            } else {
+
+                // TODO : LOG ERROR
+            }
+            LOGGER.info("Shipping Dimensions Transformation Ends");
+        }
+
+        if (shippingEstimate.getNumberOfItems() == null) {
+            // Remove Previous SDIM from the criteria set
+            existingCriteriaSetMap.remove(ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE);
+        } else {
+            this.criteriaSetId = String.valueOf(--criteriaSetId);
+            ProductCriteriaSets tempCriteriaSet = getCriteriaSet(shippingEstimate, product,
+                    existingCriteriaSetMap.get(ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE), criteriaSetId);
+            existingCriteriaSetMap.put(ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE, tempCriteriaSet);
+        }
+
+        if (shippingEstimate.getWeight() == null) {
+            // Remove Previous SDIM from the criteria set
+            existingCriteriaSetMap.remove(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT);
+        } else {
+            this.criteriaSetId = String.valueOf(--criteriaSetId);
+            String shippingWeight = ProductParserUtil.getShippingWeight(shippingEstimate);
+            ProductCriteriaSets tempCriteriaSet = getSizeCriteriaSet(shippingWeight,
+                    ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT,
+                    existingCriteriaSetMap.get(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT), product);
+            // compare and update
+            if (tempCriteriaSet != null && tempCriteriaSet.getCriteriaSetValues().size() > 0) {
+                tempCriteriaSet = compareAndUpdateSizeGroup(product, tempCriteriaSet,
+                        existingCriteriaSetMap.get(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT));
+                existingCriteriaSetMap.put(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT, tempCriteriaSet);
+            } else {
+                existingCriteriaSetMap.remove(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT);
+            }
+        }
+        return existingCriteriaSetMap;
+
+    }
+
+    private ProductCriteriaSets getCriteriaSet(ShippingEstimate shippingEstimate, ProductDetail existingProduct,
+            ProductCriteriaSets matchedCriteriaSet, int uniqueCriteriaSetId) {
+
+        if (shippingEstimate == null || shippingEstimate.getNumberOfItems() == null) {
+            return null;
+        }
+
+        LOGGER.info("Started Processing of Shipping Items of Shipping Estimate" + shippingEstimate.getNumberOfItems());
+        // String[] finalValues = processValues(values);
+        List<CriteriaSetValues> finalCriteriaSetValues = new ArrayList<>();
+
+        boolean checkExistingElements = matchedCriteriaSet != null;
+
+        HashMap<String, CriteriaSetValues> existingValueMap = new HashMap<String, CriteriaSetValues>();
+        if (checkExistingElements) {
+            existingValueMap = createTableForExistingSetValue(matchedCriteriaSet.getCriteriaSetValues());
+        } else {
+            matchedCriteriaSet = new ProductCriteriaSets();
+            // Set Basic elements
+            matchedCriteriaSet.setCriteriaSetId(String.valueOf(uniqueCriteriaSetId));
+            matchedCriteriaSet.setProductId(existingProduct.getID());
+            matchedCriteriaSet.setCompanyId(existingProduct.getCompanyId());
+            matchedCriteriaSet.setConfigId(this.configId);
+            matchedCriteriaSet.setCriteriaCode(ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE);
+            matchedCriteriaSet.setIsBase(ApplicationConstants.CONST_STRING_FALSE_SMALL);
+            matchedCriteriaSet.setIsRequiredForOrder(ApplicationConstants.CONST_STRING_FALSE_SMALL);
+            matchedCriteriaSet.setIsDefaultConfiguration(ApplicationConstants.CONST_STRING_FALSE_SMALL);
+        }
+
+        String setCodeValueId = getSetCodeValueId(ApplicationConstants.CONST_STRING_OTHER);
+        CriteriaSetValues criteriaSetValue = null;
+        Value value = getValueForShippingItem(existingProduct.getExternalProductId(), shippingEstimate.getNumberOfItems());
+        if (value == null) {
+            return null;
+        } else {
+            String key = getKeyFromValue(value);
+            if (checkExistingElements) {
+                criteriaSetValue = existingValueMap.get(key);
+            }
+
+            if (criteriaSetValue == null) {
+                // If no match found in the existing list
+                // Set basic properties for a criteriaSetValue
+                criteriaSetValue = new CriteriaSetValues();
+                criteriaSetValue.setId(String.valueOf(--uniqueSetValueId));
+                criteriaSetValue.setCriteriaValueDetail(shippingEstimate.getNumberOfItems().getUnit());
+                criteriaSetValue.setCriteriaCode(ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE);
+                criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_CUST);
+                criteriaSetValue.setIsSubset(ApplicationConstants.CONST_STRING_FALSE_SMALL);
+                criteriaSetValue.setIsSetValueMeasurement(ApplicationConstants.CONST_STRING_FALSE_SMALL);
+                criteriaSetValue.setCriteriaSetId(matchedCriteriaSet.getCriteriaSetId());
+                criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
+                criteriaSetValue.setValue(new Value[] { value });
+            }
+        }
+        updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE,
+                String.valueOf(ProductParserUtil.getShippingItem(shippingEstimate)), criteriaSetValue);
+
+        finalCriteriaSetValues.add(criteriaSetValue);
+
+        LOGGER.info("Completed Processing of Shipping Item of Shipping Estimate " + shippingEstimate);
+        matchedCriteriaSet.setCriteriaSetValues(finalCriteriaSetValues);
+        return matchedCriteriaSet;
+    }
+
+    private HashMap<String, CriteriaSetValues> createTableForExistingSetValue(List<CriteriaSetValues> existingCriteriaSetValues) {
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Started createTableForExistingSetValue(), " + System.currentTimeMillis());
+        }
+        HashMap<String, CriteriaSetValues> existing = new HashMap<String, CriteriaSetValues>(existingCriteriaSetValues.size());
+
+        for (CriteriaSetValues criteriaSetValue : existingCriteriaSetValues) {
+            if (criteriaSetValue != null) {
+                existing.put(getKeyFromValue(criteriaSetValue.getValue()), criteriaSetValue);
+            }
+        }
+
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Completed createTableForExistingSetValue(), " + System.currentTimeMillis());
+        }
+        return existing;
+    }
+
+    private Value getValueForShippingItem(String externalProductId, com.asi.ext.api.service.model.Value shippingItemValue) {
+        if (!CommonUtilities.isValueNull(shippingItemValue.getValue()) || !CommonUtilities.isValueNull(shippingItemValue.getUnit())) {
+            String criteriaSetAttributeId = getCriteriaSetAttributeId(ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE);
+            String unitOfMeasureCode = getUnitOfMeasureCode(ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE,
+                    shippingItemValue.getUnit());
+
+            if (unitOfMeasureCode == null) {
+                unitOfMeasureCode = getUnitOfMeasureCode(ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE,
+                        ApplicationConstants.CONST_STRING_OTHER);
+            }
+
+            if (criteriaSetAttributeId != null && unitOfMeasureCode != null) {
+                Value value = new Value();
+                value.setCriteriaAttributeId(criteriaSetAttributeId);
+                value.setUnitOfMeasureCode(unitOfMeasureCode);
+                value.setUnitValue(shippingItemValue.getValue());
+
+                return value;
+            } else {
+                addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_GENERIC_PLHDR,
+                        "One of the required attribute not found in the Shipping Estimate lookup data ");
+                return null;
+            }
+
+        } else {
+            addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+                    "Invalid value found for Number of Items in Shipping Estimate unit : " + shippingItemValue.getUnit()
+                            + ", value : " + shippingItemValue.getValue());
+        }
+        return null;
+    }
+
 }

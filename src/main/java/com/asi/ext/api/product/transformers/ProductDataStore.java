@@ -76,6 +76,8 @@ public class ProductDataStore {
     public static Map<String, String>                                 artworkLookupTable             = new HashMap<String, String>();
     public static Map<String, String>                                 minoLookupTable                = new HashMap<String, String>();
 
+    public static Map<String, String>                                 shippingItemLookupTable        = new HashMap<String, String>();
+
     private static Map<String, String>                                optionsLookupTable             = new HashMap<String, String>();
     private static Map<String, Currency>                              currencyLookupTable            = new HashMap<String, Currency>();
     private static Map<String, DiscountRate>                          discountLookupTable            = new HashMap<String, DiscountRate>();
@@ -144,6 +146,9 @@ public class ProductDataStore {
         // If criteriaSetValueId is null then no criteria referenced
         if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_CRITERIA_CODE_FOBP)) {
             value = CommonUtilities.removeSpaces(value);
+        }
+        if(value.contains("MEDIUM")){
+        	value=value.substring(value.indexOf(" ")).trim();
         }
         String criteriaSetValueId = tempMap.get(criteriaCode.trim() + "__" + value.toUpperCase().trim());
 
@@ -1491,8 +1496,7 @@ public class ProductDataStore {
         Catalog currentCatalogs= JsonToLookupTableConverter.jsonToCatalogs(responseList,mediaCitationId,mediaCitationReferenceId);
 	return currentCatalogs;
 	}
-	
-	
+		
 	public static ProductMediaCitations getMediaCitationsByName(String productId, String catalogName, String catalogPageNumber, String companyId) {
 
 		String URL = RestAPIProperties.get(ApplicationConstants.PRODUCT_MEDIA_CITATION) + companyId;
@@ -1500,4 +1504,26 @@ public class ProductDataStore {
 		return JsonToLookupTableConverter.jsonToMediaCitation(responseList, productId, catalogName, catalogPageNumber);
 	}
 	
+	public static String getSetCodeValueIdForShippingItem(String value) {
+        if (shippingItemLookupTable == null || shippingItemLookupTable.isEmpty()) {
+            try {
+                LinkedList<?> shippingItemResponse = lookupRestTemplate.getForObject(
+                        RestAPIProperties.get(ApplicationConstants.PRODUCT_SHIPPING_ITEM_LOOKUP), LinkedList.class);
+                if (shippingItemResponse == null || shippingItemResponse.isEmpty()) {
+                    LOGGER.error("Shipping Item Lookup API returned null response");
+                    // TODO : Batch Error
+                    return null;
+                } else {
+                    shippingItemLookupTable = JsonToLookupTableConverter.jsonToProductCustomLookupTable(shippingItemResponse,
+                            ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE);
+                }
+            } catch (Exception e) {
+                LOGGER.error("Exception while fetching/processing Shipping Item lookup data", e);
+                return null;
+            }
+        }
+
+        return shippingItemLookupTable.get(ApplicationConstants.CONST_STRING_OTHER.toUpperCase());
+
+    }
 }

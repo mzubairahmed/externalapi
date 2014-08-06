@@ -7,6 +7,9 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.asi.ext.api.product.transformers.ProductDataStore;
+import com.asi.ext.api.radar.model.CriteriaInfo;
+import com.asi.ext.api.service.model.Configurations;
 import com.asi.ext.api.service.model.Image;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.service.product.client.vo.Media;
@@ -19,16 +22,16 @@ public class ProductMediaItemProcessor {
     private final static String IMAGE_SERVER_URL = "http://media.asicdn.com/images/jpgb/";
 
     public List<ProductMediaItems> getProductImages(List<Image> imagesToProcess, String companyId, String productId,
-            List<ProductMediaItems> existingMediaItems) {
+            List<ProductMediaItems> existingMediaItems,String externalProductId) {
         if (imagesToProcess != null && !imagesToProcess.isEmpty()) {
-            return getProductMediaItems(imagesToProcess, companyId, productId, existingMediaItems);
+            return getProductMediaItems(imagesToProcess, companyId, productId, existingMediaItems,externalProductId);
         } else {
             return new ArrayList<ProductMediaItems>();
         }
     }
 
     private List<ProductMediaItems> getProductMediaItems(List<Image> imagesToProcess, String companyId, String productId,
-            List<ProductMediaItems> existingMediaItems) {
+            List<ProductMediaItems> existingMediaItems,String externalProductId) {
         LOGGER.info("Started processing product images");
 
         boolean checkExisting = (existingMediaItems != null && !existingMediaItems.isEmpty());
@@ -53,7 +56,7 @@ public class ProductMediaItemProcessor {
                 productMediaItems.setMediaRank(image.getRank());
                 productMediaItems.setMediaId(String.valueOf(mediaId--));
                 productMediaItems.setIsPrimary(image.getIsPrimary());
-                productMediaItems.setMedia(createNewMedia(image, companyId, productMediaItems.getMediaId()));
+                productMediaItems.setMedia(createNewMedia(image, companyId, productMediaItems.getMediaId(),externalProductId));
             } else {
                 productMediaItems.setIsPrimary(image.getIsPrimary());
                 productMediaItems.setMediaRank(image.getRank());
@@ -71,17 +74,30 @@ public class ProductMediaItemProcessor {
         return processedImages;
     }
 
-    private Media createNewMedia(Image img, String companyId, String mediaId) {
+    private Media createNewMedia(Image img, String companyId, String mediaId,String externalProductId) {
         Media media = new Media();
-
+        MediaCriteriaMatches[] mediaCriteriaMatchesAry={};
+      
+        CriteriaInfo tempCriteriaInfo=new CriteriaInfo();
+        MediaCriteriaMatches currentMediaCriteriaMatches=null;
         media.setId(mediaId);
         media.setCompanyID(companyId);
         media.setUrl(img.getImageURL());
         media.setDescription("");
         media.setMediaTypeCode(ApplicationConstants.CONST_MEDIA_TYPE_CODE);
         media.setImageQualityCode(ApplicationConstants.CONST_IMAGE_QUALITY_CODE);
-        media.setMediaCriteriaMatches(new MediaCriteriaMatches[0]);
-
+        //media.setMediaCriteriaMatches(new MediaCriteriaMatches[0]);
+        mediaCriteriaMatchesAry=new MediaCriteriaMatches[img.getConfigurations().size()];
+        int configId=0;
+        for(Configurations currentConfig:img.getConfigurations()){
+        	currentMediaCriteriaMatches=new MediaCriteriaMatches();
+        	tempCriteriaInfo=ProductDataStore.getCriteriaInfoByDescription(currentConfig.getCriteria());
+        	currentMediaCriteriaMatches.setCriteriaSetValueId(ProductDataStore.findCriteriaSetValueIdForValue(externalProductId,tempCriteriaInfo.getCode(),currentConfig.getValue().toString()));
+        	currentMediaCriteriaMatches.setMediaId(mediaId);
+        	mediaCriteriaMatchesAry[configId]=currentMediaCriteriaMatches;
+        	configId++;
+        }
+        media.setMediaCriteriaMatches(mediaCriteriaMatchesAry);
         return media;
     }
 

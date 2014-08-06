@@ -1,9 +1,12 @@
 package com.asi.ext.api.service.model;
 
+import java.util.List;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import com.asi.ext.api.radar.model.MediaCriteriaMatches;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Image {
@@ -14,9 +17,19 @@ public class Image {
     private Integer rank;
     @JsonProperty("IsPrimary")
     private Boolean isPrimary;
-  
+    @JsonProperty("Configurations")
+    private List<Configurations> configurations;
 
-    @JsonProperty("ImageURL")
+    public List<Configurations> getConfigurations() {
+		return configurations;
+	}
+
+	public void setConfigurations(
+			List<Configurations> mediaCriteriaMatches) {
+		this.configurations = mediaCriteriaMatches;
+	}
+
+	@JsonProperty("ImageURL")
     public String getImageURL() {
         return imageURL;
     }
