@@ -346,6 +346,7 @@ public class ProductRepo {
         			for(MediaCriteriaMatches currentMediaCriteriaMatch:currentProductMediaItems.getMedia().getMediaCriteriaMatches()){
         				currentConfiguration=new Configurations();
         				mediaCriteriaStr=criteriaSetParser.findCriteriaSetValueById(productDetail.getExternalProductId(),currentMediaCriteriaMatch.getCriteriaSetValueId());
+        				if(null!=mediaCriteriaStr){
         				criteriaInfo = ProductDataStore
 								.getCriteriaInfoForCriteriaCode(mediaCriteriaStr
 										.substring(0, mediaCriteriaStr.indexOf("_")));
@@ -354,6 +355,7 @@ public class ProductRepo {
 						currentConfiguration.setValue(mediaCriteriaStr
 								.substring(mediaCriteriaStr.indexOf("__") + 2));
         				mediaConfigurations.add(currentConfiguration);
+        				}
         			}
         			currentImage.setConfigurations(mediaConfigurations);
         		}

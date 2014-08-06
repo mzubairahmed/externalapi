@@ -175,7 +175,7 @@ public class ImportTransformer {
 
         // Product Media Item processing
         productToSave.setProductMediaItems(getProductMediaItems(companyId, productId, serviceProduct.getImages(),
-                productToSave.getProductMediaItems()));
+                productToSave.getProductMediaItems(),serviceProduct.getExternalProductId()));
 
         Map<String, ProductCriteriaSets> existingCriteriaSetMap = new HashMap<>();
         Map<String, List<ProductCriteriaSets>> optionsCriteriaSet = new HashMap<>();
@@ -216,13 +216,11 @@ public class ImportTransformer {
         // Return product model
         return productToSave;
     }
-
     private List<ProductMediaItems> getProductMediaItems(String companyId, String productId, List<Image> serviceImages,
-            List<ProductMediaItems> existingMediaItems) {
-
-        return productImageProcessor.getProductImages(serviceImages, companyId, productId, existingMediaItems);
+            List<ProductMediaItems> existingMediaItems,String externalProductId) {
+    	return productImageProcessor.getProductImages(serviceImages, companyId, productId, existingMediaItems,externalProductId);
     }
-
+   
     private List<ProductConfiguration> processProductConfigurations(String configId,
             Map<String, ProductCriteriaSets> existingCriteriaSetMap, Map<String, List<ProductCriteriaSets>> optionsCriteriaSet,
             com.asi.ext.api.service.model.ProductConfigurations serviceProdConfigs, ProductDetail rdrProduct, boolean isNewProduct) {
