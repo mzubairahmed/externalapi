@@ -320,13 +320,7 @@ public class ProductRepo {
         ProductDataSheet prodDatasheet = radProduct.getProductDataSheet();
         if (null != prodDatasheet) serviceProduct.setProductDataSheet(prodDatasheet.getUrl());
 
-        // Same Day Rush
-        if (null != radProduct.getSameDayRushFlag() && radProduct.getSameDayRushFlag().equalsIgnoreCase("U")) {
-            serviceProduct.setSameDayRushOffered(true);
-        } else
-            serviceProduct.setSameDayRushOffered(false);
-
-        // Product Type Code
+           // Product Type Code
         if(null!=radProduct.getProductTypeCode() && !radProduct.getProductTypeCode().trim().isEmpty()){
         serviceProduct.setProductType(lookupDataStore.findProdTypeNameByCode(radProduct.getProductTypeCode()));	
         }else{

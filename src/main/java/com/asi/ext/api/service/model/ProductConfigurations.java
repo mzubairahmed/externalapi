@@ -37,7 +37,18 @@ public class ProductConfigurations {
     private List<ImprintMethod>       imprintMethods       = new ArrayList<ImprintMethod>();
     @JsonProperty("ProductionTime")
     private List<ProductionTime>      productionTime       = new ArrayList<ProductionTime>();
-    @JsonProperty("RushTime")
+    @JsonProperty("SameDayRush")
+    private SameDayRush sameDayRush=null;
+    
+    public SameDayRush getSameDayRush() {
+		return sameDayRush;
+	}
+
+	public void setSameDayRush(SameDayRush sameDayRush) {
+		this.sameDayRush = sameDayRush;
+	}
+
+	@JsonProperty("RushTime")
     private List<RushTime>            rushTime             = new ArrayList<RushTime>();
     @JsonProperty("AdditionalColors")
     private List<String>              additionalColors     = new ArrayList<String>();

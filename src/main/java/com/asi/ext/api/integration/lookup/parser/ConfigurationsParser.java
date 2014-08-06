@@ -24,6 +24,7 @@ import com.asi.ext.api.service.model.ImprintSizeLocation;
 import com.asi.ext.api.service.model.Material;
 import com.asi.ext.api.service.model.ProductionTime;
 import com.asi.ext.api.service.model.RushTime;
+import com.asi.ext.api.service.model.SameDayRush;
 import com.asi.ext.api.service.model.Samples;
 import com.asi.ext.api.service.model.ShippingEstimate;
 import com.asi.ext.api.service.model.Size;
@@ -648,7 +649,18 @@ public class ConfigurationsParser {
 		serviceProductConfig.setMaterials(materialList);
 		}
 
-				
+		// Same Day Rush
+		SameDayRush sdrush=null;
+		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_STRING_SAME_DAY_RUSH_SERVICE);
+		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+			sdrush=new SameDayRush();
+			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
+			sdrush.setAvailable("true");
+			sdrush.setDetails(currentCriteriaSetValue.getCriteriaValueDetail());
+			criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), currentCriteriaSetValue.getCriteriaValueDetail());
+			serviceProductConfig.setSameDayRush(sdrush);
+			}
+		}
 		// Additional Colors
 		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_ADDITIONAL_COLOR);
 		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){

@@ -38,8 +38,6 @@ public class Product {
 	private String productInventoryLink;
 	@JsonProperty("ProductDataSheet")
 	private String productDataSheet;
-	@JsonProperty("SameDayRushOffered")
-	private Boolean sameDayRushOffered;
 	@JsonProperty("ShipperBillsBy")
 	private String shipperBillsBy;
 	@JsonProperty("ProductBreakoutBy")
@@ -227,14 +225,6 @@ public class Product {
 
 	public void setProductDataSheet(String productDataSheet) {
 		this.productDataSheet = productDataSheet;
-	}
-
-	public Boolean getSameDayRushOffered() {
-		return sameDayRushOffered;
-	}
-
-	public void setSameDayRushOffered(Boolean sameDayRushOffered) {
-		this.sameDayRushOffered = sameDayRushOffered;
 	}
 
 	public String getShipperBillsBy() {
