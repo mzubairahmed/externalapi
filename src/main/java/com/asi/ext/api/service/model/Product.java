@@ -62,7 +62,16 @@ public class Product {
 	private String priceConfirmedThru=null;
 	@JsonProperty("CanOrderLessThanMimimum")
 	private String canOrderLessThanMimimum=null;
-	
+	@JsonProperty("Availability")
+	private Availability availability;
+	public Availability getAvailability() {
+		return availability;
+	}
+
+	public void setAvailability(Availability availability) {
+		this.availability = availability;
+	}
+
 	public String getDistributorOnlyComments() {
 		return distributorOnlyComments;
 	}
