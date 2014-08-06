@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.StringUtils;
 
 import com.asi.ext.api.product.criteria.processor.AdditionalColorProcessor;
 import com.asi.ext.api.product.criteria.processor.AdditionalLocationProcessor;
@@ -115,6 +116,8 @@ public class ImportTransformer {
         String configId = "0";
         String productId = "0";
         String xid = serviceProduct.getExternalProductId();
+        // list for product configurations that are already processed for RADAR API and need to figure out the brokenout feature...
+        List<ProductConfiguration> productConfigurations;
 
         if (!isNewProduct) {
             productId = existingRadarModel.getID();
@@ -203,10 +206,40 @@ public class ImportTransformer {
         if (serviceProduct.getLineNames() != null && !serviceProduct.getLineNames().isEmpty()) {
             productToSave.setSelectedLineNames(selectedLineProcessor.getSelectedLines(serviceProduct.getLineNames(), existingRadarModel));
         }
+        
         // Process Product Configurations
-
         productToSave.setProductConfigurations(processProductConfigurations(configId, existingCriteriaSetMap, optionsCriteriaSet,
                 serviceProduct.getProductConfigurations(), productToSave, isNewProduct));
+
+        // Process Breakout Configurations...
+        if(!StringUtils.isEmpty(serviceProduct.getProductBreakoutBy())) {
+
+        	if(serviceProduct.getProductBreakoutBy().equalsIgnoreCase("ProductNumbers")) {
+                productToSave.setIsProductNumberBreakout(true);
+            } else {
+
+            	String criteriaCode = ProductParserUtil.getCriteriaCodeFromCriteria(serviceProduct.getProductBreakoutBy());
+            	if(!StringUtils.isEmpty(criteriaCode)) {
+                	productConfigurations = productToSave.getProductConfigurations();
+                	if(productConfigurations != null && !productConfigurations.isEmpty()) {
+                		for(ProductConfiguration configuration : productConfigurations) {
+                			for(ProductCriteriaSets criteriaSet : configuration.getProductCriteriaSets()) {
+                				if(criteriaSet.getCriteriaCode().equalsIgnoreCase(criteriaCode)) {
+                					criteriaSet.setIsBrokenOutOn("true");
+                				} else {
+                					criteriaSet.setIsBrokenOutOn("false");
+                				}
+                			}
+                		}
+                	}
+            	}
+            }
+        }
+        
+        if(!StringUtils.isEmpty(serviceProduct.getBreakOutByPrice())) {
+        	productToSave.setIsPriceBreakoutFlag(Boolean.parseBoolean(serviceProduct.getBreakOutByPrice()));
+        }
+
         
         // PriceGrid processing
         productToSave.setPriceGrids(getPriceGrids(serviceProduct.getPriceGrids(), productToSave));
