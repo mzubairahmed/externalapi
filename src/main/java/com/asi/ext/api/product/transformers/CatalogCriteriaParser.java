@@ -31,6 +31,7 @@ public class CatalogCriteriaParser {
 	    		productMediaCitations.add(productMediaCitation);
 	    	}
         }
+        LOGGER.info("Catalog processed...");
         return productMediaCitations;
     }
 
