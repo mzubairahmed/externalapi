@@ -29,7 +29,6 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="D:/Development/MuleStudio/plugins/org.mule.tooling.server.3.4.0.ee_3.4.0.201401021511/mule/opt/commons-lang-2.4.jar" sourcepath="D:/Development/MuleStudio/plugins/org.mule.tooling.server.3.4.0.ee_3.4.0.201401021511/mule/mule-sources-3.4.0.zip"/>
 	<classpathentry kind="var" path="M2_REPO/net/sf/opencsv/opencsv/2.3/opencsv-2.3.jar" sourcepath="M2_REPO/net/sf/opencsv/opencsv/2.3/opencsv-2.3-sources.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

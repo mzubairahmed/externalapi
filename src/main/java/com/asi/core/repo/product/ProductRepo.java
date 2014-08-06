@@ -236,6 +236,7 @@ public class ProductRepo {
         LinkedHashMap<String, String> batchDetails = productRestTemplate.postForObject(batchProcessingURL, batchData,
                 LinkedHashMap.class);
         String batchId = String.valueOf(batchDetails.get("BatchId"));
+        _LOGGER.debug("Batch ID: " + batchId);
         if (null != batchId && !batchId.equals("0")) {
             LinkedHashMap<Object, ArrayList<LinkedHashMap<String, String>>> crntObj = productRestTemplate.getForObject(
                     batchProcessingURL + "/" + batchId, LinkedHashMap.class);
@@ -368,7 +369,7 @@ public class ProductRepo {
         	Catalog catalog=null;
         	for(ProductMediaCitations currentMediaCitation:radProduct.getProductMediaCitations()){
         		catalog=new Catalog();
-        		catalogsList.add(ProductDataStore.getMediaCitationById(currentMediaCitation.getMediaCitationId(),currentMediaCitation.getProductMediaCitationReferences()[0].getMediaCitationReferenceId(),radProduct.getCompanyId()));
+        		catalogsList.add(ProductDataStore.getMediaCitationById(currentMediaCitation.getMediaCitationId(), currentMediaCitation.getProductMediaCitationReferences().get(0).getMediaCitationReferenceId(), radProduct.getCompanyId()));
         	}        	
         	serviceProduct.setCatalogs(catalogsList);
         }
