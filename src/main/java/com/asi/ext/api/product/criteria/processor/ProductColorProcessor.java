@@ -8,8 +8,10 @@ import org.apache.log4j.Logger;
 
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.service.model.Color;
+import com.asi.ext.api.service.model.Combo;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
+import com.asi.service.product.client.vo.CriteriaSetCodeValues;
 import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
@@ -39,7 +41,7 @@ public class ProductColorProcessor extends SimpleCriteriaProcessor {
         }
         this.configId = configId;
 
-        return getCriteriaSet(getColorStringFromList(colors), existingProduct, matchedCriteriaSet, 0);
+        return getCriteriaSet(colors, existingProduct, matchedCriteriaSet, 0);
     }
 
     private String getColorStringFromList(List<Color> colors) {
@@ -57,20 +59,12 @@ public class ProductColorProcessor extends SimpleCriteriaProcessor {
         return finalColor;
     }
 
-    public ProductCriteriaSets getCriteriaSet(String values, ProductDetail existingProduct, ProductCriteriaSets matchedCriteriaSet,
-            int currentSetValueId) {
+    public ProductCriteriaSets getCriteriaSet(List<Color> values, ProductDetail existingProduct,
+            ProductCriteriaSets matchedCriteriaSet, int currentSetValueId) {
 
-        if (!updateNeeded(matchedCriteriaSet, values)) {
-            return null;
-        }
         LOGGER.info("Started Processing of Product Colors");
         // First verify and process value to desired format
 
-        if (!isValueIsValid(values)) {
-            return null;
-        }
-
-        String[] finalValues = processValues(values);
         List<CriteriaSetValues> finalCriteriaSetValues = new ArrayList<>();
 
         boolean checkExistingElements = matchedCriteriaSet != null;
@@ -91,29 +85,26 @@ public class ProductColorProcessor extends SimpleCriteriaProcessor {
             matchedCriteriaSet.setIsDefaultConfiguration(ApplicationConstants.CONST_STRING_FALSE_SMALL);
         }
 
-        for (String value : finalValues) {
-            String originalValue = value;
-            int index = value.indexOf("=");
+        for (Color color : values) {
 
-            if (index != -1) {
-                value = value.substring(0, index);
-                originalValue = originalValue.substring(index + 1);
-            }
-            String setCodeValueId = getSetCodeValueId(value);
-
+            String setCodeValueId = getSetCodeValueId(color.getName());
             if (CommonUtilities.isValueNull(setCodeValueId)) {
                 // LOG Batch Error
                 continue;
             }
+            boolean hasCombo = (color.getCombos() != null && !color.getCombos().isEmpty());
+            boolean hasAliace = !CommonUtilities.isValueNull(color.getAlias());
+            String keyToSearch = null;
+            if (hasCombo && !hasAliace) {
+                keyToSearch = getSearchKeyForComboColor(color);
+            } else {
+                keyToSearch = hasAliace ? color.getAlias() : color.getName();
+            }
             CriteriaSetValues criteriaSetValue = null;
 
             if (checkExistingElements) {
-                if (index == -1) {
-                    criteriaSetValue = existingValueMap.get(value.toUpperCase() + "_" + setCodeValueId);
-                } else {
-                    criteriaSetValue = existingValueMap.get(originalValue.toUpperCase() + "_" + setCodeValueId);
-                }
 
+                criteriaSetValue = existingValueMap.get(keyToSearch.toUpperCase() + "_" + setCodeValueId);
             }
             if (criteriaSetValue == null) {
                 // If no match found in the existing list
@@ -121,20 +112,29 @@ public class ProductColorProcessor extends SimpleCriteriaProcessor {
                 criteriaSetValue = new CriteriaSetValues();
                 criteriaSetValue.setId(String.valueOf(--uniqueSetValueId));
                 criteriaSetValue.setCriteriaCode(ApplicationConstants.CONST_COLORS_CRITERIA_CODE);
-                criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_LOOK);
+                if (hasCombo) { 
+                    criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_LIST);
+                } else {
+                    criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_LOOK);
+                }
                 criteriaSetValue.setIsSubset(ApplicationConstants.CONST_STRING_FALSE_SMALL);
                 criteriaSetValue.setIsSetValueMeasurement(ApplicationConstants.CONST_STRING_FALSE_SMALL);
                 criteriaSetValue.setCriteriaSetId(matchedCriteriaSet.getCriteriaSetId());
-                criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
-                if (index != -1) {
-                    criteriaSetValue.setValue(originalValue);
+                if (hasCombo) { 
+                    criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValuesForCombo(setCodeValueId, criteriaSetValue.getId(), color.getCombos()));
                 } else {
-                    criteriaSetValue.setValue(value);
+                    criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
+                    
+                }
+                if (hasAliace) {
+                    criteriaSetValue.setValue(color.getAlias());
+                } else {
+                    criteriaSetValue.setValue(color.getName());
                 }
             }
 
             updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_COLORS_CRITERIA_CODE,
-                    processSourceCriteriaValueByCriteriaCode(originalValue, ApplicationConstants.CONST_COLORS_CRITERIA_CODE),
+                    processSourceCriteriaValueByCriteriaCode(hasAliace ? color.getAlias() : color.getName(), ApplicationConstants.CONST_COLORS_CRITERIA_CODE),
                     criteriaSetValue);
 
             finalCriteriaSetValues.add(criteriaSetValue);
@@ -145,6 +145,43 @@ public class ProductColorProcessor extends SimpleCriteriaProcessor {
         LOGGER.info("Completed Processing of Product Colors");
 
         return matchedCriteriaSet;
+    }
+
+    protected CriteriaSetCodeValues[] getCriteriaSetCodeValuesForCombo(String setCodeValueId, String setValueId, List<Combo> comboColors) {
+        List<CriteriaSetCodeValues> setCodeValues = new ArrayList<CriteriaSetCodeValues>();
+        
+        CriteriaSetCodeValues primarySetCodeValue = new CriteriaSetCodeValues();
+        primarySetCodeValue.setCriteriaSetValueId(setValueId);
+        primarySetCodeValue.setSetCodeValueId(setCodeValueId);
+        primarySetCodeValue.setCodeValue("");
+        primarySetCodeValue.setCodeValueDetail("main");
+        primarySetCodeValue.setId(ApplicationConstants.CONST_STRING_ZERO);
+        
+        setCodeValues.add(primarySetCodeValue);
+        
+        if (comboColors != null && !comboColors.isEmpty()) {
+            for (Combo combo : comboColors) {
+                String childColorSetCodeValId = getSetCodeValueId(combo.getName());
+                if (childColorSetCodeValId == null) {
+                    // TODO LOG ERROR
+                    continue;
+                }
+                CriteriaSetCodeValues childSetCodeValue = new CriteriaSetCodeValues();
+                childSetCodeValue.setCriteriaSetValueId(setValueId);
+                childSetCodeValue.setSetCodeValueId(childColorSetCodeValId);
+                childSetCodeValue.setCodeValue("");
+                childSetCodeValue.setCodeValueDetail(combo.getType());
+                childSetCodeValue.setId(ApplicationConstants.CONST_STRING_ZERO);
+                setCodeValues.add(childSetCodeValue);
+            }
+        }
+
+        return setCodeValues.toArray(new CriteriaSetCodeValues[0]);
+    }
+    
+    private String getSearchKeyForComboColor(Color color) {
+
+        return color.getAlias();
     }
 
     protected boolean isValueIsValid(String value) {
@@ -204,6 +241,13 @@ public class ProductColorProcessor extends SimpleCriteriaProcessor {
         LOGGER.info("Completed registering existing product color values");
 
         return false;
+    }
+
+    @Override
+    protected ProductCriteriaSets getCriteriaSet(String values, ProductDetail existingProduct,
+            ProductCriteriaSets matchedCriteriaSet, int currentSetValueId) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
