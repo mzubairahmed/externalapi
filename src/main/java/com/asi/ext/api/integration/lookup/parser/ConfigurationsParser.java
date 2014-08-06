@@ -625,16 +625,17 @@ public class ConfigurationsParser {
 							material.setAlias(currentCriteriaSetValue.getValue().toString());
 							materialName=ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetCodeValue.getSetCodeValueId(),ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE);
 							material.setName(materialName);
+							material.setBlendMaterials(checkAndSetMaterialBlendInfo(currentCriteriaSetCodeValue.getChildCriteriaSetCodeValues()));
 							criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), materialName);
 							firstElement=false;
 						}else{
 							currentCombo=new Combo();
 							currentCombo.setName(ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetCodeValue.getSetCodeValueId(),ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE));
-							comboList.add(currentCombo);
-						}
-						material.setBlendMaterials(checkAndSetMaterialBlendInfo(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getChildCriteriaSetCodeValues()));
+							currentCombo.setBlendMaterials(checkAndSetMaterialBlendInfo(currentCriteriaSetCodeValue.getChildCriteriaSetCodeValues()));
+							material.setCombo(currentCombo);
+						}						
 					}
-					material.setCombos(comboList);
+					
 				}else{
 					material.setAlias(currentCriteriaSetValue.getValue().toString());
 					materialName=ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE);
