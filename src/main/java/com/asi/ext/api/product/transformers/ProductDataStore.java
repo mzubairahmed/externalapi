@@ -26,6 +26,7 @@ import com.asi.ext.api.util.JsonToLookupTableConverter;
 import com.asi.ext.api.util.RestAPIProperties;
 import com.asi.service.product.client.vo.Currency;
 import com.asi.service.product.client.vo.DiscountRate;
+import com.asi.service.product.client.vo.ProductMediaCitations;
 
 /**
  * This class is used store elements for product transformation purpose and many
@@ -1490,4 +1491,13 @@ public class ProductDataStore {
         Catalog currentCatalogs= JsonToLookupTableConverter.jsonToCatalogs(responseList,mediaCitationId,mediaCitationReferenceId);
 	return currentCatalogs;
 	}
+	
+	
+	public static ProductMediaCitations getMediaCitationsByName(String productId, String catalogName, String catalogPageNumber, String companyId) {
+
+		String URL = RestAPIProperties.get(ApplicationConstants.PRODUCT_MEDIA_CITATION) + companyId;
+		LinkedList<?> responseList = lookupRestTemplate.getForObject(URL, LinkedList.class);
+		return JsonToLookupTableConverter.jsonToMediaCitation(responseList, productId, catalogName, catalogPageNumber);
+	}
+	
 }

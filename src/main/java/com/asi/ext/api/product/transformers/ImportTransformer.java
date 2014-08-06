@@ -44,6 +44,7 @@ import com.asi.service.product.client.vo.ProductConfiguration;
 import com.asi.service.product.client.vo.ProductCriteriaSet;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
+import com.asi.service.product.client.vo.ProductMediaCitations;
 import com.asi.service.product.client.vo.ProductMediaItems;
 import com.asi.service.product.client.vo.ProductNumber;
 
@@ -96,6 +97,7 @@ public class ImportTransformer {
     private ProductOptionsProcessor                optionsProcessor                = new ProductOptionsProcessor(-1501, "0");
     private ImprintMethodProcessor                 imprintMethodProcessor          = new ImprintMethodProcessor();                // 1601,
     private ProductNumberCriteriaParser            productNumberProcessor          = new ProductNumberCriteriaParser();
+    private CatalogCriteriaParser				   catalogCriteriaProcessor		   = new CatalogCriteriaParser();
 
     private FOBPointProcessor                      fobPointProcessor               = new FOBPointProcessor(1901, "0");
     private SelectedLineProcessor                  selectedLineProcessor           = new SelectedLineProcessor();
@@ -208,6 +210,10 @@ public class ImportTransformer {
 
         // Product Number Processing
         productToSave.setProductNumbers(getProductNumbers(serviceProduct, productToSave));
+        
+        // Product Catalogs
+        productToSave.setProductMediaCitations(getProductMediaCitations(serviceProduct, productToSave));
+        
         // Return product model
         return productToSave;
     }
@@ -389,6 +395,14 @@ public class ImportTransformer {
         } else { 
             return new ArrayList<ProductNumber>();
         }
+    }
+    
+    private List<ProductMediaCitations> getProductMediaCitations (Product serviceProduct, ProductDetail product) {
+    	if(serviceProduct.getCatalogs() != null && !serviceProduct.getCatalogs().isEmpty()) {
+    		return catalogCriteriaProcessor.prepareProductCatalog(serviceProduct.getCatalogs(), product);
+    	} else {
+    		return new ArrayList<>();
+    	}
     }
 
     @SuppressWarnings("unused")
