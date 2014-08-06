@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 import org.json.simple.parser.ContainerFactory;
 import org.json.simple.parser.JSONParser;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.asi.ext.api.radar.lookup.model.PriceUnitJsonModel;
@@ -876,6 +877,7 @@ public final class JsonToLookupTableConverter {
 		LinkedHashMap current;
         ArrayList<LinkedHashMap> productCitationReferences;
         
+        Integer newMediaCitationID = -1;
         Integer newMediaCitationReferenceID = -1;
 		
 		try {
@@ -886,7 +888,7 @@ public final class JsonToLookupTableConverter {
             	
             	if(current.get("Name").toString().equalsIgnoreCase(catalogName)) {
             		
-            		mediaCitation.setId("-1");
+            		mediaCitation.setId(String.valueOf(newMediaCitationID));
             		mediaCitation.setProductId(productID);
             		mediaCitation.setMediaCitationId(current.get("ID").toString());
             		mediaCitation.setIsInitMediaCitation("false");
@@ -911,7 +913,9 @@ public final class JsonToLookupTableConverter {
                     		if(pageNumberFound) {
                     			productMediaCitationReference.setMediaCitationReferenceId(citationReference.get("ID").toString());
                         		mediaCitationReference.setId(productMediaCitationReference.getMediaCitationReferenceId());
-	                    		mediaCitationReference.setSequence(citationReference.get("Sequence").toString());
+                        		if(!StringUtils.isEmpty(citationReference.get("Sequence"))) {
+                        			mediaCitationReference.setSequence(citationReference.get("Sequence").toString());
+                        		}
 	                    		break;
 	                    	}
 	                    }

@@ -22,12 +22,16 @@ public class CatalogCriteriaParser {
             LOGGER.trace("User provided catalogs : " + catalogs);
         }
     	
+        Integer newProductMediaCitationId = -1;
         List<ProductMediaCitations> productMediaCitations = new ArrayList<ProductMediaCitations>();
         ProductMediaCitations productMediaCitation;
         
         if(catalogs != null && !catalogs.isEmpty()) {
 	    	for (Catalog catalog : catalogs) {
 	    		productMediaCitation = productDataStore.getMediaCitationsByName(radProduct.getID(), catalog.getCatalogName(), catalog.getCatalogPage(), radProduct.getCompanyId());
+	    		if(Integer.parseInt(productMediaCitation.getId()) < 0) {
+	    			productMediaCitation.setId(String.valueOf(--newProductMediaCitationId));
+	    		}
 	    		productMediaCitations.add(productMediaCitation);
 	    	}
         }
