@@ -37,7 +37,18 @@ public class ProductConfigurations {
     private List<ImprintMethod>       imprintMethods       = new ArrayList<ImprintMethod>();
     @JsonProperty("ProductionTime")
     private List<ProductionTime>      productionTime       = new ArrayList<ProductionTime>();
-    @JsonProperty("RushTime")
+    @JsonProperty("SameDayRush")
+    private SameDayRush sameDayRush=null;
+    
+    public SameDayRush getSameDayRush() {
+		return sameDayRush;
+	}
+
+	public void setSameDayRush(SameDayRush sameDayRush) {
+		this.sameDayRush = sameDayRush;
+	}
+
+	@JsonProperty("RushTime")
     private List<RushTime>            rushTime             = new ArrayList<RushTime>();
     @JsonProperty("AdditionalColors")
     private List<String>              additionalColors     = new ArrayList<String>();
@@ -46,7 +57,7 @@ public class ProductConfigurations {
     @JsonProperty("ImprintSizeLocations")
     private List<ImprintSizeLocation> imprintSizeLocations = new ArrayList<ImprintSizeLocation>();
     @JsonProperty("ShippingEstimates")
-    private List<ShippingEstimate>    shippingEstimates    = new ArrayList<ShippingEstimate>();
+    private ShippingEstimate    shippingEstimates    = null;
 
     @JsonProperty("Colors")
     public List<Color> getColors() {
@@ -216,12 +227,12 @@ public class ProductConfigurations {
     }
 
     @JsonProperty("ShippingEstimates")
-    public List<ShippingEstimate> getShippingEstimates() {
+    public ShippingEstimate getShippingEstimates() {
         return shippingEstimates;
     }
 
     @JsonProperty("ShippingEstimates")
-    public void setShippingEstimates(List<ShippingEstimate> shippingEstimates) {
+    public void setShippingEstimates(ShippingEstimate shippingEstimates) {
         this.shippingEstimates = shippingEstimates;
     }
 

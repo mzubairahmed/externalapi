@@ -20,18 +20,23 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.asi.ext.api.integration.lookup.parser.ConfigurationsParser;
+import com.asi.ext.api.integration.lookup.parser.CriteriaSetParser;
 import com.asi.ext.api.integration.lookup.parser.ImprintParser;
 import com.asi.ext.api.integration.lookup.parser.LookupParser;
 import com.asi.ext.api.product.transformers.ImportTransformer;
 import com.asi.ext.api.product.transformers.PriceGridParser;
 import com.asi.ext.api.product.transformers.ProductDataStore;
+import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.ext.api.service.model.Catalog;
+import com.asi.ext.api.service.model.Configurations;
+import com.asi.ext.api.service.model.Criteria;
 import com.asi.ext.api.service.model.Image;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.ProductClient;
 import com.asi.service.product.client.vo.Batch;
 import com.asi.service.product.client.vo.BatchDataSource;
+import com.asi.service.product.client.vo.MediaCriteriaMatches;
 import com.asi.service.product.client.vo.ProductDataSheet;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductInventoryLink;
@@ -250,9 +255,9 @@ public class ProductRepo {
                 serviceProduct = new com.asi.ext.api.service.model.Product();
                 BeanUtils.copyProperties(productDetail, serviceProduct);
                 serviceProduct.setShipperBillsBy(productDetail.getShipperBillsByCode());
-                serviceProduct = setBasicProductDetails(productDetail, serviceProduct);
                 serviceProduct=configurationParser.setProductWithConfigurations(productDetail, serviceProduct);
                 serviceProduct=priceGridParser.setProductWithPriceGrids(productDetail,serviceProduct);
+                serviceProduct = setBasicProductDetails(productDetail, serviceProduct);
 /*                List<com.asi.ext.api.service.model.PriceGrid> priceGridList = new ArrayList<>();
                 serviceProduct.setPriceGrids(priceGridList);*/
                 // serviceProduct.setName(productDetail.getName());
@@ -315,13 +320,7 @@ public class ProductRepo {
         ProductDataSheet prodDatasheet = radProduct.getProductDataSheet();
         if (null != prodDatasheet) serviceProduct.setProductDataSheet(prodDatasheet.getUrl());
 
-        // Same Day Rush
-        if (null != radProduct.getSameDayRushFlag() && radProduct.getSameDayRushFlag().equalsIgnoreCase("U")) {
-            serviceProduct.setSameDayRushOffered(true);
-        } else
-            serviceProduct.setSameDayRushOffered(false);
-
-        // Product Type Code
+           // Product Type Code
         if(null!=radProduct.getProductTypeCode() && !radProduct.getProductTypeCode().trim().isEmpty()){
         serviceProduct.setProductType(lookupDataStore.findProdTypeNameByCode(radProduct.getProductTypeCode()));	
         }else{
@@ -332,11 +331,32 @@ public class ProductRepo {
         if(null!=radProduct.getProductMediaItems() && radProduct.getProductMediaItems().size()>0){
         	List<Image> imagesList=new ArrayList<>();
         	Image currentImage=null;
+        	List<Configurations> mediaConfigurations=null;
+        	Configurations currentConfiguration=null;
+        	String mediaCriteriaStr=null;
+        	CriteriaInfo criteriaInfo=null;
+        	CriteriaSetParser criteriaSetParser=new CriteriaSetParser();
         	for(ProductMediaItems currentProductMediaItems:radProduct.getProductMediaItems()){
         		currentImage=new Image();
         		currentImage.setRank(currentProductMediaItems.getMediaRank());
         		currentImage.setIsPrimary(currentProductMediaItems.getIsPrimary());
         		currentImage.setImageURL(currentProductMediaItems.getMedia().getUrl());
+        		if(null!=currentProductMediaItems.getMedia().getMediaCriteriaMatches() && currentProductMediaItems.getMedia().getMediaCriteriaMatches().length>0){
+        			mediaConfigurations=new ArrayList<>();
+        			for(MediaCriteriaMatches currentMediaCriteriaMatch:currentProductMediaItems.getMedia().getMediaCriteriaMatches()){
+        				currentConfiguration=new Configurations();
+        				mediaCriteriaStr=criteriaSetParser.findCriteriaSetValueById(productDetail.getExternalProductId(),currentMediaCriteriaMatch.getCriteriaSetValueId());
+        				criteriaInfo = ProductDataStore
+								.getCriteriaInfoForCriteriaCode(mediaCriteriaStr
+										.substring(0, mediaCriteriaStr.indexOf("_")));
+        				currentConfiguration.setCriteria(criteriaInfo
+								.getDescription());
+						currentConfiguration.setValue(mediaCriteriaStr
+								.substring(mediaCriteriaStr.indexOf("__") + 2));
+        				mediaConfigurations.add(currentConfiguration);
+        			}
+        			currentImage.setConfigurations(mediaConfigurations);
+        		}
         		imagesList.add(currentImage);
         	}
         	serviceProduct.setImages(imagesList);

@@ -47,7 +47,7 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
         }
         this.configId = configId;
 
-        return getCriteriaSet(getMaterialStringFromList(materials), existingProduct, matchedCriteriaSet, 0);
+        return getCriteriaSet(materials, existingProduct, matchedCriteriaSet, 0);
     }
 
     private String getMaterialStringFromList(List<Material> materials) {
@@ -95,7 +95,7 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
 
         for (Material material : materials) {
 
-            boolean hasCombo = material.getCombos() != null;
+            boolean hasCombo = material.getCombo() != null;
             boolean hasAliace = !CommonUtilities.isValueNull(material.getAlias());
             boolean hasBlend = (material.getBlendMaterials() != null && !material.getBlendMaterials().isEmpty());
 
@@ -138,13 +138,14 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
                 if (hasBlend || hasCombo) {
                     List<CriteriaSetCodeValues> criteriaSetCodeValues = new ArrayList<CriteriaSetCodeValues>();
                     if (hasCombo) {
-                        criteriaSetCodeValues.addAll(getComboMaterial(material.getCombos(), criteriaSetValue.getId(),
+                        criteriaSetCodeValues.addAll(getComboMaterial(material.getCombo(), criteriaSetValue.getId(),
                                 setCodeValueId, existingProduct.getID()));
                     }
                     if (hasBlend) {
                         criteriaSetCodeValues.add(getBlendMaterials(material.getBlendMaterials(), criteriaSetValue.getId(),
                                 setCodeValueId, existingProduct.getID(), null));
                     }
+                    criteriaSetValue.setCriteriaSetCodeValues(criteriaSetCodeValues.toArray(new CriteriaSetCodeValues[0]));
                 } else {
                     criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
                 }
@@ -166,7 +167,18 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
         return matchedCriteriaSet;
     }
 
-    public List<CriteriaSetCodeValues> getComboMaterial(Combo materialCombo, String criteriaSetValueId,
+    protected CriteriaSetCodeValues[] getCriteriaSetCodeValues(String setCodeValueId, String setValueId) {
+        CriteriaSetCodeValues criteriaSetCodeValue = new CriteriaSetCodeValues();
+
+        criteriaSetCodeValue.setCriteriaSetValueId(setValueId);
+        criteriaSetCodeValue.setSetCodeValueId(setCodeValueId);
+        criteriaSetCodeValue.setCodeValue("");
+        criteriaSetCodeValue.setId(String.valueOf(--criteriaSetCodeValueObjectId));
+
+        return new CriteriaSetCodeValues[] { criteriaSetCodeValue };
+    }
+    
+    private List<CriteriaSetCodeValues> getComboMaterial(Combo materialCombo, String criteriaSetValueId,
             String parentSetCodeValueId, String productId) {
         boolean isBlendCombo = (materialCombo.getBlendMaterials() != null && !materialCombo.getBlendMaterials().isEmpty());
 
@@ -197,7 +209,7 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
         return setCodeValues;
     }
 
-    public CriteriaSetCodeValues getBlendMaterials(List<BlendMaterial> blendMaterials, String criteriaSetValueId,
+    private CriteriaSetCodeValues getBlendMaterials(List<BlendMaterial> blendMaterials, String criteriaSetValueId,
             String parentSetCodeValueId, String productId, CriteriaSetCodeValues parentCriteriaSetCodeValue) {
 
         if (parentCriteriaSetCodeValue == null) {
@@ -205,6 +217,7 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
             parentCriteriaSetCodeValue.setId(String.valueOf(--criteriaSetCodeValueObjectId));
             parentCriteriaSetCodeValue.setSetCodeValueId(parentSetCodeValueId);
             parentCriteriaSetCodeValue.setCodeValue("");
+            parentCriteriaSetCodeValue.setCriteriaSetValueId(criteriaSetValueId);
         }
         if (blendMaterials.size() > 2) {
             // TODO : Log Error more two materials not allowed
@@ -267,8 +280,10 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
 
         if (setValues != null && !setValues.isEmpty()) {
             for (CriteriaSetValues criteriaSetValue : setValues) {
-                String setCodeValue = criteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(); // Check for AIOE
-                tempHashMap.put(String.valueOf(criteriaSetValue.getValue()).toUpperCase() + "_" + setCodeValue, criteriaSetValue);
+                if (criteriaSetValue.getCriteriaSetCodeValues() != null && criteriaSetValue.getCriteriaSetCodeValues().length > 0) {
+                    String setCodeValue = criteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(); // Check for AIOE
+                    tempHashMap.put(String.valueOf(criteriaSetValue.getValue()).toUpperCase() + "_" + setCodeValue, criteriaSetValue);
+                }
             }
         }
 

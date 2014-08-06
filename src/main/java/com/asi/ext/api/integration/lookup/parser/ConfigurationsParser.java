@@ -17,14 +17,18 @@ import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.service.model.BlendMaterial;
 import com.asi.ext.api.service.model.Color;
 import com.asi.ext.api.service.model.Combo;
+import com.asi.ext.api.service.model.Dimensions;
 import com.asi.ext.api.service.model.ImprintColor;
 import com.asi.ext.api.service.model.ImprintMethod;
 import com.asi.ext.api.service.model.ImprintSizeLocation;
 import com.asi.ext.api.service.model.Material;
 import com.asi.ext.api.service.model.ProductionTime;
 import com.asi.ext.api.service.model.RushTime;
+import com.asi.ext.api.service.model.SameDayRush;
 import com.asi.ext.api.service.model.Samples;
+import com.asi.ext.api.service.model.ShippingEstimate;
 import com.asi.ext.api.service.model.Size;
+import com.asi.ext.api.service.model.Value;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.service.product.client.vo.ChildCriteriaSetCodeValues;
 import com.asi.service.product.client.vo.CriteriaSetCodeValues;
@@ -620,16 +624,19 @@ public class ConfigurationsParser {
 					for(com.asi.service.product.client.vo.CriteriaSetCodeValues currentCriteriaSetCodeValue:currentCriteriaSetValue.getCriteriaSetCodeValues()){
 						if(firstElement){
 							material.setAlias(currentCriteriaSetValue.getValue().toString());
-							material.setName(ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetCodeValue.getSetCodeValueId(),ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE));
+							materialName=ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetCodeValue.getSetCodeValueId(),ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE);
+							material.setName(materialName);
+							material.setBlendMaterials(checkAndSetMaterialBlendInfo(currentCriteriaSetCodeValue.getChildCriteriaSetCodeValues()));
+							criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), materialName);
 							firstElement=false;
 						}else{
 							currentCombo=new Combo();
 							currentCombo.setName(ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetCodeValue.getSetCodeValueId(),ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE));
-							comboList.add(currentCombo);
-						}
-						material.setBlendMaterials(checkAndSetMaterialBlendInfo(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getChildCriteriaSetCodeValues()));
+							currentCombo.setBlendMaterials(checkAndSetMaterialBlendInfo(currentCriteriaSetCodeValue.getChildCriteriaSetCodeValues()));
+							material.setCombo(currentCombo);
+						}						
 					}
-					material.setCombos(comboList);
+					
 				}else{
 					material.setAlias(currentCriteriaSetValue.getValue().toString());
 					materialName=ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE);
@@ -642,7 +649,18 @@ public class ConfigurationsParser {
 		serviceProductConfig.setMaterials(materialList);
 		}
 
-				
+		// Same Day Rush
+		SameDayRush sdrush=null;
+		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_STRING_SAME_DAY_RUSH_SERVICE);
+		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+			sdrush=new SameDayRush();
+			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
+			sdrush.setAvailable("true");
+			sdrush.setDetails(currentCriteriaSetValue.getCriteriaValueDetail());
+			criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), currentCriteriaSetValue.getCriteriaValueDetail());
+			serviceProductConfig.setSameDayRush(sdrush);
+			}
+		}
 		// Additional Colors
 		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_ADDITIONAL_COLOR);
 		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
@@ -803,6 +821,58 @@ public class ConfigurationsParser {
 			}
 		}		
 		
+		// Shipping Items
+		ShippingEstimate shippingEstimate=null;
+		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE);
+		List<String> shippingItemList=new ArrayList<>();
+		Size shippingSize=new Size();
+		List<Value> valuesList=null;
+		Value shippingItemValue=new Value();
+		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+			shippingEstimate=new ShippingEstimate();
+			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
+				shippingItemValue=productLookupParser.findSizeValueListDetails(shippingItemValue, currentCriteriaSetValue.getCriteriaCode(), currentCriteriaSetValue.getValue(), productDetail.getExternalProductId()).get(0);
+				shippingEstimate.setNumberOfItems(shippingItemValue);
+			}
+		}
+		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT);
+		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+			if(null==shippingEstimate)shippingEstimate=new ShippingEstimate();
+			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
+				shippingItemValue=productLookupParser.findSizeValueListDetails(shippingItemValue, currentCriteriaSetValue.getCriteriaCode(), currentCriteriaSetValue.getValue(), productDetail.getExternalProductId()).get(0);
+				shippingEstimate.setWeight(shippingItemValue);
+			}
+			
+		}		
+		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION);
+		int sdimCntr=0;
+		Dimensions  shippingDimensions;
+		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+			shippingDimensions=new Dimensions();
+			if(null==shippingEstimate)shippingEstimate=new ShippingEstimate();
+			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
+				valuesList=productLookupParser.findSizeValueListDetails(shippingItemValue, currentCriteriaSetValue.getCriteriaCode(), currentCriteriaSetValue.getValue(), productDetail.getExternalProductId());
+			for(Value currntValueObj:valuesList)
+				{
+				if(sdimCntr==0){
+				// Length
+				shippingDimensions.setLength(currntValueObj.getValue());
+				shippingDimensions.setLengthUnit(currntValueObj.getUnit());				
+			}else if(sdimCntr==1){
+				// Width
+				shippingDimensions.setWidth(currntValueObj.getValue());
+				shippingDimensions.setWidthUnit(currntValueObj.getUnit());
+			}else if(sdimCntr==2){
+				// Height
+				shippingDimensions.setHeight(currntValueObj.getValue());
+				shippingDimensions.setHeightUnit(currntValueObj.getUnit());				
+			}
+			sdimCntr++;
+				}
+				}
+			shippingEstimate.setDimensions(shippingDimensions);
+		}
+		serviceProductConfig.setShippingEstimates(shippingEstimate);
 		serviceProduct.setBreakOutByPrice(breakoutBy);
 		serviceProduct.setFobPoints(fobPointsList);
 		serviceProduct.setProductConfigurations(serviceProductConfig);

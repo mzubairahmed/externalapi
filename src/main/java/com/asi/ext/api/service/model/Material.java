@@ -7,16 +7,18 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+@JsonInclude(Include.NON_NULL)
 public class Material {
 
     @JsonProperty("Name")
     private String              name;
     @JsonProperty("Alias")
     private String              alias;
-    @JsonProperty("Combos")
-    private List<Combo>         combos         = new ArrayList<Combo>();
+    @JsonProperty("Combo")
+    private Combo         combos         = null;
     @JsonProperty("BlendMaterials")
     private List<BlendMaterial> blendMaterials = new ArrayList<BlendMaterial>();
 
@@ -43,8 +45,8 @@ public class Material {
     /**
      * @return the combos
      */
-    @JsonProperty("Combos")
-    public List<Combo> getCombos() {
+    @JsonProperty("Combo")
+    public Combo getCombo() {
         return combos;
     }
 
@@ -52,8 +54,8 @@ public class Material {
      * @param combos
      *            the combos to set
      */
-    @JsonProperty("Combos")
-    public void setCombos(List<Combo> combos) {
+    @JsonProperty("Combo")
+    public void setCombo(Combo combos) {
         this.combos = combos;
     }
 
