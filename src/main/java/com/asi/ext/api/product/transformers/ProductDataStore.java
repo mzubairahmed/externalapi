@@ -147,6 +147,9 @@ public class ProductDataStore {
         if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_CRITERIA_CODE_FOBP)) {
             value = CommonUtilities.removeSpaces(value);
         }
+        if(value.contains("MEDIUM")){
+        	value=value.substring(value.indexOf(" ")).trim();
+        }
         String criteriaSetValueId = tempMap.get(criteriaCode.trim() + "__" + value.toUpperCase().trim());
 
         return criteriaSetValueId;
