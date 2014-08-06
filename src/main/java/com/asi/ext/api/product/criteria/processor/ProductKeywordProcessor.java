@@ -13,7 +13,10 @@ public class ProductKeywordProcessor {
 
     public List<ProductKeywords> getProductKeywords(List<String> keywordList, ProductDetail extProduct, boolean updateNeeded) {
         String[] productKeywords = keywordList != null ? CommonUtilities.filterDuplicates(keywordList) : null;
-
+        
+        if (productKeywords == null) {
+            return new ArrayList<ProductKeywords>();
+        }
         HashMap<String, ProductKeywords> prdKeywordMap = new HashMap<String, ProductKeywords>();
         List<ProductKeywords> finalKeywordList = new ArrayList<ProductKeywords>();
 

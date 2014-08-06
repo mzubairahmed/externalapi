@@ -1,12 +1,17 @@
 package com.asi.service.product.client.vo;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ProductCriteriaSets {
+public class ProductCriteriaSets implements Serializable{
 	
 	/**
+     * 
+     */
+    private static final long serialVersionUID = -6110366760669913396L;
+    /**
 	 * 
 	 */
 public String getCriteriaSetId() {

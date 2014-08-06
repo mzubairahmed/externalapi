@@ -1,6 +1,5 @@
 package com.asi.service.product.client.vo;
 
-import com.asi.ext.api.radar.model.ChildCriteriaSetCodeValue;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ChildCriteriaSetCodeValues {

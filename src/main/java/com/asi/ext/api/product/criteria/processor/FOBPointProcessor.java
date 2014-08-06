@@ -152,7 +152,7 @@ public class FOBPointProcessor extends SimpleCriteriaProcessor {
     @Override
     protected boolean isValueIsValid(String value) {
         // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     /*
