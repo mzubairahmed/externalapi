@@ -360,6 +360,15 @@ public class ImportTransformer {
         } else {
             existingCriteriaSetMap = sizeProcessor.removeSizeRelatedCriteriaSetFromExisting(existingCriteriaSetMap);
         }
+     // Product Size processing
+        if (serviceProdConfigs.getShippingEstimates() != null) {
+            existingCriteriaSetMap =  sizeProcessor.processShippingItem(rdrProduct, existingCriteriaSetMap, configId, serviceProdConfigs.getShippingEstimates(), -2501);
+        } else {
+            existingCriteriaSetMap.remove(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION);
+            existingCriteriaSetMap.remove(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT);
+            existingCriteriaSetMap.remove(ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE);
+        }
+        
         
         // Merge all updated ProductCriteriaSets into product configuration and set back to list
         ProductConfiguration updatedProductConfiguration = new ProductConfiguration();

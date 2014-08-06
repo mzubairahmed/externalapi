@@ -9,6 +9,7 @@ import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.ext.api.service.model.Capacity;
 import com.asi.ext.api.service.model.Dimension;
+import com.asi.ext.api.service.model.ShippingEstimate;
 import com.asi.ext.api.service.model.Size;
 import com.asi.ext.api.service.model.Value;
 import com.asi.ext.api.service.model.Values;
@@ -195,6 +196,43 @@ public final class ProductParserUtil {
         }
 
         return finalValues;
+    }
+    
+    public static String getShippingDimension(ShippingEstimate shippingEstimate) {
+        String shippingDimension = "";
+        if (shippingEstimate != null && shippingEstimate.getDimensions() != null) {
+            shippingDimension = CommonUtilities.appendValue(shippingDimension,shippingEstimate.getDimensions().getLength() , "");
+            shippingDimension = CommonUtilities.appendValue(shippingDimension,shippingEstimate.getDimensions().getLengthUnit() , ":");
+            shippingDimension = CommonUtilities.appendValue(shippingDimension,shippingEstimate.getDimensions().getWidth() , ";");
+            shippingDimension = CommonUtilities.appendValue(shippingDimension,shippingEstimate.getDimensions().getWidthUnit() , ":");
+            shippingDimension = CommonUtilities.appendValue(shippingDimension,shippingEstimate.getDimensions().getHeight() , ";");
+            shippingDimension = CommonUtilities.appendValue(shippingDimension,shippingEstimate.getDimensions().getHeightUnit() , ":");
+            return shippingDimension;
+        } else {
+            return "null";
+        }
+    }
+    
+    public static String getShippingWeight(ShippingEstimate shippingEstimate) {
+        String shippingWeight = "";
+        if (shippingEstimate != null && shippingEstimate.getWeight() != null) {
+            shippingWeight = CommonUtilities.appendValue(shippingWeight,shippingEstimate.getWeight().getValue() , "");
+            shippingWeight = CommonUtilities.appendValue(shippingWeight,shippingEstimate.getWeight().getUnit() , ":");
+            return shippingWeight;
+        } else {
+            return "null";
+        }
+    }
+    
+    public static String getShippingItem(ShippingEstimate shippingEstimate) {
+        String numberOfItems = "";
+        if (shippingEstimate != null && shippingEstimate.getNumberOfItems() != null) {
+            numberOfItems = CommonUtilities.appendValue(numberOfItems,shippingEstimate.getNumberOfItems().getValue() , "");
+            numberOfItems = CommonUtilities.appendValue(numberOfItems,shippingEstimate.getNumberOfItems().getUnit() , ":");
+            return numberOfItems;
+        } else {
+            return "null";
+        }
     }
     /*
      * private SelectedProductCategories[] getProductCategories(List<String> productCategories) {

@@ -75,6 +75,8 @@ public class ProductDataStore {
     public static Map<String, String>                                 artworkLookupTable             = new HashMap<String, String>();
     public static Map<String, String>                                 minoLookupTable                = new HashMap<String, String>();
 
+    public static Map<String, String>                                 shippingItemLookupTable        = new HashMap<String, String>();
+
     private static Map<String, String>                                optionsLookupTable             = new HashMap<String, String>();
     private static Map<String, Currency>                              currencyLookupTable            = new HashMap<String, Currency>();
     private static Map<String, DiscountRate>                          discountLookupTable            = new HashMap<String, DiscountRate>();
@@ -1490,4 +1492,27 @@ public class ProductDataStore {
         Catalog currentCatalogs= JsonToLookupTableConverter.jsonToCatalogs(responseList,mediaCitationId,mediaCitationReferenceId);
 	return currentCatalogs;
 	}
+	
+	public static String getSetCodeValueIdForShippingItem(String value) {
+        if (shippingItemLookupTable == null || shippingItemLookupTable.isEmpty()) {
+            try {
+                LinkedList<?> shippingItemResponse = lookupRestTemplate.getForObject(
+                        RestAPIProperties.get(ApplicationConstants.PRODUCT_SHIPPING_ITEM_LOOKUP), LinkedList.class);
+                if (shippingItemResponse == null || shippingItemResponse.isEmpty()) {
+                    LOGGER.error("Shipping Item Lookup API returned null response");
+                    // TODO : Batch Error
+                    return null;
+                } else {
+                    shippingItemLookupTable = JsonToLookupTableConverter.jsonToProductCustomLookupTable(shippingItemResponse,
+                            ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE);
+                }
+            } catch (Exception e) {
+                LOGGER.error("Exception while fetching/processing Shipping Item lookup data", e);
+                return null;
+            }
+        }
+
+        return shippingItemLookupTable.get(ApplicationConstants.CONST_STRING_OTHER.toUpperCase());
+
+    }
 }

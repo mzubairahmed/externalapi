@@ -605,7 +605,7 @@ public final class JsonToLookupTableConverter {
                 if (crntValue != null && !crntValue.isEmpty()) {
                     String criteriaCode = String.valueOf(crntValue.get("CriteriaCode"));
                     HashMap<String, String> criteriaSetAttributeMap = new HashMap<String, String>();
-                    LinkedList<?> unitsOfMeasureList = (LinkedList<?>) crntValue.get("UnitsOfMeasure");
+                    List<?> unitsOfMeasureList = (List<?>) crntValue.get("UnitsOfMeasure");
                     if (unitsOfMeasureList != null) {
                         Iterator<?> unitOfMeasureItr = unitsOfMeasureList.iterator();
                         while (unitOfMeasureItr.hasNext()) {
@@ -637,13 +637,13 @@ public final class JsonToLookupTableConverter {
                     if (criteriaItemMap != null) {
 
                         HashMap<String, String> criteriaItem = new HashMap<String, String>();
-                        LinkedList<?> codeValueGroupList = (LinkedList<?>) criteriaItemMap.get("CodeValueGroups");
+                        List<?> codeValueGroupList = (List<?>) criteriaItemMap.get("CodeValueGroups");
                         if (codeValueGroupList != null) {
                             Iterator<?> codeValueGroupItr = codeValueGroupList.iterator();
                             while (codeValueGroupItr.hasNext()) {
                                 Map<?, ?> codeValueGroup = (LinkedHashMap<?, ?>) codeValueGroupItr.next();
                                 if (codeValueGroup != null && !codeValueGroup.isEmpty()) {
-                                    LinkedList<?> setCodeValueList = (LinkedList<?>) codeValueGroup.get("SetCodeValues");
+                                    List<?> setCodeValueList = (List<?>) codeValueGroup.get("SetCodeValues");
                                     Iterator<?> setCodeValueIter = setCodeValueList.iterator();
                                     while (setCodeValueIter.hasNext()) {
                                         Map<?, ?> setCodeValue = (LinkedHashMap<?, ?>) setCodeValueIter.next();
