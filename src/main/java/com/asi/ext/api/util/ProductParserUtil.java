@@ -3,14 +3,18 @@
  */
 package com.asi.ext.api.util;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.asi.ext.api.product.criteria.processor.ProductSizeGroupProcessor;
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.radar.model.CriteriaInfo;
+import com.asi.ext.api.service.model.Apparel;
 import com.asi.ext.api.service.model.Availability;
 import com.asi.ext.api.service.model.Capacity;
 import com.asi.ext.api.service.model.Dimension;
+import com.asi.ext.api.service.model.OtherSize;
 import com.asi.ext.api.service.model.ShippingEstimate;
 import com.asi.ext.api.service.model.Size;
 import com.asi.ext.api.service.model.Value;
@@ -101,12 +105,20 @@ public final class ProductParserUtil {
 
     }
 
-    public static String getCriteriaCodeFromCriteria(String criteria) {
+    public static String getCriteriaCodeFromCriteria(String criteria, String xid) {
         if (criteria == null) {
             return null;
         }
-        CriteriaInfo criteriaInfo = ProductDataStore.getCriteriaInfoByDescription(criteria);
+        CriteriaInfo criteriaInfo = ProductDataStore.getCriteriaInfoByDescription(criteria, xid);
         return criteria != null ? criteriaInfo.getCode() : null;
+    }
+
+    public static String getCriteriaNameFromCriteriaCode(String criteria) {
+        if (criteria == null) {
+            return null;
+        }
+        CriteriaInfo criteriaInfo = ProductDataStore.getCriteriaInfoForCriteriaCode(criteria);
+        return criteria != null ? criteriaInfo.getDescription() : null;
     }
 
     public static String getSizeValuesFromSize(Size size, String sizeCriteriaCode) {
@@ -254,7 +266,7 @@ public final class ProductParserUtil {
     public static boolean isValidAvailabilty(Availability availability, boolean isOptionGroup) {
 
         if (availability != null) {
-            // Check both criterias present or not
+            // Check both criteria present or not
             if (!CommonUtilities.isValueNull(availability.getParentCriteria())
                     && !CommonUtilities.isValueNull(availability.getChildCriteria())) {
                 // now check the equality of Criteria
@@ -300,17 +312,92 @@ public final class ProductParserUtil {
         return null;
     }
 
-    public static String getRelationNameBasedOnCodes(String parent, String child) {
-        return parent + " X " + child;
+    public static String getRelationNameBasedOnCodes(String parent, String child, Availability availability) {
+        String name = getCriteriaNameFromCriteriaCode(parent);
+        if (CommonUtilities.isValueNull(name)) {
+            name = availability.getParentCriteria();
+        }
+        if (CommonUtilities.isOptionGroup(parent) && !CommonUtilities.isValueNull(availability.getParentOptionName())) {
+            name += ":" + availability.getParentOptionName();
+        }
+        name += " x ";
+        String temp = getCriteriaNameFromCriteriaCode(parent);
+        if (CommonUtilities.isValueNull(temp)) {
+            name += availability.getParentCriteria();
+        } else {
+            name += temp;
+        }
+        if (CommonUtilities.isOptionGroup(parent) && !CommonUtilities.isValueNull(availability.getParentOptionName())) {
+            name += ":" + availability.getParentOptionName();
+        }
+
+        return name;
+    }
+
+    public static boolean isSizeGroup(String criteriaCode) {
+        return ApplicationConstants.SIZE_GROUP_CRITERIACODES.contains(criteriaCode);
     }
 
     public static String getCriteriaSetValueIdBaseOnValueType(String xid, String criteriaCode, Object value) {
         Object criteriaSetValueId = null;
         if (value instanceof String) {
             criteriaSetValueId = getCriteriaSetValueId(xid, criteriaCode, value);
-            return criteriaSetValueId != null ? String.valueOf(criteriaSetValueId) : null; 
+            return criteriaSetValueId != null ? String.valueOf(criteriaSetValueId) : null;
+        } else if (isSizeGroup(criteriaCode)) {
+            String valueToSearch = null;
+            if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_DIMENSION)) {
+                Dimension dims = new Dimension();
+                dims.setValues(new ArrayList<Values>());
+                try { 
+                    dims.getValues().add((Values) value);
+                    valueToSearch = getDimensionValues(dims);
+                } catch (Exception e) {
+                    return null;
+                }
+            } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY)) {
+                Capacity caps = new Capacity();
+                caps.setValues(new ArrayList<Value>());
+                try {
+                    caps.getValues().add((Value) value);
+                    valueToSearch = getCapacityValues(caps);
+                } catch (Exception e) {
+                    return null;
+                }
+            } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI)) {
+                Volume volume = new Volume();
+                volume.setValues(new ArrayList<Values>());
+                try {
+                    volume.getValues().add((Values) value);
+                    valueToSearch = getVolumeValues(volume);
+                } catch (Exception e) {
+                    return null;
+                }
+            } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_OTHER_CODE)) {
+                OtherSize otherSize = new OtherSize();
+                otherSize.setValues(new ArrayList<Value>());
+                try {
+                    otherSize.getValues().add((Value) value);
+                    valueToSearch = getCSVSizesFromSizeModel(otherSize.getValues());
+                } catch (Exception e) {
+                    return null;
+                }
+            } else if (criteriaCode.equalsIgnoreCase("SABR") || criteriaCode.equalsIgnoreCase("SAHU")
+                    || criteriaCode.equalsIgnoreCase("SAIT") || criteriaCode.equalsIgnoreCase("SANS")
+                    || criteriaCode.equalsIgnoreCase("SAWI") || criteriaCode.equalsIgnoreCase("SSNM")) {
+                Apparel apparel = new Apparel();
+                apparel.setValues(new ArrayList<Value>());
+                try {
+                    apparel.getValues().add((Value) value);
+                    valueToSearch = getCSVSizesFromSizeModel(apparel.getValues());
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+            criteriaSetValueId = getCriteriaSetValueId(xid, criteriaCode, valueToSearch);
+            return criteriaSetValueId != null ? String.valueOf(criteriaSetValueId) :  null;
         }
         return null;
     }
 
 }
+

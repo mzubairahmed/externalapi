@@ -1,12 +1,16 @@
 package com.asi.ext.api.util;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+
+import com.asi.ext.api.product.criteria.processor.ProductSizeGroupProcessor;
 
 public class ApplicationConstants {
     private final static Logger                      LOGGER                                      = Logger.getLogger(ApplicationConstants.class
@@ -270,7 +274,10 @@ public class ApplicationConstants {
     private static final String[]                    UPCHARGE_PRICE_CRITERIA_CODES               = { "ADCL", "ADLN", "CAPS",
             "DIMS", "IMCL", "IMMD", "IMOP", "IMSZ", "LMIN", "MTRL", "ORGN", "PCKG", "FOBP", "PRCL", "PROP", "RUSH", "SABR", "SAHU",
             "SAIT", "SANS", "SAWI", "SDRU", "SHAP", "SHOP", "SMPL", "SOTH", "SSNM", "SVWT"      };
-	public static final String CONST_SELECTED_LINE_NAMES = "LNNM";
+	
+    public final static List<String>       SIZE_GROUP_CRITERIACODES    = Arrays.asList(ProductSizeGroupProcessor.SIZE_GROUP_CRITERIACODES);
+    
+    public static final String CONST_SELECTED_LINE_NAMES = "LNNM";
 	
 	
 

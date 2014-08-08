@@ -56,7 +56,7 @@ public class ProductNumberCriteriaParser {
 
         for (Configurations config : serPnoConfigs) {
 
-            String criteriaCode = ProductParserUtil.getCriteriaCodeFromCriteria(config.getCriteria());
+            String criteriaCode = ProductParserUtil.getCriteriaCodeFromCriteria(config.getCriteria(), xid);
             if (criteriaCode != null) {
                 Integer criteriaSetValueId = ProductParserUtil.getCriteriaSetValueId(xid, criteriaCode, config.getValue());
                 if (criteriaSetValueId != null) {

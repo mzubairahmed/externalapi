@@ -36,7 +36,7 @@ import com.asi.service.product.client.vo.Value;
 public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
     private final static Logger LOGGER                      = Logger.getLogger(ProductSizeGroupProcessor.class.getName());
 
-    public final String[]       SIZE_GROUP_CRITERIACODES    = { "CAPS", "DIMS", "SABR", "SAHU", "SAIT", "SANS", "SAWI", "SSNM",
+    public final static String[]       SIZE_GROUP_CRITERIACODES    = { "CAPS", "DIMS", "SABR", "SAHU", "SAIT", "SANS", "SAWI", "SSNM",
             "SVWT", "SOTH"                                 };
 
     private String              sizesWSResponse             = null;
@@ -88,6 +88,8 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
 
         if (tempCriteriaSet != null && tempCriteriaSet.getCriteriaSetValues() != null
                 && !tempCriteriaSet.getCriteriaSetValues().isEmpty()) {
+            // For the reference
+            productDataStore.registerSizeGroupOfProduct(criteriaCode, product.getExternalProductId());
             ProductCriteriaSets exisitingCriteriaSet = existingCriteriaSetMap.get(criteriaCode);
             if (exisitingCriteriaSet == null) {
                 existingCriteriaSetMap = removeSizeRelatedCriteriaSetFromExisting(existingCriteriaSetMap);

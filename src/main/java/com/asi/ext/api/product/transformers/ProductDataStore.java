@@ -44,6 +44,7 @@ public class ProductDataStore {
 
     private static ConcurrentHashMap<String, Set<String>>             GLOBAL_BATCH_LOG_COLLECTION    = new ConcurrentHashMap<String, Set<String>>();
     private static ConcurrentHashMap<String, HashMap<String, String>> criteriaSetValueReferenceTable = new ConcurrentHashMap<String, HashMap<String, String>>();
+    private static ConcurrentHashMap<String, String>                  sizeGroupOfProduct             = new ConcurrentHashMap<>();
 
     private static Map<String, CriteriaInfo>                          criteriaInfo                   = new HashMap<String, CriteriaInfo>();
     // Lookup value tables
@@ -86,6 +87,7 @@ public class ProductDataStore {
 
     public static LinkedList<LinkedHashMap>							sizelookupsResponse		= null;
     public static LinkedList<LinkedHashMap>                           sizeElementsResponse           = null;
+    
     public ProductDataStore() {
 
         if (GLOBAL_BATCH_LOG_COLLECTION == null) {
@@ -170,6 +172,20 @@ public class ProductDataStore {
         }
 
         return;
+    }
+    
+    public void registerSizeGroupOfProduct(String sizeGroup, String xid) {
+        if (sizeGroupOfProduct == null) {
+            sizeGroupOfProduct = new ConcurrentHashMap<String, String>();
+        }
+        sizeGroupOfProduct.put(xid.toUpperCase(), sizeGroup.toUpperCase());
+    }
+    
+    public static String getSizeCriteriaCodeForProduct(String xid) {
+        if (sizeGroupOfProduct != null) {
+            return sizeGroupOfProduct.get(xid.toUpperCase());
+        }
+        return null;
     }
 
     /**
@@ -1344,18 +1360,33 @@ public class ProductDataStore {
         }
     }
     
-    public static CriteriaInfo getCriteriaInfoByDescription(String description) {
+    public static CriteriaInfo getCriteriaInfoByDescription(String description, String xid) {
         if (criteriaInfo == null || criteriaInfo.isEmpty()) {
             loadCriteriaInformations();
         } 
-        for (Map.Entry<String, CriteriaInfo> crtInfo : criteriaInfo.entrySet()) {
-            if (crtInfo.getValue().getDescription().equalsIgnoreCase(description)) {
-                return crtInfo.getValue();
+        if (!description.equalsIgnoreCase("Sizes")) {
+            for (Map.Entry<String, CriteriaInfo> crtInfo : criteriaInfo.entrySet()) {
+                if (crtInfo.getValue().getDescription().equalsIgnoreCase(description)) {
+                    return crtInfo.getValue();
+                }
+            }
+        } else {
+            String criteriaCode = getSizeCriteriaCodeForProduct(xid);
+            if (criteriaCode == null) {
+                for (Map.Entry<String, CriteriaInfo> crtInfo : criteriaInfo.entrySet()) {
+                    if (crtInfo.getValue().getDescription().equalsIgnoreCase(description)) {
+                        return crtInfo.getValue();
+                    }
+                }
+            } else {
+                return criteriaInfo.get(criteriaCode);
             }
         }
         return null;
     }
+    
 
+    
     private static boolean loadCriteriaInformations() {
         try {
             LinkedList<?> wsResponse = lookupRestTemplate.getForObject(RestAPIProperties.get(ApplicationConstants.CRITERIA_INFO_URL),LinkedList.class);

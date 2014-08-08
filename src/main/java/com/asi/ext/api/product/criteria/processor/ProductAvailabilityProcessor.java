@@ -39,8 +39,8 @@ public class ProductAvailabilityProcessor {
         // Iterate each availability and create individual relationships
         for (Availability availability : productAvailability) {
 
-            String parentCriteriaCode = ProductParserUtil.getCriteriaCodeFromCriteria(availability.getParentCriteria());
-            String childCriteriaCode = ProductParserUtil.getCriteriaCodeFromCriteria(availability.getChildCriteria());
+            String parentCriteriaCode = ProductParserUtil.getCriteriaCodeFromCriteria(availability.getParentCriteria(), product.getExternalProductId());
+            String childCriteriaCode = ProductParserUtil.getCriteriaCodeFromCriteria(availability.getChildCriteria(), product.getExternalProductId());
 
             // do validations
             if (!CommonUtilities.isValueNull(parentCriteriaCode) && !CommonUtilities.isValueNull(childCriteriaCode)) {
@@ -55,17 +55,16 @@ public class ProductAvailabilityProcessor {
 
                         if (childCrtSet != null) {
                             // Basic validations completed now create relationship with parent and child
-                            Relationship relationship = relProcessor.createRelationship(
-                                    ProductParserUtil.getRelationNameBasedOnCodes(parentCriteriaCode, childCriteriaCode),
-                                    parentCrtSet.getCriteriaSetId(), childCrtSet.getCriteriaSetId(), product.getID(), --relationId);
+                            Relationship relationship = relProcessor.createRelationship(ProductParserUtil
+                                    .getRelationNameBasedOnCodes(parentCriteriaCode, childCriteriaCode, availability), parentCrtSet
+                                    .getCriteriaSetId(), childCrtSet.getCriteriaSetId(), product.getID(), --relationId);
                             if (availability.getAvailableVariations() != null && !availability.getAvailableVariations().isEmpty()) {
                                 List<CriteriaSetValuePath> crtSetValuePaths = new ArrayList<>();
                                 // Create CriteriaSetValuePath combinations for each variation
-                                System.out.println();
+
                                 for (AvailableVariations variation : availability.getAvailableVariations()) {
-                                    // if any variations not valid then getCriteriaSetValuePaths function will log error
+                                    // if any variations not valid then getCriteriaSetValuePaths() function will log appropriate error
                                     // no need to worry about that
-                                    System.out.println();
                                     crtSetValuePaths.addAll(getCriteriaSetValuePaths(product.getExternalProductId(),
                                             parentCriteriaCode, childCriteriaCode, variation, relationship.getID(), --uniqPathId,
                                             product.getID()));
