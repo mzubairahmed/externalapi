@@ -68,7 +68,7 @@ public class Product {
     /**
      * @return the availability
      */
-    public List<Availability> getAvailability() {
+	public List<Availability> getAvailability() {
         return availability;
     }
 
@@ -76,7 +76,7 @@ public class Product {
      * @param availability
      *            the availability to set
      */
-    public void setAvailability(List<Availability> availability) {
+	public void setAvailability(List<Availability> availability) {
         this.availability = availability;
     }
 
