@@ -3,24 +3,31 @@
  */
 package com.asi.ext.api.util;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.asi.ext.api.product.criteria.processor.ProductSizeGroupProcessor;
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.radar.model.CriteriaInfo;
+import com.asi.ext.api.service.model.Apparel;
+import com.asi.ext.api.service.model.Availability;
 import com.asi.ext.api.service.model.Capacity;
 import com.asi.ext.api.service.model.Dimension;
+import com.asi.ext.api.service.model.OtherSize;
 import com.asi.ext.api.service.model.ShippingEstimate;
 import com.asi.ext.api.service.model.Size;
 import com.asi.ext.api.service.model.Value;
 import com.asi.ext.api.service.model.Values;
 import com.asi.ext.api.service.model.Volume;
 import com.asi.service.product.client.vo.ProductConfiguration;
+import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDataSheet;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductInventoryLink;
 
 /**
- * @author krahul
+ * @author Rahul K
  * 
  */
 public final class ProductParserUtil {
@@ -98,9 +105,20 @@ public final class ProductParserUtil {
 
     }
 
-    public static String getCriteriaCodeFromCriteria(String criteria) {
-        CriteriaInfo criteriaInfo = ProductDataStore.getCriteriaInfoByDescription(criteria);
+    public static String getCriteriaCodeFromCriteria(String criteria, String xid) {
+        if (criteria == null) {
+            return null;
+        }
+        CriteriaInfo criteriaInfo = ProductDataStore.getCriteriaInfoByDescription(criteria, xid);
         return criteria != null ? criteriaInfo.getCode() : null;
+    }
+
+    public static String getCriteriaNameFromCriteriaCode(String criteria) {
+        if (criteria == null) {
+            return null;
+        }
+        CriteriaInfo criteriaInfo = ProductDataStore.getCriteriaInfoForCriteriaCode(criteria);
+        return criteria != null ? criteriaInfo.getDescription() : null;
     }
 
     public static String getSizeValuesFromSize(Size size, String sizeCriteriaCode) {
@@ -110,14 +128,11 @@ public final class ProductParserUtil {
             return getCapacityValues(size.getCapacity());
         } else if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI)) {
             return getVolumeValues(size.getVolume());
-        }  else if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_OTHER_CODE)) {
+        } else if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_OTHER_CODE)) {
             return getCSVSizesFromSizeModel(size.getOther().getValues());
-        } else if (sizeCriteriaCode.equalsIgnoreCase("SABR") 
-                || sizeCriteriaCode.equalsIgnoreCase("SAHU") 
-                || sizeCriteriaCode.equalsIgnoreCase("SAIT") 
-                || sizeCriteriaCode.equalsIgnoreCase("SANS") 
-                || sizeCriteriaCode.equalsIgnoreCase("SAWI") 
-                || sizeCriteriaCode.equalsIgnoreCase("SSNM")) {
+        } else if (sizeCriteriaCode.equalsIgnoreCase("SABR") || sizeCriteriaCode.equalsIgnoreCase("SAHU")
+                || sizeCriteriaCode.equalsIgnoreCase("SAIT") || sizeCriteriaCode.equalsIgnoreCase("SANS")
+                || sizeCriteriaCode.equalsIgnoreCase("SAWI") || sizeCriteriaCode.equalsIgnoreCase("SSNM")) {
             return getCSVSizesFromSizeModel(size.getApparel().getValues());
         }
         return "null";
@@ -197,79 +212,211 @@ public final class ProductParserUtil {
 
         return finalValues;
     }
-    
+
     public static String getShippingDimension(ShippingEstimate shippingEstimate) {
         String shippingDimension = "";
         if (shippingEstimate != null && shippingEstimate.getDimensions() != null) {
-            shippingDimension = CommonUtilities.appendValue(shippingDimension,shippingEstimate.getDimensions().getLength() , "");
-            shippingDimension = CommonUtilities.appendValue(shippingDimension,shippingEstimate.getDimensions().getLengthUnit() , ":");
-            shippingDimension = CommonUtilities.appendValue(shippingDimension,shippingEstimate.getDimensions().getWidth() , ";");
-            shippingDimension = CommonUtilities.appendValue(shippingDimension,shippingEstimate.getDimensions().getWidthUnit() , ":");
-            shippingDimension = CommonUtilities.appendValue(shippingDimension,shippingEstimate.getDimensions().getHeight() , ";");
-            shippingDimension = CommonUtilities.appendValue(shippingDimension,shippingEstimate.getDimensions().getHeightUnit() , ":");
+            shippingDimension = CommonUtilities.appendValue(shippingDimension, shippingEstimate.getDimensions().getLength(), "");
+            shippingDimension = CommonUtilities.appendValue(shippingDimension, shippingEstimate.getDimensions().getLengthUnit(),
+                    ":");
+            shippingDimension = CommonUtilities.appendValue(shippingDimension, shippingEstimate.getDimensions().getWidth(), ";");
+            shippingDimension = CommonUtilities
+                    .appendValue(shippingDimension, shippingEstimate.getDimensions().getWidthUnit(), ":");
+            shippingDimension = CommonUtilities.appendValue(shippingDimension, shippingEstimate.getDimensions().getHeight(), ";");
+            shippingDimension = CommonUtilities.appendValue(shippingDimension, shippingEstimate.getDimensions().getHeightUnit(),
+                    ":");
             return shippingDimension;
         } else {
             return "null";
         }
     }
-    
+
     public static String getShippingWeight(ShippingEstimate shippingEstimate) {
         String shippingWeight = "";
         if (shippingEstimate != null && shippingEstimate.getWeight() != null) {
-            shippingWeight = CommonUtilities.appendValue(shippingWeight,shippingEstimate.getWeight().getValue() , "");
-            shippingWeight = CommonUtilities.appendValue(shippingWeight,shippingEstimate.getWeight().getUnit() , ":");
+            shippingWeight = CommonUtilities.appendValue(shippingWeight, shippingEstimate.getWeight().getValue(), "");
+            shippingWeight = CommonUtilities.appendValue(shippingWeight, shippingEstimate.getWeight().getUnit(), ":");
             return shippingWeight;
         } else {
             return "null";
         }
     }
-    
+
     public static String getShippingItem(ShippingEstimate shippingEstimate) {
         String numberOfItems = "";
         if (shippingEstimate != null && shippingEstimate.getNumberOfItems() != null) {
-            numberOfItems = CommonUtilities.appendValue(numberOfItems,shippingEstimate.getNumberOfItems().getValue() , "");
-            numberOfItems = CommonUtilities.appendValue(numberOfItems,shippingEstimate.getNumberOfItems().getUnit() , ":");
+            numberOfItems = CommonUtilities.appendValue(numberOfItems, shippingEstimate.getNumberOfItems().getValue(), "");
+            numberOfItems = CommonUtilities.appendValue(numberOfItems, shippingEstimate.getNumberOfItems().getUnit(), ":");
             return numberOfItems;
         } else {
             return "null";
         }
     }
-    /*
-     * private SelectedProductCategories[] getProductCategories(List<String> productCategories) {
-     * String categories = CommonUtilities.convertStringListToCSV(productCategories);
-     * if (!CommonUtilities.isValueNull(categories)) {
-     * SelectedProductCategories category = new SelectedProductCategories();
-     * category.setCode(categories);
-     * category.setProductId(PRODUCT_ID);
-     * return new SelectedProductCategories[] { category };
-     * } else {
-     * return new SelectedProductCategories[] {};
-     * }
-     * }
-     * 
-     * private SelectedComplianceCerts[] getProductComplianceCerts(List<String> productComplianceCerts) {
-     * String complianceCerts = CommonUtilities.convertStringListToCSV(productComplianceCerts);
-     * if (!CommonUtilities.isValueNull(complianceCerts)) {
-     * SelectedComplianceCerts selectedCompliance = new SelectedComplianceCerts();
-     * selectedCompliance.setId(ID);
-     * selectedCompliance.setProductId(PRODUCT_ID);
-     * selectedCompliance.setComplianceCertId(complianceCerts);
-     * return new SelectedComplianceCerts[] { selectedCompliance };
-     * } else {
-     * return new SelectedComplianceCerts[] {};
-     * }
-     * }
-     * 
-     * private SelectedSafetyWarnings[] getSelectedSafetyWarnings(List<String> selectedSafetyWarnings) {
-     * String safetyWarnings = CommonUtilities.convertStringListToCSV(selectedSafetyWarnings);
-     * if (!CommonUtilities.isValueNull(safetyWarnings)) {
-     * SelectedSafetyWarnings safetyWarning = new SelectedSafetyWarnings();
-     * safetyWarning.setCode(safetyWarnings);
-     * return new SelectedSafetyWarnings[] { safetyWarning };
-     * } else {
-     * return new SelectedSafetyWarnings[] {};
-     * }
-     * }
-     */
+
+    public static boolean isOptionGroup(String criteriaCode) {
+        if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_PRODUCT_OPTION)
+                || criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SHIPPING_OPTION)
+                || criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_IMPRINT_OPTION)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isValidAvailabilty(Availability availability, boolean isOptionGroup) {
+
+        if (availability != null) {
+            // Check both criteria present or not
+            if (!CommonUtilities.isValueNull(availability.getParentCriteria())
+                    && !CommonUtilities.isValueNull(availability.getChildCriteria())) {
+                // now check the equality of Criteria
+                if (availability.getParentCriteria().trim().equalsIgnoreCase(availability.getChildCriteria())) {
+                    // The only case criteria code can be equal is for Options, but then its OptionName cannot be equal
+                    if (!CommonUtilities.isValueNull(availability.getParentOptionName())
+                            && !CommonUtilities.isValueNull(availability.getChildOptionName())) {
+                        if (!availability.getParentOptionName().trim().equalsIgnoreCase(availability.getChildOptionName().trim())) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                } else {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static ProductCriteriaSets getOptionCriteriaSet(String code, String optName,
+            Map<String, List<ProductCriteriaSets>> optionsCriteriaSet) {
+        if (optionsCriteriaSet == null || optionsCriteriaSet.isEmpty()) {
+            return null;
+        }
+        List<ProductCriteriaSets> criteriaSets = optionsCriteriaSet.get(code);
+        if (criteriaSets != null) {
+            boolean checkOptionName = CommonUtilities.isValueNull(optName);
+            for (ProductCriteriaSets criteriaSet : criteriaSets) {
+                if (!checkOptionName) {
+                    if (String.valueOf(criteriaSet.getCriteriaDetail()).equalsIgnoreCase(optName)) {
+                        return criteriaSet;
+                    }
+                } else {
+                    return criteriaSet;
+                }
+            }
+        } else {
+            return null;
+        }
+
+        return null;
+    }
+
+    public static String getRelationNameBasedOnCodes(String parent, String child, Availability availability) {
+        String name = getCriteriaNameFromCriteriaCode(parent);
+        if (CommonUtilities.isValueNull(name)) {
+            name = availability.getParentCriteria();
+        }
+        if (CommonUtilities.isOptionGroup(parent) && !CommonUtilities.isValueNull(availability.getParentOptionName())) {
+            name += ":" + availability.getParentOptionName();
+        }
+        name += " x ";
+        String temp = getCriteriaNameFromCriteriaCode(child);
+        if (CommonUtilities.isValueNull(temp)) {
+            name += availability.getChildCriteria();
+        } else {
+            name += temp;
+        }
+        if (CommonUtilities.isOptionGroup(child) && !CommonUtilities.isValueNull(availability.getChildOptionName())) {
+            name += ":" + availability.getChildOptionName();
+        }
+
+        return name;
+    }
+
+    public static boolean isSizeGroup(String criteriaCode) {
+        return ApplicationConstants.SIZE_GROUP_CRITERIACODES.contains(criteriaCode);
+    }
+
+    public static String getCriteriaSetValueIdBaseOnValueType(String xid, String criteriaCode, Object value) {
+        Object criteriaSetValueId = null;
+        if (value instanceof String) {
+            criteriaSetValueId = getCriteriaSetValueId(xid, criteriaCode, value);
+            return criteriaSetValueId != null ? String.valueOf(criteriaSetValueId) : null;
+        } else if (isSizeGroup(criteriaCode)) {
+            String valueToSearch = getSizeModelFromObject(criteriaCode, value);
+            criteriaSetValueId = getCriteriaSetValueId(xid, criteriaCode, valueToSearch);
+            return criteriaSetValueId != null ? String.valueOf(criteriaSetValueId) : null;
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static String getSizeModelFromObject(String criteriaCode, Object value) {
+        String valueToSearch = null;
+        if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_DIMENSION)) {
+            try {
+                List<Map<?, ?>> dimValuesList = (List<Map<?, ?>>) value;
+                String finalValue = "";
+                for (Map<?, ?> dimValue : dimValuesList) {
+                    if (dimValue.get("Attribute") != null) {
+                        finalValue = CommonUtilities.appendValue(finalValue, dimValue.get("Attribute") + ":" + dimValue.get("Value") + ":" + dimValue.get("Unit"), ";");
+                    } 
+                }
+                valueToSearch = finalValue;
+            } catch (Exception e) {
+                return null;
+            }
+        } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY)) {
+            try {
+                List<Map<?, ?>> values = (List<Map<?, ?>>) value;
+                for (Map<?, ?> v : values) {
+                    valueToSearch = v.get("Value") + ":" + v.get("Unit");
+                }
+                return valueToSearch;
+            } catch (Exception e) {
+                return null;
+            }
+        } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI)) {
+
+            try {
+                List<?> volumes = (List<?>) value;
+                if (volumes != null && !volumes.isEmpty()) {
+                    List<Map<?, ?>> values = (List<Map<?, ?>>) volumes.get(0);
+                    for (Map<?, ?> v : values) {
+                        valueToSearch = v.get("Value") + ":" + v.get("Unit");
+                    }
+                    return valueToSearch;
+                }
+
+            } catch (Exception e) {
+                return null;
+            }
+
+        } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_OTHER_CODE)) {
+            try {
+                List<?> otherSizeValues = (List<?>) value;
+                for (Object val : otherSizeValues) {
+                    return String.valueOf(val);
+                }
+            } catch (Exception e) {
+                return null;
+            }
+        } else if (criteriaCode.equalsIgnoreCase("SABR") || criteriaCode.equalsIgnoreCase("SAHU")
+                || criteriaCode.equalsIgnoreCase("SAIT") || criteriaCode.equalsIgnoreCase("SANS")
+                || criteriaCode.equalsIgnoreCase("SAWI") || criteriaCode.equalsIgnoreCase("SSNM")) {
+            
+            try {
+                List<?> apparelValues = (List<?>) value;
+                for (Object val : apparelValues) {
+                    return String.valueOf(val);
+                }
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        // criteriaSetValueId = getCriteriaSetValueId(xid, criteriaCode, valueToSearch);
+        return valueToSearch;
+    }
 
 }

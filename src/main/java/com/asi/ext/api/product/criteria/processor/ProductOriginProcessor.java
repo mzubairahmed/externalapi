@@ -159,7 +159,6 @@ public class ProductOriginProcessor extends SimpleCriteriaProcessor {
                     } else {
                         valueToRegister = String.valueOf(criteriaValues.getValue());
                     }
-                    System.out.println(valueToRegister);
                     // TODO :updateReferenceTable(externalProductId, ApplicationConstants.CONST_ORIGIN_CRITERIA_CODE,
                     // valueToRegister, criteriaValues);
                 }

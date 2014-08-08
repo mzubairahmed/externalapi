@@ -23,6 +23,7 @@ import com.asi.ext.api.integration.lookup.parser.ConfigurationsParser;
 import com.asi.ext.api.integration.lookup.parser.CriteriaSetParser;
 import com.asi.ext.api.integration.lookup.parser.ImprintParser;
 import com.asi.ext.api.integration.lookup.parser.LookupParser;
+import com.asi.ext.api.integration.lookup.parser.RelationshipParser;
 import com.asi.ext.api.product.transformers.ImportTransformer;
 import com.asi.ext.api.product.transformers.PriceGridParser;
 import com.asi.ext.api.product.transformers.ProductDataStore;
@@ -376,14 +377,20 @@ public class ProductRepo {
         	serviceProduct.setCatalogs(catalogsList);
         }
 
-        // Misclenious
-        serviceProduct.setDistributorOnly(radProduct.getIncludeAppOfferList());
+        // Availability
+        RelationshipParser relationshipParser=new RelationshipParser();
+        serviceProduct.setAvailability(relationshipParser.getAvailabilityByRelationships(productDetail.getRelationships(),productDetail.getExternalProductId()));
+        
+        
+        // Miscellaneous
+        serviceProduct.setDistributorOnly(radProduct.getIncludeAppOfferList().equalsIgnoreCase("ESPN")?"true":(radProduct.getIncludeAppOfferList().equalsIgnoreCase("ESPW")?"false":null));
         serviceProduct.setDistributorOnlyComments(radProduct.getDistributorComments());
         serviceProduct.setProductDisclaimer(radProduct.getDisclaimer());
         serviceProduct.setAdditionalProductInfo(radProduct.getAdditionalInfo());
         serviceProduct.setAdditionalShippingInfo(radProduct.getAdditionalShippingInfo());
         serviceProduct.setPriceConfirmedThru(radProduct.getPriceConfirmationDate());
         serviceProduct.setCanOrderLessThanMimimum(String.valueOf(radProduct.getIsOrderLessThanMinimumAllowed()));
+        
         
         
         return serviceProduct;

@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class CriteriaSetParser {
 	 private static ConcurrentHashMap<String, HashMap<String, String>> criteriaSetReference =  new ConcurrentHashMap<>();
-
+	 private static ConcurrentHashMap<String, HashMap<String, String>> criteriaSetIdReference =  new ConcurrentHashMap<>();
     public void addReferenceSet(String externalProductId, String criteriaCode,
             Integer criteriaSetValueId,String value) {
     	if(null!=value && null!=criteriaCode)
@@ -23,6 +23,24 @@ public class CriteriaSetParser {
     		return;
     	}
     }
+    public void addCriteriaSetByCode(String externalProductId, String criteriaCode,
+            String criteriaSetId) {
+    	if(null!=criteriaSetId && null!=criteriaCode)
+    	{
+          if (criteriaSetIdReference== null || criteriaSetIdReference.isEmpty()) {
+        	  criteriaSetIdReference = new ConcurrentHashMap<String, HashMap<String, String>>();
+            }
+
+            if (criteriaSetIdReference.get(externalProductId.trim()) == null) {
+            	criteriaSetIdReference.put(externalProductId.trim(), new HashMap<String, String>());
+            }
+            criteriaSetIdReference.get(externalProductId.trim()).put(criteriaSetId,criteriaCode);
+    	} else
+    	{
+    		return;
+    	}
+    }
+    
     public String findCriteriaSetValueById(String extPrdId, String criteriaSetValueId) {
         if (criteriaSetReference == null || criteriaSetReference.isEmpty()) {
             return null;
@@ -53,4 +71,15 @@ public class CriteriaSetParser {
     	if(null!=criteriaSetReference)
     	 criteriaSetReference.remove(externalId);
     }
+	public String findCriteriaBySetId(String extPrdId, String valueOf) {
+		if (criteriaSetIdReference == null || criteriaSetIdReference.isEmpty()) {
+            return null;
+        }
+        HashMap<String, String> tempMap = criteriaSetIdReference.get(extPrdId.trim());
+
+        if (tempMap == null || tempMap.isEmpty()) {
+            return null;
+        }
+        return tempMap.get(valueOf);
+	}
 }

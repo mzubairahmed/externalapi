@@ -109,9 +109,9 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
 
             if (checkExistingElements && !hasBlend && !hasCombo) {
                 if (hasAliace) {
-                    criteriaSetValue = existingValueMap.get(material.getAlias() + "_" + setCodeValueId);
+                    criteriaSetValue = existingValueMap.get(material.getAlias().toUpperCase() + "_" + setCodeValueId);
                 } else {
-                    criteriaSetValue = existingValueMap.get(material.getName() + "_" + setCodeValueId);
+                    criteriaSetValue = existingValueMap.get(material.getName().toUpperCase() + "_" + setCodeValueId);
                 }
             }
 

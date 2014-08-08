@@ -91,7 +91,7 @@ public class ProductMediaItemProcessor {
         int configId=0;
         for(Configurations currentConfig:img.getConfigurations()){
         	currentMediaCriteriaMatches=new MediaCriteriaMatches();
-        	tempCriteriaInfo=ProductDataStore.getCriteriaInfoByDescription(currentConfig.getCriteria());
+        	tempCriteriaInfo=ProductDataStore.getCriteriaInfoByDescription(currentConfig.getCriteria(), externalProductId);
         	currentMediaCriteriaMatches.setCriteriaSetValueId(ProductDataStore.findCriteriaSetValueIdForValue(externalProductId,tempCriteriaInfo.getCode(),currentConfig.getValue().toString()));
         	currentMediaCriteriaMatches.setMediaId(mediaId);
         	mediaCriteriaMatchesAry[configId]=currentMediaCriteriaMatches;
