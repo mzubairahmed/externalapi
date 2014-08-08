@@ -11,6 +11,7 @@ import com.asi.ext.api.product.criteria.processor.AdditionalColorProcessor;
 import com.asi.ext.api.product.criteria.processor.AdditionalLocationProcessor;
 import com.asi.ext.api.product.criteria.processor.FOBPointProcessor;
 import com.asi.ext.api.product.criteria.processor.ImprintMethodProcessor;
+import com.asi.ext.api.product.criteria.processor.ProductAvailabilityProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductCategoriesProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductColorProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductImprintColorProcessor;
@@ -103,6 +104,8 @@ public class ImportTransformer {
     private FOBPointProcessor                      fobPointProcessor               = new FOBPointProcessor(1901, "0");
     private SelectedLineProcessor                  selectedLineProcessor           = new SelectedLineProcessor();
     private ProductSizeGroupProcessor              sizeProcessor                   = new ProductSizeGroupProcessor("-2001");
+    
+    private ProductAvailabilityProcessor           availabilityProcessor           = new ProductAvailabilityProcessor();
     
     private final static Logger                    LOGGER                          = Logger.getLogger(ImportTransformer.class
                                                                                            .getName());
@@ -216,6 +219,9 @@ public class ImportTransformer {
         
         // Product Catalogs
         productToSave.setProductMediaCitations(getProductMediaCitations(serviceProduct, productToSave));
+        
+        // Product Availability processing
+        productToSave.setRelationships(availabilityProcessor.getProductAvailabilities(productToSave, serviceProduct.getAvailability(), existingCriteriaSetMap, optionsCriteriaSet));
         
         // Return product model
         return productToSave;
