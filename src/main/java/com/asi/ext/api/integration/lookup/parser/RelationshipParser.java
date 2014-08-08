@@ -1,22 +1,28 @@
 package com.asi.ext.api.integration.lookup.parser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
+import com.asi.ext.api.product.transformers.ProductDataStore;
+import com.asi.ext.api.service.model.Availability;
+import com.asi.ext.api.service.model.AvailableVariations;
+import com.asi.service.product.client.vo.CriteriaSetRelationship;
 import com.asi.service.product.client.vo.CriteriaSetRelationships;
+import com.asi.service.product.client.vo.CriteriaSetValuePath;
 import com.asi.service.product.client.vo.CriteriaSetValuePaths;
-import com.asi.service.product.client.vo.ProductCriteriaSets;
+import com.asi.service.product.client.vo.Relationship;
 import com.asi.service.product.client.vo.Relationships;
 import com.asi.service.product.vo.ImprintMethod;
-import com.asi.service.product.vo.Imprints;
 
 public class RelationshipParser {
 	
+	public static final String[] SIZE_GROUP_CRITERIACODES={"CAPS","DIMS","SABR","SAHU","SAIT","SANS","SAWI","SSNM","SVWT","SOTH"};
+	private static final String[] OPTIONS_CRITERIACODES = {"SHOP","PROP","IMOP"};
 	public void mergeRelationships() {
 		
 	}
-	
+	private CriteriaSetParser criteriaSetParser=new CriteriaSetParser();	
 	 public List<CriteriaSetValuePaths> getCriteriaSetValuePaths(ImprintMethod immdMethod, String criteriaCode, String relationId, String productId) {
 		 String[] values = null;
 		 
@@ -128,5 +134,92 @@ public class RelationshipParser {
 		 }
 		 	return finalRelationships.toArray(new Relationships[0]);
 	    }
+
+	public List<Availability> getAvailabilityByRelationships(
+			List<Relationship> relationships,String extPrdId) {
+		List<Availability> availabilityList=null;
+		List<AvailableVariations> availabileVariationsList=null;
+		AvailableVariations availableVariations=null;
+		Availability availability=null;
+		String tempCriteria="";
+		String criteriaValue="";
+		int tempId=0;
+		boolean isParentOptionCriteria=false;
+		boolean isChildOptionCriteria=false;
+		String tempCriteriaCode="";
+		String optionValue=null;
+	
+		if(null!=relationships && relationships.size()>0){
+			availabilityList=new ArrayList<>();	
+			
+		for(Relationship currentRelationship:relationships){
+			availability=new Availability();
+			if(null!=currentRelationship.getCriteriaSetRelationships() && currentRelationship.getCriteriaSetRelationships().size()>0){
+				for(CriteriaSetRelationship currentCriteriaRelationship:currentRelationship.getCriteriaSetRelationships()){
+					tempCriteria=criteriaSetParser.findCriteriaBySetId(extPrdId,String.valueOf(currentCriteriaRelationship.getCriteriaSetId()));
+				if(null!=tempCriteria){
+					tempCriteriaCode=tempCriteria;
+					if(Arrays.asList(SIZE_GROUP_CRITERIACODES).contains(tempCriteriaCode))
+						{
+						tempCriteria="Size";
+						}
+					else if(Arrays.asList(OPTIONS_CRITERIACODES).contains(tempCriteriaCode)){
+						optionValue=tempCriteria.substring(tempCriteria.indexOf(":")+1);
+						tempCriteria=tempCriteriaCode;						
+						}
+					if(currentCriteriaRelationship.getIsParent()){
+						if(Arrays.asList(OPTIONS_CRITERIACODES).contains(tempCriteriaCode))		isParentOptionCriteria=true;	
+						if(Arrays.asList(SIZE_GROUP_CRITERIACODES).contains(tempCriteriaCode)){
+							availability.setParentCriteria(tempCriteria);
+						}else{
+							availability.setParentCriteria(ProductDataStore.getCriteriaInfoForCriteriaCode(tempCriteria).getDescription());
+						}
+						availability.setParentOptionName(optionValue);
+					}else{
+						if(Arrays.asList(OPTIONS_CRITERIACODES).contains(tempCriteriaCode))		isChildOptionCriteria=true;
+						if(Arrays.asList(SIZE_GROUP_CRITERIACODES).contains(tempCriteriaCode)){
+							availability.setChildCriteria(tempCriteria);
+						}else{
+							availability.setChildCriteria(ProductDataStore.getCriteriaInfoForCriteriaCode(tempCriteria).getDescription());
+						}
+						availability.setChildOptionName(optionValue);
+					
+				}
+				availabileVariationsList=new ArrayList<>();
+				List<CriteriaSetValuePath> tempCriteriaSetValuePaths=currentRelationship.getCriteriaSetValuePaths();	
+				for(CriteriaSetValuePath currentCriteriaSetValuePath:currentRelationship.getCriteriaSetValuePaths()){
+					availableVariations=new AvailableVariations();
+					if(!currentCriteriaSetValuePath.getIsParent() ){
+						criteriaValue=criteriaSetParser.findCriteriaSetValueById(extPrdId,String.valueOf(currentCriteriaSetValuePath.getCriteriaSetValueId()));
+						if(isChildOptionCriteria){
+							tempCriteria=criteriaValue.substring(criteriaValue.indexOf("__")+2);
+							availableVariations.setChildValue(tempCriteria.substring(tempCriteria.indexOf(":")+2));
+						}else{
+							availableVariations.setChildValue(criteriaValue.substring(criteriaValue.indexOf("__")+3));
+						}
+						tempId=currentCriteriaSetValuePath.getID();
+						for(CriteriaSetValuePath pairingCriteriaSetPath:tempCriteriaSetValuePaths){
+							if(tempId==pairingCriteriaSetPath.getID() && pairingCriteriaSetPath.getIsParent()){
+								criteriaValue=criteriaSetParser.findCriteriaSetValueById(extPrdId,String.valueOf(pairingCriteriaSetPath.getCriteriaSetValueId()));
+								if(isParentOptionCriteria){
+									tempCriteria=criteriaValue.substring(criteriaValue.indexOf("__")+2);
+									availableVariations.setParentValue(tempCriteria.substring(tempCriteria.indexOf(":")+2));
+								}else{
+									availableVariations.setParentValue(criteriaValue.substring(criteriaValue.indexOf("__")+3));
+								}
+								availabileVariationsList.add(availableVariations);
+							}
+						}
+					}
+					
+				}}
+				availability.setAvailableVariations(availabileVariationsList);
+				}
+			}			
+			availabilityList.add(availability);
+		}		
+		}		
+		return availabilityList;
+	}
 
 }

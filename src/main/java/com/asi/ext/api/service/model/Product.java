@@ -63,12 +63,12 @@ public class Product {
 	@JsonProperty("CanOrderLessThanMimimum")
 	private String canOrderLessThanMimimum=null;
 	@JsonProperty("Availability")
-	private Availability availability;
-	public Availability getAvailability() {
+	private List<Availability> availability;
+	public List<Availability> getAvailability() {
 		return availability;
 	}
 
-	public void setAvailability(Availability availability) {
+	public void setAvailability(List<Availability> availability) {
 		this.availability = availability;
 	}
 
