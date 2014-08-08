@@ -28,7 +28,6 @@ public class ExternalApiCORSFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
-        System.out.println(">>>>>>>>>>>>>>>>> Request/Response Filter <<<<<<<<<<<<<<<<");
         
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         response.setHeader("Access-Control-Allow-Origin", "*");

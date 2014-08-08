@@ -34,24 +34,24 @@ import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.Value;
 
 public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
-    private final static Logger LOGGER                      = Logger.getLogger(ProductSizeGroupProcessor.class.getName());
+    private final static Logger  LOGGER                      = Logger.getLogger(ProductSizeGroupProcessor.class.getName());
 
-    public final static String[]       SIZE_GROUP_CRITERIACODES    = { "CAPS", "DIMS", "SABR", "SAHU", "SAIT", "SANS", "SAWI", "SSNM",
-            "SVWT", "SOTH"                                 };
+    public final static String[] SIZE_GROUP_CRITERIACODES    = { "CAPS", "DIMS", "SABR", "SAHU", "SAIT", "SANS", "SAWI", "SSNM",
+            "SVWT", "SOTH"                                  };
 
-    private String              sizesWSResponse             = null;
+    private String               sizesWSResponse             = null;
     @SuppressWarnings("rawtypes")
-    private HashMap             sizeElementsResponse        = null;
-    private String              sizesCriteriaWSResponse     = null;
-    private String              sizesShippingDimsWSResponse = null;
-    private String              optionsProdWSResponse       = null;
+    private HashMap              sizeElementsResponse        = null;
+    private String               sizesCriteriaWSResponse     = null;
+    private String               sizesShippingDimsWSResponse = null;
+    private String               optionsProdWSResponse       = null;
 
-    private String              companyId                   = "0";
-    private String              configId                    = "0";
+    private String               companyId                   = "0";
+    private String               configId                    = "0";
 
-    private String              criteriaSetId               = "0";
+    private String               criteriaSetId               = "0";
 
-    private String              productId;
+    private String               productId;
 
     /**
      * @param companyId
@@ -72,14 +72,14 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
 
         if (CommonUtilities.isValueNull(criteriaCode)) {
             productDataStore.addErrorToBatchLogCollection(product.getExternalProductId(),
-                    ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Unable to identify the give size details");
+                    ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Unable to identify the given size details");
             return existingCriteriaSetMap;
         }
         String sizeValues = ProductParserUtil.getSizeValuesFromSize(size, criteriaCode);
 
         if (CommonUtilities.isValueNull(sizeValues)) {
             productDataStore.addErrorToBatchLogCollection(product.getExternalProductId(),
-                    ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Unable to read the give size details");
+                    ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Unable to read the given size details");
             return existingCriteriaSetMap;
         }
 
@@ -106,6 +106,16 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
         }
 
         return existingCriteriaSetMap;
+    }
+
+    public boolean isSizeNull(Size size) {
+        if (size == null
+                || (size.getApparel() == null && size.getDimension() == null && size.getCapacity() == null
+                        && size.getVolume() == null && size.getOther() == null)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private String findCriteriaCodeForSizeModel(Size size, String xid) {

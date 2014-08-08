@@ -399,7 +399,7 @@ public class ImportTransformer {
 
         
         // Product Size processing
-        if (serviceProdConfigs.getSizes() != null) {
+        if (!sizeProcessor.isSizeNull(serviceProdConfigs.getSizes())) {
             existingCriteriaSetMap =  sizeProcessor.getProductCriteriaSet(serviceProdConfigs.getSizes(), rdrProduct, existingCriteriaSetMap, configId);
         } else {
             existingCriteriaSetMap = sizeProcessor.removeSizeRelatedCriteriaSetFromExisting(existingCriteriaSetMap);

@@ -143,20 +143,41 @@ public class PriceGridParser extends ProductParser {
     }
 
     private PriceGrid getMatchingPriceGrid(List<PriceGrid> extPriceGrids, com.asi.ext.api.service.model.PriceGrid serPGrid) {
-        String extPriceModelString = getPriceModelStringFromServiceModel(serPGrid.getPrices());
+        boolean needDeepComapre = false;
+        String extPriceModelString = getPriceModelStringFromServiceModel(serPGrid, serPGrid.getPrices(), needDeepComapre);
+        PriceGrid firstMatch = null;
         for (PriceGrid pGrid : extPriceGrids) {
             if (serPGrid.getIsBasePrice().equals(pGrid.getIsBasePrice())) {
-                String extPgString = getPriceModelString(pGrid.getPrices());
+                String extPgString = getPriceModelString(pGrid, pGrid.getPrices(), false);
                 if (extPriceModelString.equalsIgnoreCase(extPgString)) {
-                    return pGrid;
+                    if (firstMatch != null) {
+                        needDeepComapre = true;
+                    }
+                    firstMatch = pGrid;
                 }
             }
+        }
+        if (needDeepComapre) {
+            extPriceModelString = getPriceModelStringFromServiceModel(serPGrid, serPGrid.getPrices(), needDeepComapre);
+            for (PriceGrid pGrid : extPriceGrids) {
+                if (serPGrid.getIsBasePrice().equals(pGrid.getIsBasePrice())) {
+                    String extPgString = getPriceModelString(pGrid, pGrid.getPrices(), needDeepComapre);
+                    if (extPriceModelString.equalsIgnoreCase(extPgString)) {
+                        return pGrid;
+                    }
+                }
+            }
+        } else {
+            return firstMatch;
         }
         return null; // no match found
     }
 
-    private String getPriceModelString(List<com.asi.service.product.client.vo.Price> prices) {
-        String pString = "";
+    private String getPriceModelString(PriceGrid pGrid, List<com.asi.service.product.client.vo.Price> prices, boolean deepComparison) {
+        String pString = pGrid.getIsBasePrice() + "###" + pGrid.getIsQUR();
+        if (deepComparison) {
+            pString = pGrid.getIsBasePrice() + "###" + pGrid.getDisplaySequence() + "###" + pGrid.getIsQUR() + "###" + pGrid.getPriceIncludes();
+        }
         for (com.asi.service.product.client.vo.Price p : prices) {
             pString = CommonUtilities.appendValue(pString, String.valueOf(p.getQuantity()), "$$$");
             pString = CommonUtilities.appendValue(pString, String.valueOf(p.getListPrice()), "$$$");
@@ -168,8 +189,11 @@ public class PriceGridParser extends ProductParser {
         return pString;
     }
 
-    private String getPriceModelStringFromServiceModel(List<Price> prices) {
-        String pString = "";
+    private String getPriceModelStringFromServiceModel(com.asi.ext.api.service.model.PriceGrid pGrid, List<Price> prices, boolean deepComparison) {
+        String pString =  pGrid.getIsBasePrice() + "###" + pGrid.getIsQUR();
+        if (deepComparison) {
+            pString = pGrid.getIsBasePrice() + "###" + pGrid.getSequence() + "###" + pGrid.getIsQUR() + "###" + pGrid.getPriceIncludes();
+        }
         for (Price p : prices) {
             pString = CommonUtilities.appendValue(pString, String.valueOf(p.getQty()), "$$$");
             pString = CommonUtilities.appendValue(pString, String.valueOf(p.getListPrice()), "$$$");
@@ -180,6 +204,7 @@ public class PriceGridParser extends ProductParser {
 
         return pString;
     }
+
 
     public List<PriceGrid> getPriceGrids(List<com.asi.ext.api.service.model.PriceGrid> servicePriceGrids, ProductDetail product) {
         int priceGridId = -1;
@@ -244,8 +269,9 @@ public class PriceGridParser extends ProductParser {
             if (criteriaSetValueId == null) {
                 productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
                         "Criteria value specified for product dosen't exist, value : " + pConfig.getValue());
+            } else {
+                finalPricingItems.add(getPricingItem(criteriaSetValueId, pGridId, productId, isBasePrice, extPItem));
             }
-            finalPricingItems.add(getPricingItem(criteriaSetValueId, pGridId, productId, isBasePrice, extPItem));
 
         }
         return finalPricingItems;

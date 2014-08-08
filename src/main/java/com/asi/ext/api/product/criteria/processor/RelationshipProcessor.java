@@ -124,7 +124,7 @@ public class RelationshipProcessor {
     private List<CriteriaSetValuePath> compareCriteriaSetValuePaths(List<CriteriaSetValuePath> newPaths,
             List<CriteriaSetValuePath> extPaths, Integer relationId) {
 
-        if (extPaths == null || !extPaths.isEmpty()) {
+        if (extPaths == null || extPaths.isEmpty()) {
             // Set existing relationship Id to all paths
             return syncValuePath(newPaths, relationId);
         } else {

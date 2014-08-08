@@ -37,61 +37,63 @@ public class ProductAvailabilityProcessor {
         int uniqPathId = -20;
         List<Relationship> processedRelations = new ArrayList<Relationship>();
         // Iterate each availability and create individual relationships
-        for (Availability availability : productAvailability) {
-
-            String parentCriteriaCode = ProductParserUtil.getCriteriaCodeFromCriteria(availability.getParentCriteria(), product.getExternalProductId());
-            String childCriteriaCode = ProductParserUtil.getCriteriaCodeFromCriteria(availability.getChildCriteria(), product.getExternalProductId());
-
-            // do validations
-            if (!CommonUtilities.isValueNull(parentCriteriaCode) && !CommonUtilities.isValueNull(childCriteriaCode)) {
-                if (ProductParserUtil.isValidAvailabilty(availability, ProductParserUtil.isOptionGroup(parentCriteriaCode))) {
-                    ProductCriteriaSets parentCrtSet = getCriteriaSet(parentCriteriaCode,
-                            ProductParserUtil.isOptionGroup(parentCriteriaCode), availability.getParentOptionName(),
-                            criteriaSetMap, optionsCriteriaSet);
-                    if (parentCrtSet != null) {
-                        ProductCriteriaSets childCrtSet = getCriteriaSet(childCriteriaCode,
-                                ProductParserUtil.isOptionGroup(childCriteriaCode), availability.getChildOptionName(),
+        if (productAvailability != null && !productAvailability.isEmpty()) {
+            for (Availability availability : productAvailability) {
+    
+                String parentCriteriaCode = ProductParserUtil.getCriteriaCodeFromCriteria(availability.getParentCriteria(), product.getExternalProductId());
+                String childCriteriaCode = ProductParserUtil.getCriteriaCodeFromCriteria(availability.getChildCriteria(), product.getExternalProductId());
+    
+                // do validations
+                if (!CommonUtilities.isValueNull(parentCriteriaCode) && !CommonUtilities.isValueNull(childCriteriaCode)) {
+                    if (ProductParserUtil.isValidAvailabilty(availability, ProductParserUtil.isOptionGroup(parentCriteriaCode))) {
+                        ProductCriteriaSets parentCrtSet = getCriteriaSet(parentCriteriaCode,
+                                ProductParserUtil.isOptionGroup(parentCriteriaCode), availability.getParentOptionName(),
                                 criteriaSetMap, optionsCriteriaSet);
-
-                        if (childCrtSet != null) {
-                            // Basic validations completed now create relationship with parent and child
-                            Relationship relationship = relProcessor.createRelationship(ProductParserUtil
-                                    .getRelationNameBasedOnCodes(parentCriteriaCode, childCriteriaCode, availability), parentCrtSet
-                                    .getCriteriaSetId(), childCrtSet.getCriteriaSetId(), product.getID(), --relationId);
-                            if (availability.getAvailableVariations() != null && !availability.getAvailableVariations().isEmpty()) {
-                                List<CriteriaSetValuePath> crtSetValuePaths = new ArrayList<>();
-                                // Create CriteriaSetValuePath combinations for each variation
-
-                                for (AvailableVariations variation : availability.getAvailableVariations()) {
-                                    // if any variations not valid then getCriteriaSetValuePaths() function will log appropriate error
-                                    // no need to worry about that
-                                    crtSetValuePaths.addAll(getCriteriaSetValuePaths(product.getExternalProductId(),
-                                            parentCriteriaCode, childCriteriaCode, variation, relationship.getID(), --uniqPathId,
-                                            product.getID()));
+                        if (parentCrtSet != null) {
+                            ProductCriteriaSets childCrtSet = getCriteriaSet(childCriteriaCode,
+                                    ProductParserUtil.isOptionGroup(childCriteriaCode), availability.getChildOptionName(),
+                                    criteriaSetMap, optionsCriteriaSet);
+    
+                            if (childCrtSet != null) {
+                                // Basic validations completed now create relationship with parent and child
+                                Relationship relationship = relProcessor.createRelationship(ProductParserUtil
+                                        .getRelationNameBasedOnCodes(parentCriteriaCode, childCriteriaCode, availability), parentCrtSet
+                                        .getCriteriaSetId(), childCrtSet.getCriteriaSetId(), product.getID(), --relationId);
+                                if (availability.getAvailableVariations() != null && !availability.getAvailableVariations().isEmpty()) {
+                                    List<CriteriaSetValuePath> crtSetValuePaths = new ArrayList<>();
+                                    // Create CriteriaSetValuePath combinations for each variation
+    
+                                    for (AvailableVariations variation : availability.getAvailableVariations()) {
+                                        // if any variations not valid then getCriteriaSetValuePaths() function will log appropriate error
+                                        // no need to worry about that
+                                        crtSetValuePaths.addAll(getCriteriaSetValuePaths(product.getExternalProductId(),
+                                                parentCriteriaCode, childCriteriaCode, variation, relationship.getID(), --uniqPathId,
+                                                product.getID()));
+                                    }
+                                    relationship.setCriteriaSetValuePaths(crtSetValuePaths);
                                 }
-                                relationship.setCriteriaSetValuePaths(crtSetValuePaths);
+                                // If there is no availability variations, which means those availability cannot be ordered
+                                // finally compare this relationship and fix ids
+                                processedRelations.add(relProcessor.compareAndUpdateRelationShip(relationship,
+                                        parentCrtSet.getCriteriaSetId(), childCrtSet.getCriteriaSetId(), product.getRelationships()));
+    
+                            } else {
+                                // TODO: productDataStore.addErrorToBatchLog("Child Criteria " + + "not found for availability");
                             }
-                            // If there is no availability variations, which means those availability cannot be ordered
-                            // finally compare this relationship and fix ids
-                            processedRelations.add(relProcessor.compareAndUpdateRelationShip(relationship,
-                                    parentCrtSet.getCriteriaSetId(), childCrtSet.getCriteriaSetId(), product.getRelationships()));
-
                         } else {
-                            // TODO: productDataStore.addErrorToBatchLog("Child Criteria " + + "not found for availability");
+                            // TODO: productDataStore.addErrorToBatchLog("Parent Criteria not found for availability");
                         }
+    
                     } else {
-                        // TODO: productDataStore.addErrorToBatchLog("Parent Criteria not found for availability");
+                        // TODO: productDataStore.addErrorToBatchLog("Invalid Product Availability Configuration ");
                     }
-
                 } else {
-                    // TODO: productDataStore.addErrorToBatchLog("Invalid Product Availability Configuration ");
+                    // TODO: productDataStore.addErrorToBatchLog("Criteria cannot be empty for availability");
                 }
-            } else {
-                // TODO: productDataStore.addErrorToBatchLog("Criteria cannot be empty for availability");
             }
         }
         // add IMMD x ARTW and IMMD x MINO relation back
-
+        
         processedRelations = includeImprintRelationsIfExists(processedRelations, product.getRelationships());
 
         System.out.println("Total time taken for processing Availability is " + (System.currentTimeMillis() - timeStarted) + " ms");
