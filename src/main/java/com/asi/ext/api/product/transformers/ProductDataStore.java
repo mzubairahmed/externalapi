@@ -26,6 +26,7 @@ import com.asi.ext.api.util.JsonToLookupTableConverter;
 import com.asi.ext.api.util.RestAPIProperties;
 import com.asi.service.product.client.vo.Currency;
 import com.asi.service.product.client.vo.DiscountRate;
+import com.asi.service.product.client.vo.ProductMediaCitations;
 
 /**
  * This class is used store elements for product transformation purpose and many
@@ -43,6 +44,7 @@ public class ProductDataStore {
 
     private static ConcurrentHashMap<String, Set<String>>             GLOBAL_BATCH_LOG_COLLECTION    = new ConcurrentHashMap<String, Set<String>>();
     private static ConcurrentHashMap<String, HashMap<String, String>> criteriaSetValueReferenceTable = new ConcurrentHashMap<String, HashMap<String, String>>();
+    private static ConcurrentHashMap<String, String>                  sizeGroupOfProduct             = new ConcurrentHashMap<>();
 
     private static Map<String, CriteriaInfo>                          criteriaInfo                   = new HashMap<String, CriteriaInfo>();
     // Lookup value tables
@@ -75,14 +77,15 @@ public class ProductDataStore {
     public static Map<String, String>                                 artworkLookupTable             = new HashMap<String, String>();
     public static Map<String, String>                                 minoLookupTable                = new HashMap<String, String>();
 
+    public static Map<String, String>                                 shippingItemLookupTable        = new HashMap<String, String>();
+
     private static Map<String, String>                                optionsLookupTable             = new HashMap<String, String>();
     private static Map<String, Currency>                              currencyLookupTable            = new HashMap<String, Currency>();
     private static Map<String, DiscountRate>                          discountLookupTable            = new HashMap<String, DiscountRate>();
 
-    private static Map<String, CriteriaInfo>                          criteriaInfoLookups            = new HashMap<String, CriteriaInfo>();
-
-    public static LinkedList<LinkedHashMap>							sizelookupsResponse		= null;
+    public static LinkedList<LinkedHashMap>							  sizelookupsResponse		= null;
     public static LinkedList<LinkedHashMap>                           sizeElementsResponse           = null;
+    
     public ProductDataStore() {
 
         if (GLOBAL_BATCH_LOG_COLLECTION == null) {
@@ -167,6 +170,20 @@ public class ProductDataStore {
         }
 
         return;
+    }
+    
+    public void registerSizeGroupOfProduct(String sizeGroup, String xid) {
+        if (sizeGroupOfProduct == null) {
+            sizeGroupOfProduct = new ConcurrentHashMap<String, String>();
+        }
+        sizeGroupOfProduct.put(xid.toUpperCase(), sizeGroup.toUpperCase());
+    }
+    
+    public static String getSizeCriteriaCodeForProduct(String xid) {
+        if (sizeGroupOfProduct != null) {
+            return sizeGroupOfProduct.get(xid.toUpperCase());
+        }
+        return null;
     }
 
     /**
@@ -1341,18 +1358,33 @@ public class ProductDataStore {
         }
     }
     
-    public static CriteriaInfo getCriteriaInfoByDescription(String description) {
+    public static CriteriaInfo getCriteriaInfoByDescription(String description, String xid) {
         if (criteriaInfo == null || criteriaInfo.isEmpty()) {
             loadCriteriaInformations();
         } 
-        for (Map.Entry<String, CriteriaInfo> crtInfo : criteriaInfo.entrySet()) {
-            if (crtInfo.getValue().getDescription().equalsIgnoreCase(description)) {
-                return crtInfo.getValue();
+        if (!description.equalsIgnoreCase("Sizes")) {
+            for (Map.Entry<String, CriteriaInfo> crtInfo : criteriaInfo.entrySet()) {
+                if (crtInfo.getValue().getDescription().equalsIgnoreCase(description)) {
+                    return crtInfo.getValue();
+                }
+            }
+        } else {
+            String criteriaCode = getSizeCriteriaCodeForProduct(xid);
+            if (criteriaCode == null) {
+                for (Map.Entry<String, CriteriaInfo> crtInfo : criteriaInfo.entrySet()) {
+                    if (crtInfo.getValue().getDescription().equalsIgnoreCase(description)) {
+                        return crtInfo.getValue();
+                    }
+                }
+            } else {
+                return criteriaInfo.get(criteriaCode);
             }
         }
         return null;
     }
+    
 
+    
     private static boolean loadCriteriaInformations() {
         try {
             LinkedList<?> wsResponse = lookupRestTemplate.getForObject(RestAPIProperties.get(ApplicationConstants.CRITERIA_INFO_URL),LinkedList.class);
@@ -1493,4 +1525,53 @@ public class ProductDataStore {
         Catalog currentCatalogs= JsonToLookupTableConverter.jsonToCatalogs(responseList,mediaCitationId,mediaCitationReferenceId);
 	return currentCatalogs;
 	}
+		
+	public static ProductMediaCitations getMediaCitationsByName(String productId, String catalogName, String catalogPageNumber, String companyId) {
+
+		String URL = RestAPIProperties.get(ApplicationConstants.PRODUCT_MEDIA_CITATION) + companyId;
+		LinkedList<?> responseList = lookupRestTemplate.getForObject(URL, LinkedList.class);
+		return JsonToLookupTableConverter.jsonToMediaCitation(responseList, productId, catalogName, catalogPageNumber);
+	}
+	
+	public static String getSetCodeValueIdForShippingItem(String value) {
+        if (shippingItemLookupTable == null || shippingItemLookupTable.isEmpty()) {
+            try {
+                LinkedList<?> shippingItemResponse = lookupRestTemplate.getForObject(
+                        RestAPIProperties.get(ApplicationConstants.PRODUCT_SHIPPING_ITEM_LOOKUP), LinkedList.class);
+                if (shippingItemResponse == null || shippingItemResponse.isEmpty()) {
+                    LOGGER.error("Shipping Item Lookup API returned null response");
+                    // TODO : Batch Error
+                    return null;
+                } else {
+                    shippingItemLookupTable = JsonToLookupTableConverter.jsonToProductCustomLookupTable(shippingItemResponse,
+                            ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE);
+                }
+            } catch (Exception e) {
+                LOGGER.error("Exception while fetching/processing Shipping Item lookup data", e);
+                return null;
+            }
+        }
+
+        return shippingItemLookupTable.get(ApplicationConstants.CONST_STRING_OTHER.toUpperCase());
+
+    }
+
+    /**
+     * @param xid
+     */
+    public static synchronized void doCleanUp(String xid) {
+        // Clean Criteria SetValue Reference Table
+        if (criteriaSetValueReferenceTable != null) {
+            criteriaSetValueReferenceTable.remove(xid);
+        }
+        // Clean Size Group Table
+        if (sizeGroupOfProduct != null) {
+            sizeGroupOfProduct.remove(xid);
+        }
+        // Clean Error logs of product
+        if (GLOBAL_BATCH_LOG_COLLECTION != null) {
+            GLOBAL_BATCH_LOG_COLLECTION.remove(xid);
+        }
+        
+    }
 }

@@ -29,6 +29,8 @@ public class ProductCategoriesProcessor {
         String crntProductCategory = null;
         if (productCategoryList != null && !productCategoryList.isEmpty()) {
             crntProductCategory = CommonUtilities.convertStringListToCSV(productCategoryList);
+        } else {
+            return getAdCategories(existingProduct.getSelectedProductCategories());
         }
         List<SelectedProductCategory> productCategories = getProductCategories(crntProductCategory, productId, xid, existingProduct);
 
@@ -112,6 +114,21 @@ public class ProductCategoriesProcessor {
             }
         }
         return categoryMap;
+    }
+    
+    private List<SelectedProductCategory> getAdCategories(List<SelectedProductCategory> categories) {
+        adCategories = new ArrayList<SelectedProductCategory>();
+        if (categories == null) {
+            return adCategories;
+        }
+        for (SelectedProductCategory ctg : categories) {
+            if (ctg != null) {
+                if (ctg.getAdCategoryFlg()) {
+                    adCategories.add(ctg);
+                }
+            }
+        }
+        return adCategories;
     }
 
     private String getCategoryCode(String category) {

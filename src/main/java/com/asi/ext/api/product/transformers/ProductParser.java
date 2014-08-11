@@ -1724,11 +1724,7 @@ public class ProductParser {
                     /*tempCriteriaSetValues = jerseyClient.IsExistingCriteriaCode(existingCriteriaSetCodeValues, curntCriteria,
                             sourceProduct);*/
                     tempCriteriaSetValues = null;
-                    if (null != tempCriteriaSetValues && !crntCriteriaCheck) {
-                        crntCriteriaCheck = true;
-                        criteriaSetValuesAry[cntr] = tempCriteriaSetValues;
-                        cntr++;
-                    } else if (null != curntCriteria
+                    if (null != curntCriteria
                             && !curntCriteria.equalsIgnoreCase(ApplicationConstants.CONST_STRING_NULL_SMALL)) {
                         crntCriteriaCheck = true;
                         criteriaSetValuesID = criteriaSetValuesID - 1;

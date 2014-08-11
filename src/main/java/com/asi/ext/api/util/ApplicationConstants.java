@@ -1,12 +1,16 @@
 package com.asi.ext.api.util;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+
+import com.asi.ext.api.product.criteria.processor.ProductSizeGroupProcessor;
 
 public class ApplicationConstants {
     private final static Logger                      LOGGER                                      = Logger.getLogger(ApplicationConstants.class
@@ -107,13 +111,14 @@ public class ApplicationConstants {
     public static final String                       CONST_UPCHARGE_PRICE_GRID_CODE              = "OTCH";
     public static final String                       CONST_MARKET_SEGMENT_CODE                   = "USAALL";
     public static final String                       CONST_LESS_THAN_MIN_CRT_CODE                = "LMIN";
-    public static final String                       CONST_PRICE_GRID_TYPE_CODE                  = "CHRG";
+    public static final String                       CONST_PRICE_GRID_ITEM_CODE                  = "CHRG";
     public static final String                       CONST_SIZE_OTHER_CODE                       = "SOTH";
     public static final String                       CONST_IMPRINT_METHOD_CODE                   = "IMMD";
     public static final String                       CONST_ARTWORK_CODE                          = "ARTW";
     public static final String                       CONST_MINIMUM_QUANTITY                      = "MINO";
     public static final String                       CONST_STRING_CONST_QUR                      = "QUR";
     public static final String                       CONST_VALUE_TYPE_CODE_LOOK                  = "LOOK";
+    public static final String                       CONST_VALUE_TYPE_CODE_LIST                  = "LIST";
     public static final String                       CONST_VALUE_TYPE_CODE_CUST                  = "CUST";
     public static final String                       CONST_VALUE_TYPE_CODE_COLOR                 = "COLR";
     public static final String                       CONST_VALUE_TYPE_CODE_PMS                   = "PMSN ";
@@ -269,7 +274,10 @@ public class ApplicationConstants {
     private static final String[]                    UPCHARGE_PRICE_CRITERIA_CODES               = { "ADCL", "ADLN", "CAPS",
             "DIMS", "IMCL", "IMMD", "IMOP", "IMSZ", "LMIN", "MTRL", "ORGN", "PCKG", "FOBP", "PRCL", "PROP", "RUSH", "SABR", "SAHU",
             "SAIT", "SANS", "SAWI", "SDRU", "SHAP", "SHOP", "SMPL", "SOTH", "SSNM", "SVWT"      };
-	public static final String CONST_SELECTED_LINE_NAMES = "LNNM";
+	
+    public final static List<String>       SIZE_GROUP_CRITERIACODES    = Arrays.asList(ProductSizeGroupProcessor.SIZE_GROUP_CRITERIACODES);
+    
+    public static final String CONST_SELECTED_LINE_NAMES = "LNNM";
 	
 	
 

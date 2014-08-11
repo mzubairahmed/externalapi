@@ -6,28 +6,35 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(Include.NON_NULL)
 public class Value {
- @JsonProperty("Attribute")
- private String attribute;
- @JsonProperty("Value")
- private String value;
- public String getAttribute() {
-	return attribute;
-}
-public void setAttribute(String attribute) {
-	this.attribute = attribute;
-}
-public String getValue() {
-	return value;
-}
-public void setValue(String value) {
-	this.value = value;
-}
-public String getUnit() {
-	return unit;
-}
-public void setUnit(String unit) {
-	this.unit = unit;
-}
-@JsonProperty("Unit")
-private String unit;
+    @JsonProperty("Attribute")
+    private String attribute;
+    @JsonProperty("Value")
+    private String value;
+
+    public String getAttribute() {
+        return attribute;
+    }
+
+    public void setAttribute(String attribute) {
+        this.attribute = attribute;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    @JsonProperty("Unit")
+    private String unit;
 }

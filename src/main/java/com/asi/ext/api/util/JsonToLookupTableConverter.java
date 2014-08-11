@@ -1,6 +1,7 @@
 package com.asi.ext.api.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -12,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 import org.json.simple.parser.ContainerFactory;
 import org.json.simple.parser.JSONParser;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.asi.ext.api.radar.lookup.model.PriceUnitJsonModel;
@@ -20,6 +22,9 @@ import com.asi.ext.api.response.JsonProcessor;
 import com.asi.ext.api.service.model.Catalog;
 import com.asi.service.product.client.vo.Currency;
 import com.asi.service.product.client.vo.DiscountRate;
+import com.asi.service.product.client.vo.MediaCitationReference;
+import com.asi.service.product.client.vo.ProductMediaCitationReferences;
+import com.asi.service.product.client.vo.ProductMediaCitations;
 
 public final class JsonToLookupTableConverter {
 
@@ -605,7 +610,7 @@ public final class JsonToLookupTableConverter {
                 if (crntValue != null && !crntValue.isEmpty()) {
                     String criteriaCode = String.valueOf(crntValue.get("CriteriaCode"));
                     HashMap<String, String> criteriaSetAttributeMap = new HashMap<String, String>();
-                    LinkedList<?> unitsOfMeasureList = (LinkedList<?>) crntValue.get("UnitsOfMeasure");
+                    List<?> unitsOfMeasureList = (List<?>) crntValue.get("UnitsOfMeasure");
                     if (unitsOfMeasureList != null) {
                         Iterator<?> unitOfMeasureItr = unitsOfMeasureList.iterator();
                         while (unitOfMeasureItr.hasNext()) {
@@ -637,13 +642,13 @@ public final class JsonToLookupTableConverter {
                     if (criteriaItemMap != null) {
 
                         HashMap<String, String> criteriaItem = new HashMap<String, String>();
-                        LinkedList<?> codeValueGroupList = (LinkedList<?>) criteriaItemMap.get("CodeValueGroups");
+                        List<?> codeValueGroupList = (List<?>) criteriaItemMap.get("CodeValueGroups");
                         if (codeValueGroupList != null) {
                             Iterator<?> codeValueGroupItr = codeValueGroupList.iterator();
                             while (codeValueGroupItr.hasNext()) {
                                 Map<?, ?> codeValueGroup = (LinkedHashMap<?, ?>) codeValueGroupItr.next();
                                 if (codeValueGroup != null && !codeValueGroup.isEmpty()) {
-                                    LinkedList<?> setCodeValueList = (LinkedList<?>) codeValueGroup.get("SetCodeValues");
+                                    List<?> setCodeValueList = (List<?>) codeValueGroup.get("SetCodeValues");
                                     Iterator<?> setCodeValueIter = setCodeValueList.iterator();
                                     while (setCodeValueIter.hasNext()) {
                                         Map<?, ?> setCodeValue = (LinkedHashMap<?, ?>) setCodeValueIter.next();
@@ -860,6 +865,82 @@ public final class JsonToLookupTableConverter {
             pe.printStackTrace();
         }		
 		return returnCatalog;
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	public static ProductMediaCitations jsonToMediaCitation(LinkedList<?> responseList, String productID, String catalogName, String catalogPageNumber) {
+
+		ProductMediaCitations mediaCitation = new ProductMediaCitations();
+		List<ProductMediaCitationReferences> productMediaCitationReferences;
+		ProductMediaCitationReferences productMediaCitationReference;
+		MediaCitationReference mediaCitationReference;
+		LinkedHashMap current;
+        ArrayList<LinkedHashMap> productCitationReferences;
+        
+        Integer newMediaCitationID = -1;
+        Integer newMediaCitationReferenceID = -1;
+		
+		try {
+
+			for(Iterator<?> iter = responseList.iterator(); iter.hasNext(); ) {
+
+            	current = (LinkedHashMap) iter.next();
+            	
+            	if(current.get("Name").toString().equalsIgnoreCase(catalogName)) {
+            		
+            		mediaCitation.setId(String.valueOf(newMediaCitationID));
+            		mediaCitation.setProductId(productID);
+            		mediaCitation.setMediaCitationId(current.get("ID").toString());
+            		mediaCitation.setIsInitMediaCitation("false");
+            		
+            		productCitationReferences = (ArrayList<LinkedHashMap>) current.get("MediaCitationReferences");
+
+            		if(productCitationReferences != null && !productCitationReferences.isEmpty()) {
+            			boolean pageNumberFound = false;
+            			productMediaCitationReferences = new ArrayList<ProductMediaCitationReferences>();
+
+                		productMediaCitationReference = new ProductMediaCitationReferences();
+                		productMediaCitationReference.setProductId(productID);
+                		
+                		productMediaCitationReference.setMediaCitationId(mediaCitation.getMediaCitationId());
+                		productMediaCitationReference.setIsPrimary("false");
+                		
+                		mediaCitationReference = new MediaCitationReference();
+
+            			for(LinkedHashMap citationReference : productCitationReferences) {
+
+            				pageNumberFound = catalogPageNumber.equals(citationReference.get("Number").toString());
+                    		if(pageNumberFound) {
+                    			productMediaCitationReference.setMediaCitationReferenceId(citationReference.get("ID").toString());
+                        		mediaCitationReference.setId(productMediaCitationReference.getMediaCitationReferenceId());
+                        		if(!StringUtils.isEmpty(citationReference.get("Sequence"))) {
+                        			mediaCitationReference.setSequence(citationReference.get("Sequence").toString());
+                        		}
+	                    		break;
+	                    	}
+	                    }
+            			
+            			if(!pageNumberFound) {
+                    		mediaCitationReference.setId(String.valueOf(--newMediaCitationReferenceID));
+                    		productMediaCitationReference.setMediaCitationReferenceId(String.valueOf(newMediaCitationReferenceID));
+            			}
+            			
+                		mediaCitationReference.setNumber(catalogPageNumber);
+                		mediaCitationReference.setMediaCitationId(productMediaCitationReference.getMediaCitationId());
+                		productMediaCitationReference.setMediaCitationReference(mediaCitationReference);
+                		
+                		productMediaCitationReferences.add(productMediaCitationReference);
+            			
+            			mediaCitation.setProductMediaCitationReferences(productMediaCitationReferences);
+            			
+            		}
+            		break;
+            	}
+            }
+		} catch (Exception pe) {
+			pe.printStackTrace();
+		}		
+		return mediaCitation;
 	}
 
 
