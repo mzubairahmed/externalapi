@@ -31,8 +31,6 @@ public class ProductAvailabilityProcessor {
 
     public List<Relationship> getProductAvailabilities(ProductDetail product, List<Availability> productAvailability,
             Map<String, ProductCriteriaSets> criteriaSetMap, Map<String, List<ProductCriteriaSets>> optionsCriteriaSet) {
-        LOGGER.info("Started Processing product availability");
-        long timeStarted = System.currentTimeMillis();
         int relationId = -4; // Starting with -4
         int uniqPathId = -20;
         List<Relationship> processedRelations = new ArrayList<Relationship>();
@@ -96,7 +94,6 @@ public class ProductAvailabilityProcessor {
         
         processedRelations = includeImprintRelationsIfExists(processedRelations, product.getRelationships());
 
-        System.out.println("Total time taken for processing Availability is " + (System.currentTimeMillis() - timeStarted) + " ms");
 
         LOGGER.info("Started Processing product availability");
         return processedRelations;
