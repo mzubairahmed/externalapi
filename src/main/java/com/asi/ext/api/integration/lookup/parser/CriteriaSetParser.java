@@ -3,8 +3,11 @@ package com.asi.ext.api.integration.lookup.parser;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.asi.ext.api.service.model.Value;
+
 public class CriteriaSetParser {
 	 private static ConcurrentHashMap<String, HashMap<String, String>> criteriaSetReference =  new ConcurrentHashMap<>();
+	 private static ConcurrentHashMap<String, HashMap<String, Object>> criteriaSetValueReference =  new ConcurrentHashMap<>();
 	 private static ConcurrentHashMap<String, HashMap<String, String>> criteriaSetIdReference =  new ConcurrentHashMap<>();
     public void addReferenceSet(String externalProductId, String criteriaCode,
             Integer criteriaSetValueId,String value) {
@@ -82,4 +85,33 @@ public class CriteriaSetParser {
         }
         return tempMap.get(valueOf);
 	}
+	public void addSizesReferenceSet(String externalProductId,
+			String criteriaCode, String criteriaSetValueId, Object valueObj) {
+    	if(null!=valueObj && null!=criteriaCode)
+    	{
+          if (criteriaSetValueReference== null || criteriaSetValueReference.isEmpty()) {
+        	  criteriaSetValueReference = new ConcurrentHashMap<String, HashMap<String, Object>>();
+            }
+
+            if (criteriaSetValueReference.get(externalProductId.trim()) == null) {
+            	criteriaSetValueReference.put(externalProductId.trim(), new HashMap<String, Object>());
+            }
+            criteriaSetValueReference.get(externalProductId.trim()).put(criteriaSetValueId,valueObj);
+    	} else
+    	{
+    		return;
+    	}
+		
+	}
+	 public Object findSizesCriteriaSetById(String extPrdId, String criteriaSetValueId) {
+	        if (criteriaSetValueReference == null || criteriaSetValueReference.isEmpty()) {
+	            return null;
+	        }
+	        HashMap<String, Object> tempMap = criteriaSetValueReference.get(extPrdId.trim());
+
+	        if (tempMap == null || tempMap.isEmpty()) {
+	            return null;
+	        }
+	        return tempMap.get(criteriaSetValueId);
+	    }
 }
