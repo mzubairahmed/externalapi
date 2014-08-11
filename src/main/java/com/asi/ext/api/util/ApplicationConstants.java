@@ -111,7 +111,7 @@ public class ApplicationConstants {
     public static final String                       CONST_UPCHARGE_PRICE_GRID_CODE              = "OTCH";
     public static final String                       CONST_MARKET_SEGMENT_CODE                   = "USAALL";
     public static final String                       CONST_LESS_THAN_MIN_CRT_CODE                = "LMIN";
-    public static final String                       CONST_PRICE_GRID_TYPE_CODE                  = "CHRG";
+    public static final String                       CONST_PRICE_GRID_ITEM_CODE                  = "CHRG";
     public static final String                       CONST_SIZE_OTHER_CODE                       = "SOTH";
     public static final String                       CONST_IMPRINT_METHOD_CODE                   = "IMMD";
     public static final String                       CONST_ARTWORK_CODE                          = "ARTW";

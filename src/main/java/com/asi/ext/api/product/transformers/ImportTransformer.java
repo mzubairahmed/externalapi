@@ -255,7 +255,6 @@ public class ImportTransformer {
         
         // Product Availability processing
         productToSave.setRelationships(availabilityProcessor.getProductAvailabilities(productToSave, serviceProduct.getAvailability(), existingCriteriaSetMap, optionsCriteriaSet));
-        
         // Return product model
         return productToSave;
     }
