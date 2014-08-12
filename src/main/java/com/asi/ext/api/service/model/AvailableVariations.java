@@ -6,18 +6,26 @@ public class AvailableVariations {
 	@JsonProperty("ParentValue")
 	private String parentValue;
 	@JsonProperty("ChildValue")
-	private String childValue;
+	private Object childValue;
 	public String getParentValue() {
 		return parentValue;
 	}
 	public void setParentValue(String parentValue) {
 		this.parentValue = parentValue;
 	}
-	public String getChildValue() {
+	public Object getChildValue() {
 		return childValue;
 	}
-	public void setChildValue(String childValue) {
+	public void setChildValue(Object childValue) {
 		this.childValue = childValue;
+	}
+	@Override
+	public String toString() {
+		return "AvailableVariations [parentValue=" + parentValue
+				+ ", childValue=" + childValue + ", getParentValue()="
+				+ getParentValue() + ", getChildValue()=" + getChildValue()
+				+ ", getClass()=" + getClass() + ", hashCode()=" + hashCode()
+				+ ", toString()=" + super.toString() + "]";
 	}
 	
 }
