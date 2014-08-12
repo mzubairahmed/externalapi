@@ -930,8 +930,9 @@ public class PriceGridParser extends ProductParser {
                         servicePricesList.add(currentPrices);
                     }
                     currentPriceGrid.setPrices(servicePricesList);
-                    currentPriceGrid.setPriceConfigurations(setPriceGridWithItsPriceCriteria(radarPriceGrid, productDetail));
+                   // currentPriceGrid.setPriceConfigurations(setPriceGridWithItsPriceCriteria(radarPriceGrid, productDetail));
                 }
+                currentPriceGrid.setPriceConfigurations(setPriceGridWithItsPriceCriteria(radarPriceGrid, productDetail));
                 servicePriceGrids.add(currentPriceGrid);
             }
             serviceProduct.setPriceGrids(servicePriceGrids);
