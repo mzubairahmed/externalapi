@@ -117,6 +117,19 @@ public class ImportTransformer {
             productToSave.setID(productId);
             productToSave.setCompanyId(companyId);
             productToSave.setExternalProductId(serviceProduct.getExternalProductId());
+            // Issue: VELOEXTAPI-230
+            // these fields are set for new product case on temporary basis
+            // as of now RADAR API doesn't include this default implementation
+            // so we have to provide it.
+            productToSave.setProductLockedFlag("false");
+            productToSave.setChangeProductReasonCode("NONE");
+            productToSave.setShow1MediaIdIm(0);
+            productToSave.setShow1MediaIdVd(0);
+            productToSave.setLocationCode("WIPD");
+            productToSave.setSameDayRushFlag("U");
+            productToSave.setRushServiceFlag("U");
+            productToSave.setWorkflowStatusCode("INPR");
+            productToSave.setWorkflowStatusStateCode("INCP");
         }
         // DataSourceId
         productToSave.setDataSourceId(dataSourceId);
