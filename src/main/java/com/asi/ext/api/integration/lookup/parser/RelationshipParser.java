@@ -204,10 +204,15 @@ public class RelationshipParser {
 					if(!currentCriteriaSetValuePath.getIsParent() ){
 						criteriaValue=criteriaSetParser.findCriteriaSetValueById(extPrdId,String.valueOf(currentCriteriaSetValuePath.getCriteriaSetValueId()));
 						if(isChildOptionCriteria){
+							
 							tempCriteria=criteriaValue.substring(criteriaValue.indexOf("__")+2);
 							availableVariations.setChildValue(tempCriteria.substring(tempCriteria.indexOf(":")+2));
 						}else{
-							availableVariations.setChildValue(criteriaValue.substring(criteriaValue.indexOf("__")+3));
+							if(null==criteriaValue){
+								availableVariations.setChildValue(criteriaSetParser.findSizesCriteriaSetById(extPrdId, String.valueOf(currentCriteriaSetValuePath.getCriteriaSetValueId())));
+							}else{
+								availableVariations.setChildValue(criteriaValue.substring(criteriaValue.indexOf("__")+3));
+							}
 						}
 						tempId=currentCriteriaSetValuePath.getID();
 						for(CriteriaSetValuePath pairingCriteriaSetPath:tempCriteriaSetValuePaths){
