@@ -9,11 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.asi.ext.api.product.transformers.ProductDataStore;
-
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.service.product.client.vo.ProductDetail;
-import com.asi.service.product.client.vo.ProductKeywords;
 import com.asi.service.product.client.vo.SelectedProductCategory;
 
 /**
