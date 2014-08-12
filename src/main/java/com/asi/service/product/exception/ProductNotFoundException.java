@@ -10,7 +10,9 @@ public class ProductNotFoundException extends BaseException {
 	/**
 	 * 
 	 */
-
+	public ProductNotFoundException(Exception cause, String productId) {
+		super(cause, productId);
+	}
 
 
 }

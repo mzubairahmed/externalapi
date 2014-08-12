@@ -2,12 +2,14 @@ package com.asi.service.product.list;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -36,6 +38,26 @@ public class ProductSearchService {
 	ProductRepo repository;
 	@Autowired
 	ErrorMessageHandler errorMessageHandler;
+	
+    @Autowired
+    HttpServletRequest request;
+    
+
+	private HttpHeaders getHeadersInfo() {
+		 
+		HttpHeaders header = new HttpHeaders();
+		Enumeration<String> headerNames = request.getHeaderNames();
+
+		while (headerNames.hasMoreElements()) {
+			String key = headerNames.nextElement();
+			String value = request.getHeader(key);
+			header.add(key, value);
+		}
+		return header;
+	}
+	
+
+	
 	private static Logger _LOGGER = LoggerFactory
 			.getLogger(ProductSearchService.class);
 
@@ -51,7 +73,8 @@ public class ProductSearchService {
 			_LOGGER.debug("calling service");
 		Product productResponse = null;
 		try {
-			productResponse = repository.getServiceProduct(companyId, xid);
+			
+			productResponse = repository.getServiceProduct(getHeadersInfo(), companyId, xid);
 		} catch (Exception e) {
 			e.printStackTrace();
 			//throw new UnhandledException(e.getMessage());

@@ -2,6 +2,7 @@ package com.asi.service.resource;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -41,7 +43,7 @@ public class ProductServiceResource {
     private static Logger _LOGGER = LoggerFactory.getLogger(ProductServiceResource.class);
     @Autowired
     private MessageSource messageSource;
-
+    
     @Secured("ROLE_CUSTOMER")
     @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.PUT, headers = "content-type=application/json, application/xml", produces = {
             "application/xml", "application/json" })
@@ -62,7 +64,7 @@ public class ProductServiceResource {
         return new ResponseEntity<Product>(product, null, HttpStatus.CREATED);
     }
 
-    @Secured("ROLE_CUSTOMER")
+//    @Secured("ROLE_CUSTOMER")
     @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.POST, headers = "content-type=application/json, application/xml", produces = {
             "application/xml", "application/json" })
     public ResponseEntity<ExternalAPIResponse> updateProduct(HttpEntity<Product> requestEntity, @PathVariable("companyid") String companyId,
@@ -72,7 +74,7 @@ public class ProductServiceResource {
         }
         ExternalAPIResponse message = null;
         try {
-            message = productService.updateProduct(companyId, xid, requestEntity.getBody());
+            message = productService.updateProduct(requestEntity.getHeaders(), companyId, xid, requestEntity.getBody());
         } catch (Exception e) {
             throw e;
         }

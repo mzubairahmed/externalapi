@@ -21,6 +21,12 @@
 		targetNamespace="http://www.asicentral.com/schema/product" locationUri="/productSearchService">
 			<web-services:xsd location="/WEB-INF/product.xsd"/>
 		</web-services:dynamic-wsdl>
+
+		<web-services:dynamic-wsdl id="loginAPI" portTypeName="LoginAPI" 
+		targetNamespace="http://www.asicentral.com/schema/login" locationUri="/loginAPI">
+			<web-services:xsd location="/WEB-INF/login.xsd"/>
+		</web-services:dynamic-wsdl>
+
 		<context:component-scan base-package="com.asi"></context:component-scan>
 		<cache:annotation-driven />
 		<bean id="environmentConfigurator" class="com.asi.ext.api.config.EnvironmentConfigurator">
@@ -57,6 +63,9 @@
 	    <bean id="productServiceClient" class="com.asi.service.product.client.ProductClient">
 	    	<property name="productSearchUrl" value="${ws.api.product.import}"></property> 
 	    </bean>	    
+	    <bean id="loginService" class="com.asi.service.resource.LoginService">
+	    	<property name="loginAPIUrl" value="${ws.api.login}"></property>
+	    </bean>
 	    <!-- <bean id="lookupDataStore" class="com.asi.ext.api.product.transformers.ProductDataStore">
 		    <property name="lookupRestTemplate" ref="restTemplate"/>
 		     <property name="lookupConverter" ref="jsonlookupConvertor" />	    

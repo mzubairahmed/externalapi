@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
@@ -153,10 +154,11 @@ public class ProductRepo {
         return null;
     }
 
-    public ExternalAPIResponse updateProduct(String companyId, String xid, com.asi.ext.api.service.model.Product serviceProduct) {
+    public ExternalAPIResponse updateProduct(HttpHeaders headers, String companyId, String xid, com.asi.ext.api.service.model.Product serviceProduct) {
         ProductDetail existingRadarProduct = null;
         try {
-            existingRadarProduct = productClient.getRadarProduct(companyId, serviceProduct.getExternalProductId());
+//            existingRadarProduct = productClient.getRadarProduct(companyId, serviceProduct.getExternalProductId());
+        	existingRadarProduct = productClient.doIt(headers, companyId, serviceProduct.getExternalProductId());
         } catch (ProductNotFoundException e) {
             _LOGGER.info("Product Not found with Existing, going to create new Product");
         }
@@ -169,7 +171,7 @@ public class ProductRepo {
             return productClient.convertExceptionToResponseModel(e);
         }
         // Saving product to Radar API
-        ExternalAPIResponse response = productClient.saveProduct(existingRadarProduct);
+        ExternalAPIResponse response = productClient.saveProduct(headers, existingRadarProduct);
         return appendErrorLogsToResponse(response, existingRadarProduct.getExternalProductId());
     }
 
@@ -189,9 +191,9 @@ public class ProductRepo {
     }
 
     @SuppressWarnings("unused")
-    private Product prepairProduct(String companyID, String productID) throws ProductNotFoundException, RestClientException,
+    private Product prepairProduct(HttpHeaders headers, String companyID, String productID) throws ProductNotFoundException, RestClientException,
             UnsupportedEncodingException {
-        productDetail = getProductFromService(companyID, productID);
+        productDetail = getProductFromService(headers, companyID, productID);
         Product product = new Product();
         BeanUtils.copyProperties(productDetail, product);
         // product=lookupsParser.setProductConfigurations(productDetail,product);
@@ -208,8 +210,8 @@ public class ProductRepo {
         return product;
     }
 
-    public ProductDetail getProductFromService(String companyID, String productID) throws ProductNotFoundException {
-        productDetail = productClient.doIt(companyID, productID);
+    public ProductDetail getProductFromService(HttpHeaders headers, String companyID, String productID) throws ProductNotFoundException {
+        productDetail = productClient.doIt(headers, companyID, productID);
 
         return productDetail;
 
@@ -248,10 +250,10 @@ public class ProductRepo {
         return dataSourceId;
     }
 
-    public com.asi.ext.api.service.model.Product getServiceProduct(String companyId, String xid) {
+    public com.asi.ext.api.service.model.Product getServiceProduct(HttpHeaders headers, String companyId, String xid) {
         com.asi.ext.api.service.model.Product serviceProduct = null;
         try {
-            productDetail = getProductFromService(companyId, xid);
+            productDetail = getProductFromService(headers, companyId, xid);
             // serviceProduct=prepairServiceProduct();
             if (null != productDetail) {
                 serviceProduct = new com.asi.ext.api.service.model.Product();
