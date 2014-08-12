@@ -4,6 +4,7 @@
 package com.asi.ext.api.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 
 import com.asi.core.repo.product.ProductRepo;
 import com.asi.ext.api.service.ProductService;
@@ -37,9 +38,9 @@ public class ProductServiceImpl implements ProductService {
      * com.asi.ext.api.service.model.Product)
      */
     @Override
-    public ExternalAPIResponse updateProduct(String companyId, String xid, Product serviceProduct) {
+    public ExternalAPIResponse updateProduct(HttpHeaders headers, String companyId, String xid, Product serviceProduct) {
         // TODO Auto-generated method stub
-        return productRepo.updateProduct(companyId, xid, serviceProduct);
+        return productRepo.updateProduct(headers, companyId, xid, serviceProduct);
     }
 
     /**

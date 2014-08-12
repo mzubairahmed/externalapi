@@ -1,14 +1,24 @@
 package com.asi.service.product.client;
 
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -24,30 +34,40 @@ public class ProductClient {
     @Autowired
     @Qualifier("restTemplate")
     RestTemplate             restTemplate;
+
     private String           productSearchUrl;
-    private JerseyClientPost jerseyClientPost = new JerseyClientPost();
+    
+    @SuppressWarnings("unused")
+	private JerseyClientPost jerseyClientPost = new JerseyClientPost();
     private static Logger    _LOGGER          = LoggerFactory.getLogger(ProductClient.class);
 
-    public ProductDetail doIt(String companyID, String productID) throws ProductNotFoundException {
-        return searchProduct(companyID, productID);
+    public ProductDetail doIt(HttpHeaders headers, String companyID, String productID) throws ProductNotFoundException {
+        return searchProduct(headers, companyID, productID);
     }
 
     public ProductDetail getRadarProduct(String companyID, String productID) throws ProductNotFoundException {
         return searchRadarProduct(companyID, productID);
     }
 
-    private ProductDetail searchProduct(String companyID, String productID) throws ProductNotFoundException
+    private ProductDetail searchProduct(HttpHeaders headers, String companyID, String productID) throws ProductNotFoundException
 
     {
         String productSearchUrl = getProductSearchUrl() + "?companyId={companyID}&externalProductId={productID}";
 
         ProductDetail product = null;
         try {
-            product = restTemplate.getForObject(productSearchUrl, ProductDetail.class, companyID, productID);
+//            product = restTemplate.getForObject(productSearchUrl, ProductDetail.class, companyID, productID);
+            
+            HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
+            
+            ResponseEntity<ProductDetail> response = restTemplate.exchange(productSearchUrl, HttpMethod.GET, requestEntity, ProductDetail.class, companyID, productID);
+            if(response != null && response.getBody() != null) {
+            	product = response.getBody();
+            }
 
         } catch (RestClientException ex) {
             _LOGGER.error(ex.getMessage());
-            ProductNotFoundException exc = new ProductNotFoundException(productID);
+            ProductNotFoundException exc = new ProductNotFoundException(ex, productID);
             exc.setStackTrace(ex.getStackTrace());
             throw exc;
         }
@@ -72,12 +92,17 @@ public class ProductClient {
         return product;
     }
 
-    public ExternalAPIResponse saveProduct(ProductDetail product) {
+    public ExternalAPIResponse saveProduct(HttpHeaders headers, ProductDetail product) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             _LOGGER.info("Product Data : " + mapper.writeValueAsString(product));
-            ResponseEntity<?> response = restTemplate.postForObject(productSearchUrl, product, ResponseEntity.class);
             
+            HttpEntity<ProductDetail> requestEntity = new HttpEntity<>(product, headers);
+            
+//            ResponseEntity<?> response = restTemplate.postForObject(productSearchUrl, product, ResponseEntity.class);
+
+            ResponseEntity<?> response = restTemplate.exchange(productSearchUrl, HttpMethod.POST, requestEntity, ResponseEntity.class);
+
             _LOGGER.info("Result : " + response);
             return getExternalAPIResponse("Product Saved successfully", HttpStatus.OK, null);
         } catch (HttpClientErrorException hce) {
@@ -108,7 +133,7 @@ public class ProductClient {
 
         return response;
     }
-
+    
     /**
      * @return the productSearchUrl
      */

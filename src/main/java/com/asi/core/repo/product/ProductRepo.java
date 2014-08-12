@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
@@ -30,6 +31,7 @@ import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.ext.api.service.model.Catalog;
 import com.asi.ext.api.service.model.Configurations;
+import com.asi.ext.api.service.model.Criteria;
 import com.asi.ext.api.service.model.Image;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.service.product.client.LookupValuesClient;
@@ -113,8 +115,7 @@ public class ProductRepo {
     ConfigurationsParser configurationParser;
     @Autowired
     ImprintParser        imprintParser;
-    PriceGridParser      priceGridParser = new PriceGridParser();
-
+    PriceGridParser priceGridParser=new PriceGridParser();
     public ConfigurationsParser getConfigurationParser() {
         return configurationParser;
     }
@@ -153,10 +154,11 @@ public class ProductRepo {
         return null;
     }
 
-    public ExternalAPIResponse updateProduct(String companyId, String xid, com.asi.ext.api.service.model.Product serviceProduct) {
+    public ExternalAPIResponse updateProduct(HttpHeaders headers, String companyId, String xid, com.asi.ext.api.service.model.Product serviceProduct) {
         ProductDetail existingRadarProduct = null;
         try {
-            existingRadarProduct = productClient.getRadarProduct(companyId, serviceProduct.getExternalProductId());
+//            existingRadarProduct = productClient.getRadarProduct(companyId, serviceProduct.getExternalProductId());
+        	existingRadarProduct = productClient.doIt(headers, companyId, serviceProduct.getExternalProductId());
         } catch (ProductNotFoundException e) {
             _LOGGER.info("Product Not found with Existing, going to create new Product");
         }
@@ -170,13 +172,8 @@ public class ProductRepo {
         }
 
         // Saving product to Radar API
-        ExternalAPIResponse response = productClient.saveProduct(existingRadarProduct);
-        response = appendErrorLogsToResponse(response, existingRadarProduct.getExternalProductId());
-
-        // Do Clean up
-        doCleanUp(existingRadarProduct.getExternalProductId());
-
-        return response;
+        ExternalAPIResponse response = productClient.saveProduct(headers, existingRadarProduct);
+        return appendErrorLogsToResponse(response, existingRadarProduct.getExternalProductId());
     }
 
     private ExternalAPIResponse appendErrorLogsToResponse(ExternalAPIResponse response, String xid) {
@@ -199,9 +196,9 @@ public class ProductRepo {
     }
 
     @SuppressWarnings("unused")
-    private Product prepairProduct(String companyID, String productID) throws ProductNotFoundException, RestClientException,
+    private Product prepairProduct(HttpHeaders headers, String companyID, String productID) throws ProductNotFoundException, RestClientException,
             UnsupportedEncodingException {
-        productDetail = getProductFromService(companyID, productID);
+        productDetail = getProductFromService(headers, companyID, productID);
         Product product = new Product();
         BeanUtils.copyProperties(productDetail, product);
         // product=lookupsParser.setProductConfigurations(productDetail,product);
@@ -218,8 +215,8 @@ public class ProductRepo {
         return product;
     }
 
-    public ProductDetail getProductFromService(String companyID, String productID) throws ProductNotFoundException {
-        productDetail = productClient.doIt(companyID, productID);
+    public ProductDetail getProductFromService(HttpHeaders headers, String companyID, String productID) throws ProductNotFoundException {
+        productDetail = productClient.doIt(headers, companyID, productID);
 
         return productDetail;
 
@@ -258,17 +255,17 @@ public class ProductRepo {
         return dataSourceId;
     }
 
-    public com.asi.ext.api.service.model.Product getServiceProduct(String companyId, String xid) {
+    public com.asi.ext.api.service.model.Product getServiceProduct(HttpHeaders headers, String companyId, String xid) {
         com.asi.ext.api.service.model.Product serviceProduct = null;
         try {
-            productDetail = getProductFromService(companyId, xid);
+            productDetail = getProductFromService(headers, companyId, xid);
             // serviceProduct=prepairServiceProduct();
             if (null != productDetail) {
                 serviceProduct = new com.asi.ext.api.service.model.Product();
                 BeanUtils.copyProperties(productDetail, serviceProduct);
                 serviceProduct.setShipperBillsBy(productDetail.getShipperBillsByCode());
-                serviceProduct = configurationParser.setProductWithConfigurations(productDetail, serviceProduct);
-                serviceProduct = priceGridParser.setProductWithPriceGrids(productDetail, serviceProduct);
+                serviceProduct=configurationParser.setProductWithConfigurations(productDetail, serviceProduct);
+                serviceProduct=priceGridParser.setProductWithPriceGrids(productDetail,serviceProduct);
                 serviceProduct = setBasicProductDetails(productDetail, serviceProduct);
                 /*
                  * List<com.asi.ext.api.service.model.PriceGrid> priceGridList = new ArrayList<>();
@@ -302,12 +299,12 @@ public class ProductRepo {
         List<SelectedComplianceCert> complianceCertsList = radProduct.getSelectedComplianceCerts();
         List<String> finalComplianceCerts = new ArrayList<>();
         for (SelectedComplianceCert currentCompliance : complianceCertsList) {
-            if (currentCompliance.getComplianceCertId().equals("-1")) {
-                finalComplianceCerts.add(currentCompliance.getDescription());
-            } else {
+        	if(currentCompliance.getComplianceCertId().equals("-1")){
+        		finalComplianceCerts.add(currentCompliance.getDescription());
+        	}else{            
                 finalComplianceCerts.add(lookupDataStore.getComplianceCertNameById(String.valueOf(currentCompliance
                         .getComplianceCertId())));
-            }
+        	}
         }
         serviceProduct.setComplianceCerts(finalComplianceCerts);
 
@@ -338,68 +335,68 @@ public class ProductRepo {
         ProductDataSheet prodDatasheet = radProduct.getProductDataSheet();
         if (null != prodDatasheet) serviceProduct.setProductDataSheet(prodDatasheet.getUrl());
 
-        // Product Type Code
-        if (null != radProduct.getProductTypeCode() && !radProduct.getProductTypeCode().trim().isEmpty()) {
-            serviceProduct.setProductType(lookupDataStore.findProdTypeNameByCode(radProduct.getProductTypeCode()));
-        } else {
-            serviceProduct.setProductType(ApplicationConstants.CONST_STRING_EMPTY);
+           // Product Type Code
+        if(null!=radProduct.getProductTypeCode() && !radProduct.getProductTypeCode().trim().isEmpty()){
+        serviceProduct.setProductType(lookupDataStore.findProdTypeNameByCode(radProduct.getProductTypeCode()));	
+        }else{
+        	serviceProduct.setProductType(ApplicationConstants.CONST_STRING_EMPTY);
         }
-
+        
         // Imaging
-        if (null != radProduct.getProductMediaItems() && radProduct.getProductMediaItems().size() > 0) {
-            List<Image> imagesList = new ArrayList<>();
-            Image currentImage = null;
-            List<Configurations> mediaConfigurations = null;
-            Configurations currentConfiguration = null;
-            String mediaCriteriaStr = null;
-            CriteriaInfo criteriaInfo = null;
-            CriteriaSetParser criteriaSetParser = new CriteriaSetParser();
-            for (ProductMediaItems currentProductMediaItems : radProduct.getProductMediaItems()) {
-                currentImage = new Image();
-                currentImage.setRank(currentProductMediaItems.getMediaRank());
-                currentImage.setIsPrimary(currentProductMediaItems.getIsPrimary());
-                currentImage.setImageURL(currentProductMediaItems.getMedia().getUrl());
+        if(null!=radProduct.getProductMediaItems() && radProduct.getProductMediaItems().size()>0){
+        	List<Image> imagesList=new ArrayList<>();
+        	Image currentImage=null;
+        	List<Configurations> mediaConfigurations=null;
+        	Configurations currentConfiguration=null;
+        	String mediaCriteriaStr=null;
+        	CriteriaInfo criteriaInfo=null;
+        	CriteriaSetParser criteriaSetParser=new CriteriaSetParser();
+        	for(ProductMediaItems currentProductMediaItems:radProduct.getProductMediaItems()){
+        		currentImage=new Image();
+        		currentImage.setRank(currentProductMediaItems.getMediaRank());
+        		currentImage.setIsPrimary(currentProductMediaItems.getIsPrimary());
+        		currentImage.setImageURL(currentProductMediaItems.getMedia().getUrl());
                 if (null != currentProductMediaItems.getMedia().getMediaCriteriaMatches()
                         && currentProductMediaItems.getMedia().getMediaCriteriaMatches().length > 0) {
-                    mediaConfigurations = new ArrayList<>();
+        			mediaConfigurations=new ArrayList<>();
                     for (MediaCriteriaMatches currentMediaCriteriaMatch : currentProductMediaItems.getMedia()
                             .getMediaCriteriaMatches()) {
-                        currentConfiguration = new Configurations();
+        				currentConfiguration=new Configurations();
                         mediaCriteriaStr = criteriaSetParser.findCriteriaSetValueById(productDetail.getExternalProductId(),
                                 currentMediaCriteriaMatch.getCriteriaSetValueId());
-                        if (null != mediaCriteriaStr) {
+        				if(null!=mediaCriteriaStr){
                             criteriaInfo = ProductDataStore.getCriteriaInfoForCriteriaCode(mediaCriteriaStr.substring(0,
                                     mediaCriteriaStr.indexOf("_")));
                             currentConfiguration.setCriteria(criteriaInfo.getDescription());
                             currentConfiguration.setValue(mediaCriteriaStr.substring(mediaCriteriaStr.indexOf("__") + 3));
-                            mediaConfigurations.add(currentConfiguration);
-                        }
-                    }
-                    currentImage.setConfigurations(mediaConfigurations);
-                }
-                imagesList.add(currentImage);
-            }
-            serviceProduct.setImages(imagesList);
+        				mediaConfigurations.add(currentConfiguration);
+        				}
+        			}
+        			currentImage.setConfigurations(mediaConfigurations);
+        		}
+        		imagesList.add(currentImage);
+        	}
+        	serviceProduct.setImages(imagesList);
         }
 
         // Catalog
-        if (null != radProduct.getProductMediaCitations() && radProduct.getProductMediaCitations().size() > 0) {
-            List<Catalog> catalogsList = new ArrayList<>();
-            Catalog catalog = null;
-            for (ProductMediaCitations currentMediaCitation : radProduct.getProductMediaCitations()) {
-                catalog = new Catalog();
+        if(null!=radProduct.getProductMediaCitations() && radProduct.getProductMediaCitations().size()>0){
+        	List<Catalog> catalogsList=new ArrayList<>();
+        	Catalog catalog=null;
+        	for(ProductMediaCitations currentMediaCitation:radProduct.getProductMediaCitations()){
+        		catalog=new Catalog();
                 catalogsList.add(ProductDataStore.getMediaCitationById(currentMediaCitation.getMediaCitationId(),
                         currentMediaCitation.getProductMediaCitationReferences().get(0).getMediaCitationReferenceId(),
                         radProduct.getCompanyId()));
-            }
-            serviceProduct.setCatalogs(catalogsList);
+        	}        	
+        	serviceProduct.setCatalogs(catalogsList);
         }
 
         // Availability
-        RelationshipParser relationshipParser = new RelationshipParser();
+        RelationshipParser relationshipParser=new RelationshipParser();
         serviceProduct.setAvailability(relationshipParser.getAvailabilityByRelationships(productDetail.getRelationships(),
                 productDetail.getExternalProductId()));
-
+        
         // Miscellaneous
         serviceProduct.setDistributorOnly(radProduct.getIncludeAppOfferList().equalsIgnoreCase("ESPN") ? "true" : (radProduct
                 .getIncludeAppOfferList().equalsIgnoreCase("ESPW") ? "false" : null));
@@ -409,7 +406,9 @@ public class ProductRepo {
         serviceProduct.setAdditionalShippingInfo(radProduct.getAdditionalShippingInfo());
         serviceProduct.setPriceConfirmedThru(radProduct.getPriceConfirmationDate());
         serviceProduct.setCanOrderLessThanMimimum(String.valueOf(radProduct.getIsOrderLessThanMinimumAllowed()));
-
+        
+        
+        
         return serviceProduct;
     }
 

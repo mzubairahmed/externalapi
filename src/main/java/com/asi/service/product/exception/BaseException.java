@@ -18,6 +18,13 @@ public abstract class BaseException extends Exception {
 		
 		this.productID = productID;
 	}
+	
+	public BaseException(Exception e, String productID)
+	{
+		super(e);
+		this.productID = productID;
+	}
+	
 
 	public String getProductID() {
 		return productID;
