@@ -158,20 +158,28 @@ public class RelationshipParser {
 				for(CriteriaSetRelationship currentCriteriaRelationship:currentRelationship.getCriteriaSetRelationships()){
 					tempCriteria=criteriaSetParser.findCriteriaBySetId(extPrdId,String.valueOf(currentCriteriaRelationship.getCriteriaSetId()));
 				if(null!=tempCriteria){
-					tempCriteriaCode=tempCriteria;
+					if(tempCriteria.contains(":")){
+						tempCriteriaCode=tempCriteria.substring(0,tempCriteria.indexOf(":"));
+					}else{
+						tempCriteriaCode=tempCriteria;
+					}
 					if(Arrays.asList(SIZE_GROUP_CRITERIACODES).contains(tempCriteriaCode))
 						{
 						tempCriteria="Size";
 						}
 					else if(Arrays.asList(OPTIONS_CRITERIACODES).contains(tempCriteriaCode)){
 						optionValue=tempCriteria.substring(tempCriteria.indexOf(":")+1);
-						tempCriteria=tempCriteriaCode;						
+						//tempCriteria=tempCriteriaCode;						
 						}
 					if(currentCriteriaRelationship.getIsParent()){
 						if(Arrays.asList(OPTIONS_CRITERIACODES).contains(tempCriteriaCode))		isParentOptionCriteria=true;	
 						if(Arrays.asList(SIZE_GROUP_CRITERIACODES).contains(tempCriteriaCode)){
 							availability.setParentCriteria(tempCriteria);
 						}else{
+							if(isParentOptionCriteria){
+								optionValue=tempCriteria.substring(tempCriteria.indexOf(":")+1);
+								tempCriteria=tempCriteria.substring(0,tempCriteria.indexOf(":"));
+								}
 							availability.setParentCriteria(ProductDataStore.getCriteriaInfoForCriteriaCode(tempCriteria).getDescription());
 						}
 						availability.setParentOptionName(optionValue);
@@ -180,6 +188,10 @@ public class RelationshipParser {
 						if(Arrays.asList(SIZE_GROUP_CRITERIACODES).contains(tempCriteriaCode)){
 							availability.setChildCriteria(tempCriteria);
 						}else{
+							if(isChildOptionCriteria){
+							optionValue=tempCriteria.substring(tempCriteria.indexOf(":")+1);
+							tempCriteria=tempCriteria.substring(0,tempCriteria.indexOf(":"));
+							}
 							availability.setChildCriteria(ProductDataStore.getCriteriaInfoForCriteriaCode(tempCriteria).getDescription());
 						}
 						availability.setChildOptionName(optionValue);
@@ -192,10 +204,15 @@ public class RelationshipParser {
 					if(!currentCriteriaSetValuePath.getIsParent() ){
 						criteriaValue=criteriaSetParser.findCriteriaSetValueById(extPrdId,String.valueOf(currentCriteriaSetValuePath.getCriteriaSetValueId()));
 						if(isChildOptionCriteria){
+							
 							tempCriteria=criteriaValue.substring(criteriaValue.indexOf("__")+2);
 							availableVariations.setChildValue(tempCriteria.substring(tempCriteria.indexOf(":")+2));
 						}else{
-							availableVariations.setChildValue(criteriaValue.substring(criteriaValue.indexOf("__")+3));
+							if(null==criteriaValue){
+								availableVariations.setChildValue(criteriaSetParser.findSizesCriteriaSetById(extPrdId, String.valueOf(currentCriteriaSetValuePath.getCriteriaSetValueId())));
+							}else{
+								availableVariations.setChildValue(criteriaValue.substring(criteriaValue.indexOf("__")+3));
+							}
 						}
 						tempId=currentCriteriaSetValuePath.getID();
 						for(CriteriaSetValuePath pairingCriteriaSetPath:tempCriteriaSetValuePaths){

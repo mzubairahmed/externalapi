@@ -170,6 +170,7 @@ public class ProductRepo {
             _LOGGER.error("Exception while generating Radar product", e);
             return productClient.convertExceptionToResponseModel(e);
         }
+
         // Saving product to Radar API
         ExternalAPIResponse response = productClient.saveProduct(headers, existingRadarProduct);
         return appendErrorLogsToResponse(response, existingRadarProduct.getExternalProductId());
@@ -188,6 +189,10 @@ public class ProductRepo {
             _LOGGER.error("Batch Creation failed ", e);
             return "0";
         }
+    }
+
+    private static final void doCleanUp(String xid) {
+        ProductDataStore.doCleanUp(xid);
     }
 
     @SuppressWarnings("unused")
@@ -262,8 +267,10 @@ public class ProductRepo {
                 serviceProduct=configurationParser.setProductWithConfigurations(productDetail, serviceProduct);
                 serviceProduct=priceGridParser.setProductWithPriceGrids(productDetail,serviceProduct);
                 serviceProduct = setBasicProductDetails(productDetail, serviceProduct);
-/*                List<com.asi.ext.api.service.model.PriceGrid> priceGridList = new ArrayList<>();
-                serviceProduct.setPriceGrids(priceGridList);*/
+                /*
+                 * List<com.asi.ext.api.service.model.PriceGrid> priceGridList = new ArrayList<>();
+                 * serviceProduct.setPriceGrids(priceGridList);
+                 */
                 // serviceProduct.setName(productDetail.getName());
             }
 
@@ -295,7 +302,8 @@ public class ProductRepo {
         	if(currentCompliance.getComplianceCertId().equals("-1")){
         		finalComplianceCerts.add(currentCompliance.getDescription());
         	}else{            
-        		finalComplianceCerts.add(lookupDataStore.getComplianceCertNameById(String.valueOf(currentCompliance.getComplianceCertId())));
+                finalComplianceCerts.add(lookupDataStore.getComplianceCertNameById(String.valueOf(currentCompliance
+                        .getComplianceCertId())));
         	}
         }
         serviceProduct.setComplianceCerts(finalComplianceCerts);
@@ -345,19 +353,19 @@ public class ProductRepo {
         		currentImage.setRank(currentProductMediaItems.getMediaRank());
         		currentImage.setIsPrimary(currentProductMediaItems.getIsPrimary());
         		currentImage.setImageURL(currentProductMediaItems.getMedia().getUrl());
-        		if(null!=currentProductMediaItems.getMedia().getMediaCriteriaMatches() && currentProductMediaItems.getMedia().getMediaCriteriaMatches().length>0){
+                if (null != currentProductMediaItems.getMedia().getMediaCriteriaMatches()
+                        && currentProductMediaItems.getMedia().getMediaCriteriaMatches().length > 0) {
         			mediaConfigurations=new ArrayList<>();
-        			for(MediaCriteriaMatches currentMediaCriteriaMatch:currentProductMediaItems.getMedia().getMediaCriteriaMatches()){
+                    for (MediaCriteriaMatches currentMediaCriteriaMatch : currentProductMediaItems.getMedia()
+                            .getMediaCriteriaMatches()) {
         				currentConfiguration=new Configurations();
-        				mediaCriteriaStr=criteriaSetParser.findCriteriaSetValueById(productDetail.getExternalProductId(),currentMediaCriteriaMatch.getCriteriaSetValueId());
+                        mediaCriteriaStr = criteriaSetParser.findCriteriaSetValueById(productDetail.getExternalProductId(),
+                                currentMediaCriteriaMatch.getCriteriaSetValueId());
         				if(null!=mediaCriteriaStr){
-        				criteriaInfo = ProductDataStore
-								.getCriteriaInfoForCriteriaCode(mediaCriteriaStr
-										.substring(0, mediaCriteriaStr.indexOf("_")));
-        				currentConfiguration.setCriteria(criteriaInfo
-								.getDescription());
-						currentConfiguration.setValue(mediaCriteriaStr
-								.substring(mediaCriteriaStr.indexOf("__") + 2));
+                            criteriaInfo = ProductDataStore.getCriteriaInfoForCriteriaCode(mediaCriteriaStr.substring(0,
+                                    mediaCriteriaStr.indexOf("_")));
+                            currentConfiguration.setCriteria(criteriaInfo.getDescription());
+                            currentConfiguration.setValue(mediaCriteriaStr.substring(mediaCriteriaStr.indexOf("__") + 3));
         				mediaConfigurations.add(currentConfiguration);
         				}
         			}
@@ -374,18 +382,21 @@ public class ProductRepo {
         	Catalog catalog=null;
         	for(ProductMediaCitations currentMediaCitation:radProduct.getProductMediaCitations()){
         		catalog=new Catalog();
-        		catalogsList.add(ProductDataStore.getMediaCitationById(currentMediaCitation.getMediaCitationId(), currentMediaCitation.getProductMediaCitationReferences().get(0).getMediaCitationReferenceId(), radProduct.getCompanyId()));
+                catalogsList.add(ProductDataStore.getMediaCitationById(currentMediaCitation.getMediaCitationId(),
+                        currentMediaCitation.getProductMediaCitationReferences().get(0).getMediaCitationReferenceId(),
+                        radProduct.getCompanyId()));
         	}        	
         	serviceProduct.setCatalogs(catalogsList);
         }
 
         // Availability
         RelationshipParser relationshipParser=new RelationshipParser();
-        serviceProduct.setAvailability(relationshipParser.getAvailabilityByRelationships(productDetail.getRelationships(),productDetail.getExternalProductId()));
-        
+        serviceProduct.setAvailability(relationshipParser.getAvailabilityByRelationships(productDetail.getRelationships(),
+                productDetail.getExternalProductId()));
         
         // Miscellaneous
-        serviceProduct.setDistributorOnly(radProduct.getIncludeAppOfferList().equalsIgnoreCase("ESPN")?"true":(radProduct.getIncludeAppOfferList().equalsIgnoreCase("ESPW")?"false":null));
+        serviceProduct.setDistributorOnly(radProduct.getIncludeAppOfferList().equalsIgnoreCase("ESPN") ? "true" : (radProduct
+                .getIncludeAppOfferList().equalsIgnoreCase("ESPW") ? "false" : null));
         serviceProduct.setDistributorOnlyComments(radProduct.getDistributorComments());
         serviceProduct.setProductDisclaimer(radProduct.getDisclaimer());
         serviceProduct.setAdditionalProductInfo(radProduct.getAdditionalInfo());

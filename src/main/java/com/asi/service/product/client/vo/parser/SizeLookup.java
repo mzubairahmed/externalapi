@@ -166,23 +166,25 @@ public class SizeLookup {
 								
 								sizeValue=getSizesElementValue("ID", criteriaAttributes, valueMap.get("CriteriaAttributeId").toString())+":"+valueMap.get("UnitValue")+":"
 										+unitOfmeasureCode;
-								criteriaSetParser.addReferenceSet(externalProductId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),sizeValue);
+					//			criteriaSetParser.addReferenceSet(externalProductId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),sizeValue);
 								valueElements=sizeValue.split(":");
 								if(valueElements.length>2){
 									valueObj.setAttribute(valueElements[0]);
 									valueObj.setUnit(valueElements[2]);
 									valueObj.setValue(valueElements[1]);
+									criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),valueObj);
 									}
 								valueObjList.add(valueObj);
 							}
 							else{
 							sizeValue=valueMap.get("UnitValue")+":"+unitOfmeasureCode;
-							criteriaSetParser.addReferenceSet(externalProductId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),sizeValue);
+				//			criteriaSetParser.addReferenceSet(externalProductId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),sizeValue);
 							valueElements=sizeValue.split(":");
 							if(valueElements.length>2){
 							valueObj.setAttribute(valueElements[1]);
 							valueObj.setUnit("");
 							valueObj.setValue(valueElements[0]);
+							criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),valueObj);
 							}
 							delim="; ";
 							}
@@ -191,12 +193,13 @@ public class SizeLookup {
 							{
 							sizeValue=valueMap.get("UnitValue")+":"
 									+unitOfmeasureCode;
-							criteriaSetParser.addReferenceSet(externalProductId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),sizeValue);
+			//				criteriaSetParser.addReferenceSet(externalProductId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),sizeValue);
 							if(criteriaCode.equalsIgnoreCase("SVWT") ||criteriaCode.equalsIgnoreCase("CAPS")){
 							valueElements=sizeValue.split(":");
 							if(valueElements.length>1){
 								valueObj.setValue(valueElements[0]);
 								valueObj.setUnit(valueElements[1]);
+								criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),valueObj);
 							}
 							valueObjList.add(valueObj);
 							
@@ -277,6 +280,7 @@ public class SizeLookup {
 							capacityValueObjList.add(capacityObj);
 							}else{
 								valueObj.setValue(sizeValue);
+								criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),valueObj);
 								otherValueObjList.add(valueObj);
 							}
 								

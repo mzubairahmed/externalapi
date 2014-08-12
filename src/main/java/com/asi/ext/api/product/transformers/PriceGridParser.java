@@ -303,7 +303,7 @@ public class PriceGridParser extends ProductParser {
         if (isBasePrice) {
             pItem.setPriceGridTypeCode(ApplicationConstants.CONST_BASE_PRICE_GRID_CODE);
         } else {
-            pItem.setPriceGridTypeCode(ApplicationConstants.CONST_UPCHARGE_PRICE_GRID_CODE);
+            pItem.setPriceGridTypeCode(ApplicationConstants.CONST_PRICE_GRID_ITEM_CODE);
         }
 
         return pItem;
@@ -421,7 +421,7 @@ public class PriceGridParser extends ProductParser {
                                 pricingItems.setId(ApplicationConstants.CONST_STRING_ZERO);
                                 pricingItems.setProductId(product.getId());
                                 pricingItems.setMarketSegmentCode(ApplicationConstants.CONST_MARKET_SEGMENT_CODE);
-                                pricingItems.setPriceGridTypeCode(ApplicationConstants.CONST_PRICE_GRID_TYPE_CODE);
+                                pricingItems.setPriceGridTypeCode(ApplicationConstants.CONST_PRICE_GRID_ITEM_CODE);
                                 pricingItems.setPriceGridId(priceGrids.getId());
 
                                 pricingItemsList.add(pricingItems);

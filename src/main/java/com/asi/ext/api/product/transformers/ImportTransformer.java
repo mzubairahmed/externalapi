@@ -16,7 +16,6 @@ import com.asi.ext.api.product.criteria.processor.ProductAvailabilityProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductCategoriesProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductColorProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductImprintColorProcessor;
-import com.asi.ext.api.product.criteria.processor.ProductImprintMethodProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductImprintSizeAndLocationProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductKeywordProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductMateriaProcessor;
@@ -33,18 +32,13 @@ import com.asi.ext.api.product.criteria.processor.ProductTradeNameProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductionTimeProcessor;
 import com.asi.ext.api.product.criteria.processor.RushTimeProcessor;
 import com.asi.ext.api.product.criteria.processor.SelectedLineProcessor;
-import com.asi.ext.api.response.JsonProcessor;
-import com.asi.ext.api.rest.JersyClientGet;
 import com.asi.ext.api.service.model.Image;
 import com.asi.ext.api.service.model.PriceGrid;
 import com.asi.ext.api.service.model.Product;
 import com.asi.ext.api.service.model.ProductConfigurations;
 import com.asi.ext.api.util.ApplicationConstants;
-import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.ProductParserUtil;
-import com.asi.service.product.client.vo.PriceGrids;
 import com.asi.service.product.client.vo.ProductConfiguration;
-import com.asi.service.product.client.vo.ProductCriteriaSet;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductMediaCitations;
@@ -61,58 +55,49 @@ import com.asi.service.product.client.vo.ProductNumber;
  */
 public class ImportTransformer {
 
-    private JsonProcessor                          jsonProcessorObj                = new JsonProcessor();
-    private ProductCriteriaSets                    productCriteriaSets             = null;
-    private int                                    criteriasCount                  = 0;
+    private ProductCriteriaSets[]                  productCriteriaSetsAry      = null;
 
-    private JerseyClientPost                       orgnCall                        = new JerseyClientPost();
-    private ProductCriteriaSets[]                  productCriteriaSetsAry          = null;
-    private JersyClientGet                         jerseyClient                    = new JersyClientGet();
+    private PriceGridParser                        priceGridParser             = new PriceGridParser();
 
-    private String                                 pricingSubTypeCodeWSResponse    = null;
-    private String                                 pricingUsageLevelCodeWSResponse = null;
-    private CommonUtilities                        commonUtils                     = new CommonUtilities();
-    private ProductParser                          productParser                   = new ProductParser();
-    private PriceGridParser                        priceGridParser                 = new PriceGridParser();
-
-
-    private ProductSelectedSafetyWarningProcessor  safetyWarningProcessor          = new ProductSelectedSafetyWarningProcessor();
-    private ProductKeywordProcessor                keywordProcessor                = new ProductKeywordProcessor();
-    private ProductCategoriesProcessor             categoryProcessor               = new ProductCategoriesProcessor();
-    private ProductSelectedComplianceCertProcessor complianceCertProcessor         = new ProductSelectedComplianceCertProcessor();
+    private ProductSelectedSafetyWarningProcessor  safetyWarningProcessor      = new ProductSelectedSafetyWarningProcessor();
+    private ProductKeywordProcessor                keywordProcessor            = new ProductKeywordProcessor();
+    private ProductCategoriesProcessor             categoryProcessor           = new ProductCategoriesProcessor();
+    private ProductSelectedComplianceCertProcessor complianceCertProcessor     = new ProductSelectedComplianceCertProcessor();
     // Product Media related
-    private ProductMediaItemProcessor              productImageProcessor           = new ProductMediaItemProcessor();
+    private ProductMediaItemProcessor              productImageProcessor       = new ProductMediaItemProcessor();
     // Product configuration related
-    private ProductOriginProcessor                 originProcessor                 = new ProductOriginProcessor(-101, "0");
-    private ProductColorProcessor                  colorProcessor                  = new ProductColorProcessor(-201, "0");
-    private ProductMateriaProcessor                materialProcessor               = new ProductMateriaProcessor(-301, "0");
-    private ProductShapeProcessor                  shapeProcessor                  = new ProductShapeProcessor(-401, "0");
-    private ProductTradeNameProcessor              tradeNameProcessor              = new ProductTradeNameProcessor(-601, "0");
-    private ProductImprintColorProcessor           imprintColorProcessor           = new ProductImprintColorProcessor(-701, "0");
-    private ProductImprintSizeAndLocationProcessor imszProcessor                   = new ProductImprintSizeAndLocationProcessor(
-                                                                                           -801, "0");
-    private ProductPackageProcessor                packagingProcessor              = new ProductPackageProcessor(-901, "0");
-    private ProductionTimeProcessor                productionTimeProcessor         = new ProductionTimeProcessor(-1001, "0");
-    private RushTimeProcessor                      rushTimeProcessor               = new RushTimeProcessor(-1101, "0");
-    private AdditionalColorProcessor               additionalColorProcessor        = new AdditionalColorProcessor(-1201, "0");
-    private AdditionalLocationProcessor            additionalLocationProcessor     = new AdditionalLocationProcessor(-1301, "0");
-    private ProductSpecSampleProcessor             specSampleProcessor             = new ProductSpecSampleProcessor(-1401, "0");
-    private ProductOptionsProcessor                optionsProcessor                = new ProductOptionsProcessor(-1501, "0");
-    private ImprintMethodProcessor                 imprintMethodProcessor          = new ImprintMethodProcessor();                // 1601,
-    private ProductNumberCriteriaParser            productNumberProcessor          = new ProductNumberCriteriaParser();
-    private CatalogCriteriaParser				   catalogCriteriaProcessor		   = new CatalogCriteriaParser();
+    private ProductOriginProcessor                 originProcessor             = new ProductOriginProcessor(-101, "0");
+    private ProductColorProcessor                  colorProcessor              = new ProductColorProcessor(-201, "0");
+    private ProductMateriaProcessor                materialProcessor           = new ProductMateriaProcessor(-301, "0");
+    private ProductShapeProcessor                  shapeProcessor              = new ProductShapeProcessor(-401, "0");
+    private ProductTradeNameProcessor              tradeNameProcessor          = new ProductTradeNameProcessor(-601, "0");
+    private ProductImprintColorProcessor           imprintColorProcessor       = new ProductImprintColorProcessor(-701, "0");
+    private ProductImprintSizeAndLocationProcessor imszProcessor               = new ProductImprintSizeAndLocationProcessor(-801,
+                                                                                       "0");
+    private ProductPackageProcessor                packagingProcessor          = new ProductPackageProcessor(-901, "0");
+    private ProductionTimeProcessor                productionTimeProcessor     = new ProductionTimeProcessor(-1001, "0");
+    private RushTimeProcessor                      rushTimeProcessor           = new RushTimeProcessor(-1101, "0");
+    private AdditionalColorProcessor               additionalColorProcessor    = new AdditionalColorProcessor(-1201, "0");
+    private AdditionalLocationProcessor            additionalLocationProcessor = new AdditionalLocationProcessor(-1301, "0");
+    private ProductSpecSampleProcessor             specSampleProcessor         = new ProductSpecSampleProcessor(-1401, "0");
+    private ProductOptionsProcessor                optionsProcessor            = new ProductOptionsProcessor(-1501, "0");
+    private ImprintMethodProcessor                 imprintMethodProcessor      = new ImprintMethodProcessor();                       // 1601,
+    private ProductNumberCriteriaParser            productNumberProcessor      = new ProductNumberCriteriaParser();
+    private CatalogCriteriaParser                  catalogCriteriaProcessor    = new CatalogCriteriaParser();
 
-    private FOBPointProcessor                      fobPointProcessor               = new FOBPointProcessor(1901, "0");
-    private SelectedLineProcessor                  selectedLineProcessor           = new SelectedLineProcessor();
-    private ProductSizeGroupProcessor              sizeProcessor                   = new ProductSizeGroupProcessor("-2001");
-    
-    private ProductAvailabilityProcessor           availabilityProcessor           = new ProductAvailabilityProcessor();
-    
-    private final static Logger                    LOGGER                          = Logger.getLogger(ImportTransformer.class
-                                                                                           .getName());
+    private FOBPointProcessor                      fobPointProcessor           = new FOBPointProcessor(1901, "0");
+    private SelectedLineProcessor                  selectedLineProcessor       = new SelectedLineProcessor();
+    private ProductSizeGroupProcessor              sizeProcessor               = new ProductSizeGroupProcessor("-2001");
+
+    private ProductAvailabilityProcessor           availabilityProcessor       = new ProductAvailabilityProcessor();
+
+    private final static Logger                    LOGGER                      = Logger.getLogger(ImportTransformer.class.getName());
 
     public ProductDetail generateRadarProduct(com.asi.ext.api.service.model.Product serviceProduct,
             ProductDetail existingRadarModel, String dataSourceId, String companyId) {
+        LOGGER.info("Started processing product conversion");
+        long processingTime = System.currentTimeMillis(); // For evaluating application performance
+
         boolean isNewProduct = existingRadarModel == null;
         ProductDetail productToSave = null;
 
@@ -165,7 +150,7 @@ public class ImportTransformer {
 
         // Product Media Item processing
         productToSave.setProductMediaItems(getProductMediaItems(companyId, productId, serviceProduct.getImages(),
-                productToSave.getProductMediaItems(),serviceProduct.getExternalProductId()));
+                productToSave.getProductMediaItems(), serviceProduct.getExternalProductId()));
 
         Map<String, ProductCriteriaSets> existingCriteriaSetMap = new HashMap<>();
         Map<String, List<ProductCriteriaSets>> optionsCriteriaSet = new HashMap<>();
@@ -175,7 +160,7 @@ public class ImportTransformer {
                     true);
             optionsCriteriaSet = ProductCompareUtil.getOptionCriteriaSets(productToSave.getProductConfigurations());
         }
-        
+
         // Imprint, Artwork, Minimum Quantity processing
         ImprintRelationData imprintRelationData = null;
         if (serviceProduct != null && serviceProduct.getProductConfigurations().getImprintMethods() != null
@@ -190,79 +175,81 @@ public class ImportTransformer {
             existingCriteriaSetMap.put(ApplicationConstants.CONST_ARTWORK_CODE, null);
             existingCriteriaSetMap.put(ApplicationConstants.CONST_MINIMUM_QUANTITY, null);
         }
-        
+
         // Product, Imprint, Shipping Options processing
         optionsCriteriaSet = processProductOptions(optionsCriteriaSet, productToSave, serviceProduct.getProductConfigurations(),
                 configId);
-        
+
         // FOB points processing
         if (serviceProduct.getFobPoints() != null && !serviceProduct.getFobPoints().isEmpty()) {
-            ProductCriteriaSets tempCriteriaSet = fobPointProcessor.getFOBPCriteriaSet(serviceProduct.getFobPoints(), productToSave,
-                existingCriteriaSetMap.get(ApplicationConstants.CONST_CRITERIA_CODE_FOBP), configId);
+            ProductCriteriaSets tempCriteriaSet = fobPointProcessor.getFOBPCriteriaSet(serviceProduct.getFobPoints(),
+                    productToSave, existingCriteriaSetMap.get(ApplicationConstants.CONST_CRITERIA_CODE_FOBP), configId);
             existingCriteriaSetMap.put(ApplicationConstants.CONST_CRITERIA_CODE_FOBP, tempCriteriaSet);
         } else {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_CRITERIA_CODE_FOBP);
         }
-        
-        
+
         // Selected Line name processing
         if (serviceProduct.getLineNames() != null && !serviceProduct.getLineNames().isEmpty()) {
-            productToSave.setSelectedLineNames(selectedLineProcessor.getSelectedLines(serviceProduct.getLineNames(), existingRadarModel));
+            productToSave.setSelectedLineNames(selectedLineProcessor.getSelectedLines(serviceProduct.getLineNames(),
+                    existingRadarModel));
         }
         // Process Product Configurations
 
         productToSave.setProductConfigurations(processProductConfigurations(configId, existingCriteriaSetMap, optionsCriteriaSet,
                 serviceProduct.getProductConfigurations(), productToSave, isNewProduct));
-        
-        // Process Breakout Configurations...
-        if(!StringUtils.isEmpty(serviceProduct.getProductBreakoutBy())) {
 
-        	if(serviceProduct.getProductBreakoutBy().equalsIgnoreCase("ProductNumbers")) {
+        // Process Breakout Configurations...
+        if (!StringUtils.isEmpty(serviceProduct.getProductBreakoutBy())) {
+
+            if (serviceProduct.getProductBreakoutBy().equalsIgnoreCase("ProductNumbers")) {
                 productToSave.setIsProductNumberBreakout(true);
             } else {
 
-            	String criteriaCode = ProductParserUtil.getCriteriaCodeFromCriteria(serviceProduct.getProductBreakoutBy(), productToSave.getExternalProductId());
-            	if(!StringUtils.isEmpty(criteriaCode)) {
-                	productConfigurations = productToSave.getProductConfigurations();
-                	if(productConfigurations != null && !productConfigurations.isEmpty()) {
-                		for(ProductConfiguration configuration : productConfigurations) {
-                			for(ProductCriteriaSets criteriaSet : configuration.getProductCriteriaSets()) {
-                				if(criteriaSet.getCriteriaCode().equalsIgnoreCase(criteriaCode)) {
-                					criteriaSet.setIsBrokenOutOn("true");
-                				} else {
-                					criteriaSet.setIsBrokenOutOn("false");
-                				}
-                			}
-                		}
-                	}
-            	}
+                String criteriaCode = ProductParserUtil.getCriteriaCodeFromCriteria(serviceProduct.getProductBreakoutBy(),
+                        productToSave.getExternalProductId());
+                if (!StringUtils.isEmpty(criteriaCode)) {
+                    productConfigurations = productToSave.getProductConfigurations();
+                    if (productConfigurations != null && !productConfigurations.isEmpty()) {
+                        for (ProductConfiguration configuration : productConfigurations) {
+                            for (ProductCriteriaSets criteriaSet : configuration.getProductCriteriaSets()) {
+                                if (criteriaSet.getCriteriaCode().equalsIgnoreCase(criteriaCode)) {
+                                    criteriaSet.setIsBrokenOutOn("true");
+                                } else {
+                                    criteriaSet.setIsBrokenOutOn("false");
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
-        
-        if(!StringUtils.isEmpty(serviceProduct.getBreakOutByPrice())) {
-        	productToSave.setIsPriceBreakoutFlag(Boolean.parseBoolean(serviceProduct.getBreakOutByPrice()));
+
+        if (!StringUtils.isEmpty(serviceProduct.getBreakOutByPrice())) {
+            productToSave.setIsPriceBreakoutFlag(Boolean.parseBoolean(serviceProduct.getBreakOutByPrice()));
         }
 
-        
         // PriceGrid processing
         productToSave.setPriceGrids(getPriceGrids(serviceProduct.getPriceGrids(), productToSave));
 
         // Product Number Processing
         productToSave.setProductNumbers(getProductNumbers(serviceProduct, productToSave));
-        
+
         // Product Catalogs
         productToSave.setProductMediaCitations(getProductMediaCitations(serviceProduct, productToSave));
-        
+
         // Product Availability processing
-        productToSave.setRelationships(availabilityProcessor.getProductAvailabilities(productToSave, serviceProduct.getAvailability(), existingCriteriaSetMap, optionsCriteriaSet));
-        
+        productToSave.setRelationships(availabilityProcessor.getProductAvailabilities(productToSave,
+                serviceProduct.getAvailability(), existingCriteriaSetMap, optionsCriteriaSet));
+        LOGGER.info("Completed convertion of service product to Radar model, time taken for convertion : "
+                + (System.currentTimeMillis() - processingTime) + " ms");
         // Return product model
         return productToSave;
     }
 
     private List<ProductMediaItems> getProductMediaItems(String companyId, String productId, List<Image> serviceImages,
-            List<ProductMediaItems> existingMediaItems,String externalProductId) {
-    	return productImageProcessor.getProductImages(serviceImages, companyId, productId, existingMediaItems,externalProductId);
+            List<ProductMediaItems> existingMediaItems, String externalProductId) {
+        return productImageProcessor.getProductImages(serviceImages, companyId, productId, existingMediaItems, externalProductId);
     }
 
     private List<ProductConfiguration> processProductConfigurations(String configId,
@@ -274,9 +261,8 @@ public class ImportTransformer {
             return new ArrayList<ProductConfiguration>();
         }
 
-       
         ProductCriteriaSets tempCriteriaSet = null;
-        
+
         // Product Origin processing
 
         if (serviceProdConfigs.getOrigins() != null && !serviceProdConfigs.getOrigins().isEmpty()) {
@@ -397,23 +383,23 @@ public class ImportTransformer {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_PRODUCTION_TIME_CRITERIA_CODE);
         }
 
-        
         // Product Size processing
         if (!sizeProcessor.isSizeNull(serviceProdConfigs.getSizes())) {
-            existingCriteriaSetMap =  sizeProcessor.getProductCriteriaSet(serviceProdConfigs.getSizes(), rdrProduct, existingCriteriaSetMap, configId);
+            existingCriteriaSetMap = sizeProcessor.getProductCriteriaSet(serviceProdConfigs.getSizes(), rdrProduct,
+                    existingCriteriaSetMap, configId);
         } else {
             existingCriteriaSetMap = sizeProcessor.removeSizeRelatedCriteriaSetFromExisting(existingCriteriaSetMap);
         }
-     // Product Size processing
+        // Product Size processing
         if (serviceProdConfigs.getShippingEstimates() != null) {
-            existingCriteriaSetMap =  sizeProcessor.processShippingItem(rdrProduct, existingCriteriaSetMap, configId, serviceProdConfigs.getShippingEstimates(), -2501);
+            existingCriteriaSetMap = sizeProcessor.processShippingItem(rdrProduct, existingCriteriaSetMap, configId,
+                    serviceProdConfigs.getShippingEstimates(), -2501);
         } else {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION);
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT);
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE);
         }
-        
-        
+
         // Merge all updated ProductCriteriaSets into product configuration and set back to list
         ProductConfiguration updatedProductConfiguration = new ProductConfiguration();
         updatedProductConfiguration.setConfigId(configId);
@@ -440,21 +426,21 @@ public class ImportTransformer {
 
         return optionsCriteriaSet;
     }
-    
+
     private List<ProductNumber> getProductNumbers(Product serviceProduct, ProductDetail product) {
         if (serviceProduct.getProductNumbers() != null && !serviceProduct.getProductNumbers().isEmpty()) {
             return productNumberProcessor.generateProductNumbers(serviceProduct.getProductNumbers(), product);
-        } else { 
+        } else {
             return new ArrayList<ProductNumber>();
         }
     }
 
-    private List<ProductMediaCitations> getProductMediaCitations (Product serviceProduct, ProductDetail product) {
-    	if(serviceProduct.getCatalogs() != null && !serviceProduct.getCatalogs().isEmpty()) {
-    		return catalogCriteriaProcessor.prepareProductCatalog(serviceProduct.getCatalogs(), product);
-    	} else {
-    		return new ArrayList<>();
-    	}
+    private List<ProductMediaCitations> getProductMediaCitations(Product serviceProduct, ProductDetail product) {
+        if (serviceProduct.getCatalogs() != null && !serviceProduct.getCatalogs().isEmpty()) {
+            return catalogCriteriaProcessor.prepareProductCatalog(serviceProduct.getCatalogs(), product);
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     @SuppressWarnings("unused")
