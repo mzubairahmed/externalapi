@@ -98,6 +98,8 @@ public class ProductionTimeProcessor extends SimpleCriteriaProcessor {
                     criteriaSetValue.setCriteriaSetId(matchedCriteriaSet.getCriteriaSetId());
                     criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
                     criteriaSetValue.setValue(new Value[] { value });
+                } else {
+                    criteriaSetValue.setCriteriaValueDetail(productionTime.getDetails());
                 }
             }
             updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_PRODUCTION_TIME_CRITERIA_CODE,

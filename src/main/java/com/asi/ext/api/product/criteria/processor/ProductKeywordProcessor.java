@@ -12,7 +12,7 @@ import com.asi.service.product.client.vo.ProductKeywords;
 public class ProductKeywordProcessor {
 
     public List<ProductKeywords> getProductKeywords(List<String> keywordList, ProductDetail extProduct, boolean updateNeeded) {
-        String[] productKeywords = keywordList != null ? CommonUtilities.filterDuplicates(keywordList) : null;
+        String[] productKeywords = (keywordList != null && !keywordList.isEmpty()) ? CommonUtilities.filterDuplicates(keywordList) : null;
         
         if (productKeywords == null) {
             return new ArrayList<ProductKeywords>();
@@ -35,11 +35,13 @@ public class ProductKeywordProcessor {
         // Compare and update each keywords
         if (productKeywords != null && productKeywords.length > 0) {
             for (String keyword : productKeywords) {
-                ProductKeywords tempKeyword = prdKeywordMap.get(keyword.trim().toUpperCase());
-                if (tempKeyword != null) {
-                    finalKeywordList.add(tempKeyword);
-                } else {
-                    finalKeywordList.add(createProductKeyword(keyword, extProduct));
+                if (!CommonUtilities.isValueNull(keyword)) {
+                    ProductKeywords tempKeyword = prdKeywordMap.get(keyword.trim().toUpperCase());
+                    if (tempKeyword != null) {
+                        finalKeywordList.add(tempKeyword);
+                    } else {
+                        finalKeywordList.add(createProductKeyword(keyword, extProduct));
+                    }
                 }
 
             }

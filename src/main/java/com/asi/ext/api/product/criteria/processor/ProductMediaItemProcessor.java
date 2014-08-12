@@ -79,7 +79,6 @@ public class ProductMediaItemProcessor {
         MediaCriteriaMatches[] mediaCriteriaMatchesAry={};
       
         CriteriaInfo tempCriteriaInfo=new CriteriaInfo();
-        MediaCriteriaMatches currentMediaCriteriaMatches=null;
         media.setId(mediaId);
         media.setCompanyID(companyId);
         media.setUrl(img.getImageURL());
@@ -87,17 +86,19 @@ public class ProductMediaItemProcessor {
         media.setMediaTypeCode(ApplicationConstants.CONST_MEDIA_TYPE_CODE);
         media.setImageQualityCode(ApplicationConstants.CONST_IMAGE_QUALITY_CODE);
         //media.setMediaCriteriaMatches(new MediaCriteriaMatches[0]);
-        mediaCriteriaMatchesAry=new MediaCriteriaMatches[img.getConfigurations().size()];
-        int configId=0;
-        for(Configurations currentConfig:img.getConfigurations()){
-        	currentMediaCriteriaMatches=new MediaCriteriaMatches();
-        	tempCriteriaInfo=ProductDataStore.getCriteriaInfoByDescription(currentConfig.getCriteria(), externalProductId);
-        	currentMediaCriteriaMatches.setCriteriaSetValueId(ProductDataStore.findCriteriaSetValueIdForValue(externalProductId,tempCriteriaInfo.getCode(),currentConfig.getValue().toString()));
-        	currentMediaCriteriaMatches.setMediaId(mediaId);
-        	mediaCriteriaMatchesAry[configId]=currentMediaCriteriaMatches;
-        	configId++;
+        if (img.getConfigurations() != null && !img.getConfigurations().isEmpty()) {
+            mediaCriteriaMatchesAry=new MediaCriteriaMatches[img.getConfigurations().size()];
+            int configId=0;
+            for(Configurations currentConfig:img.getConfigurations()){
+                MediaCriteriaMatches currentMediaCriteriaMatches = new MediaCriteriaMatches();
+            	tempCriteriaInfo=ProductDataStore.getCriteriaInfoByDescription(currentConfig.getCriteria(), externalProductId);
+            	currentMediaCriteriaMatches.setCriteriaSetValueId(ProductDataStore.findCriteriaSetValueIdForValue(externalProductId,tempCriteriaInfo.getCode(),currentConfig.getValue().toString()));
+            	currentMediaCriteriaMatches.setMediaId(mediaId);
+            	mediaCriteriaMatchesAry[configId]=currentMediaCriteriaMatches;
+            	configId++;
+            }
+            media.setMediaCriteriaMatches(mediaCriteriaMatchesAry);
         }
-        media.setMediaCriteriaMatches(mediaCriteriaMatchesAry);
         return media;
     }
 

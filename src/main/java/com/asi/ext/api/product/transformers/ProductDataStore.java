@@ -3,6 +3,7 @@
  */
 package com.asi.ext.api.product.transformers;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -621,8 +622,7 @@ public class ProductDataStore {
             String lookupUrl = RestAPIProperties.get(ApplicationConstants.PRODUCT_TRADENAMES_LOOKUP);
             lookupUrl += CommonUtilities.getURLEncodedValue(tradeName);
           
-            LinkedList<?> productTradeNameResponse = lookupRestTemplate.getForObject(RestAPIProperties
-                    .get(ApplicationConstants.PRODUCT_TRADENAMES_LOOKUP), LinkedList.class);
+            LinkedList<?> productTradeNameResponse = lookupRestTemplate.getForObject(new URI(lookupUrl), LinkedList.class);
             if (productTradeNameResponse == null || productTradeNameResponse.isEmpty()) {
                 // Report error to API that we are not able to fetch data for
                 // Origin
