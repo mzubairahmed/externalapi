@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.asi.ext.api.service.model.Value;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.service.product.client.vo.BasePriceDetails;
 import com.asi.service.product.client.vo.DiscountList;
@@ -225,7 +226,36 @@ CommonUtilities commonUtilities=new CommonUtilities();
 		criteriaSets[1] = criteriaSet2;
 		return criteriaSets;
 	}
-    
+    public List<Value[]> getPriceSizesCriteria(String externalProductId, List<PricingItem> pricingItems) {
+		List<Value[]> criteriaSets = new ArrayList<>();
+		Value[] temp;
+		for (PricingItem priceItem : pricingItems) {
+	//		if (criteriaCntr == 0) {
+                temp = (Value[]) criteriaSetParser.findSizesCriteriaSetById(externalProductId, priceItem.getCriteriaSetValueId());
+				if (null != temp) {
+					criteriaSets.add(temp);
+				}
+			/*} else {
+				// criteriaSet1=temp;
+                temp = (Value[]) criteriaSetParser.findSizesCriteriaSetById(externalProductId, priceItem.getCriteriaSetValueId());
+				if (null != temp) {
+					criteriaItems = temp.split("__");
+					if (criteriaItems.length > 1) {
+						if (criteriaItems[0].equalsIgnoreCase(criteriaCode)) {
+                            criteriaSet1 = criteriaSet1 + "," + formatCriteriaValue(criteriaItems[1], criteriaItems[0]);
+						} else if (temp1.equals("")) {
+                            criteriaSet2 = criteriaItems[0] + ":" + formatCriteriaValue(criteriaItems[1], criteriaItems[0]);
+							temp1 = criteriaItems[0];
+					  } else {
+                            criteriaSet2 = criteriaSet2 + "," + formatCriteriaValue(criteriaItems[1], criteriaItems[0]);
+               	}
+					}
+				}
+			}
+	*/	//	criteriaCntr++;
+		}
+		return criteriaSets;
+	}
     public BasePriceDetails getBasePriceDetails(String externalProductId, PriceGrid priceGrid, boolean setCurrency,
             String firstCriteria, String secondCriteria) {
         BasePriceDetails basePriceDetails = new BasePriceDetails();

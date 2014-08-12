@@ -368,7 +368,7 @@ public class ProductRepo {
                             criteriaInfo = ProductDataStore.getCriteriaInfoForCriteriaCode(mediaCriteriaStr.substring(0,
                                     mediaCriteriaStr.indexOf("_")));
                             currentConfiguration.setCriteria(criteriaInfo.getDescription());
-                            currentConfiguration.setValue(mediaCriteriaStr.substring(mediaCriteriaStr.indexOf("__") + 2));
+                            currentConfiguration.setValue(mediaCriteriaStr.substring(mediaCriteriaStr.indexOf("__") + 3));
                             mediaConfigurations.add(currentConfiguration);
                         }
                     }
