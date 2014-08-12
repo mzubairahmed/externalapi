@@ -83,9 +83,7 @@ public class ProductDataStore {
     private static Map<String, Currency>                              currencyLookupTable            = new HashMap<String, Currency>();
     private static Map<String, DiscountRate>                          discountLookupTable            = new HashMap<String, DiscountRate>();
 
-    private static Map<String, CriteriaInfo>                          criteriaInfoLookups            = new HashMap<String, CriteriaInfo>();
-
-    public static LinkedList<LinkedHashMap>							sizelookupsResponse		= null;
+    public static LinkedList<LinkedHashMap>							  sizelookupsResponse		= null;
     public static LinkedList<LinkedHashMap>                           sizeElementsResponse           = null;
     
     public ProductDataStore() {
@@ -1556,5 +1554,24 @@ public class ProductDataStore {
 
         return shippingItemLookupTable.get(ApplicationConstants.CONST_STRING_OTHER.toUpperCase());
 
+    }
+
+    /**
+     * @param xid
+     */
+    public static synchronized void doCleanUp(String xid) {
+        // Clean Criteria SetValue Reference Table
+        if (criteriaSetValueReferenceTable != null) {
+            criteriaSetValueReferenceTable.remove(xid);
+        }
+        // Clean Size Group Table
+        if (sizeGroupOfProduct != null) {
+            sizeGroupOfProduct.remove(xid);
+        }
+        // Clean Error logs of product
+        if (GLOBAL_BATCH_LOG_COLLECTION != null) {
+            GLOBAL_BATCH_LOG_COLLECTION.remove(xid);
+        }
+        
     }
 }
