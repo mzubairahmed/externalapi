@@ -914,7 +914,7 @@ public class ConfigurationsParser {
 		Size currentSize=new Size();
 		for(ProductCriteriaSets currentProductCriteriaSets:productCriteriaSetsList){
 			if(Arrays.asList(SIZE_GROUP_CRITERIACODES).contains(currentProductCriteriaSets.getCriteriaCode().toString())){
-				//criteriaSetParser.addCriteriaSetByCode(externalProductId, currentProductCriteriaSets.getCriteriaCode(), currentProductCriteriaSets.getCriteriaSetId());
+				criteriaSetParser.addCriteriaSetByCode(externalProductId, currentProductCriteriaSets.getCriteriaCode(), currentProductCriteriaSets.getCriteriaSetId());
 				productCriteriaSetValuesList=currentProductCriteriaSets.getCriteriaSetValues();
 					currentSize=productLookupParser.findSizeValueDetails(currentSize, currentProductCriteriaSets.getCriteriaCode(), productCriteriaSetValuesList, externalProductId);
 			}			

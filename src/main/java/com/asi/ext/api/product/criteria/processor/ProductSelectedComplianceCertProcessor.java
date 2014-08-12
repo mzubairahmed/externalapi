@@ -29,7 +29,7 @@ public class ProductSelectedComplianceCertProcessor {
     private List<SelectedComplianceCert> getSelectedComplianceCerts(String complianceCerts, String companyId, String productId,
             ProductDetail existingProduct) {
 
-        if (complianceCerts == null) {
+        if (CommonUtilities.isValueNull(complianceCerts)) {
             return new ArrayList<>();
         } else if (!CommonUtilities.isUpdateNeeded(complianceCerts)) {
             if (existingProduct != null) {

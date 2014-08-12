@@ -126,6 +126,11 @@ public class ImportTransformer {
         productToSave.setDescription(serviceProduct.getDescription());
         productToSave.setSummary(serviceProduct.getSummary());
         productToSave.setShipperBillsByCode(serviceProduct.getShipperBillsBy());
+        productToSave.setDisclaimer(serviceProduct.getProductDisclaimer());
+        productToSave.setAdditionalInfo(serviceProduct.getAdditionalProductInfo());
+        productToSave.setDistributorComments(serviceProduct.getDistributorOnlyComments());
+        productToSave.setAdditionalShippingInfo(serviceProduct.getAdditionalShippingInfo());
+        
         // Object Type Elements
         productToSave.setProductInventoryLink(ProductParserUtil.getInventoryLink(serviceProduct.getProductInventoryLink(),
                 existingRadarModel, companyId));
@@ -268,7 +273,7 @@ public class ImportTransformer {
         if (serviceProdConfigs.getOrigins() != null && !serviceProdConfigs.getOrigins().isEmpty()) {
             tempCriteriaSet = originProcessor.getOriginCriteriaSet(serviceProdConfigs.getOrigins(), rdrProduct,
                     existingCriteriaSetMap.get(ApplicationConstants.CONST_ORIGIN_CRITERIA_CODE), configId);
-            existingCriteriaSetMap.put(ApplicationConstants.CONST_ORIGIN_CRITERIA_CODE, tempCriteriaSet);
+            existingCriteriaSetMap.put(ApplicationConstants.CONST_ORIGIN_CRITERIA_CODE, null);
         } else {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_ORIGIN_CRITERIA_CODE);
         }

@@ -94,6 +94,8 @@ public class RushTimeProcessor extends SimpleCriteriaProcessor {
                     criteriaSetValue.setCriteriaSetId(matchedCriteriaSet.getCriteriaSetId());
                     criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
                     criteriaSetValue.setValue(new Value[] { value });
+                } else {
+                    criteriaSetValue.setCriteriaValueDetail(rushTime.getDetails());
                 }
             }
             updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE,
