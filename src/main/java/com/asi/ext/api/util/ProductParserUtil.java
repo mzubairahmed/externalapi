@@ -3,18 +3,14 @@
  */
 package com.asi.ext.api.util;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.asi.ext.api.product.criteria.processor.ProductSizeGroupProcessor;
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.radar.model.CriteriaInfo;
-import com.asi.ext.api.service.model.Apparel;
 import com.asi.ext.api.service.model.Availability;
 import com.asi.ext.api.service.model.Capacity;
 import com.asi.ext.api.service.model.Dimension;
-import com.asi.ext.api.service.model.OtherSize;
 import com.asi.ext.api.service.model.ShippingEstimate;
 import com.asi.ext.api.service.model.Size;
 import com.asi.ext.api.service.model.Value;

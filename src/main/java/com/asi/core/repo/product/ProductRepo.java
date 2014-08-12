@@ -31,7 +31,6 @@ import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.ext.api.service.model.Catalog;
 import com.asi.ext.api.service.model.Configurations;
-import com.asi.ext.api.service.model.Criteria;
 import com.asi.ext.api.service.model.Image;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.service.product.client.LookupValuesClient;
