@@ -202,6 +202,8 @@ CommonUtilities commonUtilities=new CommonUtilities();
 						criteriaCode = criteriaItems[0];
 						criteriaSet1 = criteriaCode + ":" + formatCriteriaValue(criteriaItems[1],criteriaCode);
 					}
+				}else{
+					
 				}
 			} else {
 				// criteriaSet1=temp;
@@ -226,16 +228,16 @@ CommonUtilities commonUtilities=new CommonUtilities();
 		criteriaSets[1] = criteriaSet2;
 		return criteriaSets;
 	}
-    public List<Value[]> getPriceSizesCriteria(String externalProductId, List<PricingItem> pricingItems) {
+   /* public List<Value[]> getPriceSizesCriteria(String externalProductId, List<PricingItem> pricingItems) {
 		List<Value[]> criteriaSets = new ArrayList<>();
 		Value[] temp;
 		for (PricingItem priceItem : pricingItems) {
 	//		if (criteriaCntr == 0) {
-                temp = (Value[]) criteriaSetParser.findSizesCriteriaSetById(externalProductId, priceItem.getCriteriaSetValueId());
+                temp =  criteriaSetParser.findSizesCriteriaSetById(externalProductId, priceItem.getCriteriaSetValueId());
 				if (null != temp) {
 					criteriaSets.add(temp);
 				}
-			/*} else {
+			} else {
 				// criteriaSet1=temp;
                 temp = (Value[]) criteriaSetParser.findSizesCriteriaSetById(externalProductId, priceItem.getCriteriaSetValueId());
 				if (null != temp) {
@@ -252,10 +254,10 @@ CommonUtilities commonUtilities=new CommonUtilities();
 					}
 				}
 			}
-	*/	//	criteriaCntr++;
+		//	criteriaCntr++;
 		}
 		return criteriaSets;
-	}
+	}*/
     public BasePriceDetails getBasePriceDetails(String externalProductId, PriceGrid priceGrid, boolean setCurrency,
             String firstCriteria, String secondCriteria) {
         BasePriceDetails basePriceDetails = new BasePriceDetails();

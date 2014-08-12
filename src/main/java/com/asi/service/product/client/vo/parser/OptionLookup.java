@@ -1,6 +1,7 @@
 package com.asi.service.product.client.vo.parser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,6 +13,7 @@ import com.asi.service.product.client.vo.ProductCriteriaSets;
 
 
 public class OptionLookup {
+	public static final String[] SIZE_GROUP_CRITERIACODES={"CAPS","DIMS","SABR","SAHU","SAIT","SANS","SAWI","SSNM","SVWT","SOTH"};
 	private CriteriaSetParser criteriaSetParser=new CriteriaSetParser(); 
 	public ConcurrentHashMap<String,ArrayList<String>> findOptionValueDetails(
 			ConcurrentHashMap<String,ArrayList<String>> optionList,
@@ -30,7 +32,8 @@ public class OptionLookup {
 		for (CriteriaSetValues criteriaSetValue : criteriaSetValueLst) {
 			tempArrayList=new ArrayList<>();
 			optionTyp=criteriaCode;
-//			criteriaSetParser.addReferenceSet(externalId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),(criteriaSetValue.getValue() instanceof String)?productCriteriaSet.getCriteriaDetail()+":"+criteriaSetValue.getValue().toString():"");
+			if(!Arrays.asList(SIZE_GROUP_CRITERIACODES).contains(criteriaCode))
+				criteriaSetParser.addReferenceSet(externalId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),(criteriaSetValue.getValue() instanceof String)?productCriteriaSet.getCriteriaDetail()+":"+criteriaSetValue.getValue().toString():"");
 				canOrderOnlyOne = (productCriteriaSet.getIsMultipleChoiceAllowed().equalsIgnoreCase("true"))?"Y":"N";
 				reqForOrder = (productCriteriaSet.getIsRequiredForOrder().equalsIgnoreCase("true"))?"Y":"N";
 			optionName = productCriteriaSet.getCriteriaDetail();

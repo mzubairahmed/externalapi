@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class CriteriaSetParser {
 	 private static ConcurrentHashMap<String, HashMap<String, String>> criteriaSetReference =  new ConcurrentHashMap<>();
-	 private static ConcurrentHashMap<String, HashMap<String, Object>> criteriaSetValueReference =  new ConcurrentHashMap<>();
+	 private static ConcurrentHashMap<String, HashMap<String, String>> criteriaSetValueReference =  new ConcurrentHashMap<>();
 	 private static ConcurrentHashMap<String, HashMap<String, String>> criteriaSetIdReference =  new ConcurrentHashMap<>();
     public void addReferenceSet(String externalProductId, String criteriaCode,
             Integer criteriaSetValueId,String value) {
@@ -51,7 +51,11 @@ public class CriteriaSetParser {
         if (tempMap == null || tempMap.isEmpty()) {
             return null;
         }
+        if(null!=tempMap.get(criteriaSetValueId)){
         return tempMap.get(criteriaSetValueId);
+        }else{
+        	return findSizesCriteriaSetById(extPrdId,criteriaSetValueId);
+        }
     }
     public HashMap<String, String> findCriteriaSetMapValueById(String extPrdId) {
         if (criteriaSetReference == null || criteriaSetReference.isEmpty()) {
@@ -72,11 +76,11 @@ public class CriteriaSetParser {
     	if(null!=criteriaSetReference)
     	 criteriaSetReference.remove(externalId);
     }
-    public Object findSizesCriteriaSetById(String extPrdId, String criteriaSetValueId) {
+    public String findSizesCriteriaSetById(String extPrdId, String criteriaSetValueId) {
         if (criteriaSetValueReference == null || criteriaSetValueReference.isEmpty()) {
             return null;
         }
-        HashMap<String, Object> tempMap = criteriaSetValueReference.get(extPrdId.trim());
+        HashMap<String, String> tempMap = criteriaSetValueReference.get(extPrdId.trim());
 
         if (tempMap == null || tempMap.isEmpty()) {
             return null;
@@ -95,15 +99,15 @@ public class CriteriaSetParser {
         return tempMap.get(valueOf);
 	}
 	public void addSizesReferenceSet(String externalProductId,
-			String criteriaCode, String criteriaSetValueId, Object valueObj) {
+			String criteriaCode, String criteriaSetValueId, String valueObj) {
     	if(null!=valueObj && null!=criteriaCode)
     	{
           if (criteriaSetValueReference== null || criteriaSetValueReference.isEmpty()) {
-        	  criteriaSetValueReference = new ConcurrentHashMap<String, HashMap<String, Object>>();
+        	  criteriaSetValueReference = new ConcurrentHashMap<String, HashMap<String, String>>();
             }
 
             if (criteriaSetValueReference.get(externalProductId.trim()) == null) {
-            	criteriaSetValueReference.put(externalProductId.trim(), new HashMap<String, Object>());
+            	criteriaSetValueReference.put(externalProductId.trim(), new HashMap<String, String>());
             }
             criteriaSetValueReference.get(externalProductId.trim()).put(criteriaSetValueId,valueObj);
     	} else

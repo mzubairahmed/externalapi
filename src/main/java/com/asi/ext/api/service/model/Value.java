@@ -35,6 +35,15 @@ public class Value {
         this.unit = unit;
     }
 
-    @JsonProperty("Unit")
+    @Override
+	public String toString() {
+		return "Value [attribute=" + attribute + ", value=" + value + ", unit="
+				+ unit + ", getAttribute()=" + getAttribute() + ", getValue()="
+				+ getValue() + ", getUnit()=" + getUnit() + ", getClass()="
+				+ getClass() + ", hashCode()=" + hashCode() + ", toString()="
+				+ super.toString() + "]";
+	}
+
+	@JsonProperty("Unit")
     private String unit;
 }
