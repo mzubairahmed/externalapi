@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.neo4j.cypher.internal.compiler.v2_1.ast.rewriters.isolateAggregation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestTemplate;
 
@@ -313,7 +312,8 @@ public class PriceGridParser extends ProductParser {
     protected ProductCriteriaSets getLessThanMinimumCriteriaSet(Product product) throws VelocityException {
 
         if (lessThanMinimumSetCodeValueMap == null || lessThanMinimumSetCodeValueMap.isEmpty()) {
-            String lessThanMinWSResponse = orgnCall.getLookupsResponse(RestAPIProperties
+            @SuppressWarnings("static-access")
+			String lessThanMinWSResponse = orgnCall.getLookupsResponse(RestAPIProperties
                     .get(ApplicationConstants.LESS_THAN_MIN_LOOKUP));
             lessThanMinimumSetCodeValueMap = jsonProcessorObj.getSetCodeValuesForIndividualCriteriaCode(lessThanMinWSResponse,
                     ApplicationConstants.CONST_LESS_THAN_MIN_CRT_CODE);
@@ -921,7 +921,7 @@ public class PriceGridParser extends ProductParser {
                             if (null!=currentPrice.getItemsPerUnit() && currentPrice.getItemsPerUnit() > 0)
                                 currentPriceUnit.setItemsPerUnit(String.valueOf(currentPrice.getItemsPerUnit()));
 
-                            currentPriceUnit.setName(currentPrice.getPriceUnitName());
+                            currentPriceUnit.setName((null!=currentPrice.getPriceUnitName() && !currentPrice.getPriceUnitName().isEmpty())?currentPrice.getPriceUnitName():null);
                             if (ProductDataStore.isOtherPriceUnit(currentPrice.getPriceUnit().getDisplayName())) {
                                 currentPriceUnit.setPriceUnitName(currentPrice.getPriceUnit().getDescription());
                             }

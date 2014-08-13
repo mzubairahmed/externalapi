@@ -700,6 +700,7 @@ public class LookupParser {
 				}
 				if (null != currentOption)
 					optionsList.add(currentOption);
+				currentOption = null;
 			}
 		}
 		serviceConfigurations.setOptions(optionsList);
