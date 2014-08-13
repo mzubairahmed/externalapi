@@ -155,7 +155,7 @@ public class ImportTransformer {
         productToSave.setProductKeywords(keywordProcessor.getProductKeywords(serviceProduct.getProductKeywords(),
                 existingRadarModel, true));
 
-        productToSave.setSelectedProductCategories(categoryProcessor.getCategories(serviceProduct.getCategories(), productId, xid,
+        productToSave.setSelectedProductCategories(new ProductCategoriesProcessor().getCategories(serviceProduct.getCategories(), productId, xid,
                 existingRadarModel));
 
         // Safety Warning Start
