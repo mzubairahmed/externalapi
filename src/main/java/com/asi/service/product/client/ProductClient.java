@@ -49,14 +49,14 @@ public class ProductClient {
 
         ProductDetail product = null;
         try {
-//            product = restTemplate.getForObject(productSearchUrl, ProductDetail.class, companyID, productID);
+            product = restTemplate.getForObject(productSearchUrl, ProductDetail.class, companyID, productID);
             
-            HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
-            
-            ResponseEntity<ProductDetail> response = restTemplate.exchange(productSearchUrl, HttpMethod.GET, requestEntity, ProductDetail.class, companyID, productID);
-            if(response != null && response.getBody() != null) {
-            	product = response.getBody();
-            }
+//            HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
+//            
+//            ResponseEntity<ProductDetail> response = restTemplate.exchange(productSearchUrl, HttpMethod.GET, requestEntity, ProductDetail.class, companyID, productID);
+//            if(response != null && response.getBody() != null) {
+//            	product = response.getBody();
+//            }
 
         } catch (RestClientException ex) {
             _LOGGER.error(ex.getMessage());
@@ -92,9 +92,9 @@ public class ProductClient {
             
             HttpEntity<ProductDetail> requestEntity = new HttpEntity<>(product, headers);
             
-//            ResponseEntity<?> response = restTemplate.postForObject(productSearchUrl, product, ResponseEntity.class);
+            ResponseEntity<?> response = restTemplate.postForObject(productSearchUrl, product, ResponseEntity.class);
 
-            ResponseEntity<?> response = restTemplate.exchange(productSearchUrl, HttpMethod.POST, requestEntity, ResponseEntity.class);
+//            ResponseEntity<?> response = restTemplate.exchange(productSearchUrl, HttpMethod.POST, requestEntity, ResponseEntity.class);
 
             _LOGGER.info("Result : " + response);
             return getExternalAPIResponse("Product Saved successfully", HttpStatus.OK, null);
