@@ -286,7 +286,7 @@ public class ImportTransformer {
         if (serviceProdConfigs.getOrigins() != null && !serviceProdConfigs.getOrigins().isEmpty()) {
             tempCriteriaSet = originProcessor.getOriginCriteriaSet(serviceProdConfigs.getOrigins(), rdrProduct,
                     existingCriteriaSetMap.get(ApplicationConstants.CONST_ORIGIN_CRITERIA_CODE), configId);
-            existingCriteriaSetMap.put(ApplicationConstants.CONST_ORIGIN_CRITERIA_CODE, null);
+            existingCriteriaSetMap.put(ApplicationConstants.CONST_ORIGIN_CRITERIA_CODE, tempCriteriaSet);
         } else {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_ORIGIN_CRITERIA_CODE);
         }
