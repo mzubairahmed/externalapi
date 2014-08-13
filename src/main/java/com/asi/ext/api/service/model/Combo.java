@@ -17,7 +17,11 @@ public class Combo {
     private String type;
     @JsonProperty("BlendMaterials")
     private List<BlendMaterial> blendMaterials=null;
-    public List<BlendMaterial> getBlendMaterials() {
+    @JsonProperty("RGBHex")
+    private String RGBHex;
+    
+
+	public List<BlendMaterial> getBlendMaterials() {
 		return blendMaterials;
 	}
 
@@ -53,6 +57,22 @@ public class Combo {
      */
     public void setType(String type) {
         this.type = type;
+    }
+    
+    
+
+    /**
+     * @return the rGBHex
+     */
+    public String getRGBHex() {
+        return RGBHex;
+    }
+
+    /**
+     * @param rGBHex the rGBHex to set
+     */
+    public void setRGBHex(String rGBHex) {
+        RGBHex = rGBHex;
     }
 
     @Override

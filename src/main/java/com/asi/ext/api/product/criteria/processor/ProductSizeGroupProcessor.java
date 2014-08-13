@@ -295,7 +295,8 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
 
         List<CriteriaSetValues> criteriaSetValuesAry = new ArrayList<CriteriaSetValues>();
 
-        Value[] valueAry = null;
+        //Value[] valueAry = null;
+        List<Value> valueAry = new ArrayList<Value>();
 
         if (null != productSizes && !productSizes.trim().equals("")) {
             // If Product has any Size Groups
@@ -328,7 +329,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                     continue;
                 }
                 String[] sizeValueElements = individualSizes[criteriaSetValuesCntr].split(";");
-                valueAry = new Value[sizeValueElements.length];
+                //valueAry = new Value[sizeValueElements.length];
                 for (int valueElementsCntr = 0; valueElementsCntr < sizeValueElements.length; valueElementsCntr++) {
                     tempValueElement = sizeValueElements[valueElementsCntr];
                     // For Single Size Element(attribute:value:units) it will iterate once
@@ -392,6 +393,8 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                                     || units.equalsIgnoreCase(ApplicationConstants.CONST_STRING_FEET_SMALL)) units = "\'";
                             units = JsonProcessor.getSizesElementValue(ApplicationConstants.CONST_STRING_UNITS,
                                     sizeElementsResponse, units.trim());
+                        } else {
+                            continue;
                         }
                     } else if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY)
                             || sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT)) {
@@ -417,7 +420,8 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                     value.setCriteriaAttributeId(attribute);
                     value.setUnitValue(sizeValue);
                     value.setUnitOfMeasureCode(units);
-                    valueAry[valueElementsCntr] = value;
+                    
+                    valueAry.add(value);
                 }
 
                 CriteriaSetCodeValues criteriaSetCodeValuesNew = new CriteriaSetCodeValues();
@@ -467,7 +471,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                 criteriaSetValueNew.setCriteriaSetCodeValues(criteriaSetCodeValuesAryNew);
                 criteriaSetValueNew.setIsSubset(ApplicationConstants.CONST_STRING_FALSE_SMALL);
                 criteriaSetValueNew.setIsSetValueMeasurement(ApplicationConstants.CONST_STRING_FALSE_SMALL);
-                criteriaSetValueNew.setValue(valueAry);
+                criteriaSetValueNew.setValue(valueAry.toArray(new Value[0]));
                 // TODO : Set ReferenceTable
                 // Adding a this criteriaSet entry details to reference table, so later can be referenced easily
                 productDataStore.updateCriteriaSetValueReferenceTable(product.getExternalProductId().trim(), sizeCriteriaCode,

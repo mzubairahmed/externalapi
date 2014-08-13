@@ -119,6 +119,8 @@ public class ProductImprintColorProcessor extends SimpleCriteriaProcessor {
                 criteriaSetValue.setCriteriaSetId(matchedCriteriaSet.getCriteriaSetId());
                 criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
                 criteriaSetValue.setValue(value);
+            } else {
+                criteriaSetValue.setValueTypeCode(typeCode);
             }
             updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_IMPRINT_COLOR_CRITERIA_CODE,
                     value, criteriaSetValue);

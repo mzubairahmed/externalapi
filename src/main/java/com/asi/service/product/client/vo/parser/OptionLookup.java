@@ -7,13 +7,13 @@ import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.asi.ext.api.integration.lookup.parser.CriteriaSetParser;
-import com.asi.service.product.client.vo.CriteriaSetValue;
 import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 
 
 public class OptionLookup {
-	public static final String[] SIZE_GROUP_CRITERIACODES={"CAPS","DIMS","SABR","SAHU","SAIT","SANS","SAWI","SSNM","SVWT","SOTH"};
+	public final String[] SIZE_GROUP_CRITERIACODES={"CAPS","DIMS","SABR","SAHU","SAIT","SANS","SAWI","SSNM","SVWT","SOTH"};
+	public final String[] OPTION_CRITERIACODES={"IMOP","SHOP","PROP"};
 	private CriteriaSetParser criteriaSetParser=new CriteriaSetParser(); 
 	public ConcurrentHashMap<String,ArrayList<String>> findOptionValueDetails(
 			ConcurrentHashMap<String,ArrayList<String>> optionList,
@@ -32,8 +32,13 @@ public class OptionLookup {
 		for (CriteriaSetValues criteriaSetValue : criteriaSetValueLst) {
 			tempArrayList=new ArrayList<>();
 			optionTyp=criteriaCode;
-			if(!Arrays.asList(SIZE_GROUP_CRITERIACODES).contains(criteriaCode))
-				criteriaSetParser.addReferenceSet(externalId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),(criteriaSetValue.getValue() instanceof String)?productCriteriaSet.getCriteriaDetail()+":"+criteriaSetValue.getValue().toString():"");
+			if(!Arrays.asList(SIZE_GROUP_CRITERIACODES).contains(criteriaCode)){
+				if(Arrays.asList(OPTION_CRITERIACODES).contains(criteriaCode)){
+				criteriaSetParser.addReferenceSet(externalId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),(criteriaSetValue.getValue() instanceof String)?productCriteriaSet.getCriteriaDetail()+":"+criteriaSetValue.getValue().toString():null);
+			}else{
+				criteriaSetParser.addReferenceSet(externalId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),(criteriaSetValue.getValue() instanceof String)?criteriaSetValue.getValue().toString():null);
+			}
+			}
 				canOrderOnlyOne = (productCriteriaSet.getIsMultipleChoiceAllowed().equalsIgnoreCase("true"))?"Y":"N";
 				reqForOrder = (productCriteriaSet.getIsRequiredForOrder().equalsIgnoreCase("true"))?"Y":"N";
 			optionName = productCriteriaSet.getCriteriaDetail();

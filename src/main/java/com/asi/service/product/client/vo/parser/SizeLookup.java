@@ -172,7 +172,7 @@ public class SizeLookup {
 									valueObj.setAttribute(valueElements[0]);
 									valueObj.setUnit(valueElements[2]);
 									valueObj.setValue(valueElements[1]);
-									criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),valueObj.toString());
+									
 									}
 								valueObjList.add(valueObj);
 							}
@@ -184,7 +184,7 @@ public class SizeLookup {
 							valueObj.setAttribute(valueElements[1]);
 							valueObj.setUnit("");
 							valueObj.setValue(valueElements[0]);
-							criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),valueObj.toString());
+							criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),valueObj);
 							}
 							delim="; ";
 							}
@@ -199,12 +199,15 @@ public class SizeLookup {
 							if(valueElements.length>1){
 								valueObj.setValue(valueElements[0]);
 								valueObj.setUnit(valueElements[1]);
-								criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),valueObj.toString());
+							//	criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),valueObj);
 							}
 							valueObjList.add(valueObj);
-							
-							capacityValueObjList.add(valueObj);}else{
+							if(null!=capacity) criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),valueObj);
+							capacityValueObjList.add(valueObj);
+						//	criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),capacityValueObjList);
+							}else{
 								valueStringList.add(sizeValue);
+								criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),valueStringList);
 							}
 							delim=": ";
 							}
@@ -261,11 +264,15 @@ public class SizeLookup {
 						//valueObjList.add(valueObj);
 						if(sizeCntr==0){
 							if(criteriaCode.equalsIgnoreCase("SAWI")){
-						}else		apperalValueObjList.add(apperalObj);
+						}else		
+							if(null!=apparel) criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),apperalObj);
+							apperalValueObjList.add(apperalObj);
 						}else{
+							if(null!=apparel) criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),apperalObj);
 							apperalValueObjList.add(apperalObj);
 						}
 						sizeCntr++;
+						
 					}		
 					
 					}else
@@ -281,19 +288,25 @@ public class SizeLookup {
 							sizeElementValue+=sizeValue;
 							if(null!=apparel){
 							apperalObj.setValue(sizeValue);
+							if(null!=apparel) criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),apperalObj);
 							apperalValueObjList.add(apperalObj);
 							}else if(criteriaCode.equalsIgnoreCase("CAPS")){
 							capacityObj.setValue(sizeValue.substring(0,sizeValue.indexOf(" ")));
 							capacityObj.setUnit(sizeValue.substring(sizeValue.indexOf(" ")+1));
+							if(null!=capacity) criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),capacityObj);
 							capacityValueObjList.add(capacityObj);
+						//
 							}else{
 								valueObj.setValue(sizeValue);
-								criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),valueObj.toString());
 								otherValueObjList.add(valueObj);
-							}
 								
+							}
+							
+							if(null!=otherSize) criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),otherValueObjList);
+							
 						sizeCntr++;
 					}
+					
 					//criteriaSetParser.addReferenceSet(externalProductId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),sizeValue);
 					if(elementsCntr!=0)
 					{
@@ -318,8 +331,10 @@ public class SizeLookup {
 					elementsCntr++;
 					if(criteriaCode.equalsIgnoreCase("DIMS") || criteriaCode.equalsIgnoreCase("SVWT")){
 						currentValues.setValue(valueObjList);
+						criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),valueObjList);
 						valuesList.add(currentValues);
 					}
+					
 					
 					
 						/*else if(criteriaCode.equalsIgnoreCase("SAIT")){

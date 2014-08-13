@@ -615,7 +615,7 @@ public class LookupParser {
 						currentCriteria.setCriteria(criteriaInfo
 								.getDescription());
 						currentCriteria.setValue(tempCriteria
-								.substring(tempCriteria.indexOf("__") + 2));
+								.substring(tempCriteria.indexOf("__") + 3));
 					}
 					criteriaList.add(currentCriteria);
 				}
@@ -700,6 +700,7 @@ public class LookupParser {
 				}
 				if (null != currentOption)
 					optionsList.add(currentOption);
+				currentOption = null;
 			}
 		}
 		serviceConfigurations.setOptions(optionsList);

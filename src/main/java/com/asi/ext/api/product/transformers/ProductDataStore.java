@@ -59,6 +59,7 @@ public class ProductDataStore {
     private static HashMap<String, String>                            additionalColorLookupTable     = new HashMap<>();
     private static HashMap<String, String>                            additionalLocationLookupTable  = new HashMap<>();
     private static HashMap<String, String>                            imprintColorLookupTable        = new HashMap<>();
+    private static Map<String, String>                                imprintSizeLookupTable          = new HashMap<>();
     private static HashMap<String, String>                            complianceCertLookupTable      = new HashMap<>();
     private static HashMap<String, String>                            safetyWarningLookupTable       = new HashMap<>();
     private static HashMap<String, String>                            prodSpecSampleLookupTable      = new HashMap<>();
@@ -1350,12 +1351,15 @@ public class ProductDataStore {
 	        }
 	        return sizelookupsResponse;
 	    }
-    public static CriteriaInfo getCriteriaInfoForCriteriaCode(String code) {
+    public static CriteriaInfo getCriteriaInfoForCriteriaCode(Object code) {
+    	if(code instanceof String){
         if (criteriaInfo == null || criteriaInfo.isEmpty()) {
             return loadCriteriaInformations() ? criteriaInfo.get(code) : null;
         } else {
             return criteriaInfo.get(code);
         }
+    	}else
+    		return null;
     }
     
     public static CriteriaInfo getCriteriaInfoByDescription(String description, String xid) {
@@ -1554,6 +1558,38 @@ public class ProductDataStore {
 
         return shippingItemLookupTable.get(ApplicationConstants.CONST_STRING_OTHER.toUpperCase());
 
+    }
+	
+	public static String getSetCodeValueIdForImprintSize(String imprintSize) {
+        if (imprintSizeLookupTable == null || imprintSizeLookupTable.isEmpty()) {
+            // Create Product imprint size Lookup table
+            try {
+
+                LinkedList<?> imprintSizeResponse = lookupRestTemplate.getForObject(
+                        RestAPIProperties.get(ApplicationConstants.IMPRINT_SIZE_LOOKUP), LinkedList.class);
+                if (imprintSizeResponse == null || imprintSizeResponse.isEmpty()) {
+                    // Report error to API that we are not able to fetch data
+                    // for imprint size
+                    // throw new
+                    // VelocityException("Unable to get response from imprint size API",
+                    // null);
+                    LOGGER.error("Product imprint size Lookup API returned null response");
+                    // TODO : Batch Error
+                    return null;
+                } else {
+                    imprintSizeLookupTable = JsonToLookupTableConverter.jsonToProductCustomLookupTable(imprintSizeResponse,
+                            ApplicationConstants.CONST_IMPRINT_SIZE_CRITERIA_CODE);
+                    if (imprintSizeLookupTable == null) {
+                        return null; // TODO : LOG Batch Error
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.error("Exception while fetching/processing imprint size lookup data", e);
+                return null;
+            }
+        }
+
+        return imprintSizeLookupTable.get(ApplicationConstants.CONST_STRING_OTHER.toUpperCase());
     }
 
     /**

@@ -121,7 +121,7 @@ public class ApplicationConstants {
     public static final String                       CONST_VALUE_TYPE_CODE_LIST                  = "LIST";
     public static final String                       CONST_VALUE_TYPE_CODE_CUST                  = "CUST";
     public static final String                       CONST_VALUE_TYPE_CODE_COLOR                 = "COLR";
-    public static final String                       CONST_VALUE_TYPE_CODE_PMS                   = "PMSN ";
+    public static final String                       CONST_VALUE_TYPE_CODE_PMS                   = "PMSN";
 
     // Size Groups - CODE
 

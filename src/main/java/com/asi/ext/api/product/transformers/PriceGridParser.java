@@ -312,7 +312,8 @@ public class PriceGridParser extends ProductParser {
     protected ProductCriteriaSets getLessThanMinimumCriteriaSet(Product product) throws VelocityException {
 
         if (lessThanMinimumSetCodeValueMap == null || lessThanMinimumSetCodeValueMap.isEmpty()) {
-            String lessThanMinWSResponse = orgnCall.getLookupsResponse(RestAPIProperties
+            @SuppressWarnings("static-access")
+			String lessThanMinWSResponse = orgnCall.getLookupsResponse(RestAPIProperties
                     .get(ApplicationConstants.LESS_THAN_MIN_LOOKUP));
             lessThanMinimumSetCodeValueMap = jsonProcessorObj.getSetCodeValuesForIndividualCriteriaCode(lessThanMinWSResponse,
                     ApplicationConstants.CONST_LESS_THAN_MIN_CRT_CODE);
@@ -406,7 +407,8 @@ public class PriceGridParser extends ProductParser {
                     if (criteriaValues != null && !criteriaValues.isEmpty()) {
                         List<PricingItems> pricingItemsList = new ArrayList<PricingItems>();
                         for (String criteria : criteriaValues) {
-                            String criteriaSetValueId = productDataStore.findCriteriaSetValueIdForValue(product
+                            @SuppressWarnings("static-access")
+							String criteriaSetValueId = productDataStore.findCriteriaSetValueIdForValue(product
                                     .getExternalProductId().trim(), criteriaCode, criteria);
 
                             if (!CommonUtilities.isValueNull(criteriaSetValueId)) {
@@ -917,10 +919,10 @@ public class PriceGridParser extends ProductParser {
                             currentPrices.setDiscountCode(currentPrice.getDiscountRate().getIndustryDiscountCode());
                         if (null != currentPrice.getPriceUnit()) {
                             currentPriceUnit = new com.asi.ext.api.service.model.PriceUnit();
-                            if (Integer.parseInt(currentPrice.getPriceUnit().getItemsPerUnit()) > 0)
-                                currentPriceUnit.setItemsPerUnit(currentPrice.getPriceUnit().getItemsPerUnit());
+                            if (null!=currentPrice.getItemsPerUnit() && currentPrice.getItemsPerUnit() > 0)
+                                currentPriceUnit.setItemsPerUnit(String.valueOf(currentPrice.getItemsPerUnit()));
 
-                            currentPriceUnit.setName(currentPrice.getPriceUnit().getDisplayName());
+                            currentPriceUnit.setName((null!=currentPrice.getPriceUnitName() && !currentPrice.getPriceUnitName().isEmpty())?currentPrice.getPriceUnitName():null);
                             if (ProductDataStore.isOtherPriceUnit(currentPrice.getPriceUnit().getDisplayName())) {
                                 currentPriceUnit.setPriceUnitName(currentPrice.getPriceUnit().getDescription());
                             }
@@ -956,8 +958,8 @@ public class PriceGridParser extends ProductParser {
         upChargeLookup.setUpchargeTypelookupAPI(RestAPIProperties.get(ApplicationConstants.PRICING_SUBTYPECODE_LOOKUP));
         upChargeLookup.setUsageLevelLookupAPI(RestAPIProperties.get(ApplicationConstants.PRICING_USAGELEVEL_LOOKUP));
         PricesParser pricesParser = new PricesParser();
-        String firstCriteria = "";
-        String secondCriteria = "";
+        Object firstCriteria = "";
+        Object secondCriteria = "";
         CriteriaInfo criteriaInfo = null;
         UpChargePriceDetails upchargePriceDetail = new UpChargePriceDetails();
         boolean checkNeeded = false;
@@ -966,30 +968,52 @@ public class PriceGridParser extends ProductParser {
             if (currentPriceGrid.getIsBasePrice()) {
 
                 BasePriceDetails bpDetails = pricesParser.getBasePriceDetails(productDetail.getExternalProductId(),
-                        currentPriceGrid, setCurrency, firstCriteria, secondCriteria);
+                        currentPriceGrid, setCurrency, firstCriteria.toString(), secondCriteria.toString());
 
-                if (bpDetails.getBasePriceCriteria1() != null && !bpDetails.getBasePriceCriteria1().isEmpty() && !checkNeeded) {
-                    firstCriteria = getCriteriaCode(bpDetails.getBasePriceCriteria1());
-                    secondCriteria = getCriteriaCode(bpDetails.getBasePriceCriteria2());
+                if (bpDetails.getBasePriceCriteria1() != null && !bpDetails.getBasePriceCriteria1().toString().isEmpty() && !checkNeeded) {
+                	firstCriteria = getCriteriaCode(bpDetails.getBasePriceCriteria1());
+                  secondCriteria = getCriteriaCode(bpDetails.getBasePriceCriteria2());
                     checkNeeded = true;
                 }
                 // basePriceDetailsList.add(bpDetails);
-                if (firstCriteria != null && !firstCriteria.trim().isEmpty()) {
+                if (firstCriteria != null && firstCriteria instanceof String && !firstCriteria.toString().trim().isEmpty()) {
                     currentPriceConfig = new PriceConfiguration();
                     criteriaInfo = ProductDataStore.getCriteriaInfoForCriteriaCode(getCriteriaCode(bpDetails
-                            .getBasePriceCriteria1()));
-                    currentPriceConfig.setCriteria(criteriaInfo.getDescription());
-                    currentPriceConfig.setValue(getCriteriaValueByCriteria(bpDetails.getBasePriceCriteria1()));
+                            .getBasePriceCriteria1().toString()));
+                    if(null!=criteriaInfo){
+                    	currentPriceConfig.setCriteria(criteriaInfo.getDescription());
+                    	currentPriceConfig.setValue(getCriteriaValueByCriteria(bpDetails.getBasePriceCriteria1().toString()));
+                    }
+                    else{
+                    	currentPriceConfig.setValue(bpDetails
+                            .getBasePriceCriteria1());
+                    } 
                     pricingConfigurations.add(currentPriceConfig);
+                }else if(firstCriteria != null){
+                	 currentPriceConfig = new PriceConfiguration();
+                	currentPriceConfig.setValue(bpDetails
+                            .getBasePriceCriteria1());
+                	pricingConfigurations.add(currentPriceConfig);
                 }
-                if (secondCriteria != null && !secondCriteria.trim().isEmpty()) {
+                if (secondCriteria != null  && secondCriteria instanceof String && !secondCriteria.toString().trim().isEmpty()) {
                     currentPriceConfig = new PriceConfiguration();
                     criteriaInfo = ProductDataStore.getCriteriaInfoForCriteriaCode(getCriteriaCode(bpDetails
-                            .getBasePriceCriteria1()));
+                            .getBasePriceCriteria2().toString()));
+                    if(null!=criteriaInfo){
                     currentPriceConfig.setCriteria(criteriaInfo.getDescription());
-                    currentPriceConfig.setValue(getCriteriaValueByCriteria(bpDetails.getBasePriceCriteria2()));
+                    currentPriceConfig.setValue(getCriteriaValueByCriteria(bpDetails.getBasePriceCriteria2().toString()));
+                    }else{
+                    	currentPriceConfig.setValue(bpDetails
+                            .getBasePriceCriteria2());
+                    }
+                   
                     pricingConfigurations.add(currentPriceConfig);
-                }
+                }else if(secondCriteria != null){
+               	 currentPriceConfig = new PriceConfiguration();
+               	currentPriceConfig.setValue(bpDetails
+                           .getBasePriceCriteria2());
+               	if(null!=currentPriceConfig.getValue()) pricingConfigurations.add(currentPriceConfig);
+               }
                 setCurrency = false;
             } else {
                 upchargePriceDetail = pricesParser.getUpChargePriceDetails(productDetail.getExternalProductId(), currentPriceGrid,
@@ -1015,11 +1039,16 @@ public class PriceGridParser extends ProductParser {
         return pricingConfigurations;
     }
 
-    public String getCriteriaCode(String source) {
-        if (source != null && !source.isEmpty() && source.contains(":")) {
-            return source.substring(0, source.indexOf(":"));
-        }
+    public Object getCriteriaCode(Object source) {
+    	
+        if (source != null && source instanceof String && !source.toString().isEmpty() && source.toString().contains(":")) {
+            return source.toString().substring(0, source.toString().indexOf(":"));
+        }else if(source ==null)
         return null;
+        else
+        {
+        	return source;
+        }
     }
 
     public Object getCriteriaValueByCriteria(String source) {
