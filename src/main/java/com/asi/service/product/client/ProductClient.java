@@ -1,7 +1,5 @@
 package com.asi.service.product.client;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -55,11 +53,7 @@ public class ProductClient {
             
             HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
             
-            Map<String, String> map = new HashMap<String, String>();
-            map.put("companyID", companyID);
-            map.put("productID", productID);
-            
-            ResponseEntity<ProductDetail> response = restTemplate.exchange(productSearchUrl, HttpMethod.GET, requestEntity, ProductDetail.class, map);
+            ResponseEntity<ProductDetail> response = restTemplate.exchange(productSearchUrl, HttpMethod.GET, requestEntity, ProductDetail.class, companyID, productID);
             if(response != null && response.getBody() != null) {
             	product = response.getBody();
             }
