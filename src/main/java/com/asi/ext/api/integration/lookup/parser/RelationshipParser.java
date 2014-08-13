@@ -211,7 +211,8 @@ public class RelationshipParser {
 							if(null==criteriaValue){
 								availableVariations.setChildValue(criteriaSetParser.findSizesCriteriaSetById(extPrdId, String.valueOf(currentCriteriaSetValuePath.getCriteriaSetValueId())));
 							}else{
-								availableVariations.setChildValue(criteriaValue.substring(criteriaValue.indexOf("__")+3));
+								if(criteriaValue.indexOf("__")+3<criteriaValue.length())
+								availableVariations.setChildValue(criteriaValue.substring(criteriaValue.indexOf("__")+2));
 							}
 						}
 						tempId=currentCriteriaSetValuePath.getID();
@@ -222,7 +223,7 @@ public class RelationshipParser {
 									tempCriteria=criteriaValue.substring(criteriaValue.indexOf("__")+2);
 									availableVariations.setParentValue(tempCriteria.substring(tempCriteria.indexOf(":")+2));
 								}else{
-									availableVariations.setParentValue(criteriaValue.substring(criteriaValue.indexOf("__")+3));
+									availableVariations.setParentValue(criteriaValue.substring(criteriaValue.indexOf("__")+2));
 								}
 								availabileVariationsList.add(availableVariations);
 							}

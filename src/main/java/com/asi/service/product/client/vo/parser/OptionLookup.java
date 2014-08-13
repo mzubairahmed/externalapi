@@ -32,7 +32,7 @@ public class OptionLookup {
 		for (CriteriaSetValues criteriaSetValue : criteriaSetValueLst) {
 			tempArrayList=new ArrayList<>();
 			optionTyp=criteriaCode;
-			if(!Arrays.asList(SIZE_GROUP_CRITERIACODES).contains(criteriaCode))
+			if(!Arrays.asList(SIZE_GROUP_CRITERIACODES).contains(criteriaCode) && !criteriaCode.equals("PRCL"))
 				criteriaSetParser.addReferenceSet(externalId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),(criteriaSetValue.getValue() instanceof String)?productCriteriaSet.getCriteriaDetail()+":"+criteriaSetValue.getValue().toString():"");
 				canOrderOnlyOne = (productCriteriaSet.getIsMultipleChoiceAllowed().equalsIgnoreCase("true"))?"Y":"N";
 				reqForOrder = (productCriteriaSet.getIsRequiredForOrder().equalsIgnoreCase("true"))?"Y":"N";

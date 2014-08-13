@@ -214,7 +214,7 @@ CommonUtilities commonUtilities=new CommonUtilities();
 						if (criteriaItems[0].equalsIgnoreCase(criteriaCode)) {
                             criteriaSet1 = criteriaSet1 + "," + formatCriteriaValue(criteriaItems[1], criteriaItems[0]);
 						} else if (temp1.equals("")) {
-                            criteriaSet2 = criteriaItems[0] + ":" + formatCriteriaValue(criteriaItems[1], criteriaItems[0]);
+                            criteriaSet2 = criteriaItems[0] + formatCriteriaValue(criteriaItems[1], criteriaItems[0]);
 							temp1 = criteriaItems[0];
 					  } else {
                             criteriaSet2 = criteriaSet2 + "," + formatCriteriaValue(criteriaItems[1], criteriaItems[0]);

@@ -986,7 +986,7 @@ public class PriceGridParser extends ProductParser {
                     else{
                     	currentPriceConfig.setValue(bpDetails
                             .getBasePriceCriteria1());
-                    }                    	
+                    } 
                     pricingConfigurations.add(currentPriceConfig);
                 }else if(firstCriteria != null){
                 	 currentPriceConfig = new PriceConfiguration();

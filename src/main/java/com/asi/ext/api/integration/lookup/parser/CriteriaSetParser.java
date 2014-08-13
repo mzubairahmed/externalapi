@@ -109,7 +109,9 @@ public class CriteriaSetParser {
             if (criteriaSetValueReference.get(externalProductId.trim()) == null) {
             	criteriaSetValueReference.put(externalProductId.trim(), new HashMap<String, Object>());
             }
-            criteriaSetValueReference.get(externalProductId.trim()).put(criteriaSetValueId,valueObj);
+          if(criteriaSetValueReference.get(externalProductId.trim()).get(criteriaSetValueId) == null){
+        	  criteriaSetValueReference.get(externalProductId.trim()).put(criteriaSetValueId,valueObj);
+          }
     	} else
     	{
     		return;
