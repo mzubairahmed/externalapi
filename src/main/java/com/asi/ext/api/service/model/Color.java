@@ -15,6 +15,8 @@ public class Color {
     private String      name;
     @JsonProperty("Alias")
     private String      alias;
+    @JsonProperty("RGBHex")
+    private String      RGBHex;
     @JsonProperty("Combos")
     private List<Combo> combos = new ArrayList<Combo>();
 
@@ -36,6 +38,23 @@ public class Color {
     @JsonProperty("Alias")
     public void setAlias(String alias) {
         this.alias = alias;
+    }
+
+    /**
+     * @return the rGBHex
+     */
+    @JsonProperty("RGBHex")
+    public String getRGBHex() {
+        return RGBHex;
+    }
+
+    /**
+     * @param rGBHex
+     *            the rGBHex to set
+     */
+    @JsonProperty("RGBHex")
+    public void setRGBHex(String rGBHex) {
+        RGBHex = rGBHex;
     }
 
     /**

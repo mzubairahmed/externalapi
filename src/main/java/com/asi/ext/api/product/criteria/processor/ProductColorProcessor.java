@@ -44,21 +44,6 @@ public class ProductColorProcessor extends SimpleCriteriaProcessor {
         return getCriteriaSet(colors, existingProduct, matchedCriteriaSet, 0);
     }
 
-    private String getColorStringFromList(List<Color> colors) {
-        String finalColor = "";
-        for (Color color : colors) {
-            if (color != null) {
-                if (CommonUtilities.isValueNull(color.getAlias())) {
-                    finalColor = finalColor.isEmpty() ? color.getName() : finalColor + "," + color.getName();
-                } else {
-                    finalColor = finalColor.isEmpty() ? color.getName() + "=" + color.getAlias() : finalColor + ","
-                            + color.getName() + "=" + color.getAlias();
-                }
-            }
-        }
-        return finalColor;
-    }
-
     public ProductCriteriaSets getCriteriaSet(List<Color> values, ProductDetail existingProduct,
             ProductCriteriaSets matchedCriteriaSet, int currentSetValueId) {
 
@@ -120,16 +105,28 @@ public class ProductColorProcessor extends SimpleCriteriaProcessor {
                 criteriaSetValue.setIsSubset(ApplicationConstants.CONST_STRING_FALSE_SMALL);
                 criteriaSetValue.setIsSetValueMeasurement(ApplicationConstants.CONST_STRING_FALSE_SMALL);
                 criteriaSetValue.setCriteriaSetId(matchedCriteriaSet.getCriteriaSetId());
+                CriteriaSetCodeValues[] setCodeValues = null;
                 if (hasCombo) { 
-                    criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValuesForCombo(setCodeValueId, criteriaSetValue.getId(), color.getCombos()));
+                    setCodeValues = getCriteriaSetCodeValuesForCombo(setCodeValueId, criteriaSetValue.getId(), color.getCombos());
+                    //criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValuesForCombo(setCodeValueId, criteriaSetValue.getId(), color.getCombos()));
                 } else {
-                    criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
+                    setCodeValues = getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId());
+                    //criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
                     
                 }
+                if (!CommonUtilities.isValueNull(color.getRGBHex()) && setCodeValues != null && setCodeValues.length > 0) {
+                    setCodeValues[0].setCodeValue(color.getRGBHex());
+                }
+                criteriaSetValue.setCriteriaSetCodeValues(setCodeValues);
+                
                 if (hasAliace) {
                     criteriaSetValue.setValue(color.getAlias());
                 } else {
                     criteriaSetValue.setValue(color.getName());
+                }
+            } else {
+                if (!CommonUtilities.isValueNull(color.getRGBHex()) && criteriaSetValue.getCriteriaSetCodeValues() != null &&  criteriaSetValue.getCriteriaSetCodeValues().length > 0) {
+                    criteriaSetValue.getCriteriaSetCodeValues()[0].setCodeValue(color.getRGBHex());
                 }
             }
 
