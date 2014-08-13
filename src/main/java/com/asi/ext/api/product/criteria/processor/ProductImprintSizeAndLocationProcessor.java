@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.service.model.ImprintSizeLocation;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
@@ -131,14 +132,17 @@ public class ProductImprintSizeAndLocationProcessor extends SimpleCriteriaProces
     @Override
     public String getSetCodeValueId(String value) {
         // TODO Auto-generated method stub
-        return null;
+        return ProductDataStore.getSetCodeValueIdForImprintSize(value);
     }
 
     private Map<String, CriteriaSetValues> createTableForExistingSetValue(List<CriteriaSetValues> existingCriteriaSetValues) {
         Map<String, CriteriaSetValues> existing = new HashMap<String, CriteriaSetValues>();
         try {
             for (CriteriaSetValues setValues : existingCriteriaSetValues) {
-                existing.put(String.valueOf(setValues.getValue()), setValues);
+                if (setValues != null && setValues.getCriteriaSetCodeValues() != null && setValues.getCriteriaSetCodeValues().length > 0) {
+                    String setCodeValue = setValues.getCriteriaSetCodeValues()[0].getSetCodeValueId();
+                    existing.put(String.valueOf(setValues.getValue()).toUpperCase() + "_" + setCodeValue, setValues);
+                }
             }
         } catch (Exception e) {
             LOGGER.error("Exception while processing existing imprint size value , " + e.getMessage());
@@ -149,7 +153,7 @@ public class ProductImprintSizeAndLocationProcessor extends SimpleCriteriaProces
     @Override
     protected boolean isValueIsValid(String value) {
         // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override
