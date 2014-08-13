@@ -5,8 +5,8 @@ import java.util.List;
 
 public class BasePriceDetails {
     private String       basePriceName      = "";
-    private String       basePriceCriteria1 = "";
-    private String       basePriceCriteria2 = "";
+    private Object       basePriceCriteria1 = null;
+    private Object       basePriceCriteria2 = null;
     private String       priceIncludes      = "";
     private String       QUR                = "";
     private String       currency           = "";
@@ -35,7 +35,7 @@ public class BasePriceDetails {
     /**
      * @return the basePriceCriteria1
      */
-    public String getBasePriceCriteria1() {
+    public Object getBasePriceCriteria1() {
         return basePriceCriteria1;
     }
 
@@ -43,14 +43,14 @@ public class BasePriceDetails {
      * @param basePriceCriteria1
      *            the basePriceCriteria1 to set
      */
-    public void setBasePriceCriteria1(String basePriceCriteria1) {
+    public void setBasePriceCriteria1(Object basePriceCriteria1) {
         this.basePriceCriteria1 = basePriceCriteria1;
     }
 
     /**
      * @return the basePriceCriteria2
      */
-    public String getBasePriceCriteria2() {
+    public Object getBasePriceCriteria2() {
         return basePriceCriteria2;
     }
 
@@ -58,7 +58,7 @@ public class BasePriceDetails {
      * @param basePriceCriteria2
      *            the basePriceCriteria2 to set
      */
-    public void setBasePriceCriteria2(String basePriceCriteria2) {
+    public void setBasePriceCriteria2(Object basePriceCriteria2) {
         this.basePriceCriteria2 = basePriceCriteria2;
     }
 

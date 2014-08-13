@@ -185,10 +185,10 @@ CommonUtilities commonUtilities=new CommonUtilities();
 	return srcString;
 }
 
-    public String[] getPriceCriteria(String externalProductId, List<PricingItem> pricingItems) {
-		String criteriaSet1 = "";
-		String criteriaSet2 = "";
-		String[] criteriaSets = new String[] { "", "" };
+    public Object[] getPriceCriteria(String externalProductId, List<PricingItem> pricingItems) {
+		Object criteriaSet1 = "";
+		Object criteriaSet2 = "";
+		Object[] criteriaSets = new Object[] { null, null };
 		String criteriaCode = "";
 		String temp = "", temp1 = "";
 		String[] criteriaItems = null;
@@ -203,7 +203,7 @@ CommonUtilities commonUtilities=new CommonUtilities();
 						criteriaSet1 = criteriaCode + ":" + formatCriteriaValue(criteriaItems[1],criteriaCode);
 					}
 				}else{
-					
+					criteriaSet1=criteriaSetParser.findSizesCriteriaSetById(externalProductId, priceItem.getCriteriaSetValueId());
 				}
 			} else {
 				// criteriaSet1=temp;
@@ -214,12 +214,14 @@ CommonUtilities commonUtilities=new CommonUtilities();
 						if (criteriaItems[0].equalsIgnoreCase(criteriaCode)) {
                             criteriaSet1 = criteriaSet1 + "," + formatCriteriaValue(criteriaItems[1], criteriaItems[0]);
 						} else if (temp1.equals("")) {
-                            criteriaSet2 = criteriaItems[0] + ":" + formatCriteriaValue(criteriaItems[1], criteriaItems[0]);
+                            criteriaSet2 = criteriaItems[0] + formatCriteriaValue(criteriaItems[1], criteriaItems[0]);
 							temp1 = criteriaItems[0];
 					  } else {
                             criteriaSet2 = criteriaSet2 + "," + formatCriteriaValue(criteriaItems[1], criteriaItems[0]);
                	}
 					}
+				}else{
+					criteriaSet2=criteriaSetParser.findSizesCriteriaSetById(externalProductId, priceItem.getCriteriaSetValueId());
 				}
 			}
 			criteriaCntr++;
@@ -288,10 +290,10 @@ CommonUtilities commonUtilities=new CommonUtilities();
         }
         
         // TODO : Call the function 
-        String[] temp = getPriceCriteria(externalProductId, priceGrid.getPricingItems());
-        String tempCode ="";
-        if (temp != null && temp.length == 2) {
-        	if (!CommonUtilities.isValueNull(temp[0]) && !CommonUtilities.isValueNull(firstCriteria)) {
+        Object[] temp = getPriceCriteria(externalProductId, priceGrid.getPricingItems());
+        Object tempCode;
+        if (temp != null && temp.length == 2 && temp[0] instanceof String) {
+        	if (!CommonUtilities.isValueNull(temp[0].toString()) && !CommonUtilities.isValueNull(firstCriteria)) {
         		if(rushCriteriaGroup.contains(firstCriteria) && !rushCriteriaGroup.contains(temp[0]) && rushCriteriaGroup.contains(temp[1])){
         			tempCode = temp[0];
         			temp[0] = temp[1];
@@ -301,15 +303,25 @@ CommonUtilities commonUtilities=new CommonUtilities();
         				tempCode = temp[0];
             			temp[0] = temp[1];
             			temp[1] = tempCode;
-        		}else if (!temp[0].startsWith(firstCriteria) && !rushCriteriaGroup.contains(firstCriteria)) {
+        		}else if (!temp[0].toString().startsWith(firstCriteria) && !rushCriteriaGroup.contains(firstCriteria)) {
         			tempCode = temp[0];
         			temp[0] = temp[1];
         			temp[1] = tempCode;
         		}
         	}
-            basePriceDetails.setBasePriceCriteria1(CommonUtilities.isValueNull(temp[0]) ? "" : temp[0]);
-            basePriceDetails.setBasePriceCriteria2(CommonUtilities.isValueNull(temp[1]) ? "" : temp[1]);
+           if(null!=temp[0]) basePriceDetails.setBasePriceCriteria1(CommonUtilities.isValueNull(temp[0].toString()) ? null : temp[0].toString());
+           if(null!=temp[1]) basePriceDetails.setBasePriceCriteria2(CommonUtilities.isValueNull(temp[1].toString()) ? null : temp[1].toString());
+        }else{
+        	basePriceDetails.setBasePriceCriteria1(temp[0]);
+        	if(null!=temp[1] && temp[1] instanceof String && !temp[1].toString().isEmpty()) 
+        		basePriceDetails.setBasePriceCriteria2(temp[1]);
+        	else if(null!=temp[1] && temp[1] instanceof String){
+        		
+        	}else{
+        		basePriceDetails.setBasePriceCriteria2(temp[1]);
+        		}
         }
+        
         return basePriceDetails;
     }
 	
@@ -335,10 +347,10 @@ CommonUtilities commonUtilities=new CommonUtilities();
         upChargePriceDetails.setQuantities(quantityList);
         upChargePriceDetails.setDiscounts(discountList);
         
-        String[] temp = getPriceCriteria(externalProductId, priceGrid.getPricingItems());
-        if (temp != null && temp.length == 2) {
-            upChargePriceDetails.setUpChargeCriteria1(CommonUtilities.isValueNull(temp[0]) ? "" : temp[0]);
-            upChargePriceDetails.setUpChargeCriteria2(CommonUtilities.isValueNull(temp[1]) ? "" : temp[1]);
+        Object[] temp = getPriceCriteria(externalProductId, priceGrid.getPricingItems());
+        if (temp != null && temp.length == 2 && temp[0] instanceof String) {
+            upChargePriceDetails.setUpChargeCriteria1(CommonUtilities.isValueNull(temp[0].toString()) ? null : temp[0].toString());
+            upChargePriceDetails.setUpChargeCriteria2(CommonUtilities.isValueNull(temp[1].toString()) ? null : temp[1].toString());
         }
         
         if (upChargeLookup != null) {
