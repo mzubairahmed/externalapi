@@ -492,7 +492,7 @@ public class ConfigurationsParser {
 				crntColor=ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_COLORS_CRITERIA_CODE);
 						criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), crntColor);		
 				currentColor.setName(crntColor);
-				currentColor.setRgbHex(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getCodeValue());
+				currentColor.setRGBHex(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getCodeValue());
 				}
 				colorsList.add(currentColor);
 			}

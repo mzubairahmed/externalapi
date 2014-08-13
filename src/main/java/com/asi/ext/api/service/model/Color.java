@@ -21,16 +21,7 @@ public class Color {
     private String      RGBHex;
     @JsonProperty("Combos")
     private List<Combo> combos = new ArrayList<Combo>();
-    @JsonProperty("RGBHex")
-    private String rgbHex;
     
-    public String getRgbHex() {
-		return rgbHex;
-	}
-
-	public void setRgbHex(String rgbHex) {
-		this.rgbHex = rgbHex;
-	}
 
 	@JsonProperty("Name")
     public String getName() {
