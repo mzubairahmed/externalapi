@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.asi.ext.api.integration.lookup.parser.CriteriaSetParser;
-import com.asi.service.product.client.vo.CriteriaSetValue;
 import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 

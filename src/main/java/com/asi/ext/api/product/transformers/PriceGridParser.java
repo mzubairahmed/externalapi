@@ -407,7 +407,8 @@ public class PriceGridParser extends ProductParser {
                     if (criteriaValues != null && !criteriaValues.isEmpty()) {
                         List<PricingItems> pricingItemsList = new ArrayList<PricingItems>();
                         for (String criteria : criteriaValues) {
-                            String criteriaSetValueId = productDataStore.findCriteriaSetValueIdForValue(product
+                            @SuppressWarnings("static-access")
+							String criteriaSetValueId = productDataStore.findCriteriaSetValueIdForValue(product
                                     .getExternalProductId().trim(), criteriaCode, criteria);
 
                             if (!CommonUtilities.isValueNull(criteriaSetValueId)) {

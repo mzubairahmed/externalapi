@@ -628,11 +628,11 @@ public class ConfigurationsParser {
 			List<Material> materialList=new ArrayList<>();
 			Combo currentCombo=null;
 			boolean firstElement=false;
-			List<Combo> comboList=null;
+		//	List<Combo> comboList=null;
 			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
 				material=new Material();
 				firstElement=true;
-				comboList=new ArrayList<>();
+			//	comboList=new ArrayList<>();
 				if(currentCriteriaSetValue.getCriteriaSetCodeValues().length>1){
 					// Combo
 					for(com.asi.service.product.client.vo.CriteriaSetCodeValues currentCriteriaSetCodeValue:currentCriteriaSetValue.getCriteriaSetCodeValues()){
@@ -851,8 +851,8 @@ public class ConfigurationsParser {
 		// Shipping Items
 		ShippingEstimate shippingEstimate=null;
 		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE);
-		List<String> shippingItemList=new ArrayList<>();
-		Size shippingSize=new Size();
+		//List<String> shippingItemList=new ArrayList<>();
+		//Size shippingSize=new Size();
 		List<Value> valuesList=null;
 		Value shippingItemValue=new Value();
 		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
