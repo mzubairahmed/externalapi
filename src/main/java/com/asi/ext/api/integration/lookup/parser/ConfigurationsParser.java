@@ -30,6 +30,7 @@ import com.asi.ext.api.service.model.ShippingEstimate;
 import com.asi.ext.api.service.model.Size;
 import com.asi.ext.api.service.model.Value;
 import com.asi.ext.api.util.ApplicationConstants;
+import com.asi.ext.api.util.CommonUtilities;
 import com.asi.service.product.client.vo.ChildCriteriaSetCodeValues;
 import com.asi.service.product.client.vo.CriteriaSetCodeValues;
 import com.asi.service.product.client.vo.CriteriaSetValues;
@@ -492,7 +493,9 @@ public class ConfigurationsParser {
 				crntColor=ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_COLORS_CRITERIA_CODE);
 						criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), crntColor);		
 				currentColor.setName(crntColor);
-				currentColor.setRGBHex(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getCodeValue());
+				if (!CommonUtilities.isValueNull(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getCodeValue())) {
+				    currentColor.setRGBHex(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getCodeValue());				    
+				}
 				}
 				colorsList.add(currentColor);
 			}
