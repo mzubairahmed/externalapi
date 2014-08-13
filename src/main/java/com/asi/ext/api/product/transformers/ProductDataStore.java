@@ -1350,12 +1350,15 @@ public class ProductDataStore {
 	        }
 	        return sizelookupsResponse;
 	    }
-    public static CriteriaInfo getCriteriaInfoForCriteriaCode(String code) {
+    public static CriteriaInfo getCriteriaInfoForCriteriaCode(Object code) {
+    	if(code instanceof String){
         if (criteriaInfo == null || criteriaInfo.isEmpty()) {
             return loadCriteriaInformations() ? criteriaInfo.get(code) : null;
         } else {
             return criteriaInfo.get(code);
         }
+    	}else
+    		return null;
     }
     
     public static CriteriaInfo getCriteriaInfoByDescription(String description, String xid) {

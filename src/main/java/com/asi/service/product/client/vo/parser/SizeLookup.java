@@ -172,7 +172,7 @@ public class SizeLookup {
 									valueObj.setAttribute(valueElements[0]);
 									valueObj.setUnit(valueElements[2]);
 									valueObj.setValue(valueElements[1]);
-									criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),valueObj.toString());
+									
 									}
 								valueObjList.add(valueObj);
 							}
@@ -184,7 +184,7 @@ public class SizeLookup {
 							valueObj.setAttribute(valueElements[1]);
 							valueObj.setUnit("");
 							valueObj.setValue(valueElements[0]);
-							criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),valueObj.toString());
+							criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),valueObj);
 							}
 							delim="; ";
 							}
@@ -199,7 +199,7 @@ public class SizeLookup {
 							if(valueElements.length>1){
 								valueObj.setValue(valueElements[0]);
 								valueObj.setUnit(valueElements[1]);
-								criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),valueObj.toString());
+								criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),valueObj);
 							}
 							valueObjList.add(valueObj);
 							
@@ -281,6 +281,7 @@ public class SizeLookup {
 							sizeElementValue+=sizeValue;
 							if(null!=apparel){
 							apperalObj.setValue(sizeValue);
+							criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),apperalObj.toString());
 							apperalValueObjList.add(apperalObj);
 							}else if(criteriaCode.equalsIgnoreCase("CAPS")){
 							capacityObj.setValue(sizeValue.substring(0,sizeValue.indexOf(" ")));
@@ -294,6 +295,7 @@ public class SizeLookup {
 								
 						sizeCntr++;
 					}
+					
 					//criteriaSetParser.addReferenceSet(externalProductId,criteriaCode,Integer.parseInt(criteriaSetValue.getId()),sizeValue);
 					if(elementsCntr!=0)
 					{
@@ -318,6 +320,7 @@ public class SizeLookup {
 					elementsCntr++;
 					if(criteriaCode.equalsIgnoreCase("DIMS") || criteriaCode.equalsIgnoreCase("SVWT")){
 						currentValues.setValue(valueObjList);
+						criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),valueObjList);
 						valuesList.add(currentValues);
 					}
 					

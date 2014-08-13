@@ -7,8 +7,10 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+@JsonInclude(Include.NON_NULL)
 public class Color {
 
     @JsonProperty("Name")
@@ -17,8 +19,18 @@ public class Color {
     private String      alias;
     @JsonProperty("Combos")
     private List<Combo> combos = new ArrayList<Combo>();
+    @JsonProperty("RGBHex")
+    private String rgbHex;
+    
+    public String getRgbHex() {
+		return rgbHex;
+	}
 
-    @JsonProperty("Name")
+	public void setRgbHex(String rgbHex) {
+		this.rgbHex = rgbHex;
+	}
+
+	@JsonProperty("Name")
     public String getName() {
         return name;
     }
