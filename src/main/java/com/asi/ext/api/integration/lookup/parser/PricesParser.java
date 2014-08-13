@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.asi.ext.api.service.model.Value;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.service.product.client.vo.BasePriceDetails;
 import com.asi.service.product.client.vo.DiscountList;

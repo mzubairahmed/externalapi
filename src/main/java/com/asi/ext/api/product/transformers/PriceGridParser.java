@@ -312,7 +312,8 @@ public class PriceGridParser extends ProductParser {
     protected ProductCriteriaSets getLessThanMinimumCriteriaSet(Product product) throws VelocityException {
 
         if (lessThanMinimumSetCodeValueMap == null || lessThanMinimumSetCodeValueMap.isEmpty()) {
-            String lessThanMinWSResponse = orgnCall.getLookupsResponse(RestAPIProperties
+            @SuppressWarnings("static-access")
+			String lessThanMinWSResponse = orgnCall.getLookupsResponse(RestAPIProperties
                     .get(ApplicationConstants.LESS_THAN_MIN_LOOKUP));
             lessThanMinimumSetCodeValueMap = jsonProcessorObj.getSetCodeValuesForIndividualCriteriaCode(lessThanMinWSResponse,
                     ApplicationConstants.CONST_LESS_THAN_MIN_CRT_CODE);
@@ -406,7 +407,8 @@ public class PriceGridParser extends ProductParser {
                     if (criteriaValues != null && !criteriaValues.isEmpty()) {
                         List<PricingItems> pricingItemsList = new ArrayList<PricingItems>();
                         for (String criteria : criteriaValues) {
-                            String criteriaSetValueId = productDataStore.findCriteriaSetValueIdForValue(product
+                            @SuppressWarnings("static-access")
+							String criteriaSetValueId = productDataStore.findCriteriaSetValueIdForValue(product
                                     .getExternalProductId().trim(), criteriaCode, criteria);
 
                             if (!CommonUtilities.isValueNull(criteriaSetValueId)) {
@@ -920,7 +922,7 @@ public class PriceGridParser extends ProductParser {
                             if (null!=currentPrice.getItemsPerUnit() && currentPrice.getItemsPerUnit() > 0)
                                 currentPriceUnit.setItemsPerUnit(String.valueOf(currentPrice.getItemsPerUnit()));
 
-                            currentPriceUnit.setName(currentPrice.getPriceUnitName());
+                            currentPriceUnit.setName((null!=currentPrice.getPriceUnitName() && !currentPrice.getPriceUnitName().isEmpty())?currentPrice.getPriceUnitName():null);
                             if (ProductDataStore.isOtherPriceUnit(currentPrice.getPriceUnit().getDisplayName())) {
                                 currentPriceUnit.setPriceUnitName(currentPrice.getPriceUnit().getDescription());
                             }
