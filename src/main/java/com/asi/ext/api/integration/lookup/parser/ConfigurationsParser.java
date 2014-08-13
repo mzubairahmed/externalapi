@@ -481,7 +481,9 @@ public class ConfigurationsParser {
 							currentCombo=new Combo();
 							currentCombo.setName(ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetCodeValue.getSetCodeValueId(),ApplicationConstants.CONST_COLORS_CRITERIA_CODE));
 							currentCombo.setType(currentCriteriaSetCodeValue.getCodeValueDetail());
-							currentCombo.setRgbHex(currentCriteriaSetCodeValue.getCodeValue());
+							if (!CommonUtilities.isValueNull(currentCriteriaSetCodeValue.getCodeValue())) {
+							    currentCombo.setRGBHex(currentCriteriaSetCodeValue.getCodeValue());
+							}
 							comboList.add(currentCombo);
 						}
 					}
