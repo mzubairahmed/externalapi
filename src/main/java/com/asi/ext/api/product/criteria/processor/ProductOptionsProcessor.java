@@ -16,6 +16,7 @@ import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.product.transformers.ProductParser;
 import com.asi.ext.api.service.model.Option;
 import com.asi.ext.api.util.ApplicationConstants;
+import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.ProductParserUtil;
 import com.asi.service.product.client.vo.CriteriaSetCodeValues;
 import com.asi.service.product.client.vo.CriteriaSetValues;
@@ -68,7 +69,11 @@ public class ProductOptionsProcessor extends SimpleCriteriaProcessor {
             optionCriteriaSet.setCriteriaSetId(String.valueOf(--uniqueCriteriaSetId));
             optionCriteriaSet.setProductId(existingProduct.getID());
             optionCriteriaSet.setCompanyId(existingProduct.getCompanyId());
-            optionCriteriaSet.setCriteriaDetail(option.getName());
+            if (option.getValues() != null && option.getValues().size() == 1 && CommonUtilities.isValueNull(option.getName())) {
+                optionCriteriaSet.setCriteriaDetail(option.getValues().get(0));
+            } else {
+                optionCriteriaSet.setCriteriaDetail(option.getName());
+            }
             optionCriteriaSet.setDescription(option.getAdditionalInformation());
             optionCriteriaSet.setConfigId(configId);
             optionCriteriaSet.setCriteriaCode(criteriaCode);
