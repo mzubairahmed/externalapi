@@ -16,6 +16,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.asi.ext.api.exception.VelocityImportExceptionCodes;
 import com.asi.ext.api.product.transformers.JerseyClientPost;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.exception.ProductNotFoundException;
@@ -120,8 +121,13 @@ public class ProductClient {
 
     private ExternalAPIResponse getExternalAPIResponse(String message, HttpStatus statusCode, Set<String> additionalInfo) {
         ExternalAPIResponse response = new ExternalAPIResponse();
-        response.setStatusCode(statusCode);
-        response.setMessage(message);
+        if (statusCode != null && message != null && message.toLowerCase().startsWith("{\"Message\":\"Not Valid".toLowerCase())) {
+            response.setMessage("Product saved successfully but not active");
+            response.setStatusCode(HttpStatus.OK);
+        } else {
+            response.setStatusCode(statusCode);
+            response.setMessage(message);
+        }
         response.setAdditionalInfo(additionalInfo);
 
         return response;
