@@ -1,5 +1,11 @@
 package com.asi.service.product.client;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -9,8 +15,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.support.HttpRequestWrapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
@@ -43,21 +55,39 @@ public class ProductClient {
         return searchRadarProduct(companyID, productID);
     }
 
-    private ProductDetail searchProduct(HttpHeaders headers, String companyID, String productID) throws ProductNotFoundException
+    private ProductDetail searchProduct(final HttpHeaders headers, String companyID, String productID) throws ProductNotFoundException
 
     {
         String productSearchUrl = getProductSearchUrl() + "?companyId={companyID}&externalProductId={productID}";
 
         ProductDetail product = null;
         try {
-            product = restTemplate.getForObject(productSearchUrl, ProductDetail.class, companyID, productID);
+        	
+//        	List<ClientHttpRequestInterceptor> httpInterceptors = new ArrayList<ClientHttpRequestInterceptor>();
+//        	ClientHttpRequestInterceptor acceptHeader = new ClientHttpRequestInterceptor() {
+//				
+//				@Override
+//				public ClientHttpResponse intercept(HttpRequest request, byte[] body,
+//						ClientHttpRequestExecution execution) throws IOException {
+//					HttpRequestWrapper requestWrapper = new HttpRequestWrapper(request);
+//					requestWrapper.getHeaders().set("AuthToken", headers.get("AuthToken").toString());
+//					return execution.execute(requestWrapper, body);
+//				}
+//			};
+//			httpInterceptors.add(acceptHeader);
+//			
+//			restTemplate.setInterceptors(httpInterceptors);
+//			
+//            product = restTemplate.getForObject(productSearchUrl, ProductDetail.class, companyID, productID);
+
+            HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
             
-//            HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
-//            
-//            ResponseEntity<ProductDetail> response = restTemplate.exchange(productSearchUrl, HttpMethod.GET, requestEntity, ProductDetail.class, companyID, productID);
-//            if(response != null && response.getBody() != null) {
-//            	product = response.getBody();
-//            }
+            _LOGGER.debug("Hiting the RADAR API...");
+            
+            ResponseEntity<ProductDetail> response = restTemplate.exchange(productSearchUrl, HttpMethod.GET, requestEntity, ProductDetail.class, companyID, productID);
+            if(response != null && response.getBody() != null) {
+            	product = response.getBody();
+            }
 
         } catch (RestClientException ex) {
             _LOGGER.error(ex.getMessage());
