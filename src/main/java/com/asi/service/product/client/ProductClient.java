@@ -42,9 +42,9 @@ public class ProductClient {
     RestTemplate             restTemplate;
 
     private String           productSearchUrl;
-    
+
     @SuppressWarnings("unused")
-	private JerseyClientPost jerseyClientPost = new JerseyClientPost();
+    private JerseyClientPost jerseyClientPost = new JerseyClientPost();
     private static Logger    _LOGGER          = LoggerFactory.getLogger(ProductClient.class);
 
     public ProductDetail doIt(HttpHeaders headers, String companyID, String productID) throws ProductNotFoundException {
@@ -55,38 +55,41 @@ public class ProductClient {
         return searchRadarProduct(companyID, productID);
     }
 
-    private ProductDetail searchProduct(final HttpHeaders headers, String companyID, String productID) throws ProductNotFoundException
+    private ProductDetail searchProduct(final HttpHeaders headers, String companyID, String productID)
+            throws ProductNotFoundException
 
     {
         String productSearchUrl = getProductSearchUrl() + "?companyId={companyID}&externalProductId={productID}";
 
         ProductDetail product = null;
         try {
-        	
-//        	List<ClientHttpRequestInterceptor> httpInterceptors = new ArrayList<ClientHttpRequestInterceptor>();
-//        	ClientHttpRequestInterceptor acceptHeader = new ClientHttpRequestInterceptor() {
-//				
-//				@Override
-//				public ClientHttpResponse intercept(HttpRequest request, byte[] body,
-//						ClientHttpRequestExecution execution) throws IOException {
-//					HttpRequestWrapper requestWrapper = new HttpRequestWrapper(request);
-//					requestWrapper.getHeaders().set("AuthToken", headers.get("AuthToken").toString());
-//					return execution.execute(requestWrapper, body);
-//				}
-//			};
-//			httpInterceptors.add(acceptHeader);
-//			
-//			restTemplate.setInterceptors(httpInterceptors);
-//			
-//            product = restTemplate.getForObject(productSearchUrl, ProductDetail.class, companyID, productID);
 
+            // List<ClientHttpRequestInterceptor> httpInterceptors = new ArrayList<ClientHttpRequestInterceptor>();
+            // ClientHttpRequestInterceptor acceptHeader = new ClientHttpRequestInterceptor() {
+            //
+            // @Override
+            // public ClientHttpResponse intercept(HttpRequest request, byte[] body,
+            // ClientHttpRequestExecution execution) throws IOException {
+            // HttpRequestWrapper requestWrapper = new HttpRequestWrapper(request);
+            // requestWrapper.getHeaders().set("AuthToken", headers.get("AuthToken").toString());
+            // return execution.execute(requestWrapper, body);
+            // }
+            // };
+            // httpInterceptors.add(acceptHeader);
+            //
+            // restTemplate.setInterceptors(httpInterceptors);
+            //
+            // product = restTemplate.getForObject(productSearchUrl, ProductDetail.class, companyID, productID);
+
+            // headers.remove("accept-encoding");
             HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
-            
+
             _LOGGER.debug("Hiting the RADAR API...");
-            
-            ResponseEntity<ProductDetail> response = restTemplate.exchange(productSearchUrl, HttpMethod.GET, requestEntity, ProductDetail.class, companyID, productID);
-            if(response != null && response.getBody() != null) {
-            	product = response.getBody();
+
+            ResponseEntity<ProductDetail> response = restTemplate.exchange(productSearchUrl, HttpMethod.GET, requestEntity,
+                    ProductDetail.class, companyID, productID);
+            if (response != null && response.getBody() != null) {
+                product = response.getBody();
             }
 
         } catch (RestClientException ex) {
@@ -120,12 +123,13 @@ public class ProductClient {
         try {
             ObjectMapper mapper = new ObjectMapper();
             _LOGGER.info("Product Data : " + mapper.writeValueAsString(product));
-            
+
             HttpEntity<ProductDetail> requestEntity = new HttpEntity<>(product, headers);
-            
+
             ResponseEntity<?> response = restTemplate.postForObject(productSearchUrl, product, ResponseEntity.class);
 
-//            ResponseEntity<?> response = restTemplate.exchange(productSearchUrl, HttpMethod.POST, requestEntity, ResponseEntity.class);
+            // ResponseEntity<?> response = restTemplate.exchange(productSearchUrl, HttpMethod.POST, requestEntity,
+            // ResponseEntity.class);
 
             _LOGGER.info("Result : " + response);
             return getExternalAPIResponse("Product Saved successfully", HttpStatus.OK, null);
@@ -145,7 +149,8 @@ public class ProductClient {
         } else if (e instanceof HttpClientErrorException) {
             return getExternalAPIResponse(((HttpClientErrorException) e).getResponseBodyAsString(), HttpStatus.BAD_REQUEST, null);
         } else {
-            return getExternalAPIResponse("Unhandled Exception while processing request, failed to process product", HttpStatus.INTERNAL_SERVER_ERROR, null);
+            return getExternalAPIResponse("Unhandled Exception while processing request, failed to process product",
+                    HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }
 
@@ -162,7 +167,7 @@ public class ProductClient {
 
         return response;
     }
-    
+
     /**
      * @return the productSearchUrl
      */
