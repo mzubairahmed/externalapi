@@ -50,21 +50,6 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
         return getCriteriaSet(materials, existingProduct, matchedCriteriaSet, 0);
     }
 
-    private String getMaterialStringFromList(List<Material> materials) {
-        String finalMaterials = "";
-        for (Material color : materials) {
-            if (color != null) {
-                if (CommonUtilities.isValueNull(color.getAlias())) {
-                    finalMaterials = finalMaterials.isEmpty() ? color.getName() : finalMaterials + "," + color.getName();
-                } else {
-                    finalMaterials = finalMaterials.isEmpty() ? color.getName() + "=" + color.getAlias() : finalMaterials + ","
-                            + color.getName() + "=" + color.getAlias();
-                }
-            }
-        }
-        return finalMaterials;
-    }
-
     public ProductCriteriaSets getCriteriaSet(List<Material> materials, ProductDetail existingProduct,
             ProductCriteriaSets matchedCriteriaSet, int currentSetValueId) {
         if (materials == null || materials.isEmpty()) {
@@ -139,7 +124,7 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
                     List<CriteriaSetCodeValues> criteriaSetCodeValues = new ArrayList<CriteriaSetCodeValues>();
                     if (hasCombo) {
                         criteriaSetCodeValues.addAll(getComboMaterial(material.getCombo(), criteriaSetValue.getId(),
-                                setCodeValueId, existingProduct.getID()));
+                                setCodeValueId, existingProduct.getID(), existingProduct.getExternalProductId(), String.valueOf(criteriaSetValue.getValue())));
                     }
                     if (hasBlend) {
                         criteriaSetCodeValues.add(getBlendMaterials(material.getBlendMaterials(), criteriaSetValue.getId(),
@@ -177,9 +162,9 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
 
         return new CriteriaSetCodeValues[] { criteriaSetCodeValue };
     }
-    
+
     private List<CriteriaSetCodeValues> getComboMaterial(Combo materialCombo, String criteriaSetValueId,
-            String parentSetCodeValueId, String productId) {
+            String parentSetCodeValueId, String productId, String xid, String parentName) {
         boolean isBlendCombo = (materialCombo.getBlendMaterials() != null && !materialCombo.getBlendMaterials().isEmpty());
 
         List<CriteriaSetCodeValues> setCodeValues = new ArrayList<CriteriaSetCodeValues>();
@@ -194,16 +179,20 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
                     parentSetCodeValueId, productId, parentCriteriaSetCodeValue);
             setCodeValues.add(parentCriteriaSetCodeValue);
         } else {
+            parentCriteriaSetCodeValue.setId(String.valueOf(--criteriaSetCodeValueObjectId));
+            setCodeValues.add(parentCriteriaSetCodeValue);
             String childCriteriaSetCodeValueId = getSetCodeValueId(materialCombo.getName());
             if (childCriteriaSetCodeValueId != null) {
                 CriteriaSetCodeValues childSetCodeValue = new CriteriaSetCodeValues();
                 childSetCodeValue.setCodeValue(materialCombo.getName());
                 childSetCodeValue.setCriteriaSetValueId(criteriaSetValueId);
                 childSetCodeValue.setSetCodeValueId(childCriteriaSetCodeValueId);
+                childSetCodeValue.setId(String.valueOf(--criteriaSetCodeValueObjectId));
 
                 setCodeValues.add(childSetCodeValue);
             } else {
-                // TODO If needed add error messages
+                productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+                        "Invalid combo material found for Material " + parentName);
             }
         }
         return setCodeValues;
@@ -282,7 +271,8 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
             for (CriteriaSetValues criteriaSetValue : setValues) {
                 if (criteriaSetValue.getCriteriaSetCodeValues() != null && criteriaSetValue.getCriteriaSetCodeValues().length > 0) {
                     String setCodeValue = criteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(); // Check for AIOE
-                    tempHashMap.put(String.valueOf(criteriaSetValue.getValue()).toUpperCase() + "_" + setCodeValue, criteriaSetValue);
+                    tempHashMap.put(String.valueOf(criteriaSetValue.getValue()).toUpperCase() + "_" + setCodeValue,
+                            criteriaSetValue);
                 }
             }
         }

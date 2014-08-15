@@ -154,6 +154,8 @@ public final class JsonToLookupTableConverter {
     public static HashMap<String, String> jsonToProductOriginMap(LinkedList<?> originsList) {
 
         HashMap<String, String> originMap = new HashMap<String, String>();
+        // This is a workaround requested by Radar Team, this need to be there until they clean up DB
+        HashMap<String, String> originTempMap = new HashMap<String, String>(); // Store is StandardValueFlag: "N" elements only
         try {
             originMap = new HashMap<String, String>(originsList.size());
             Iterator<?> iter = originsList.iterator();// entrySet().iterator();
@@ -161,7 +163,11 @@ public final class JsonToLookupTableConverter {
                 LinkedHashMap<String, String> crntValue = (LinkedHashMap<String, String>) iter.next();
                 if (crntValue != null) {
                     try {
-                        originMap.put(crntValue.get("CodeValue"), String.valueOf(crntValue.get("ID")));
+                        if (!String.valueOf(crntValue.get("StandardValueFlag")).toLowerCase().equalsIgnoreCase("N")) { 
+                            originMap.put(crntValue.get("CodeValue").toUpperCase(), String.valueOf(crntValue.get("ID")));
+                        } else {
+                            originTempMap.put(crntValue.get("CodeValue").toUpperCase(), String.valueOf(crntValue.get("ID")));
+                        }
                     } catch (Exception e) {
                     }
                 }
@@ -169,6 +175,16 @@ public final class JsonToLookupTableConverter {
         } catch (Exception e) {
             LOGGER.error("Exception while proceesing Origin Json Value conversion", e);
         }
+        // now merge the elements those are not in actual map, this is a workaround for Radar DB problem
+        // 
+        if (originMap.isEmpty()) {
+            return originTempMap;
+        } else if (!originTempMap.isEmpty()) {
+            originTempMap.keySet().removeAll(originMap.keySet()); // Removing elements which are already present in actual map
+            if (originTempMap != null && !originTempMap.isEmpty()) {
+                originMap.putAll(originTempMap); // now add all remaining elements are need to be added to the exact map
+            }
+        } 
         return originMap;
     }
 
