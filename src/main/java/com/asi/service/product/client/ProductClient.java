@@ -55,7 +55,8 @@ public class ProductClient {
         return searchRadarProduct(companyID, productID);
     }
 
-    private ProductDetail searchProduct(final HttpHeaders headers, String companyID, String productID) throws ProductNotFoundException
+    private ProductDetail searchProduct(final HttpHeaders headers, String companyID, String productID)
+            throws ProductNotFoundException
 
     {
         String productSearchUrl = getProductSearchUrl() + "?companyId={companyID}&externalProductId={productID}";
@@ -80,11 +81,13 @@ public class ProductClient {
 //			
 //            product = restTemplate.getForObject(productSearchUrl, ProductDetail.class, companyID, productID);
 
+            // headers.remove("accept-encoding");
             HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
             
             _LOGGER.debug("Hiting the RADAR API...");
             
-            ResponseEntity<ProductDetail> response = restTemplate.exchange(productSearchUrl, HttpMethod.GET, requestEntity, ProductDetail.class, companyID, productID);
+            ResponseEntity<ProductDetail> response = restTemplate.exchange(productSearchUrl, HttpMethod.GET, requestEntity,
+                    ProductDetail.class, companyID, productID);
             if(response != null && response.getBody() != null) {
             	product = response.getBody();
             }
@@ -145,7 +148,8 @@ public class ProductClient {
         } else if (e instanceof HttpClientErrorException) {
             return getExternalAPIResponse(((HttpClientErrorException) e).getResponseBodyAsString(), HttpStatus.BAD_REQUEST, null);
         } else {
-            return getExternalAPIResponse("Unhandled Exception while processing request, failed to process product", HttpStatus.INTERNAL_SERVER_ERROR, null);
+            return getExternalAPIResponse("Unhandled Exception while processing request, failed to process product",
+                    HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }
 
