@@ -24,13 +24,11 @@ public class LookupValuesRepo {
 	private static Logger _LOGGER = LoggerFactory
 			.getLogger(LookupValuesRepo.class);
 
-	@SuppressWarnings({ "unchecked" })
 	public CategoriesList getAllCategories() {
 		CategoriesList categoriesList = new CategoriesList();
 		Category category = null;
 		ConcurrentHashMap<String, String> categoryCodeLookupTable;
 		List<Category> categoryArrayList = new ArrayList<Category>();
-		LinkedHashMap<String, String> currentHashMap = new LinkedHashMap<>();
 		LinkedList<?> categoryResponse = lookupRestTemplate
 				.getForObject(
 						RestAPIProperties
@@ -39,6 +37,7 @@ public class LookupValuesRepo {
 		try {
 			categoryCodeLookupTable = JsonToLookupTableConverter
 					.jsonToProductCategoryLookupTable(categoryResponse);
+			@SuppressWarnings("rawtypes")
 			Iterator categoryIterator = categoryCodeLookupTable.keySet()
 					.iterator();
 			while (categoryIterator.hasNext()) {
