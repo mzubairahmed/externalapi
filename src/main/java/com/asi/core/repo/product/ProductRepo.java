@@ -153,11 +153,11 @@ public class ProductRepo {
         return null;
     }
 
-    public ExternalAPIResponse updateProduct(HttpHeaders headers, String companyId, String xid, com.asi.ext.api.service.model.Product serviceProduct) {
+    public ExternalAPIResponse updateProduct(String authToken, String companyId, String xid, com.asi.ext.api.service.model.Product serviceProduct) {
         ProductDetail existingRadarProduct = null;
         try {
 //            existingRadarProduct = productClient.getRadarProduct(companyId, serviceProduct.getExternalProductId());
-        	existingRadarProduct = productClient.doIt(headers, companyId, serviceProduct.getExternalProductId());
+        	existingRadarProduct = productClient.doIt(authToken, companyId, serviceProduct.getExternalProductId());
         } catch (ProductNotFoundException e) {
             _LOGGER.info("Product Not found with Existing, going to create new Product");
         }
@@ -171,7 +171,7 @@ public class ProductRepo {
         }
 
         // Saving product to Radar API
-        ExternalAPIResponse response = productClient.saveProduct(headers, existingRadarProduct);
+        ExternalAPIResponse response = productClient.saveProduct(authToken, existingRadarProduct);
         return appendErrorLogsToResponse(response, existingRadarProduct.getExternalProductId());
     }
 
@@ -195,9 +195,9 @@ public class ProductRepo {
     }
 
     @SuppressWarnings("unused")
-    private Product prepairProduct(HttpHeaders headers, String companyID, String productID) throws ProductNotFoundException, RestClientException,
+    private Product prepairProduct(String authToken, String companyID, String productID) throws ProductNotFoundException, RestClientException,
             UnsupportedEncodingException {
-        productDetail = getProductFromService(headers, companyID, productID);
+        productDetail = getProductFromService(authToken, companyID, productID);
         Product product = new Product();
         BeanUtils.copyProperties(productDetail, product);
         // product=lookupsParser.setProductConfigurations(productDetail,product);
@@ -214,8 +214,8 @@ public class ProductRepo {
         return product;
     }
 
-    public ProductDetail getProductFromService(HttpHeaders headers, String companyID, String productID) throws ProductNotFoundException {
-        productDetail = productClient.doIt(headers, companyID, productID);
+    public ProductDetail getProductFromService(String authToken, String companyID, String productID) throws ProductNotFoundException {
+        productDetail = productClient.doIt(authToken, companyID, productID);
 
         return productDetail;
 
@@ -254,10 +254,10 @@ public class ProductRepo {
         return dataSourceId;
     }
 
-    public com.asi.ext.api.service.model.Product getServiceProduct(HttpHeaders headers, String companyId, String xid) {
+    public com.asi.ext.api.service.model.Product getServiceProduct(String authToken, String companyId, String xid) {
         com.asi.ext.api.service.model.Product serviceProduct = null;
         try {
-            productDetail = getProductFromService(headers, companyId, xid);
+            productDetail = getProductFromService(authToken, companyId, xid);
             // serviceProduct=prepairServiceProduct();
             if (null != productDetail) {
                 serviceProduct = new com.asi.ext.api.service.model.Product();
