@@ -34,7 +34,6 @@ import com.asi.ext.api.service.ProductService;
 import com.asi.ext.api.service.model.Product;
 import com.asi.service.product.exception.ProductNotFoundException;
 import com.asi.service.resource.response.ExternalAPIResponse;
-import com.asi.service.resource.util.ExternalApiHeaderHandler;
 
 @RestController
 @RequestMapping("api")
@@ -46,9 +45,6 @@ public class ProductServiceResource {
     private static Logger            _LOGGER = LoggerFactory.getLogger(ProductServiceResource.class);
     @Autowired
     private MessageSource            messageSource;
-
-    @Autowired
-    private ExternalApiHeaderHandler headerHandler;
 
     @Secured("ROLE_CUSTOMER")
     @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.PUT, headers = { MediaType.APPLICATION_JSON_VALUE,
@@ -72,18 +68,19 @@ public class ProductServiceResource {
     }
 
     // @Secured("ROLE_CUSTOMER")
-    @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.POST, consumes = { MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-    public ResponseEntity<ExternalAPIResponse> updateProduct(@Context HttpServletRequest request, HttpEntity<Product> requestEntity, @RequestHeader("AuthToken") String authToken,
-            @PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws Exception {
+    @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.POST, headers = "content-type=application/json, application/xml", produces = {
+            "application/xml", "application/json" })
+    public ResponseEntity<ExternalAPIResponse> updateProduct(HttpEntity<Product> requestEntity, @RequestHeader("AuthToken") String authToken, @PathVariable("companyid") String companyId,
+            @PathVariable("xid") String xid) throws Exception {
         if (_LOGGER.isDebugEnabled()) {
             _LOGGER.debug("calling service");
         }
-        System.out.println(request.getHeader("AuthToken"));
         ExternalAPIResponse message = null;
+        if (authToken == null) {
+            return new ResponseEntity<ExternalAPIResponse>(message, null, HttpStatus.UNAUTHORIZED);
+        }
         try {
-            message = productService.updateProduct(headerHandler.handleHeaderForRadarAPI(requestEntity.getHeaders(), authToken), companyId,
-                    xid, requestEntity.getBody());
+            message = productService.updateProduct(authToken, companyId, xid, requestEntity.getBody());
         } catch (Exception e) {
             throw e;
         }
@@ -155,21 +152,6 @@ public class ProductServiceResource {
      */
     public void setProductService(ProductService productService) {
         this.productService = productService;
-    }
-
-    /**
-     * @return the headerHandler
-     */
-    public ExternalApiHeaderHandler getHeaderHandler() {
-        return headerHandler;
-    }
-
-    /**
-     * @param headerHandler
-     *            the headerHandler to set
-     */
-    public void setHeaderHandler(ExternalApiHeaderHandler headerHandler) {
-        this.headerHandler = headerHandler;
     }
 
 }

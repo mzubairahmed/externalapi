@@ -19,6 +19,6 @@ public interface ProductService {
     
     public Product getProduct(String companyId, String xid);
     
-    public ExternalAPIResponse updateProduct(HttpHeaders headers, String companyId, String xid, Product serviceProduct);
+    public ExternalAPIResponse updateProduct(String authToken, String companyId, String xid, Product serviceProduct);
 
 }

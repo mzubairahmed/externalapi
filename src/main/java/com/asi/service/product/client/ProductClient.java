@@ -47,15 +47,15 @@ public class ProductClient {
 	private JerseyClientPost jerseyClientPost = new JerseyClientPost();
     private static Logger    _LOGGER          = LoggerFactory.getLogger(ProductClient.class);
 
-    public ProductDetail doIt(HttpHeaders headers, String companyID, String productID) throws ProductNotFoundException {
-        return searchProduct(headers, companyID, productID);
+    public ProductDetail doIt(String authToken, String companyID, String productID) throws ProductNotFoundException {
+        return searchProduct(authToken, companyID, productID);
     }
 
     public ProductDetail getRadarProduct(String companyID, String productID) throws ProductNotFoundException {
         return searchRadarProduct(companyID, productID);
     }
 
-    private ProductDetail searchProduct(final HttpHeaders headers, String companyID, String productID)
+    private ProductDetail searchProduct(String authToken, String companyID, String productID)
             throws ProductNotFoundException
 
     {
@@ -82,7 +82,12 @@ public class ProductClient {
 //            product = restTemplate.getForObject(productSearchUrl, ProductDetail.class, companyID, productID);
 
             // headers.remove("accept-encoding");
-            HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
+        	
+        	HttpHeaders header = new HttpHeaders();
+        	header.add("AuthToken", authToken);
+        	header.setContentType(MediaType.APPLICATION_JSON);
+        	
+            HttpEntity<String> requestEntity = new HttpEntity<String>(header);
             
             _LOGGER.debug("Hiting the RADAR API...");
             
@@ -119,10 +124,14 @@ public class ProductClient {
         return product;
     }
 
-    public ExternalAPIResponse saveProduct(HttpHeaders headers, ProductDetail product) {
+    public ExternalAPIResponse saveProduct(String authToken, ProductDetail product) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             _LOGGER.info("Product Data : " + mapper.writeValueAsString(product));
+            
+        	HttpHeaders headers = new HttpHeaders();
+        	headers.add("AuthToken", authToken);
+        	headers.setContentType(MediaType.APPLICATION_JSON);
             
             HttpEntity<ProductDetail> requestEntity = new HttpEntity<>(product, headers);
             
