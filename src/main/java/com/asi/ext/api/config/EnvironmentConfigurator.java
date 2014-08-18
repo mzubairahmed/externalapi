@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.web.client.RestTemplate;
 
+import com.asi.core.repo.lookup.LookupValuesRepo;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.integration.lookup.parser.LookupParser;
 import com.asi.ext.api.product.transformers.PriceGridParser;
@@ -58,6 +59,7 @@ public class EnvironmentConfigurator implements InitializingBean {
 		JsonToLookupTableConverter.lookupRestTemplate = lookupRestTemplate;
 		LookupParser.lookupRestTemplate=lookupRestTemplate;
 		PriceGridParser.lookupRestTemplate=lookupRestTemplate;
+		LookupValuesRepo.lookupRestTemplate=lookupRestTemplate;
     }
 
     /**

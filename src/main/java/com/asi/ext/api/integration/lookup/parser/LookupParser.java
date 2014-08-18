@@ -643,7 +643,7 @@ public class LookupParser {
 						currentCriteria.setCriteria(criteriaInfo
 								.getDescription());
 						currentCriteria.setValue(tempCriteria
-								.substring(tempCriteria.indexOf("__") + 3));
+								.substring(tempCriteria.indexOf("__") + 2));
 					}
 					if(null!=currentCriteria.getCriteria()) criteriaList.add(currentCriteria);
 				}

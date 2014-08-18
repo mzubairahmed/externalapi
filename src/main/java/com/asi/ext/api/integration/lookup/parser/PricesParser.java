@@ -221,14 +221,16 @@ CommonUtilities commonUtilities=new CommonUtilities();
 					}
 					
 					criteriaSet1=criteriaSetParser.findSizesCriteriaSetById(externalProductId, priceItem.getCriteriaSetValueId());
+					if(criteriaSet1 instanceof Value){
 					currentCriteriaObj=(Value)criteriaSet1;
 					firstCriteria=(String) getCriteriaCode(currentCriteriaObj);
 					if(APPAREL_SIZE_GROUP_CRITERIACODES.contains(currentCriteriaObj.getCriteriaType())){
 						criteriaValues.setType(ProductDataStore.getCriteriaInfoForCriteriaCode(currentCriteriaObj.getCriteriaType()).getDescription());						
-					}
+					}					
 					valuesList.add(currentCriteriaObj);
 					criteriaValues.setValue(valuesList);
 					criteriaSet1=criteriaValues;
+					}
 				}
 			} else {
 				// criteriaSet1=temp;
@@ -252,6 +254,7 @@ CommonUtilities commonUtilities=new CommonUtilities();
 					currentObj=criteriaSetParser.findSizesCriteriaSetById(externalProductId, priceItem.getCriteriaSetValueId());
 					secondCriteria=(String) getCriteriaCode(currentCriteriaObj);
 					if(firstCriteria.equalsIgnoreCase(secondCriteria)){
+						if(currentObj instanceof Value){
 						currentCriteriaObj=(Value)currentObj;
 						if(APPAREL_SIZE_GROUP_CRITERIACODES.contains(currentCriteriaObj.getCriteriaType())){
 							criteriaValues2.setType(ProductDataStore.getCriteriaInfoForCriteriaCode(currentCriteriaObj.getCriteriaType()).getDescription());						
@@ -259,7 +262,9 @@ CommonUtilities commonUtilities=new CommonUtilities();
 						valuesList.add(currentCriteriaObj);
 						criteriaValues.setValue(valuesList);
 						criteriaSet1=criteriaValues;	
+						}
 					}else{
+						if(currentObj instanceof Value){
 					currentCriteriaObj2=(Value)currentObj;
 					if(APPAREL_SIZE_GROUP_CRITERIACODES.contains(currentCriteriaObj.getCriteriaType())){
 						criteriaValues2.setType(ProductDataStore.getCriteriaInfoForCriteriaCode(currentCriteriaObj.getCriteriaType()).getDescription());						
@@ -267,6 +272,7 @@ CommonUtilities commonUtilities=new CommonUtilities();
 					valuesList2.add(currentCriteriaObj2);
 					criteriaValues2.setValue(valuesList2);
 					criteriaSet2=criteriaValues2;
+						}else criteriaSet2=currentObj;
 					}
 				}
 			}
