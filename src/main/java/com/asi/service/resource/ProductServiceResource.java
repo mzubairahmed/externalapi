@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -65,14 +66,14 @@ public class ProductServiceResource {
 //    @Secured("ROLE_CUSTOMER")
     @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.POST, headers = "content-type=application/json, application/xml", produces = {
             "application/xml", "application/json" })
-    public ResponseEntity<ExternalAPIResponse> updateProduct(HttpEntity<Product> requestEntity, @PathVariable("companyid") String companyId,
+    public ResponseEntity<ExternalAPIResponse> updateProduct(HttpEntity<Product> requestEntity, @RequestHeader("AuthToken") String authToken, @PathVariable("companyid") String companyId,
             @PathVariable("xid") String xid) throws Exception {
         if (_LOGGER.isDebugEnabled()) {
             _LOGGER.debug("calling service");
         }
         ExternalAPIResponse message = null;
         try {
-            message = productService.updateProduct(requestEntity.getHeaders(), companyId, xid, requestEntity.getBody());
+            message = productService.updateProduct(authToken, companyId, xid, requestEntity.getBody());
         } catch (Exception e) {
             throw e;
         }

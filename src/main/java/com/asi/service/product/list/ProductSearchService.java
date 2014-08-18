@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.HeaderParam;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -63,13 +65,13 @@ public class ProductSearchService {
     // @Secured("ROLE_CUSTOMER")
     @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.GET, headers = "content-type=application/json, application/xml", produces = {
             "application/xml", "application/json" })
-    public ResponseEntity<Product> getProduct(@PathVariable("companyid") String companyId, @PathVariable("xid") String xid)
+    public ResponseEntity<Product> getProduct(@RequestHeader("AuthToken") String authToken, @PathVariable("companyid") String companyId, @PathVariable("xid") String xid)
             throws UnsupportedEncodingException, ProductNotFoundException, UnhandledException {
         if (_LOGGER.isDebugEnabled()) _LOGGER.debug("calling service");
         Product productResponse = null;
         try {
 
-            productResponse = repository.getServiceProduct(getHeadersInfo(), companyId, xid);
+            productResponse = repository.getServiceProduct(authToken, companyId, xid);
         } catch (Exception e) {
             e.printStackTrace();
             // throw new UnhandledException(e.getMessage());
