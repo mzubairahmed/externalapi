@@ -14,6 +14,7 @@ import com.asi.service.product.client.vo.Relationship;
 /**
  * @author Rahul K
  * 
+ * This class has been using in many places, even a small change cause issues
  */
 public class RelationshipProcessor {
 
@@ -121,7 +122,7 @@ public class RelationshipProcessor {
     }
 
     // Really complex method
-    private List<CriteriaSetValuePath> compareCriteriaSetValuePaths(List<CriteriaSetValuePath> newPaths,
+    public List<CriteriaSetValuePath> compareCriteriaSetValuePaths(List<CriteriaSetValuePath> newPaths,
             List<CriteriaSetValuePath> extPaths, Integer relationId) {
 
         if (extPaths == null || extPaths.isEmpty()) {
