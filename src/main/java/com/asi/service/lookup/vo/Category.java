@@ -1,15 +1,8 @@
 package com.asi.service.lookup.vo;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-@XmlRootElement(namespace = "http://www.asicentral.com/schema/product" , name = "categoriesList")
-@XmlType(propOrder={"Name"})
-@JsonPropertyOrder({"Name"})
+import com.fasterxml.jackson.annotation.JsonProperty;
 public class Category {
-	@XmlElement(nillable=true, name="Name")
+	@JsonProperty("Name")
 	private String name;
 	public String getName() {
 		return name;
