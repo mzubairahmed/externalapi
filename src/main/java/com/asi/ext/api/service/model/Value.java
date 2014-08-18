@@ -1,5 +1,6 @@
 package com.asi.ext.api.service.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -10,8 +11,18 @@ public class Value {
     private String attribute;
     @JsonProperty("Value")
     private String value;
+    @JsonIgnore
+    private String criteriaType;
+    
+    public String getCriteriaType() {
+		return criteriaType;
+	}
 
-    public String getAttribute() {
+	public void setCriteriaType(String criteriaType) {
+		this.criteriaType = criteriaType;
+	}
+
+	public String getAttribute() {
         return attribute;
     }
 
