@@ -18,8 +18,16 @@ public class Combo {
     @JsonProperty("BlendMaterials")
     private List<BlendMaterial> blendMaterials=null;
     @JsonProperty("RGBHex")
-    private String RGBHex;
+    private String rgbhex;
     
+
+	public String getRgbhex() {
+		return rgbhex;
+	}
+
+	public void setRgbhex(String rgbhex) {
+		this.rgbhex = rgbhex;
+	}
 
 	public List<BlendMaterial> getBlendMaterials() {
 		return blendMaterials;
@@ -60,20 +68,6 @@ public class Combo {
     }
     
     
-
-    /**
-     * @return the rGBHex
-     */
-    public String getRGBHex() {
-        return RGBHex;
-    }
-
-    /**
-     * @param rGBHex the rGBHex to set
-     */
-    public void setRGBHex(String rGBHex) {
-        RGBHex = rGBHex;
-    }
 
     @Override
     public String toString() {

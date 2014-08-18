@@ -1,7 +1,11 @@
 package com.asi.ext.api.integration.lookup.parser;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.asi.ext.api.service.model.Value;
 
 public class CriteriaSetParser {
 	 private static ConcurrentHashMap<String, HashMap<String, String>> criteriaSetReference =  new ConcurrentHashMap<>();
@@ -100,6 +104,22 @@ public class CriteriaSetParser {
 	}
 	public void addSizesReferenceSet(String externalProductId,
 			String criteriaCode, String criteriaSetValueId, Object valueObj) {
+		Object currentValueObj=null;
+		List<Value> valuesList=null;
+		List<Value> tempValuesList=null;
+		if(valueObj instanceof Value){
+		currentValueObj=(Value)valueObj;
+		((Value) currentValueObj).setCriteriaType(criteriaCode);
+		}else if(valueObj instanceof List){
+			valuesList=(List<Value>)valueObj;
+			tempValuesList=new ArrayList<>();
+			for(Value currentValue:valuesList){
+				currentValue.setCriteriaType(criteriaCode);
+				tempValuesList.add(currentValue);
+			}
+			currentValueObj=tempValuesList;
+		}else
+			currentValueObj=valueObj;
     	if(null!=valueObj && null!=criteriaCode)
     	{
           if (criteriaSetValueReference== null || criteriaSetValueReference.isEmpty()) {
@@ -110,7 +130,7 @@ public class CriteriaSetParser {
             	criteriaSetValueReference.put(externalProductId.trim(), new HashMap<String, Object>());
             }
           if(criteriaSetValueReference.get(externalProductId.trim()).get(criteriaSetValueId) == null){
-        	  criteriaSetValueReference.get(externalProductId.trim()).put(criteriaSetValueId,valueObj);
+        	  criteriaSetValueReference.get(externalProductId.trim()).put(criteriaSetValueId,currentValueObj);
           }
     	} else
     	{

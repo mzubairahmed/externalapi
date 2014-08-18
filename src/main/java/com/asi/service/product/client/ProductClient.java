@@ -137,7 +137,7 @@ public class ProductClient {
             
 //            ResponseEntity<?> response = restTemplate.postForObject(productSearchUrl, product, ResponseEntity.class);
 
-            ResponseEntity<?> response = restTemplate.exchange(productSearchUrl, HttpMethod.POST, requestEntity, ResponseEntity.class);
+            ResponseEntity<Object> response = restTemplate.exchange(productSearchUrl, HttpMethod.POST, requestEntity, Object.class);
 
             _LOGGER.info("Result : " + response);
             return getExternalAPIResponse("Product Saved successfully", HttpStatus.OK, null);

@@ -482,7 +482,7 @@ public class ConfigurationsParser {
 							currentCombo.setName(ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetCodeValue.getSetCodeValueId(),ApplicationConstants.CONST_COLORS_CRITERIA_CODE));
 							currentCombo.setType(currentCriteriaSetCodeValue.getCodeValueDetail());
 							if (!CommonUtilities.isValueNull(currentCriteriaSetCodeValue.getCodeValue())) {
-							    currentCombo.setRGBHex(currentCriteriaSetCodeValue.getCodeValue());
+							    currentCombo.setRgbhex(currentCriteriaSetCodeValue.getCodeValue());
 							}
 							comboList.add(currentCombo);
 						}
@@ -741,7 +741,7 @@ public class ConfigurationsParser {
 					currentProductionTime=new ProductionTime();
 					if(currentCriteriaSetValue.getValue() instanceof List){
 						currentProductionTime.setBusinessDays(Integer.parseInt(productLookupParser.getTimeText(currentCriteriaSetValue.getValue())));
-						criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), productLookupParser.getTimeText(currentCriteriaSetValue.getValue()));
+						criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), productLookupParser.getTimeWithUnitsInText(currentCriteriaSetValue.getValue()));
 					}
 					currentProductionTime.setDetails(currentCriteriaSetValue.getCriteriaValueDetail());
 					prodTimeList.add(currentProductionTime);

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.asi.ext.api.product.transformers.ProductDataStore;
+import com.asi.ext.api.service.model.Value;
+import com.asi.ext.api.service.model.Values;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.service.product.client.vo.BasePriceDetails;
 import com.asi.service.product.client.vo.DiscountList;
@@ -18,6 +21,7 @@ import com.asi.service.product.client.vo.parser.UpChargeLookup;
 public class PricesParser {
     private CriteriaSetParser criteriaSetParser=new CriteriaSetParser(); 
     private ArrayList<String> rushCriteriaGroup=new ArrayList<String>(Arrays.asList("RUSH","PRTM","SDRU"));
+	 private ArrayList<String> APPAREL_SIZE_GROUP_CRITERIACODES=new ArrayList<String>(Arrays.asList("SABR","SAHU","SAIT","SANS","SAWI","SVWT"));
 CommonUtilities commonUtilities=new CommonUtilities();
     public List<Object> getPricesList(List<PriceGrid> priceGrids,String externalProductId) {
         ArrayList<Object> priceFinalList=null;
@@ -186,23 +190,47 @@ CommonUtilities commonUtilities=new CommonUtilities();
 
     public Object[] getPriceCriteria(String externalProductId, List<PricingItem> pricingItems) {
 		Object criteriaSet1 = "";
+		Object currentObj="";
 		Object criteriaSet2 = "";
 		Object[] criteriaSets = new Object[] { null, null };
 		String criteriaCode = "";
+		String firstCriteria=null,secondCriteria=null;
 		String temp = "", temp1 = "";
 		String[] criteriaItems = null;
 		int criteriaCntr = 0;
+		Values criteriaValues=null;
+		Value currentCriteriaObj=null;
+		List<Value> valuesList=new ArrayList<>();
+		Values criteriaValues2=null;
+		Value currentCriteriaObj2=null;
+		List<Value> valuesList2=new ArrayList<>();
 		for (PricingItem priceItem : pricingItems) {
-			if (criteriaCntr == 0) {
+			
+			if (criteriaCntr==0) {
                 temp = criteriaSetParser.findCriteriaSetValueById(externalProductId, priceItem.getCriteriaSetValueId());
 				if (null != temp) {
 					criteriaItems = temp.split("__");
 					if (criteriaItems.length > 1) {
 						criteriaCode = criteriaItems[0];
+						firstCriteria=criteriaCode;
 						criteriaSet1 = criteriaCode + ":" + formatCriteriaValue(criteriaItems[1],criteriaCode);
 					}
 				}else{
+					if(null==criteriaValues){
+						criteriaValues=new Values();						
+					}
+					
 					criteriaSet1=criteriaSetParser.findSizesCriteriaSetById(externalProductId, priceItem.getCriteriaSetValueId());
+					if(criteriaSet1 instanceof Value){
+					currentCriteriaObj=(Value)criteriaSet1;
+					firstCriteria=(String) getCriteriaCode(currentCriteriaObj);
+					if(APPAREL_SIZE_GROUP_CRITERIACODES.contains(currentCriteriaObj.getCriteriaType())){
+						criteriaValues.setType(ProductDataStore.getCriteriaInfoForCriteriaCode(currentCriteriaObj.getCriteriaType()).getDescription());						
+					}					
+					valuesList.add(currentCriteriaObj);
+					criteriaValues.setValue(valuesList);
+					criteriaSet1=criteriaValues;
+					}
 				}
 			} else {
 				// criteriaSet1=temp;
@@ -220,7 +248,32 @@ CommonUtilities commonUtilities=new CommonUtilities();
                	}
 					}
 				}else{
-					criteriaSet2=criteriaSetParser.findSizesCriteriaSetById(externalProductId, priceItem.getCriteriaSetValueId());
+					if(null==criteriaValues2){
+						criteriaValues2=new Values();						
+					}
+					currentObj=criteriaSetParser.findSizesCriteriaSetById(externalProductId, priceItem.getCriteriaSetValueId());
+					secondCriteria=(String) getCriteriaCode(currentCriteriaObj);
+					if(firstCriteria.equalsIgnoreCase(secondCriteria)){
+						if(currentObj instanceof Value){
+						currentCriteriaObj=(Value)currentObj;
+						if(APPAREL_SIZE_GROUP_CRITERIACODES.contains(currentCriteriaObj.getCriteriaType())){
+							criteriaValues2.setType(ProductDataStore.getCriteriaInfoForCriteriaCode(currentCriteriaObj.getCriteriaType()).getDescription());						
+						}
+						valuesList.add(currentCriteriaObj);
+						criteriaValues.setValue(valuesList);
+						criteriaSet1=criteriaValues;	
+						}
+					}else{
+						if(currentObj instanceof Value){
+					currentCriteriaObj2=(Value)currentObj;
+					if(APPAREL_SIZE_GROUP_CRITERIACODES.contains(currentCriteriaObj.getCriteriaType())){
+						criteriaValues2.setType(ProductDataStore.getCriteriaInfoForCriteriaCode(currentCriteriaObj.getCriteriaType()).getDescription());						
+					}
+					valuesList2.add(currentCriteriaObj2);
+					criteriaValues2.setValue(valuesList2);
+					criteriaSet2=criteriaValues2;
+						}else criteriaSet2=currentObj;
+					}
 				}
 			}
 			criteriaCntr++;
@@ -311,12 +364,13 @@ CommonUtilities commonUtilities=new CommonUtilities();
            if(null!=temp[0]) basePriceDetails.setBasePriceCriteria1(CommonUtilities.isValueNull(temp[0].toString()) ? null : temp[0].toString());
            if(null!=temp[1]) basePriceDetails.setBasePriceCriteria2(CommonUtilities.isValueNull(temp[1].toString()) ? null : temp[1].toString());
         }else{
+        	
         	basePriceDetails.setBasePriceCriteria1(temp[0]);
         	if(null!=temp[1] && temp[1] instanceof String && !temp[1].toString().isEmpty()) 
         		basePriceDetails.setBasePriceCriteria2(temp[1]);
         	else if(null!=temp[1] && temp[1] instanceof String){
         		
-        	}else{
+        	}else if(null!=temp[1]){
         		basePriceDetails.setBasePriceCriteria2(temp[1]);
         		}
         }
@@ -358,5 +412,17 @@ CommonUtilities commonUtilities=new CommonUtilities();
         }
         return upChargePriceDetails;
     }
-    
+ public Object getCriteriaCode(Object source) {
+    	
+        if (source != null && source instanceof String && !source.toString().isEmpty() && source.toString().contains(":")) {
+            return source.toString().substring(0, source.toString().indexOf(":"));
+        }else if(source !=null && source instanceof Values){
+        	return ((Values)source).getValue().get(0).getCriteriaType();
+        }else if(source !=null && source instanceof Value){
+        	return ((Value)source).getCriteriaType();
+        }else
+        {
+        	return source;
+        }
+    }
 }

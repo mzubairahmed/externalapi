@@ -264,12 +264,12 @@ public class SizeLookup {
 						//valueObjList.add(valueObj);
 						if(sizeCntr==0){
 							if(criteriaCode.equalsIgnoreCase("SAWI")){
-						}else		
-							if(null!=apparel) criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),apperalObj);
+						}if(null!=apparel)
+							{
+						//	apperalObj.setCriteriaType(criteriaCode);
+							criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),apperalObj);
 							apperalValueObjList.add(apperalObj);
-						}else{
-							if(null!=apparel) criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),apperalObj);
-							apperalValueObjList.add(apperalObj);
+							}
 						}
 						sizeCntr++;
 						
@@ -286,9 +286,12 @@ public class SizeLookup {
 							sizeValue=criteriaSetValue.getFormatValue();
 							valueStringList.add(sizeValue);//valueObj.setValue(sizeValue);
 							sizeElementValue+=sizeValue;
-							if(null!=apparel){
+							if(null!=apparel){								
 							apperalObj.setValue(sizeValue);
-							if(null!=apparel) criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),apperalObj);
+							if(null!=apparel) {
+							//	apperalObj.setCriteriaType(criteriaCode);
+								criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),apperalObj);
+							}
 							apperalValueObjList.add(apperalObj);
 							}else if(criteriaCode.equalsIgnoreCase("CAPS")){
 							capacityObj.setValue(sizeValue.substring(0,sizeValue.indexOf(" ")));

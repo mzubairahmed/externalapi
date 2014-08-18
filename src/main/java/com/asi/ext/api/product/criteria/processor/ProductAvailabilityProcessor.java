@@ -92,7 +92,7 @@ public class ProductAvailabilityProcessor {
         }
         // add IMMD x ARTW and IMMD x MINO relation back
         
-        processedRelations = includeImprintRelationsIfExists(processedRelations, product.getRelationships());
+        processedRelations = includeImprintRelationsIfExists(processedRelations, product.getRelationships(), criteriaSetMap);
 
 
         LOGGER.info("Started Processing product availability");
@@ -130,18 +130,26 @@ public class ProductAvailabilityProcessor {
         return new ArrayList<>();
     }
 
-    private List<Relationship> includeImprintRelationsIfExists(List<Relationship> updatedRels, List<Relationship> extRels) {
-
-        Relationship immdXartw = relProcessor.getRelationshipBasedCriteriaIds(ApplicationConstants.CONST_IMPRINT_METHOD_CODE,
-                ApplicationConstants.CONST_ARTWORK_CODE, extRels);
-        if (immdXartw != null) {
-            updatedRels.add(immdXartw);
-        }
-
-        Relationship immdXmino = relProcessor.getRelationshipBasedCriteriaIds(ApplicationConstants.CONST_IMPRINT_METHOD_CODE,
-                ApplicationConstants.CONST_MINIMUM_QUANTITY, extRels);
-        if (immdXmino != null) {
-            updatedRels.add(immdXartw);
+    private List<Relationship> includeImprintRelationsIfExists(List<Relationship> updatedRels, List<Relationship> extRels, Map<String, ProductCriteriaSets> criteriaSetMap) {
+        ProductCriteriaSets parentCriteriaSet = criteriaSetMap.get(ApplicationConstants.CONST_IMPRINT_METHOD_CODE); 
+        if (parentCriteriaSet != null) {
+            String parentId = parentCriteriaSet.getCriteriaSetId();
+            ProductCriteriaSets childCriteriaSet = criteriaSetMap.get(ApplicationConstants.CONST_ARTWORK_CODE); // Artwork processing
+            if (childCriteriaSet != null) {                
+                Relationship immdXartw = relProcessor.getRelationshipBasedCriteriaIds(parentId, childCriteriaSet.getCriteriaSetId(), extRels);
+                if (immdXartw != null) {
+                    updatedRels.add(immdXartw);
+                }
+            }
+            childCriteriaSet = criteriaSetMap.get(ApplicationConstants.CONST_MINIMUM_QUANTITY); // MIN_QTY processing
+            if (childCriteriaSet != null) {
+                Relationship immdXmino = relProcessor.getRelationshipBasedCriteriaIds(parentId, childCriteriaSet.getCriteriaSetId(), extRels);
+                if (immdXmino != null) {
+                    updatedRels.add(immdXmino);
+                }
+            }
+        } else {
+            return updatedRels;
         }
         return updatedRels;
     }

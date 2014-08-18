@@ -19,7 +19,7 @@ public class ProductImprintMethodProcessor extends SimpleCriteriaProcessor {
 
     public CriteriaSetValues getImprintCriteriaSetValue(String imprintName, String aliace, String criteriaSetId) {
         
-        CriteriaSetValues criteriaSetValue = existingCriteriaValueMap.get(imprintName);
+        CriteriaSetValues criteriaSetValue = existingCriteriaValueMap.get(imprintName.toUpperCase());
         String setCodeValueId = null;
         boolean customValue = false;
         if (criteriaSetValue == null) {
@@ -98,7 +98,7 @@ public class ProductImprintMethodProcessor extends SimpleCriteriaProcessor {
                         && criteriaValue.getCriteriaSetCodeValues().length != 0) {
                     key = reverseLookup(criteriaValue.getCriteriaSetCodeValues()[0].getSetCodeValueId());
                 }
-                finalCriteriaValueMap.put(key, criteriaValue);
+                finalCriteriaValueMap.put(String.valueOf(key).toUpperCase(), criteriaValue);
             }
         }
         return finalCriteriaValueMap;
@@ -137,6 +137,15 @@ public class ProductImprintMethodProcessor extends SimpleCriteriaProcessor {
     protected boolean updateCriteriaSet(String value) {
         // TODO Auto-generated method stub
         return false;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#finalize()
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        // TODO Auto-generated method stub
+        super.finalize();
     }
 
 }

@@ -14,10 +14,27 @@ public class BasePriceDetails {
     private List<String> prices             = new ArrayList<String>();
     private List<String> quantities         = new ArrayList<String>();
     private List<String> discounts          = new ArrayList<String>();
-
+    private String criteriaCode1=null;
+    private String criteriaCode2=null;
     private boolean      isMultiPriceGrid   = false;
 
-    /**
+    public String getCriteriaCode1() {
+		return criteriaCode1;
+	}
+
+	public void setCriteriaCode1(String criteriaCode1) {
+		this.criteriaCode1 = criteriaCode1;
+	}
+
+	public String getCriteriaCode2() {
+		return criteriaCode2;
+	}
+
+	public void setCriteriaCode2(String criteriaCode2) {
+		this.criteriaCode2 = criteriaCode2;
+	}
+
+	/**
      * @return the basePriceName
      */
     public String getBasePriceName() {

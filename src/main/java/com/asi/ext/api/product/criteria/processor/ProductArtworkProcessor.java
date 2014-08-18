@@ -17,8 +17,36 @@ public class ProductArtworkProcessor extends SimpleCriteriaProcessor {
 
     protected Map<String, CriteriaSetValues> existingCriteriaValueMap = new HashMap<String, CriteriaSetValues>();
 
-    public CriteriaSetValues getArtworkCriteriaSetValue(Artwork artworks, String criteriaSetId) {
-        return null;
+    public CriteriaSetValues getArtworkCriteriaSetValue(String xid, Artwork artworks, String criteriaSetId) {
+            
+            CriteriaSetValues criteriaSetValue = null;
+            if (existingCriteriaValueMap != null) {
+                criteriaSetValue = existingCriteriaValueMap.get(artworks.getValue().toUpperCase());
+            }
+            // Check again, if not exist create new one, else update code value
+            if (criteriaSetValue == null) {
+                criteriaSetValue = new CriteriaSetValues();
+                criteriaSetValue.setId(String.valueOf(--uniqueSetValueId));
+                criteriaSetValue.setCriteriaCode(ApplicationConstants.CONST_ARTWORK_CODE);
+                criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_LOOK);
+                criteriaSetValue.setIsSubset(ApplicationConstants.CONST_STRING_FALSE_SMALL);
+                criteriaSetValue.setIsSetValueMeasurement(ApplicationConstants.CONST_STRING_FALSE_SMALL);
+                criteriaSetValue.setCriteriaSetId(criteriaSetId);
+                
+                String setCodeValueId = getSetCodeValueId(artworks.getValue());
+                if (CommonUtilities.isValueNull(setCodeValueId)) {
+                    setCodeValueId = getSetCodeValueId(artworks.getValue(), true);
+                    criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_CUST);
+                }
+                criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
+                criteriaSetValue.setValue(artworks.getValue());
+            } else {
+                criteriaSetValue.getCriteriaSetCodeValues()[0].setCodeValue(artworks.getComments());
+            }
+            
+            updateReferenceTable(xid, ApplicationConstants.CONST_ARTWORK_CODE, artworks.getValue(), criteriaSetValue);
+        
+        return criteriaSetValue;
 
     }
 
@@ -54,9 +82,13 @@ public class ProductArtworkProcessor extends SimpleCriteriaProcessor {
     @Override
     public String getSetCodeValueId(String value) {
         // TODO Auto-generated method stub
-        return null;
+        return ProductDataStore.getArtworkSetCodeValueId(value, false);
     }
 
+    public String getSetCodeValueId(String value, boolean checkOther) {
+        // TODO Auto-generated method stub
+        return ProductDataStore.getArtworkSetCodeValueId(value, checkOther);
+    }
     @Override
     protected boolean isValueIsValid(String value) {
         // TODO Auto-generated method stub
@@ -73,5 +105,14 @@ public class ProductArtworkProcessor extends SimpleCriteriaProcessor {
     protected boolean updateCriteriaSet(String value) {
         // TODO Auto-generated method stub
         return false;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#finalize()
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        // TODO Auto-generated method stub
+        super.finalize();
     }
 }
