@@ -25,24 +25,23 @@ import com.asi.service.product.client.vo.Relationship;
  */
 public class ImprintMethodProcessor extends SimpleCriteriaProcessor {
 
-    private final static Logger           LOGGER                 = Logger.getLogger(ImprintMethodProcessor.class.getName());
+    private final static Logger LOGGER        = Logger.getLogger(ImprintMethodProcessor.class.getName());
 
-    private final static String           MINO_REL_NAME          = "Imprint Method x Min Order";
-    private final static String           ARTW_REL_NAME          = "Imprint Method x Artwork";
+    private final static String MINO_REL_NAME = "Imprint Method x Min Order";
+    private final static String ARTW_REL_NAME = "Imprint Method x Artwork";
+    
+    private RelationshipProcessor relationshipProcessor = new RelationshipProcessor();
 
-    private ProductImprintMethodProcessor imprintMethodProcessor = new ProductImprintMethodProcessor();
-    private int                           criteiraSetId          = -2000;
+    private int                 criteiraSetId = -2000;
 
     public ProductDetail processImprintAndRelations(ProductDetail existingProduct,
             Map<String, ProductCriteriaSets> existingCriteriaSetMap, String configId) {
         return existingProduct;
     }
 
-    private ProductArtworkProcessor         artworkProcessor = new ProductArtworkProcessor();
-    private ProductMinimumQuantityProcessor minoProcessor    = new ProductMinimumQuantityProcessor();
-    private int                             relationshipId   = -1;
+    private int relationshipId  = -1;
 
-    private int                             valuePathUniqId  = -1;
+    private int valuePathUniqId = -1;
 
     /*
      * imprintMethodString = CommonUtilities.appendValue(imprintMethodString,
@@ -53,7 +52,11 @@ public class ImprintMethodProcessor extends SimpleCriteriaProcessor {
 
     public ImprintRelationData getImprintCriteriaSet(List<ImprintMethod> imprintMethods, ProductDetail exisitingProduct,
             Map<String, ProductCriteriaSets> existingCriteriaSetMap, String configId) {
+        
         ImprintRelationData imprintRelationData = new ImprintRelationData();
+        ProductImprintMethodProcessor imprintMethodProcessor = new ProductImprintMethodProcessor();
+        ProductArtworkProcessor artworkProcessor = new ProductArtworkProcessor();
+        ProductMinimumQuantityProcessor minoProcessor = new ProductMinimumQuantityProcessor();
 
         String immdCriteriaId = "";
         String minoCriteriaId = "";
@@ -79,9 +82,13 @@ public class ImprintMethodProcessor extends SimpleCriteriaProcessor {
         ProductCriteriaSets artwCriteriaSet = existingCriteriaSetMap.get(ApplicationConstants.CONST_ARTWORK_CODE);
         if (artwCriteriaSet != null) {
             artwCriteriaId = artwCriteriaSet.getCriteriaSetId();
-            artworkProcessor.generateExistingCriteriaList(immdCriteriaSet.getCriteriaSetValues());
+            artworkProcessor.generateExistingCriteriaList(artwCriteriaSet.getCriteriaSetValues());
             immdArtwRelationship = immdCriteriaSet != null ? getRelationshipBasedCriteriaIds(immdCriteriaId, artwCriteriaId,
                     exisitingProduct.getRelationships()) : null;
+            if (immdArtwRelationship == null) {
+                immdArtwRelationship = createRelationship(ARTW_REL_NAME, immdCriteriaId, artwCriteriaId, exisitingProduct.getID(),
+                        --relationshipId);
+            }
         } else {
             artwCriteriaSet = getProductCriteriaSet(exisitingProduct, configId, ApplicationConstants.CONST_ARTWORK_CODE,
                     String.valueOf(--criteiraSetId));
@@ -95,6 +102,10 @@ public class ImprintMethodProcessor extends SimpleCriteriaProcessor {
             minoProcessor.generateExistingCriteriaList(minoCriteriaSet.getCriteriaSetValues());
             immdMinoRelationship = immdCriteriaSet != null ? getRelationshipBasedCriteriaIds(immdCriteriaId, minoCriteriaId,
                     exisitingProduct.getRelationships()) : null;
+            if (immdMinoRelationship == null) {
+                immdMinoRelationship = createRelationship(MINO_REL_NAME, immdCriteriaId, minoCriteriaId, exisitingProduct.getID(),
+                        --relationshipId);
+            }
         } else {
             minoCriteriaSet = getProductCriteriaSet(exisitingProduct, configId, ApplicationConstants.CONST_MINIMUM_QUANTITY,
                     String.valueOf(--criteiraSetId));
@@ -126,7 +137,8 @@ public class ImprintMethodProcessor extends SimpleCriteriaProcessor {
 
             if (immdCriteriaSetValue != null && impMethod.getArtwork() != null && !impMethod.getArtwork().isEmpty()) {
                 for (Artwork art : impMethod.getArtwork()) {
-                    CriteriaSetValues artwCriteriaSetValue = artworkProcessor.getArtworkCriteriaSetValue(art, artwCriteriaId);
+                    CriteriaSetValues artwCriteriaSetValue = artworkProcessor.getArtworkCriteriaSetValue(
+                            exisitingProduct.getExternalProductId(), art, artwCriteriaId);
                     if (artwCriteriaSetValue != null) {
                         artwCriteriaValues.put(art.getValue().toUpperCase(), artwCriteriaSetValue);
                         artworkCriteriaValuePathList.addAll(getValuePaths(immdCriteriaSetValue, artwCriteriaSetValue,
@@ -198,6 +210,7 @@ public class ImprintMethodProcessor extends SimpleCriteriaProcessor {
                 }
             }
         } else {
+
             relationships = new ArrayList<Relationship>();
         }
         relationships.add(relToReplace);
@@ -266,28 +279,11 @@ public class ImprintMethodProcessor extends SimpleCriteriaProcessor {
 
     private List<CriteriaSetValuePath> getValuePaths(CriteriaSetValues parentCriteriaValue, CriteriaSetValues childCriteriaValue,
             Relationship relationship) {
-        List<CriteriaSetValuePath> crtValuePaths = new ArrayList<CriteriaSetValuePath>(2);
-        Integer parentId = Integer.parseInt(parentCriteriaValue.getId());
-        Integer childId = Integer.parseInt(childCriteriaValue.getId());
-
-        if (relationship.getCriteriaSetValuePaths() != null && !relationship.getCriteriaSetValuePaths().isEmpty()) {
-            CriteriaSetValuePath parentValuePath = null;
-            for (CriteriaSetValuePath valuePath : relationship.getCriteriaSetValuePaths()) {
-                if (parentCriteriaValue == null) {
-                    if (valuePath.getIsParent() && parentId.equals(valuePath.getCriteriaSetValueId())) {
-                        parentValuePath = valuePath;
-                    }
-                } else {
-                    if (parentValuePath != null && !valuePath.getIsParent() && valuePath.getID().equals(parentValuePath.getID())
-                            && childId.equals(valuePath.getCriteriaSetValueId())) {
-                        crtValuePaths.add(parentValuePath);
-                        crtValuePaths.add(valuePath);
-                        return crtValuePaths;
-                    }
-                    parentValuePath = null;
-                }
-            }
-            return getNewCriteriaSetValuePaths(parentCriteriaValue.getId(), childCriteriaValue.getId(), relationship);
+        List<CriteriaSetValuePath> crtValuePaths = getNewCriteriaSetValuePaths(parentCriteriaValue.getId(), childCriteriaValue.getId(), relationship);
+        
+        if (relationship != null && relationship.getCriteriaSetValuePaths() != null
+                && !relationship.getCriteriaSetValuePaths().isEmpty()) {
+            return relationshipProcessor.compareCriteriaSetValuePaths(crtValuePaths, relationship.getCriteriaSetValuePaths(), relationship.getID());
         } else {
             return getNewCriteriaSetValuePaths(parentCriteriaValue.getId(), childCriteriaValue.getId(), relationship);
         }

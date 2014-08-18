@@ -14,10 +14,12 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,16 +38,17 @@ import com.asi.service.resource.response.ExternalAPIResponse;
 public class ProductServiceResource {
 
     @Autowired
-    ProductService        productService;
+    ProductService                   productService;
 
-    private static Logger _LOGGER = LoggerFactory.getLogger(ProductServiceResource.class);
+    private static Logger            _LOGGER = LoggerFactory.getLogger(ProductServiceResource.class);
     @Autowired
-    private MessageSource messageSource;
-    
+    private MessageSource            messageSource;
+
     @Secured("ROLE_CUSTOMER")
-    @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.PUT, headers = "content-type=application/json, application/xml", produces = {
-            "application/xml", "application/json" })
-    public ResponseEntity<Product> createOrUpdateProduct(HttpEntity<Product> requestEntity,
+    @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.PUT, headers = { MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_ATOM_XML_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_ATOM_XML_VALUE })
+    public ResponseEntity<Product> createOrUpdateProduct(HttpEntity<Product> requestEntity, 
             @PathVariable("companyid") String companyId, @PathVariable("xid") String xid) throws ProductNotFoundException,
             ExistingProductException, ResponseNotValidException, RestClientException, UnsupportedEncodingException {
         Product product = null;
@@ -54,7 +57,7 @@ public class ProductServiceResource {
             _LOGGER.debug("calling service");
         }
         try {
-           // product = productService.updateProduct(companyId, xid, requestEntity.getBody());
+            // product = productService.updateProduct(companyId, xid, requestEntity.getBody());
         } catch (Exception e) {
 
         }
@@ -62,90 +65,26 @@ public class ProductServiceResource {
         return new ResponseEntity<Product>(product, null, HttpStatus.CREATED);
     }
 
-//    @Secured("ROLE_CUSTOMER")
+    // @Secured("ROLE_CUSTOMER")
     @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.POST, headers = "content-type=application/json, application/xml", produces = {
             "application/xml", "application/json" })
-    public ResponseEntity<ExternalAPIResponse> updateProduct(HttpEntity<Product> requestEntity, @PathVariable("companyid") String companyId,
+    public ResponseEntity<ExternalAPIResponse> updateProduct(HttpEntity<Product> requestEntity, @RequestHeader("AuthToken") String authToken, @PathVariable("companyid") String companyId,
             @PathVariable("xid") String xid) throws Exception {
         if (_LOGGER.isDebugEnabled()) {
             _LOGGER.debug("calling service");
         }
         ExternalAPIResponse message = null;
+        if (authToken == null) {
+            return new ResponseEntity<ExternalAPIResponse>(message, null, HttpStatus.UNAUTHORIZED);
+        }
         try {
-            message = productService.updateProduct(requestEntity.getHeaders(), companyId, xid, requestEntity.getBody());
+            message = productService.updateProduct(authToken, companyId, xid, requestEntity.getBody());
         } catch (Exception e) {
             throw e;
         }
-    
-        return new ResponseEntity<ExternalAPIResponse>(message, null, message.getStatusCode());
-        //return Response.status(message.getStatusCode()).entity(message).build();
-    }
 
-    /*
-     * @Secured("ROLE_CUSTOMER")
-     * 
-     * @RequestMapping(value = "{companyid}/pid/{xid}/price/{priceGridId}", method = RequestMethod.POST, headers =
-     * "content-type=application/com.asi.util.json, application/xml", produces = {
-     * "application/xml", "application/com.asi.util.json" })
-     * public ResponseEntity<ItemPriceDetail> createProductPrice(HttpEntity<ItemPriceDetail> requestEntity,
-     * 
-     * @PathVariable("companyid") String companyId, @PathVariable("xid") String xid,
-     * 
-     * @PathVariable("priceGridId") Integer priceGridId) throws UnsupportedEncodingException, ProductNotFoundException {
-     * if (_LOGGER.isDebugEnabled()) _LOGGER.debug("calling service");
-     * ItemPriceDetail itemPriceResponse = requestEntity.getBody();
-     * return new ResponseEntity<ItemPriceDetail>(itemPriceResponse, null, HttpStatus.CREATED);
-     * }
-     * 
-     * @RequestMapping(value = "{companyid}/pid/{xid}/imprintMethods", method = RequestMethod.POST, headers =
-     * "content-type=application/com.asi.util.json, application/xml", produces = {
-     * "application/xml", "application/com.asi.util.json" })
-     * public ResponseEntity<Imprints> createImprintMethods(@PathVariable("companyid") String companyId,
-     * 
-     * @PathVariable("xid") String xid) throws UnsupportedEncodingException, ProductNotFoundException {
-     * if (_LOGGER.isDebugEnabled()) _LOGGER.debug("calling Imprint Method Service");
-     * Imprints productResponse = repository.getProductImprintMethods(companyId, xid);
-     * return new ResponseEntity<Imprints>(productResponse, null, HttpStatus.CREATED);
-     * }
-     * 
-     * @Secured("ROLE_CUSTOMER")
-     * 
-     * @RequestMapping(value = "{companyid}/pid/{xid}/price/{priceGridId}", method = RequestMethod.PUT, headers =
-     * "content-type=application/com.asi.util.json, application/xml", produces = {
-     * "application/xml", "application/com.asi.util.json" })
-     * public ResponseEntity<ItemPriceDetail> updateProductPrice(HttpEntity<ItemPriceDetail> requestEntity,
-     * 
-     * @PathVariable("companyid") String companyId, @PathVariable("xid") String xid,
-     * 
-     * @PathVariable("priceGridId") Integer priceGridId) throws UnsupportedEncodingException, ProductNotFoundException {
-     * if (_LOGGER.isDebugEnabled()) _LOGGER.debug("calling service");
-     * ItemPriceDetail productResponse = requestEntity.getBody();
-     * 
-     * return new ResponseEntity<ItemPriceDetail>(productResponse, null, HttpStatus.OK);
-     * }
-     * 
-     * @RequestMapping(value = "{companyid}/pid/{xid}/imprintMethods", method = RequestMethod.PUT, headers =
-     * "content-type=application/com.asi.util.json, application/xml", produces = {
-     * "application/xml", "application/com.asi.util.json" })
-     * public ResponseEntity<Imprints> updateImprintMethods(@PathVariable("companyid") String companyId,
-     * 
-     * @PathVariable("xid") String xid) throws UnsupportedEncodingException, ProductNotFoundException {
-     * if (_LOGGER.isDebugEnabled()) _LOGGER.debug("calling Imprint Method Service");
-     * Imprints productResponse = repository.getProductImprintMethods(companyId, xid);
-     * return new ResponseEntity<Imprints>(productResponse, null, HttpStatus.OK);
-     * }
-     * 
-     * @Secured("ROLE_CUSTOMER")
-     * 
-     * @RequestMapping(value = "{companyid}/pid/{xid}/basePrices", method = RequestMethod.POST, headers =
-     * "content-type=application/com.asi.util.json, application/xml", produces = {
-     * "application/xml", "application/com.asi.util.json" })
-     * public ResponseEntity<Product> updateBasePrices(HttpEntity<Product> product) throws Exception {
-     * if (_LOGGER.isDebugEnabled()) _LOGGER.debug("calling Base Price Service Updation");
-     * Product productResponse = repository.updateProductBasePrices(product.getBody(), "update");
-     * return new ResponseEntity<Product>(productResponse, null, HttpStatus.OK);
-     * }
-     */
+        return new ResponseEntity<ExternalAPIResponse>(message, null, message.getStatusCode());
+    }
 
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<ErrorMessage> handleUnsupportedEncodingException(ProductNotFoundException ex, HttpServletRequest request) {

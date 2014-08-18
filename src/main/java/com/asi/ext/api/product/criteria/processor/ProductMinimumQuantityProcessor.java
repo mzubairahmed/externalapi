@@ -17,11 +17,10 @@ public class ProductMinimumQuantityProcessor extends SimpleCriteriaProcessor {
     protected Map<String, CriteriaSetValues> existingCriteriaValueMap = new HashMap<String, CriteriaSetValues>();
 
     public CriteriaSetValues getMinQtyCriteriaSetValue(MinimumOrder minQty, String criteriaSetId) {
-        CriteriaSetValues criteriaSetValue = existingCriteriaValueMap.get(getKey(minQty));
-        String setCodeValueId = null;
-        if (criteriaSetValue == null) {
+            String setCodeValueId = null;
+        
             setCodeValueId = ProductDataStore.getMinQtySetCodeValueId(ApplicationConstants.CONST_STRING_OTHER, true);
-            criteriaSetValue = new CriteriaSetValues();
+            CriteriaSetValues criteriaSetValue = new CriteriaSetValues();
 
             criteriaSetValue.setId(String.valueOf(--uniqueSetValueId));
             criteriaSetValue.setCriteriaCode(ApplicationConstants.CONST_MINIMUM_QUANTITY);
@@ -31,7 +30,11 @@ public class ProductMinimumQuantityProcessor extends SimpleCriteriaProcessor {
             criteriaSetValue.setCriteriaSetId(criteriaSetId);
             criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
             criteriaSetValue.setValue(getValueObject(minQty));
-        }
+        
+            CriteriaSetValues tempCriteriaSetValue = existingCriteriaValueMap.get(getKeyFromValue(criteriaSetValue.getValue()));
+            if (tempCriteriaSetValue != null) {
+                return tempCriteriaSetValue;
+            }
 
         return criteriaSetValue;
     }
@@ -51,7 +54,7 @@ public class ProductMinimumQuantityProcessor extends SimpleCriteriaProcessor {
     }
 
     protected String getKey(MinimumOrder mino) {
-        return mino.getValue() + "===" + mino.getValue();
+        return String.valueOf(mino.getValue()) + "===" + String.valueOf(mino.getUnit());
     }
 
     private Map<String, CriteriaSetValues> getExistingCriteriaSetValues(List<CriteriaSetValues> criteriaSetValues) {
@@ -96,4 +99,14 @@ public class ProductMinimumQuantityProcessor extends SimpleCriteriaProcessor {
         return false;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#finalize()
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        // TODO Auto-generated method stub
+        super.finalize();
+    }
 }

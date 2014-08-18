@@ -1079,7 +1079,8 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION);
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT);
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE);
-        }
+            return existingCriteriaSetMap;
+        } 
         // Shipping Dimensions and Weight
         String[] dimnsAry = {};
         if (shippingEstimate.getDimensions() == null) {

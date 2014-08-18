@@ -61,7 +61,7 @@ public class ImportTransformer {
 
     private ProductSelectedSafetyWarningProcessor  safetyWarningProcessor      = new ProductSelectedSafetyWarningProcessor();
     private ProductKeywordProcessor                keywordProcessor            = new ProductKeywordProcessor();
-    private ProductCategoriesProcessor             categoryProcessor           = new ProductCategoriesProcessor();
+    //private ProductCategoriesProcessor             categoryProcessor           = new ProductCategoriesProcessor();
     private ProductSelectedComplianceCertProcessor complianceCertProcessor     = new ProductSelectedComplianceCertProcessor();
     // Product Media related
     private ProductMediaItemProcessor              productImageProcessor       = new ProductMediaItemProcessor();

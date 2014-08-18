@@ -28,7 +28,9 @@
 		</web-services:dynamic-wsdl>
 
 		<context:component-scan base-package="com.asi"></context:component-scan>
+		
 		<cache:annotation-driven />
+		<bean id="headerHandler" class="com.asi.service.resource.util.ExternalApiHeaderHandler" />
 		<bean id="ExternalApiApplicationContextProvider" class="com.asi.core.spring.config.provider.ExternalApiApplicationContextProvider"></bean>
 		<bean id="environmentConfigurator" class="com.asi.ext.api.config.EnvironmentConfigurator">
 			<property name="env" value="stage"></property>
