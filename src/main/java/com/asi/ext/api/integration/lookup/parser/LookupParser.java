@@ -285,7 +285,35 @@ public class LookupParser {
 		}
 		return timeValue;
 	}
-
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public String getTimeWithUnitsInText(Object valueAry) {
+		String timeValue = "";
+		ArrayList<LinkedHashMap> valueAryList = (ArrayList<LinkedHashMap>) valueAry;
+		SizeLookup sizeLookup = new SizeLookup();
+		if (null == sizesCriteriaWSResponse) {
+			try {
+				sizesCriteriaWSResponse = (LinkedList<LinkedHashMap>) lookupRestTemplate
+						.getForObject(
+								RestAPIProperties
+										.get(ApplicationConstants.SIZES_CRITERIA_LOOKUP_URL),
+								LinkedList.class);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		LinkedHashMap<?, ?> crntValueObj = null;
+		for (int valueCntr = 0; null != valueAryList
+				&& valueCntr < valueAryList.size(); valueCntr++) {
+			crntValueObj = valueAryList.get(valueCntr);
+			if (valueCntr == 0)
+				timeValue = crntValueObj.get("UnitValue").toString() +" "+ sizeLookup.getSizesElementValue("UNITS",
+						sizesCriteriaWSResponse,
+						crntValueObj.get("UnitOfMeasureCode").toString());
+			else
+				timeValue += ", " + crntValueObj.get("UnitValue").toString();
+		}
+		return timeValue;
+	}
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public String getShippingItems(Object value) {
 		String shippingItems = "";
@@ -617,9 +645,9 @@ public class LookupParser {
 						currentCriteria.setValue(tempCriteria
 								.substring(tempCriteria.indexOf("__") + 3));
 					}
-					criteriaList.add(currentCriteria);
+					if(null!=currentCriteria.getCriteria()) criteriaList.add(currentCriteria);
 				}
-				currentServiceProductNumber.setConfigurations(criteriaList);
+				if(criteriaList.size()>0) currentServiceProductNumber.setConfigurations(criteriaList);
 				productNumberList.add(currentServiceProductNumber);
 			}
 

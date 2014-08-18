@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestTemplate;
 
+
 import com.asi.ext.api.exception.AmbiguousPriceCriteriaException;
 import com.asi.ext.api.exception.VelocityException;
 import com.asi.ext.api.integration.lookup.parser.PricesParser;
@@ -28,6 +29,7 @@ import com.asi.ext.api.radar.model.ProductCriteriaSets;
 import com.asi.ext.api.service.model.Price;
 import com.asi.ext.api.service.model.PriceConfiguration;
 import com.asi.ext.api.service.model.Value;
+import com.asi.ext.api.service.model.Values;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.PriceCriteriaComparator;
@@ -41,6 +43,8 @@ import com.asi.service.product.client.vo.PriceGrid;
 import com.asi.service.product.client.vo.PriceUnit;
 import com.asi.service.product.client.vo.PricingItem;
 import com.asi.service.product.client.vo.ProductDetail;
+import com.asi.service.product.client.vo.ProductNumber;
+import com.asi.service.product.client.vo.ProductNumberConfiguration;
 import com.asi.service.product.client.vo.UpChargePriceDetails;
 import com.asi.service.product.client.vo.parser.UpChargeLookup;
 
@@ -907,6 +911,7 @@ public class PriceGridParser extends ProductParser {
                 currentPriceGrid.setCurrency(jsonProcessorObj.checkCurrencyValueKeyPair(
                         productDetail.getExternalProductId().trim(), currenciesWSList, radarPriceGrid.getCurrency().getCode()));
                 // Product Number - TBD
+                currentPriceGrid.setProductNumber(getProductNumber(radarPriceGrid.getPricingItems(),productDetail.getProductNumbers()));
                 pricesList = radarPriceGrid.getPrices();
                 if (null != pricesList && pricesList.size() > 0) {
                     servicePricesList = new ArrayList<>();
@@ -943,7 +948,27 @@ public class PriceGridParser extends ProductParser {
         return serviceProduct;
     }
 
-    private boolean isValidDiscountCode(String code) {
+    private String getProductNumber(List<PricingItem> pricingItems,List<ProductNumber> productNumbers) {
+    	String finalProductNumber=null;
+    	if(null!=pricingItems && pricingItems.size()>0){
+    	for(PricingItem currentPricingItem:pricingItems){
+    			for(ProductNumber currentProductNumber:productNumbers){
+    				for(ProductNumberConfiguration currentProductNumberConfig:currentProductNumber.getProductNumberConfigurations())
+    				if(currentPricingItem.getCriteriaSetValueId().equals(String.valueOf(currentProductNumberConfig.getCriteriaSetValueId()))){
+    					finalProductNumber=currentProductNumber.getValue();
+    					break;
+    				}
+    				if(null!=finalProductNumber)
+    					break;
+    			}    	
+    			if(null!=finalProductNumber)
+					break;
+    		}    		
+    	}    
+		return finalProductNumber;
+	}
+
+	private boolean isValidDiscountCode(String code) {
         DiscountRate currentDiscountRate = ProductDataStore.getDiscountRate(code, true);
         if (null != currentDiscountRate && currentDiscountRate.getIndustryDiscountCode().equalsIgnoreCase(code))
             return true;
@@ -960,6 +985,7 @@ public class PriceGridParser extends ProductParser {
         PricesParser pricesParser = new PricesParser();
         Object firstCriteria = "";
         Object secondCriteria = "";
+        String currentCriteria="";
         CriteriaInfo criteriaInfo = null;
         UpChargePriceDetails upchargePriceDetail = new UpChargePriceDetails();
         boolean checkNeeded = false;
@@ -985,8 +1011,15 @@ public class PriceGridParser extends ProductParser {
                     	currentPriceConfig.setValue(getCriteriaValueByCriteria(bpDetails.getBasePriceCriteria1().toString()));
                     }
                     else{
-                    	currentPriceConfig.setValue(bpDetails
-                            .getBasePriceCriteria1());
+                    	if(null!=bpDetails.getBasePriceCriteria1() && bpDetails.getBasePriceCriteria1() instanceof Values){
+                    		currentCriteria=((Values)bpDetails.getBasePriceCriteria1()).getType();
+                    		if(currentCriteria.contains("Size") || currentCriteria.contains("Apparel")) currentCriteria="Size";
+                    		currentPriceConfig.setCriteria(currentCriteria);
+                    		currentPriceConfig.setValue(bpDetails
+                                    .getBasePriceCriteria1());
+                    	}else{                    	
+                    		currentPriceConfig.setValue(bpDetails.getBasePriceCriteria1());                    	
+                    	}
                     } 
                     pricingConfigurations.add(currentPriceConfig);
                 }else if(firstCriteria != null){
@@ -1043,8 +1076,9 @@ public class PriceGridParser extends ProductParser {
     	
         if (source != null && source instanceof String && !source.toString().isEmpty() && source.toString().contains(":")) {
             return source.toString().substring(0, source.toString().indexOf(":"));
-        }else if(source ==null)
-        return null;
+        }else if(source !=null && source instanceof Values){
+        	return ((Values)source).getValue().get(0).getCriteriaType();
+        }
         else
         {
         	return source;

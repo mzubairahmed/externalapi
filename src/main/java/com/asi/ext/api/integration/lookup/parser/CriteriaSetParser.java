@@ -3,6 +3,8 @@ package com.asi.ext.api.integration.lookup.parser;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.asi.ext.api.service.model.Value;
+
 public class CriteriaSetParser {
 	 private static ConcurrentHashMap<String, HashMap<String, String>> criteriaSetReference =  new ConcurrentHashMap<>();
 	 private static ConcurrentHashMap<String, HashMap<String, Object>> criteriaSetValueReference =  new ConcurrentHashMap<>();
@@ -100,6 +102,8 @@ public class CriteriaSetParser {
 	}
 	public void addSizesReferenceSet(String externalProductId,
 			String criteriaCode, String criteriaSetValueId, Object valueObj) {
+		Value currentValueObj=(Value)valueObj;
+		currentValueObj.setCriteriaType(criteriaCode);
     	if(null!=valueObj && null!=criteriaCode)
     	{
           if (criteriaSetValueReference== null || criteriaSetValueReference.isEmpty()) {
@@ -110,7 +114,7 @@ public class CriteriaSetParser {
             	criteriaSetValueReference.put(externalProductId.trim(), new HashMap<String, Object>());
             }
           if(criteriaSetValueReference.get(externalProductId.trim()).get(criteriaSetValueId) == null){
-        	  criteriaSetValueReference.get(externalProductId.trim()).put(criteriaSetValueId,valueObj);
+        	  criteriaSetValueReference.get(externalProductId.trim()).put(criteriaSetValueId,currentValueObj);
           }
     	} else
     	{
