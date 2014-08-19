@@ -936,9 +936,13 @@ public class PriceGridParser extends ProductParser {
                         }
                         servicePricesList.add(currentPrices);
                     }
+                    if(servicePricesList.size()>0)
                     currentPriceGrid.setPrices(servicePricesList);
+                    else
+                    	currentPriceGrid.setPrices(null);
                    // currentPriceGrid.setPriceConfigurations(setPriceGridWithItsPriceCriteria(radarPriceGrid, productDetail));
                 }
+                
                 currentPriceGrid.setPriceConfigurations(setPriceGridWithItsPriceCriteria(radarPriceGrid, productDetail));
                 servicePriceGrids.add(currentPriceGrid);
             }
@@ -1028,7 +1032,7 @@ public class PriceGridParser extends ProductParser {
                     	}
                     } 
                     pricingConfigurations.add(currentPriceConfig);
-                }else if(firstCriteria != null){
+                }else if(firstCriteria != null && !firstCriteria.toString().trim().isEmpty()){
                 	 currentPriceConfig = new PriceConfiguration();
                 	currentPriceConfig.setValue(bpDetails
                             .getBasePriceCriteria1());
@@ -1047,7 +1051,7 @@ public class PriceGridParser extends ProductParser {
                     }
                    
                     pricingConfigurations.add(currentPriceConfig);
-                }else if(secondCriteria != null){
+                }else if(secondCriteria != null && !secondCriteria.toString().trim().isEmpty()){
                	 currentPriceConfig = new PriceConfiguration();
                	currentPriceConfig.setValue(bpDetails
                            .getBasePriceCriteria2());
@@ -1075,7 +1079,10 @@ public class PriceGridParser extends ProductParser {
                 }
             }
         }
+        if(pricingConfigurations.size()>0)
         return pricingConfigurations;
+        else
+        	return null;
     }
 
     public Object getCriteriaCode(Object source) {

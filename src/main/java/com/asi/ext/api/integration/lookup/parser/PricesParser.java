@@ -225,7 +225,7 @@ CommonUtilities commonUtilities=new CommonUtilities();
 					currentCriteriaObj=(Value)criteriaSet1;
 					firstCriteria=(String) getCriteriaCode(currentCriteriaObj);
 					if(APPAREL_SIZE_GROUP_CRITERIACODES.contains(currentCriteriaObj.getCriteriaType())){
-						criteriaValues.setType(ProductDataStore.getCriteriaInfoForCriteriaCode(currentCriteriaObj.getCriteriaType()).getDescription());						
+						criteriaValues.setType(ProductDataStore.getCriteriaInfoForCriteriaCode(currentCriteriaObj.getCriteriaType()).getDescription().replace("Size-", "").trim());						
 					}					
 					valuesList.add(currentCriteriaObj);
 					criteriaValues.setValue(valuesList);
@@ -257,7 +257,7 @@ CommonUtilities commonUtilities=new CommonUtilities();
 						if(currentObj instanceof Value){
 						currentCriteriaObj=(Value)currentObj;
 						if(APPAREL_SIZE_GROUP_CRITERIACODES.contains(currentCriteriaObj.getCriteriaType())){
-							criteriaValues2.setType(ProductDataStore.getCriteriaInfoForCriteriaCode(currentCriteriaObj.getCriteriaType()).getDescription());						
+							criteriaValues2.setType(ProductDataStore.getCriteriaInfoForCriteriaCode(currentCriteriaObj.getCriteriaType()).getDescription().replace("Size-", "").trim());						
 						}
 						valuesList.add(currentCriteriaObj);
 						criteriaValues.setValue(valuesList);
@@ -267,7 +267,7 @@ CommonUtilities commonUtilities=new CommonUtilities();
 						if(currentObj instanceof Value){
 					currentCriteriaObj2=(Value)currentObj;
 					if(APPAREL_SIZE_GROUP_CRITERIACODES.contains(currentCriteriaObj.getCriteriaType())){
-						criteriaValues2.setType(ProductDataStore.getCriteriaInfoForCriteriaCode(currentCriteriaObj.getCriteriaType()).getDescription());						
+						criteriaValues2.setType(ProductDataStore.getCriteriaInfoForCriteriaCode(currentCriteriaObj.getCriteriaType()).getDescription().replace("Size-", "").trim());						
 					}
 					valuesList2.add(currentCriteriaObj2);
 					criteriaValues2.setValue(valuesList2);
