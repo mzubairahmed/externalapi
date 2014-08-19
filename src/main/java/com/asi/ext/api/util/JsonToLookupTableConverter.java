@@ -1,7 +1,6 @@
 package com.asi.ext.api.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -26,7 +25,6 @@ import com.asi.service.product.client.vo.MediaCitationReference;
 import com.asi.service.product.client.vo.ProductMediaCitationReferences;
 import com.asi.service.product.client.vo.ProductMediaCitations;
 
-import freemarker.log._Log4JLoggerFactory;
 
 public final class JsonToLookupTableConverter {
 

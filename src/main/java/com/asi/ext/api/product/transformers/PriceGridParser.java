@@ -1015,6 +1015,10 @@ public class PriceGridParser extends ProductParser {
                     		currentCriteria=((Values)bpDetails.getBasePriceCriteria1()).getType();
                     		if(null!=currentCriteria){
                     			if(currentCriteria.contains("Size") || currentCriteria.contains("Apparel") || currentCriteria.contains("SIZE")) currentCriteria="Size";
+                    		}else{
+                    			currentCriteria=((Values)bpDetails.getBasePriceCriteria1()).getValue().get(0).getCriteriaType();
+                    			currentCriteria=ProductDataStore.getCriteriaInfoForCriteriaCode(currentCriteria).getDescription();
+                    			if(currentCriteria.contains("Size") || currentCriteria.contains("Apparel") || currentCriteria.contains("SIZE")) currentCriteria="Size";
                     		}
                     		currentPriceConfig.setCriteria(currentCriteria);
                     		currentPriceConfig.setValue(bpDetails
@@ -1080,7 +1084,7 @@ public class PriceGridParser extends ProductParser {
             return source.toString().substring(0, source.toString().indexOf(":"));
         }else if(source !=null && source instanceof Values){
         	return ((Values)source).getValue().get(0).getCriteriaType();
-        }else if(source !=null && source instanceof List){
+        }else if(source !=null && source instanceof List<?>){
         	tempList=(List<Value>)source;
         	if(tempList.size()>0)
         	return (String)tempList.get(0).getCriteriaType();
