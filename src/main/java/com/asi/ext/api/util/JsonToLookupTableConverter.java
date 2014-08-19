@@ -26,6 +26,8 @@ import com.asi.service.product.client.vo.MediaCitationReference;
 import com.asi.service.product.client.vo.ProductMediaCitationReferences;
 import com.asi.service.product.client.vo.ProductMediaCitations;
 
+import freemarker.log._Log4JLoggerFactory;
+
 public final class JsonToLookupTableConverter {
 
     private final static Logger LOGGER = Logger.getLogger(JsonToLookupTableConverter.class.getName());
@@ -311,7 +313,7 @@ public final class JsonToLookupTableConverter {
             Iterator<?> iter = productThemesResponse.iterator();
             while (iter.hasNext()) {
                 Map<?, ?> crntValue = (LinkedHashMap<?, ?>) iter.next();
-                LinkedList<LinkedHashMap> codeValueGrps = (LinkedList<LinkedHashMap>) crntValue.get("SetCodeValues");
+                ArrayList<LinkedHashMap> codeValueGrps = (ArrayList<LinkedHashMap>) crntValue.get("SetCodeValues");
                 Iterator<LinkedHashMap> iterator = codeValueGrps.iterator();
 
                 while (iterator.hasNext()) {
@@ -324,6 +326,7 @@ public final class JsonToLookupTableConverter {
                 }
             }
         } catch (Exception pe) {
+        	LOGGER.info(pe.getMessage());
         }
         return productThemesLookupTable;
     }

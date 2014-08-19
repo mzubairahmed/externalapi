@@ -1,8 +1,8 @@
 package com.asi.core.repo.lookup;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,6 +17,8 @@ import com.asi.ext.api.util.JsonToLookupTableConverter;
 import com.asi.ext.api.util.RestAPIProperties;
 import com.asi.service.lookup.vo.CategoriesList;
 import com.asi.service.lookup.vo.Category;
+import com.asi.service.lookup.vo.Theme;
+import com.asi.service.lookup.vo.ThemesList;
 
 @Component
 public class LookupValuesRepo {
@@ -50,6 +52,36 @@ public class LookupValuesRepo {
 			_LOGGER.info(ex.getMessage());
 		}
 		return categoriesList;
+	}
+
+	public ThemesList getAllThemes() {
+		ThemesList themesList=new ThemesList();
+		Theme theme=null;
+		HashMap<String, String> themesLookupTable;
+		List<Theme> themeArrayList = new ArrayList<Theme>();
+		LinkedList<?> categoryResponse = lookupRestTemplate
+				.getForObject(
+						RestAPIProperties
+								.get(ApplicationConstants.PRODUCT_THEMES_URL),
+						LinkedList.class);
+		
+		try {
+			themesLookupTable = JsonToLookupTableConverter
+					.jsonToProductThemesMap(categoryResponse);
+			@SuppressWarnings("rawtypes")
+			Iterator themeIterator = themesLookupTable.keySet()
+					.iterator();
+			while (themeIterator.hasNext()) {
+				theme = new Theme();
+				theme.setName(themeIterator.next().toString());
+				themeArrayList.add(theme);
+				themesList.setThemes(themeArrayList);
+			}
+		} catch (Exception ex) {
+			_LOGGER.info(ex.getMessage());
+		}
+		return themesList;
+		
 	}
 
 }
