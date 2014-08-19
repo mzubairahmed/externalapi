@@ -936,9 +936,13 @@ public class PriceGridParser extends ProductParser {
                         }
                         servicePricesList.add(currentPrices);
                     }
+                    if(servicePricesList.size()>0)
                     currentPriceGrid.setPrices(servicePricesList);
+                    else
+                    	currentPriceGrid.setPrices(null);
                    // currentPriceGrid.setPriceConfigurations(setPriceGridWithItsPriceCriteria(radarPriceGrid, productDetail));
                 }
+                
                 currentPriceGrid.setPriceConfigurations(setPriceGridWithItsPriceCriteria(radarPriceGrid, productDetail));
                 servicePriceGrids.add(currentPriceGrid);
             }
@@ -1015,6 +1019,10 @@ public class PriceGridParser extends ProductParser {
                     		currentCriteria=((Values)bpDetails.getBasePriceCriteria1()).getType();
                     		if(null!=currentCriteria){
                     			if(currentCriteria.contains("Size") || currentCriteria.contains("Apparel") || currentCriteria.contains("SIZE")) currentCriteria="Size";
+                    		}else{
+                    			currentCriteria=((Values)bpDetails.getBasePriceCriteria1()).getValue().get(0).getCriteriaType();
+                    			currentCriteria=ProductDataStore.getCriteriaInfoForCriteriaCode(currentCriteria).getDescription();
+                    			if(currentCriteria.contains("Size") || currentCriteria.contains("Apparel") || currentCriteria.contains("SIZE")) currentCriteria="Size";
                     		}
                     		currentPriceConfig.setCriteria(currentCriteria);
                     		currentPriceConfig.setValue(bpDetails
@@ -1024,7 +1032,7 @@ public class PriceGridParser extends ProductParser {
                     	}
                     } 
                     pricingConfigurations.add(currentPriceConfig);
-                }else if(firstCriteria != null){
+                }else if(firstCriteria != null && !firstCriteria.toString().trim().isEmpty()){
                 	 currentPriceConfig = new PriceConfiguration();
                 	currentPriceConfig.setValue(bpDetails
                             .getBasePriceCriteria1());
@@ -1043,7 +1051,7 @@ public class PriceGridParser extends ProductParser {
                     }
                    
                     pricingConfigurations.add(currentPriceConfig);
-                }else if(secondCriteria != null){
+                }else if(secondCriteria != null && !secondCriteria.toString().trim().isEmpty()){
                	 currentPriceConfig = new PriceConfiguration();
                	currentPriceConfig.setValue(bpDetails
                            .getBasePriceCriteria2());
@@ -1071,7 +1079,10 @@ public class PriceGridParser extends ProductParser {
                 }
             }
         }
+        if(pricingConfigurations.size()>0)
         return pricingConfigurations;
+        else
+        	return null;
     }
 
     public Object getCriteriaCode(Object source) {
@@ -1080,7 +1091,7 @@ public class PriceGridParser extends ProductParser {
             return source.toString().substring(0, source.toString().indexOf(":"));
         }else if(source !=null && source instanceof Values){
         	return ((Values)source).getValue().get(0).getCriteriaType();
-        }else if(source !=null && source instanceof List){
+        }else if(source !=null && source instanceof List<?>){
         	tempList=(List<Value>)source;
         	if(tempList.size()>0)
         	return (String)tempList.get(0).getCriteriaType();

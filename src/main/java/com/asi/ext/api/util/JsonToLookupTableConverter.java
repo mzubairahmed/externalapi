@@ -1,7 +1,6 @@
 package com.asi.ext.api.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -25,6 +24,7 @@ import com.asi.service.product.client.vo.DiscountRate;
 import com.asi.service.product.client.vo.MediaCitationReference;
 import com.asi.service.product.client.vo.ProductMediaCitationReferences;
 import com.asi.service.product.client.vo.ProductMediaCitations;
+
 
 public final class JsonToLookupTableConverter {
 
@@ -311,7 +311,7 @@ public final class JsonToLookupTableConverter {
             Iterator<?> iter = productThemesResponse.iterator();
             while (iter.hasNext()) {
                 Map<?, ?> crntValue = (LinkedHashMap<?, ?>) iter.next();
-                LinkedList<LinkedHashMap> codeValueGrps = (LinkedList<LinkedHashMap>) crntValue.get("SetCodeValues");
+                ArrayList<LinkedHashMap> codeValueGrps = (ArrayList<LinkedHashMap>) crntValue.get("SetCodeValues");
                 Iterator<LinkedHashMap> iterator = codeValueGrps.iterator();
 
                 while (iterator.hasNext()) {
@@ -324,6 +324,7 @@ public final class JsonToLookupTableConverter {
                 }
             }
         } catch (Exception pe) {
+        	LOGGER.info(pe.getMessage());
         }
         return productThemesLookupTable;
     }

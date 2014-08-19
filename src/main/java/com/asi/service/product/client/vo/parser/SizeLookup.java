@@ -362,7 +362,7 @@ public class SizeLookup {
 				case "SANS":
 				case "SAWI":
 				case "SSNM":
-					apparel.setType(ProductDataStore.getCriteriaInfoForCriteriaCode(criteriaCode).getDescription());
+					apparel.setType(ProductDataStore.getCriteriaInfoForCriteriaCode(criteriaCode).getDescription().replace("Size-", "").trim());
 					apparel.setValues(apperalValueObjList);
 					size.setApparel(apparel);
 					break;

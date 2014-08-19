@@ -530,11 +530,11 @@ public class LookupParser {
 								if (minQtyStr.contains(":")) {
 									imprintMinOrder.setUnit(minQtyStr
 											.substring(0,
-													minQty.indexOf(":") - 2));
+													minQtyStr.indexOf(":")));
 									imprintMinOrder
 											.setValue(minQtyStr
-													.substring(minQty
-															.indexOf(":") - 1));
+													.substring(minQtyStr
+															.indexOf(":") + 1));
 								} else {
 									imprintMinOrder = null;
 								}
