@@ -31,6 +31,7 @@ import org.springframework.web.client.RestTemplate;
 import com.asi.ext.api.exception.VelocityImportExceptionCodes;
 import com.asi.ext.api.product.transformers.JerseyClientPost;
 import com.asi.service.product.client.vo.ProductDetail;
+import com.asi.service.product.exception.ExternalApiAuthenticationException;
 import com.asi.service.product.exception.ProductNotFoundException;
 import com.asi.service.resource.response.ExternalAPIResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,7 +48,7 @@ public class ProductClient {
 	private JerseyClientPost jerseyClientPost = new JerseyClientPost();
     private static Logger    _LOGGER          = LoggerFactory.getLogger(ProductClient.class);
 
-    public ProductDetail doIt(String authToken, String companyID, String productID) throws ProductNotFoundException {
+    public ProductDetail doIt(String authToken, String companyID, String productID) throws ProductNotFoundException, ExternalApiAuthenticationException {
         return searchProduct(authToken, companyID, productID);
     }
 
@@ -56,7 +57,7 @@ public class ProductClient {
     }
 
     private ProductDetail searchProduct(String authToken, String companyID, String productID)
-            throws ProductNotFoundException
+            throws ProductNotFoundException, ExternalApiAuthenticationException
 
     {
         String productSearchUrl = getProductSearchUrl() + "?companyId={companyID}&externalProductId={productID}";
@@ -97,11 +98,23 @@ public class ProductClient {
             	product = response.getBody();
             }
 
-        } catch (RestClientException ex) {
+        } catch (HttpClientErrorException hce) {
+            _LOGGER.error("Exception while posting product to Radar API", hce);
+            if (hce.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
+                
+                throw new ExternalApiAuthenticationException(hce, productID, hce.getStatusCode());
+            } else if (hce.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+                ProductNotFoundException exc = new ProductNotFoundException(hce, productID);
+                exc.setStackTrace(hce.getStackTrace());
+                throw exc;
+            } else {
+                ProductNotFoundException exc = new ProductNotFoundException(hce, productID);
+                exc.setStackTrace(hce.getStackTrace());
+                throw hce;
+            }
+        }  catch (RestClientException ex) {
             _LOGGER.error(ex.getMessage());
-            ProductNotFoundException exc = new ProductNotFoundException(ex, productID);
-            exc.setStackTrace(ex.getStackTrace());
-            throw exc;
+            
         }
         return product;
     }
@@ -155,7 +168,17 @@ public class ProductClient {
         if (e == null) {
             return getExternalAPIResponse("Bad Request", HttpStatus.BAD_REQUEST, null);
         } else if (e instanceof HttpClientErrorException) {
-            return getExternalAPIResponse(((HttpClientErrorException) e).getResponseBodyAsString(), HttpStatus.BAD_REQUEST, null);
+            if (((HttpClientErrorException) e).getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
+                return getExternalAPIResponse("Your session expired or is no longer valid", HttpStatus.UNAUTHORIZED, null);
+            } else {
+                return getExternalAPIResponse(((HttpClientErrorException) e).getResponseBodyAsString(), HttpStatus.BAD_REQUEST, null);
+            }
+        } else if (e instanceof ExternalApiAuthenticationException) { 
+            if (((ExternalApiAuthenticationException) e).getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
+                return getExternalAPIResponse("Your session expired or is no longer valid", HttpStatus.UNAUTHORIZED, null);
+            } else {
+                return getExternalAPIResponse(((ExternalApiAuthenticationException) e).getMessage(), HttpStatus.BAD_REQUEST, null);
+            }
         } else {
             return getExternalAPIResponse("Unhandled Exception while processing request, failed to process product",
                     HttpStatus.INTERNAL_SERVER_ERROR, null);

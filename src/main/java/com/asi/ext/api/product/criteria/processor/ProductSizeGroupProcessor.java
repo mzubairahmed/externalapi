@@ -735,7 +735,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
 
                 criteriaSetValue.setCriteriaSetCodeValues(criteriaSetCodeValues);
 
-                if (criteriaSetValuesList.size() > cntr) {
+                if (criteriaSetValuesList != null) {
                     criteriaSetValuesList.add(criteriaSetValue);
                     // Adding a this criteriaSet entry details to reference table, so later can be referenced easily
                     productDataStore.updateCriteriaSetValueReferenceTable(product.getExternalProductId(), criteriaCode,

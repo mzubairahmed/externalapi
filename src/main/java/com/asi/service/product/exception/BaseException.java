@@ -25,6 +25,12 @@ public abstract class BaseException extends Exception {
 		this.productID = productID;
 	}
 	
+	public BaseException(Exception e, String productID, HttpStatus status)
+    {
+        super(e);
+        this.productID = productID;
+        this.statusCode = status;
+    }
 
 	public String getProductID() {
 		return productID;
