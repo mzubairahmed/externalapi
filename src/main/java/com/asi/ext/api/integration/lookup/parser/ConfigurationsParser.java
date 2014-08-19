@@ -549,6 +549,23 @@ public class ConfigurationsParser {
 			serviceProductConfig.setShapes(shapesList);
 		}
 		
+		// Themes
+		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_THEME_CRITERIA_CODE);
+
+		if(currentCriteriaSetValueList != null && !currentCriteriaSetValueList.isEmpty()) {
+			
+			//criteriaSetParser.addCriteriaSetByCode(productDetail.getExternalProductId(), currentCriteriaSetValueList.get(0).getCriteriaCode(), currentCriteriaSetValueList.get(0).getCriteriaSetId());
+			List<String> themes = new ArrayList<>();
+		    String currentTheme;
+			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue : currentCriteriaSetValueList) {
+				currentTheme = ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(), ApplicationConstants.CONST_THEME_CRITERIA_CODE);
+				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), currentTheme);
+				themes.add(currentTheme);
+			}
+			serviceProductConfig.setThemes(themes);
+		}
+		
+		
 		// Imprint Colors
 		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_IMPRINT_COLOR_CRITERIA_CODE);
 		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
