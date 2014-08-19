@@ -47,6 +47,7 @@ import com.asi.service.product.client.vo.ProductMediaItems;
 import com.asi.service.product.client.vo.SelectedComplianceCert;
 import com.asi.service.product.client.vo.SelectedProductCategory;
 import com.asi.service.product.client.vo.SelectedSafetyWarnings;
+import com.asi.service.product.exception.ExternalApiAuthenticationException;
 import com.asi.service.product.exception.ProductNotFoundException;
 import com.asi.service.product.vo.Product;
 import com.asi.service.resource.response.ExternalAPIResponse;
@@ -155,11 +156,15 @@ public class ProductRepo {
 
     public ExternalAPIResponse updateProduct(String authToken, String companyId, String xid, com.asi.ext.api.service.model.Product serviceProduct) {
         ProductDetail existingRadarProduct = null;
+        boolean isLoggedIn = false;
         try {
 //            existingRadarProduct = productClient.getRadarProduct(companyId, serviceProduct.getExternalProductId());
         	existingRadarProduct = productClient.doIt(authToken, companyId, serviceProduct.getExternalProductId());
+        	isLoggedIn = true;
         } catch (ProductNotFoundException e) {
             _LOGGER.info("Product Not found with Existing, going to create new Product");
+        } catch (ExternalApiAuthenticationException ea) {
+            return productClient.convertExceptionToResponseModel(ea);
         }
         try {
             // Doing Transformation of Service product to pure Radar object model (Core Component)
@@ -172,7 +177,13 @@ public class ProductRepo {
 
         // Saving product to Radar API
         ExternalAPIResponse response = productClient.saveProduct(authToken, existingRadarProduct);
-        return appendErrorLogsToResponse(response, existingRadarProduct.getExternalProductId());
+        
+        response = appendErrorLogsToResponse(response, existingRadarProduct.getExternalProductId());
+        
+        // Do Clean up
+        doCleanUp(existingRadarProduct.getExternalProductId());
+        
+        return response;
     }
 
     private ExternalAPIResponse appendErrorLogsToResponse(ExternalAPIResponse response, String xid) {
@@ -196,7 +207,7 @@ public class ProductRepo {
 
     @SuppressWarnings("unused")
     private Product prepairProduct(String authToken, String companyID, String productID) throws ProductNotFoundException, RestClientException,
-            UnsupportedEncodingException {
+            UnsupportedEncodingException, ExternalApiAuthenticationException {
         productDetail = getProductFromService(authToken, companyID, productID);
         Product product = new Product();
         BeanUtils.copyProperties(productDetail, product);
@@ -214,7 +225,7 @@ public class ProductRepo {
         return product;
     }
 
-    public ProductDetail getProductFromService(String authToken, String companyID, String productID) throws ProductNotFoundException {
+    public ProductDetail getProductFromService(String authToken, String companyID, String productID) throws ProductNotFoundException, ExternalApiAuthenticationException {
         productDetail = productClient.doIt(authToken, companyID, productID);
 
         return productDetail;
@@ -276,6 +287,9 @@ public class ProductRepo {
         } catch (ProductNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } catch (ExternalApiAuthenticationException eau) {
+            // TODO Auto-generated catch block
+            eau.printStackTrace();
         }
 
         return serviceProduct;

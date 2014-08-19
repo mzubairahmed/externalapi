@@ -210,7 +210,7 @@ public class ImportTransformer {
         // Selected Line name processing
         if (serviceProduct.getLineNames() != null && !serviceProduct.getLineNames().isEmpty()) {
             productToSave.setSelectedLineNames(selectedLineProcessor.getSelectedLines(serviceProduct.getLineNames(),
-                    existingRadarModel));
+                    productToSave));
         }
         // Process Product Configurations
 
