@@ -38,7 +38,7 @@
 		</bean>
 		<bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" p:config-location="classpath:ehcache.xml"/> 
 		<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" p:cache-manager-ref="ehcache"/> 	
-		<context:property-placeholder  location="classpath:dev-environment.properties, classpath:velocity-import.properties" order="1"/>
+		<context:property-placeholder  location="classpath:stage-environment.properties, classpath:velocity-import.properties" order="1"/>
 
  			 <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
 			    <property name="mediaTypes">
