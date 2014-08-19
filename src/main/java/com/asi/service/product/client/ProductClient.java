@@ -1,11 +1,5 @@
 package com.asi.service.product.client;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -15,20 +9,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.client.support.HttpRequestWrapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import com.asi.ext.api.exception.VelocityImportExceptionCodes;
 import com.asi.ext.api.product.transformers.JerseyClientPost;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.exception.ExternalApiAuthenticationException;
@@ -64,25 +52,6 @@ public class ProductClient {
 
         ProductDetail product = null;
         try {
-        	
-//        	List<ClientHttpRequestInterceptor> httpInterceptors = new ArrayList<ClientHttpRequestInterceptor>();
-//        	ClientHttpRequestInterceptor acceptHeader = new ClientHttpRequestInterceptor() {
-//				
-//				@Override
-//				public ClientHttpResponse intercept(HttpRequest request, byte[] body,
-//						ClientHttpRequestExecution execution) throws IOException {
-//					HttpRequestWrapper requestWrapper = new HttpRequestWrapper(request);
-//					requestWrapper.getHeaders().set("AuthToken", headers.get("AuthToken").toString());
-//					return execution.execute(requestWrapper, body);
-//				}
-//			};
-//			httpInterceptors.add(acceptHeader);
-//			
-//			restTemplate.setInterceptors(httpInterceptors);
-//			
-//            product = restTemplate.getForObject(productSearchUrl, ProductDetail.class, companyID, productID);
-
-            // headers.remove("accept-encoding");
         	
         	HttpHeaders header = new HttpHeaders();
         	header.add("AuthToken", authToken);

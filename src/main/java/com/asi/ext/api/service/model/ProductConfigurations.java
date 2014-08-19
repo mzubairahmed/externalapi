@@ -22,9 +22,11 @@ public class ProductConfigurations {
     @JsonProperty("Materials")
     private List<Material>            materials            = new ArrayList<Material>();
     @JsonProperty("Sizes")
-    private Size                sizes                = new Size();
+    private Size                	  sizes                = new Size();
     @JsonProperty("Shapes")
     private List<String>              shapes               = new ArrayList<String>();
+    @JsonProperty("Themes")
+    private List<String>			  themes				= new ArrayList<String>();
     @JsonProperty("Options")
     private List<Option>              options              = new ArrayList<Option>();
     @JsonProperty("Origins")
@@ -99,7 +101,15 @@ public class ProductConfigurations {
         this.shapes = shapes;
     }
 
-    @JsonProperty("Options")
+    public List<String> getThemes() {
+		return themes;
+	}
+
+	public void setThemes(List<String> themes) {
+		this.themes = themes;
+	}
+
+	@JsonProperty("Options")
     public List<Option> getOptions() {
         return options;
     }
