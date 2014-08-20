@@ -125,9 +125,9 @@ public class ProductColorProcessor extends SimpleCriteriaProcessor {
                     criteriaSetValue.setValue(color.getName());
                 }
             } else {
-                if (!CommonUtilities.isValueNull(color.getRGBHex()) && criteriaSetValue.getCriteriaSetCodeValues() != null &&  criteriaSetValue.getCriteriaSetCodeValues().length > 0) {
+                if (criteriaSetValue.getCriteriaSetCodeValues() != null &&  criteriaSetValue.getCriteriaSetCodeValues().length > 0) {
                     criteriaSetValue.getCriteriaSetCodeValues()[0].setCodeValue(color.getRGBHex());
-                }
+                } 
             }
 
             updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_COLORS_CRITERIA_CODE,
@@ -166,7 +166,7 @@ public class ProductColorProcessor extends SimpleCriteriaProcessor {
                 CriteriaSetCodeValues childSetCodeValue = new CriteriaSetCodeValues();
                 childSetCodeValue.setCriteriaSetValueId(setValueId);
                 childSetCodeValue.setSetCodeValueId(childColorSetCodeValId);
-                childSetCodeValue.setCodeValue("");
+                childSetCodeValue.setCodeValue(combo.getRgbhex());
                 childSetCodeValue.setCodeValueDetail(combo.getType());
                 childSetCodeValue.setId(ApplicationConstants.CONST_STRING_ZERO);
                 setCodeValues.add(childSetCodeValue);

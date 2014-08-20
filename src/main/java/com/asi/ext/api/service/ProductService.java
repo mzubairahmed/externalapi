@@ -3,8 +3,6 @@
  */
 package com.asi.ext.api.service;
 
-import org.springframework.http.HttpHeaders;
-
 import com.asi.ext.api.service.model.Product;
 import com.asi.service.resource.response.ExternalAPIResponse;
 
