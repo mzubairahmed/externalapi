@@ -264,7 +264,7 @@ public class PriceGridParser extends ProductParser {
             if (criteriaInfo == null) {
                 // TODO: LOG Validation ERROR
                 productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
-                        "Criteria specified for product dosen't exist");
+                        "Criteria specified for product doesn’t exist");
                 continue;
             }
 
@@ -272,7 +272,7 @@ public class PriceGridParser extends ProductParser {
                     pConfig.getValue());
             if (criteriaSetValueId == null) {
                 productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
-                        "Criteria value specified for product dosen't exist, value : " + pConfig.getValue());
+                        "Criteria value specified for product doesn’t exist, value : " + pConfig.getValue());
             } else {
                 finalPricingItems.add(getPricingItem(criteriaSetValueId, pGridId, productId, isBasePrice, extPItem));
             }
@@ -436,7 +436,7 @@ public class PriceGridParser extends ProductParser {
 
                                 productDataStore.addErrorToBatchLogCollection(product.getExternalProductId().trim(),
                                         ApplicationConstants.CONST_BATCH_ERR_LOOKUP_VALUE_NOT_EXIST,
-                                        "PriceGrid - Given Criteria value " + criteria + " dosen't exist");
+                                        "PriceGrid - Given Criteria value " + criteria + " doesn’t exist");
                             }
                         }
                         return pricingItemsList;
@@ -1009,10 +1009,16 @@ public class PriceGridParser extends ProductParser {
                 if (firstCriteria != null && firstCriteria instanceof String && !firstCriteria.toString().trim().isEmpty()) {
                     currentPriceConfig = new PriceConfiguration();
                     criteriaInfo = ProductDataStore.getCriteriaInfoForCriteriaCode(getCriteriaCode(bpDetails
-                            .getBasePriceCriteria1().toString()));
+                            .getBasePriceCriteria1()));
                     if(null!=criteriaInfo){
-                    	currentPriceConfig.setCriteria(criteriaInfo.getDescription());
-                    	currentPriceConfig.setValue(getCriteriaValueByCriteria(bpDetails.getBasePriceCriteria1().toString()));
+                    	currentCriteria=criteriaInfo.getDescription();
+                    	if(currentCriteria.contains("Size") || currentCriteria.contains("Apparel") || currentCriteria.contains("SIZE")) currentCriteria="Size";
+                    	currentPriceConfig.setCriteria(currentCriteria);
+                    	if(null!=bpDetails.getBasePriceCriteria1() && bpDetails.getBasePriceCriteria1() instanceof String){
+                    		currentPriceConfig.setValue(getCriteriaValueByCriteria(bpDetails.getBasePriceCriteria1().toString()));
+                    	}else{
+                    		currentPriceConfig.setValue(bpDetails.getBasePriceCriteria1());
+                    	}
                     }
                     else{
                     	if(null!=bpDetails.getBasePriceCriteria1() && bpDetails.getBasePriceCriteria1() instanceof Values){

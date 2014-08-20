@@ -168,9 +168,6 @@ public class ImportTransformer {
         productToSave.setSelectedComplianceCerts(complianceCertProcessor.getSelectedComplianceCertList(
                 serviceProduct.getComplianceCerts(), companyId, productId, existingRadarModel));
 
-        // Product Media Item processing
-        productToSave.setProductMediaItems(getProductMediaItems(companyId, productId, serviceProduct.getImages(),
-                productToSave.getProductMediaItems(), serviceProduct.getExternalProductId()));
 
         Map<String, ProductCriteriaSets> existingCriteriaSetMap = new HashMap<>();
         Map<String, List<ProductCriteriaSets>> optionsCriteriaSet = new HashMap<>();
@@ -218,6 +215,10 @@ public class ImportTransformer {
 
         productToSave.setProductConfigurations(processProductConfigurations(configId, existingCriteriaSetMap, optionsCriteriaSet,
                 serviceProduct.getProductConfigurations(), productToSave, isNewProduct));
+        
+        // Product Media Item processing
+        productToSave.setProductMediaItems(getProductMediaItems(companyId, productId, serviceProduct.getImages(),
+                productToSave.getProductMediaItems(), serviceProduct.getExternalProductId()));
 
         // Process Breakout Configurations...
         if (!StringUtils.isEmpty(serviceProduct.getProductBreakoutBy())) {

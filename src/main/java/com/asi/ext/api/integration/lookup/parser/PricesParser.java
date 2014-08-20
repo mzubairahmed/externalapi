@@ -221,9 +221,9 @@ CommonUtilities commonUtilities=new CommonUtilities();
 					}
 					
 					criteriaSet1=criteriaSetParser.findSizesCriteriaSetById(externalProductId, priceItem.getCriteriaSetValueId());
+					firstCriteria=(String) getCriteriaCode(criteriaSet1);
 					if(criteriaSet1 instanceof Value){
-					currentCriteriaObj=(Value)criteriaSet1;
-					firstCriteria=(String) getCriteriaCode(currentCriteriaObj);
+					currentCriteriaObj=(Value)criteriaSet1;					
 					if(APPAREL_SIZE_GROUP_CRITERIACODES.contains(currentCriteriaObj.getCriteriaType())){
 						criteriaValues.setType(ProductDataStore.getCriteriaInfoForCriteriaCode(currentCriteriaObj.getCriteriaType()).getDescription().replace("Size-", "").trim());						
 					}					
@@ -252,7 +252,7 @@ CommonUtilities commonUtilities=new CommonUtilities();
 						criteriaValues2=new Values();						
 					}
 					currentObj=criteriaSetParser.findSizesCriteriaSetById(externalProductId, priceItem.getCriteriaSetValueId());
-					secondCriteria=(String) getCriteriaCode(currentCriteriaObj);
+					secondCriteria=(String) getCriteriaCode(currentObj);
 					if(firstCriteria.equalsIgnoreCase(secondCriteria)){
 						if(currentObj instanceof Value){
 						currentCriteriaObj=(Value)currentObj;
@@ -413,13 +413,19 @@ CommonUtilities commonUtilities=new CommonUtilities();
         return upChargePriceDetails;
     }
  public Object getCriteriaCode(Object source) {
-    	
+    	List<Value> valuesList=null;
         if (source != null && source instanceof String && !source.toString().isEmpty() && source.toString().contains(":")) {
             return source.toString().substring(0, source.toString().indexOf(":"));
         }else if(source !=null && source instanceof Values){
         	return ((Values)source).getValue().get(0).getCriteriaType();
         }else if(source !=null && source instanceof Value){
         	return ((Value)source).getCriteriaType();
+        }else if(null!=source && source instanceof List){
+        	valuesList=(List<Value>)source;
+        	if(null!=valuesList && valuesList.size()>0)
+        	return valuesList.get(0).getCriteriaType();
+        	else
+        		return null;
         }else
         {
         	return source;

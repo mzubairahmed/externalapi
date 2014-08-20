@@ -303,6 +303,7 @@ public class ProductRepo {
         for (SelectedSafetyWarnings currentSafetyWrng : safetyWarningsList) {
             finalSafetyWrngs.add(lookupDataStore.getSelectedSafetyWarningNameByCode(currentSafetyWrng.getCode()));
         }
+        if(finalSafetyWrngs.size()>0)
         serviceProduct.setSafetyWarnings(finalSafetyWrngs);
 
         // Status Code
@@ -319,13 +320,15 @@ public class ProductRepo {
                         .getComplianceCertId())));
         	}
         }
+        if(finalComplianceCerts.size()>0)
         serviceProduct.setComplianceCerts(finalComplianceCerts);
 
         // Keywords
         List<ProductKeywords> productKeywordsList = radProduct.getProductKeywords();
         List<String> finalKeywords = new ArrayList<>();
         for (ProductKeywords currentKeyword : productKeywordsList) {
-            finalKeywords.add(currentKeyword.getValue());
+            if(currentKeyword.getTypeCode().equalsIgnoreCase("HIDD"))
+        	finalKeywords.add(currentKeyword.getValue());
         }
         serviceProduct.setProductKeywords(finalKeywords);
 

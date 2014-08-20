@@ -88,6 +88,7 @@ public class SizeLookup {
 	public List<Value> findSizeValueListDetails(Value size,String criteriaCode,@SuppressWarnings("rawtypes") LinkedList<LinkedHashMap> criteriaAttributes,
 			Object srcValueObj,String externalProductId) {
 		List<Value> valuesList=null;
+		String otherValue=null;
 		Value valueObj=null;
 		if(srcValueObj instanceof List){
 			valuesList=new ArrayList<>();
@@ -97,7 +98,9 @@ public class SizeLookup {
 			while(sizeValuesItr.hasNext()){
 			valueObj=new Value();
 			LinkedHashMap<?, ?> valueMap=(LinkedHashMap<?, ?>)sizeValuesItr.next();
-			valueObj.setUnit(getSizesElementValue("UNITS", criteriaAttributes,valueMap.get("UnitOfMeasureCode").toString()).replaceAll("\"", "in"));
+			otherValue=getSizesElementValue("UNITS", criteriaAttributes,valueMap.get("UnitOfMeasureCode").toString()).replaceAll("\"", "in");
+			if(null!=otherValue && !otherValue.equalsIgnoreCase("other"))
+			valueObj.setUnit(otherValue);
 			valueObj.setValue(valueMap.get("UnitValue").toString());
 			valuesList.add(valueObj);
 			}

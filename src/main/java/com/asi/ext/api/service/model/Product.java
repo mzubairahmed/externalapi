@@ -45,7 +45,7 @@ public class Product {
     @JsonProperty("BreakoutByPrice")
     private String             breakOutByPrice;
     @JsonProperty("LineNames")
-    private List<String>       lineNames               = new ArrayList<String>();
+    private List<String>       lineNames               = null;
     @JsonProperty("Catalogs")
     private List<Catalog>      catalogs                = null;
     @JsonProperty("DistributorOnly")
@@ -153,22 +153,22 @@ public class Product {
     }
 
     @JsonProperty("FOBPoints")
-    private List<String>          fobPoints       = new ArrayList<String>();
+    private List<String>          fobPoints       = null;
 
     @JsonProperty("ProductKeywords")
-    private List<String>          productKeywords = new ArrayList<String>();
+    private List<String>          productKeywords = null;
     @JsonProperty("Categories")
-    private List<String>          categories      = new ArrayList<String>();
+    private List<String>          categories      = null;
     @JsonProperty("ComplianceCerts")
-    private List<String>          complianceCerts = new ArrayList<String>();
+    private List<String>          complianceCerts = null;
     @JsonProperty("SafetyWarnings")
-    private List<String>          safetyWarnings  = new ArrayList<String>();
+    private List<String>          safetyWarnings  = null;
     @JsonProperty("Images")
-    private List<Image>           images          = new ArrayList<Image>();
+    private List<Image>           images          = null;
     @JsonProperty("PriceGrids")
-    private List<PriceGrid>       priceGrids      = new ArrayList<PriceGrid>();
+    private List<PriceGrid>       priceGrids      = null;
     @JsonProperty("ProductNumbers")
-    private List<ProductNumber>   productNumbers  = new ArrayList<ProductNumber>();
+    private List<ProductNumber>   productNumbers  = null;
     @JsonProperty("ProductConfigurations")
     private ProductConfigurations productConfigurations;
 

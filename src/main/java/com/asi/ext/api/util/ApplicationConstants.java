@@ -180,10 +180,10 @@ public class ApplicationConstants {
     public static final String                       CONST_STRING_DIMENSION                      = "Dimension";
     public static final String                       CONST_STRING_VOLUME_WEIGHT                  = "Volume/Weight";
     public static final String                       CONST_STRING_APPAREL                        = "Apparel";
-    public static final String                       CONST_STRING_APPAREL_INFANT_TODDLER         = "Apparel-Infant/Toddler";
-    public static final String                       CONST_STRING_APPAREL_DRESS_SHIRT_SIZES      = "Apparel-Dress Shirt Sizes";
-    public static final String                       CONST_STRING_APPAREL_PANTS_SIZES            = "Apparel-Pants Sizes";
-    public static final String                       CONST_STRING_APPAREL_HOSIERY_UNIFORM        = "Apparel-Hosiery/Uniform Sizes";
+    public static final String                       CONST_STRING_APPAREL_INFANT_TODDLER         = "Apparel-Infant/Toddler (3 Months, 2T)";
+    public static final String                       CONST_STRING_APPAREL_DRESS_SHIRT_SIZES      = "Apparel-Neck/Sleeve";
+    public static final String                       CONST_STRING_APPAREL_PANTS_SIZES            = "Apparel-Waist/Inseam";
+    public static final String                       CONST_STRING_APPAREL_HOSIERY_UNIFORM        = "Apparel-Hoisery/Uniform (A,AB)";
     public static final String                       CONST_STRING_APPAREL_BRA_SIZES              = "Apparel-Bra Sizes";
     public static final String                       CONST_STRING_APPAREL_BRA_SIZES_OTHER        = "Apparel-Bra Sizes - Other";
     public static final String                       CONST_STRING_STANDARD_NUMBERED              = "Standard & Numbered";

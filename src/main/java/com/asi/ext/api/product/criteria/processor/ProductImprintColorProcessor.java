@@ -98,7 +98,7 @@ public class ProductImprintColorProcessor extends SimpleCriteriaProcessor {
                 if (CommonUtilities.isValueNull(value)) {
                     productDataStore.addErrorToBatchLogCollection(existingProduct.getExternalProductId(),
                             ApplicationConstants.CONST_BATCH_ERR_LOOKUP_VALUE_NOT_EXIST, "Imprint Color Value " + value
-                                    + " dosen't exists in lookup values");
+                                    + " doesn’t exist in lookup values");
                 }
                 continue;
             }

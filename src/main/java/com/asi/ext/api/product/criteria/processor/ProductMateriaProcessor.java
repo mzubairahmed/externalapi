@@ -83,6 +83,7 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
             boolean hasCombo = material.getCombo() != null;
             boolean hasAliace = !CommonUtilities.isValueNull(material.getAlias());
             boolean hasBlend = (material.getBlendMaterials() != null && !material.getBlendMaterials().isEmpty());
+            boolean needToCheckAgain = false;
 
             String setCodeValueId = getSetCodeValueId(material.getName());
 
@@ -98,6 +99,8 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
                 } else {
                     criteriaSetValue = existingValueMap.get(material.getName().toUpperCase() + "_" + setCodeValueId);
                 }
+            } else if (checkExistingElements && (hasBlend || hasCombo)) {
+                needToCheckAgain = true;
             }
 
             if (criteriaSetValue == null) {
@@ -135,14 +138,24 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
                     criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
                 }
             }
-
+            try {
+                if (needToCheckAgain) {
+                    String key = getKeyForComoboOrBlendMaterial(criteriaSetValue);
+                    if (key != null) {
+                        key = String.valueOf(criteriaSetValue.getValue()).toUpperCase() + "_" + key;
+                        if (existingValueMap.get(key) != null) {
+                            criteriaSetValue = existingValueMap.get(key);
+                        }
+                    }
+                }
+            } catch (Exception e) {}// Nothing to for now
+            finalCriteriaSetValues.add(criteriaSetValue);
             updateReferenceTable(
                     existingProduct.getExternalProductId(),
                     ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE,
                     processSourceCriteriaValueByCriteriaCode(hasAliace ? material.getAlias() : material.getName(),
                             ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE), criteriaSetValue);
 
-            finalCriteriaSetValues.add(criteriaSetValue);
         }
 
         matchedCriteriaSet.setCriteriaSetValues(finalCriteriaSetValues);
@@ -242,6 +255,27 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
         return parentCriteriaSetCodeValue;
     }
 
+    private String getKeyForComoboOrBlendMaterial(CriteriaSetValues criteriaValue) {
+        String key = null;
+        if (criteriaValue != null) {
+            key = ""; // avoid null check again
+            CriteriaSetCodeValues[] setCodeValues = criteriaValue.getCriteriaSetCodeValues();
+            for (CriteriaSetCodeValues setCodeValue : setCodeValues) {
+                key = CommonUtilities.appendValue(key, setCodeValue.getSetCodeValueId(), "+");
+                if (setCodeValue.getChildCriteriaSetCodeValues() != null && setCodeValue.getChildCriteriaSetCodeValues().length > 0) {
+                    for (ChildCriteriaSetCodeValues childCriteriaSetCodeValue : setCodeValue.getChildCriteriaSetCodeValues()) {
+                        if (childCriteriaSetCodeValue != null && childCriteriaSetCodeValue.getChildCriteriaSetCodeValue() != null) {
+                            key = CommonUtilities.appendValue(key, childCriteriaSetCodeValue.getChildCriteriaSetCodeValue().getSetCodeValueId(), "+");                            
+                        }
+                    }
+                }
+            }
+        }
+        if (key != null && key.endsWith("+")) {
+            key = key.substring(0, key.length() - 1);
+        }
+        return key;
+    }
     protected boolean isValueIsValid(String value) {
         // For color no need to validate values
         return true;
@@ -273,6 +307,10 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
                     String setCodeValue = criteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(); // Check for AIOE
                     tempHashMap.put(String.valueOf(criteriaSetValue.getValue()).toUpperCase() + "_" + setCodeValue,
                             criteriaSetValue);
+                    // Workaround for Blend and Combo checking
+                    try {
+                        tempHashMap.put(String.valueOf(criteriaSetValue.getValue()).toUpperCase() + "_" + getKeyForComoboOrBlendMaterial(criteriaSetValue), criteriaSetValue);
+                    } catch (Exception e){}
                 }
             }
         }

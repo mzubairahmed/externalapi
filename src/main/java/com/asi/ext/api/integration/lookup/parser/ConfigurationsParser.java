@@ -465,13 +465,14 @@ public class ConfigurationsParser {
 			//criteriaSetParser.addCriteriaSetByCode(productDetail.getExternalProductId(), currentCriteriaSetValueList.get(0).getCriteriaCode(), currentCriteriaSetValueList.get(0).getCriteriaSetId());
 			Color currentColor;
 			String crntColor;
-			List<Combo> comboList=new ArrayList<>();
+			List<Combo> comboList=null;
 			Combo currentCombo=null;
 			List<Color> colorsList=new ArrayList<>();
 			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
 				currentColor=new Color();
 				if(currentCriteriaSetValue.getCriteriaSetCodeValues().length>1){
 					// Combo
+					comboList=new ArrayList<>();
 					for(com.asi.service.product.client.vo.CriteriaSetCodeValues currentCriteriaSetCodeValue:currentCriteriaSetValue.getCriteriaSetCodeValues()){
 						if(currentCriteriaSetCodeValue.getCodeValueDetail().equalsIgnoreCase("main")){
 							currentColor.setAlias(currentCriteriaSetValue.getValue().toString());
@@ -484,8 +485,9 @@ public class ConfigurationsParser {
 							if (!CommonUtilities.isValueNull(currentCriteriaSetCodeValue.getCodeValue())) {
 							    currentCombo.setRgbhex(currentCriteriaSetCodeValue.getCodeValue());
 							}
-							comboList.add(currentCombo);
+							comboList.add(currentCombo);						
 						}
+						currentCombo=null;
 					}
 					currentColor.setCombos(comboList);				
 					criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), currentCriteriaSetValue.getValue().toString());
@@ -494,13 +496,14 @@ public class ConfigurationsParser {
 				currentColor.setAlias(currentCriteriaSetValue.getValue().toString());
 				crntColor=ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_COLORS_CRITERIA_CODE);
 						criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), crntColor);		
-				currentColor.setName(crntColor);
+				currentColor.setName(crntColor);				
+				}
 				if (!CommonUtilities.isValueNull(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getCodeValue())) {
 				    currentColor.setRGBHex(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getCodeValue());				    
 				}
-				}
 				colorsList.add(currentColor);
 			}
+			if(colorsList.size()>0)
 			serviceProductConfig.setColors(colorsList);
 		}
 		
@@ -515,6 +518,7 @@ public class ConfigurationsParser {
 				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), currentOrigin);	
 				originsList.add(currentOrigin);
 			}
+			if(originsList.size()>0)
 			serviceProductConfig.setOrigins(originsList);
 		}
 		
@@ -532,6 +536,7 @@ public class ConfigurationsParser {
 						criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), packageName);
 						packageList.add(packageName);
 					}
+					if(packageList.size()>0)
 					serviceProductConfig.setPackaging(packageList);
 				}
 		// Shapes
@@ -546,6 +551,7 @@ public class ConfigurationsParser {
 				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), crntShape);
 				shapesList.add(crntShape);
 			}
+			if(shapesList.size()>0)
 			serviceProductConfig.setShapes(shapesList);
 		}
 		
@@ -562,6 +568,7 @@ public class ConfigurationsParser {
 				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), currentTheme);
 				themes.add(currentTheme);
 			}
+			if(themes.size()>0)
 			serviceProductConfig.setThemes(themes);
 		}
 		
@@ -575,6 +582,8 @@ public class ConfigurationsParser {
 			String[] imprintColrsAry;
 			List<String> imprColrValues=null;
 			HashMap<String,String> imprintColorByValueTypeCode=getImprintColorsByTypeCode(currentCriteriaSetValueList,productDetail.getExternalProductId());
+			if(imprintColorByValueTypeCode==null)
+				currentImprintcolor=null;
 			@SuppressWarnings("rawtypes")
 			Iterator itr = imprintColorByValueTypeCode.entrySet().iterator();
 		    while (itr.hasNext()) {
@@ -613,7 +622,8 @@ public class ConfigurationsParser {
 				currentImprintSizeLocation.setLocation(imprintSizeLocation.substring(imprintSizeLocation.indexOf("|")+1));
 				imprintSzLnList.add(currentImprintSizeLocation);
 				}
-			}			
+			}
+			if(imprintSzLnList.size()>0)
 			serviceProductConfig.setImprintSizeLocations(imprintSzLnList);		
 		}
 		
@@ -636,7 +646,8 @@ public class ConfigurationsParser {
 				}
 				
 				rushTimeList.add(rushTime);
-			}		
+			}	
+			if(rushTimeList.size()>0)
 			serviceProductConfig.setRushTime(rushTimeList);
 		}
 		
@@ -682,6 +693,7 @@ public class ConfigurationsParser {
 				}
 				materialList.add(material);
 		}
+			if(materialList.size()>0)
 		serviceProductConfig.setMaterials(materialList);
 		}
 
@@ -746,6 +758,7 @@ public class ConfigurationsParser {
 			}*/			
 			}
 		_LOGGER.info(tradeNamesList);
+		if(tradeNamesList.size()>0)
 			serviceProductConfig.setTradeNames(tradeNamesList);
 		}
 		// Production Time
@@ -754,22 +767,26 @@ public class ConfigurationsParser {
 			//criteriaSetParser.addCriteriaSetByCode(productDetail.getExternalProductId(), currentCriteriaSetValueList.get(0).getCriteriaCode(), currentCriteriaSetValueList.get(0).getCriteriaSetId());
 			ProductionTime currentProductionTime=null;
 			List<ProductionTime> prodTimeList=new ArrayList<>();
+			String currentProductionTimeDetail=null;
 			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
 					currentProductionTime=new ProductionTime();
 					if(currentCriteriaSetValue.getValue() instanceof List){
 						currentProductionTime.setBusinessDays(Integer.parseInt(productLookupParser.getTimeText(currentCriteriaSetValue.getValue())));
 						criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), productLookupParser.getTimeWithUnitsInText(currentCriteriaSetValue.getValue()));
 					}
-					currentProductionTime.setDetails(currentCriteriaSetValue.getCriteriaValueDetail());
+					currentProductionTimeDetail=currentCriteriaSetValue.getCriteriaValueDetail();
+					if(null!=currentProductionTimeDetail && !currentProductionTimeDetail.isEmpty()) currentProductionTime.setDetails(currentProductionTimeDetail);
 					prodTimeList.add(currentProductionTime);
 			}
+			if(prodTimeList.size()>0)
 			serviceProductConfig.setProductionTime(prodTimeList);
 		}
 		// Samples
 		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_PRODUCT_SAMPLE_CRITERIA_CODE);
 		String sampleType="";
-		Samples samples=new Samples();
+		Samples samples=null;
 		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+			samples=new Samples();
 			//criteriaSetParser.addCriteriaSetByCode(productDetail.getExternalProductId(), currentCriteriaSetValueList.get(0).getCriteriaCode(), currentCriteriaSetValueList.get(0).getCriteriaSetId());
 			samples.setProductSampleAvailable(false);
 			samples.setSpecSampleAvailable(false);
@@ -787,6 +804,19 @@ public class ConfigurationsParser {
 			serviceProductConfig.setSamples(samples);
 		}
 			
+		// Options
+		List<ProductCriteriaSets> productCriteriaSetsList=productDetail.getProductConfigurations().get(0).getProductCriteriaSets();
+		ConcurrentHashMap<String,ArrayList<String>> optionList=null;
+		for(ProductCriteriaSets currentProductCriteriaSet:productCriteriaSetsList){
+			if(Arrays.asList(OPTION_CRITERIACODES).contains(currentProductCriteriaSet.getCriteriaCode())){
+				criteriaSetParser.addCriteriaSetByCode(productDetail.getExternalProductId(), currentProductCriteriaSet.getCriteriaCode()+":"+currentProductCriteriaSet.getCriteriaDetail(), currentProductCriteriaSet.getCriteriaSetId());
+				optionList=productLookupParser.findOptionValueDetails(optionList,currentProductCriteriaSet.getCriteriaCode(),currentProductCriteriaSet,productDetail.getExternalProductId());
+			}else{
+				criteriaSetParser.addCriteriaSetByCode(productDetail.getExternalProductId(), currentProductCriteriaSet.getCriteriaCode(), currentProductCriteriaSet.getCriteriaSetId());
+			}
+		}
+		if(null!=optionList) serviceProductConfig=productLookupParser.setOptionList(serviceProductConfig,optionList);
+
 		// Imprint Methods
 		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_IMPRINT_METHOD_CODE);
 		List<ImprintMethod> imprintMethodsList=new ArrayList<>();
@@ -797,7 +827,7 @@ public class ConfigurationsParser {
 			int imprintCntr=0;
 			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
 				currentImprintMethod=ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_IMPRINT_METHOD_CODE);
-				if(currentImprintMethod.equalsIgnoreCase("Other")){
+				if(currentImprintMethod.equalsIgnoreCase("Other") || !currentImprintMethod.equalsIgnoreCase(currentCriteriaSetValue.getValue().toString())){
 					currentImprintMethod=currentImprintMethod+":"+currentCriteriaSetValue.getValue().toString();
 				}
 				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), ApplicationConstants.CONST_IMPRINT_METHOD_CODE, Integer.parseInt(currentCriteriaSetValue.getId()), currentImprintMethod);
@@ -817,7 +847,7 @@ public class ConfigurationsParser {
 		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
 			//criteriaSetParser.addCriteriaSetByCode(productDetail.getExternalProductId(), currentCriteriaSetValueList.get(0).getCriteriaCode(), currentCriteriaSetValueList.get(0).getCriteriaSetId());
 			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
-				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), ApplicationConstants.CONST_ARTWORK_CODE, Integer.parseInt(currentCriteriaSetValue.getId()), ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_ARTWORK_CODE));
+				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), ApplicationConstants.CONST_ARTWORK_CODE, Integer.parseInt(currentCriteriaSetValue.getId()), ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_ARTWORK_CODE)+":"+currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getCodeValue());
 			}
 		}
 		
@@ -832,22 +862,8 @@ public class ConfigurationsParser {
 		}
 
 		imprintMethodsList=productLookupParser.setServiceImprintMethods(productDetail,imprintMethods,criteriaSetParser);
-		if(null!=imprintMethodsList && imprintMethodsList.size()>0 && imprintMethodsList.get(0).getType()!=null)
+		if(null!=imprintMethodsList && imprintMethodsList.size()>0)
 		serviceProductConfig.setImprintMethods(imprintMethodsList);
-		
-		
-		// Options
-		List<ProductCriteriaSets> productCriteriaSetsList=productDetail.getProductConfigurations().get(0).getProductCriteriaSets();
-		ConcurrentHashMap<String,ArrayList<String>> optionList=null;
-		for(ProductCriteriaSets currentProductCriteriaSet:productCriteriaSetsList){
-			if(Arrays.asList(OPTION_CRITERIACODES).contains(currentProductCriteriaSet.getCriteriaCode())){
-				criteriaSetParser.addCriteriaSetByCode(productDetail.getExternalProductId(), currentProductCriteriaSet.getCriteriaCode()+":"+currentProductCriteriaSet.getCriteriaDetail(), currentProductCriteriaSet.getCriteriaSetId());
-			}else{
-				criteriaSetParser.addCriteriaSetByCode(productDetail.getExternalProductId(), currentProductCriteriaSet.getCriteriaCode(), currentProductCriteriaSet.getCriteriaSetId());
-			}
-			optionList=productLookupParser.findOptionValueDetails(optionList,currentProductCriteriaSet.getCriteriaCode(),currentProductCriteriaSet,productDetail.getExternalProductId());
-		}
-		if(null!=optionList) serviceProductConfig=productLookupParser.setOptionList(serviceProductConfig,optionList);
 		
 		// Sizes
 		serviceProductConfig.setSizes(getCriteriaSetValuesListBySizeCode(productDetail.getExternalProductId(),productDetail.getProductConfigurations().get(0),SIZE_GROUP_CRITERIACODES));
@@ -882,6 +898,7 @@ public class ConfigurationsParser {
 			shippingEstimate=new ShippingEstimate();
 			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
 				shippingItemValue=productLookupParser.findSizeValueListDetails(shippingItemValue, currentCriteriaSetValue.getCriteriaCode(), currentCriteriaSetValue.getValue(), productDetail.getExternalProductId()).get(0);
+				if(shippingItemValue.getUnit() == null) shippingItemValue.setUnit(currentCriteriaSetValue.getCriteriaValueDetail());
 				shippingEstimate.setNumberOfItems(shippingItemValue);
 			}
 		}
@@ -926,6 +943,7 @@ public class ConfigurationsParser {
 		}
 		serviceProductConfig.setShippingEstimates(shippingEstimate);
 		serviceProduct.setProductBreakoutBy(breakoutBy);
+		if(fobPointsList.size()>0)
 		serviceProduct.setFobPoints(fobPointsList);
 		serviceProduct.setProductConfigurations(serviceProductConfig);
 		return serviceProduct;
@@ -988,8 +1006,11 @@ public class ConfigurationsParser {
 				blendMaterial.setPercentage(currentSetCodeValue.getChildCriteriaSetCodeValue().getCodeValue());
 				finalBlendMaterial.add(blendMaterial);
 			}			
-		}		
+		}
+		if(finalBlendMaterial.size()>0)
 		return finalBlendMaterial;
+		else
+			return null;
 	}
 	
 }
