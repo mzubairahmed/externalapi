@@ -465,13 +465,14 @@ public class ConfigurationsParser {
 			//criteriaSetParser.addCriteriaSetByCode(productDetail.getExternalProductId(), currentCriteriaSetValueList.get(0).getCriteriaCode(), currentCriteriaSetValueList.get(0).getCriteriaSetId());
 			Color currentColor;
 			String crntColor;
-			List<Combo> comboList=new ArrayList<>();
+			List<Combo> comboList=null;
 			Combo currentCombo=null;
 			List<Color> colorsList=new ArrayList<>();
 			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
 				currentColor=new Color();
 				if(currentCriteriaSetValue.getCriteriaSetCodeValues().length>1){
 					// Combo
+					comboList=new ArrayList<>();
 					for(com.asi.service.product.client.vo.CriteriaSetCodeValues currentCriteriaSetCodeValue:currentCriteriaSetValue.getCriteriaSetCodeValues()){
 						if(currentCriteriaSetCodeValue.getCodeValueDetail().equalsIgnoreCase("main")){
 							currentColor.setAlias(currentCriteriaSetValue.getValue().toString());
@@ -484,8 +485,9 @@ public class ConfigurationsParser {
 							if (!CommonUtilities.isValueNull(currentCriteriaSetCodeValue.getCodeValue())) {
 							    currentCombo.setRgbhex(currentCriteriaSetCodeValue.getCodeValue());
 							}
-							comboList.add(currentCombo);
+							comboList.add(currentCombo);						
 						}
+						currentCombo=null;
 					}
 					currentColor.setCombos(comboList);				
 					criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), currentCriteriaSetValue.getValue().toString());
@@ -494,10 +496,10 @@ public class ConfigurationsParser {
 				currentColor.setAlias(currentCriteriaSetValue.getValue().toString());
 				crntColor=ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_COLORS_CRITERIA_CODE);
 						criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), crntColor);		
-				currentColor.setName(crntColor);
+				currentColor.setName(crntColor);				
+				}
 				if (!CommonUtilities.isValueNull(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getCodeValue())) {
 				    currentColor.setRGBHex(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getCodeValue());				    
-				}
 				}
 				colorsList.add(currentColor);
 			}
@@ -795,10 +797,10 @@ public class ConfigurationsParser {
 		for(ProductCriteriaSets currentProductCriteriaSet:productCriteriaSetsList){
 			if(Arrays.asList(OPTION_CRITERIACODES).contains(currentProductCriteriaSet.getCriteriaCode())){
 				criteriaSetParser.addCriteriaSetByCode(productDetail.getExternalProductId(), currentProductCriteriaSet.getCriteriaCode()+":"+currentProductCriteriaSet.getCriteriaDetail(), currentProductCriteriaSet.getCriteriaSetId());
+				optionList=productLookupParser.findOptionValueDetails(optionList,currentProductCriteriaSet.getCriteriaCode(),currentProductCriteriaSet,productDetail.getExternalProductId());
 			}else{
 				criteriaSetParser.addCriteriaSetByCode(productDetail.getExternalProductId(), currentProductCriteriaSet.getCriteriaCode(), currentProductCriteriaSet.getCriteriaSetId());
 			}
-			optionList=productLookupParser.findOptionValueDetails(optionList,currentProductCriteriaSet.getCriteriaCode(),currentProductCriteriaSet,productDetail.getExternalProductId());
 		}
 		if(null!=optionList) serviceProductConfig=productLookupParser.setOptionList(serviceProductConfig,optionList);
 

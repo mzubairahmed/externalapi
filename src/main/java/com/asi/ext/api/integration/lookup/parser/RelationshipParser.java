@@ -232,7 +232,8 @@ public class RelationshipParser {
 				}}
 				availability.setAvailableVariations(availabileVariationsList);
 				}
-			}			
+			}
+			if(availability.getParentCriteria()!=null)
 			availabilityList.add(availability);
 		}		
 		}		

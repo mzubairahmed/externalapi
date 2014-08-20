@@ -740,9 +740,9 @@ public class LookupParser {
 						currentOption.getValues().add(currentOptValue);
 					}
 					currentOption.setCanOnlyOrderOne(Boolean
-							.valueOf(optionAryList.get(1)));
+							.valueOf((optionAryList.get(1).equalsIgnoreCase("Y")?"true":"false")));
 					currentOption.setRequiredForOrder(Boolean
-							.valueOf(optionAryList.get(2)));
+							.valueOf((optionAryList.get(2).equalsIgnoreCase("Y")?"true":"false")));
 					currentOption
 							.setAdditionalInformation(optionAryList.get(3));
 

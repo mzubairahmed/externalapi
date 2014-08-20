@@ -325,7 +325,8 @@ public class ProductRepo {
         List<ProductKeywords> productKeywordsList = radProduct.getProductKeywords();
         List<String> finalKeywords = new ArrayList<>();
         for (ProductKeywords currentKeyword : productKeywordsList) {
-            finalKeywords.add(currentKeyword.getValue());
+            if(currentKeyword.getTypeCode().equalsIgnoreCase("HIDD"))
+        	finalKeywords.add(currentKeyword.getValue());
         }
         serviceProduct.setProductKeywords(finalKeywords);
 
