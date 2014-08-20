@@ -754,13 +754,15 @@ public class ConfigurationsParser {
 			//criteriaSetParser.addCriteriaSetByCode(productDetail.getExternalProductId(), currentCriteriaSetValueList.get(0).getCriteriaCode(), currentCriteriaSetValueList.get(0).getCriteriaSetId());
 			ProductionTime currentProductionTime=null;
 			List<ProductionTime> prodTimeList=new ArrayList<>();
+			String currentProductionTimeDetail=null;
 			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
 					currentProductionTime=new ProductionTime();
 					if(currentCriteriaSetValue.getValue() instanceof List){
 						currentProductionTime.setBusinessDays(Integer.parseInt(productLookupParser.getTimeText(currentCriteriaSetValue.getValue())));
 						criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), productLookupParser.getTimeWithUnitsInText(currentCriteriaSetValue.getValue()));
 					}
-					currentProductionTime.setDetails(currentCriteriaSetValue.getCriteriaValueDetail());
+					currentProductionTimeDetail=currentCriteriaSetValue.getCriteriaValueDetail();
+					if(null!=currentProductionTimeDetail && !currentProductionTimeDetail.isEmpty()) currentProductionTime.setDetails(currentProductionTimeDetail);
 					prodTimeList.add(currentProductionTime);
 			}
 			serviceProductConfig.setProductionTime(prodTimeList);
@@ -787,6 +789,19 @@ public class ConfigurationsParser {
 			serviceProductConfig.setSamples(samples);
 		}
 			
+		// Options
+		List<ProductCriteriaSets> productCriteriaSetsList=productDetail.getProductConfigurations().get(0).getProductCriteriaSets();
+		ConcurrentHashMap<String,ArrayList<String>> optionList=null;
+		for(ProductCriteriaSets currentProductCriteriaSet:productCriteriaSetsList){
+			if(Arrays.asList(OPTION_CRITERIACODES).contains(currentProductCriteriaSet.getCriteriaCode())){
+				criteriaSetParser.addCriteriaSetByCode(productDetail.getExternalProductId(), currentProductCriteriaSet.getCriteriaCode()+":"+currentProductCriteriaSet.getCriteriaDetail(), currentProductCriteriaSet.getCriteriaSetId());
+			}else{
+				criteriaSetParser.addCriteriaSetByCode(productDetail.getExternalProductId(), currentProductCriteriaSet.getCriteriaCode(), currentProductCriteriaSet.getCriteriaSetId());
+			}
+			optionList=productLookupParser.findOptionValueDetails(optionList,currentProductCriteriaSet.getCriteriaCode(),currentProductCriteriaSet,productDetail.getExternalProductId());
+		}
+		if(null!=optionList) serviceProductConfig=productLookupParser.setOptionList(serviceProductConfig,optionList);
+
 		// Imprint Methods
 		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_IMPRINT_METHOD_CODE);
 		List<ImprintMethod> imprintMethodsList=new ArrayList<>();
@@ -797,7 +812,7 @@ public class ConfigurationsParser {
 			int imprintCntr=0;
 			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
 				currentImprintMethod=ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_IMPRINT_METHOD_CODE);
-				if(currentImprintMethod.equalsIgnoreCase("Other")){
+				if(currentImprintMethod.equalsIgnoreCase("Other") || !currentImprintMethod.equalsIgnoreCase(currentCriteriaSetValue.getValue().toString())){
 					currentImprintMethod=currentImprintMethod+":"+currentCriteriaSetValue.getValue().toString();
 				}
 				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), ApplicationConstants.CONST_IMPRINT_METHOD_CODE, Integer.parseInt(currentCriteriaSetValue.getId()), currentImprintMethod);
@@ -817,7 +832,7 @@ public class ConfigurationsParser {
 		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
 			//criteriaSetParser.addCriteriaSetByCode(productDetail.getExternalProductId(), currentCriteriaSetValueList.get(0).getCriteriaCode(), currentCriteriaSetValueList.get(0).getCriteriaSetId());
 			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
-				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), ApplicationConstants.CONST_ARTWORK_CODE, Integer.parseInt(currentCriteriaSetValue.getId()), ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_ARTWORK_CODE));
+				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), ApplicationConstants.CONST_ARTWORK_CODE, Integer.parseInt(currentCriteriaSetValue.getId()), ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_ARTWORK_CODE)+":"+currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getCodeValue());
 			}
 		}
 		
@@ -834,20 +849,6 @@ public class ConfigurationsParser {
 		imprintMethodsList=productLookupParser.setServiceImprintMethods(productDetail,imprintMethods,criteriaSetParser);
 		if(null!=imprintMethodsList && imprintMethodsList.size()>0)
 		serviceProductConfig.setImprintMethods(imprintMethodsList);
-		
-		
-		// Options
-		List<ProductCriteriaSets> productCriteriaSetsList=productDetail.getProductConfigurations().get(0).getProductCriteriaSets();
-		ConcurrentHashMap<String,ArrayList<String>> optionList=null;
-		for(ProductCriteriaSets currentProductCriteriaSet:productCriteriaSetsList){
-			if(Arrays.asList(OPTION_CRITERIACODES).contains(currentProductCriteriaSet.getCriteriaCode())){
-				criteriaSetParser.addCriteriaSetByCode(productDetail.getExternalProductId(), currentProductCriteriaSet.getCriteriaCode()+":"+currentProductCriteriaSet.getCriteriaDetail(), currentProductCriteriaSet.getCriteriaSetId());
-			}else{
-				criteriaSetParser.addCriteriaSetByCode(productDetail.getExternalProductId(), currentProductCriteriaSet.getCriteriaCode(), currentProductCriteriaSet.getCriteriaSetId());
-			}
-			optionList=productLookupParser.findOptionValueDetails(optionList,currentProductCriteriaSet.getCriteriaCode(),currentProductCriteriaSet,productDetail.getExternalProductId());
-		}
-		if(null!=optionList) serviceProductConfig=productLookupParser.setOptionList(serviceProductConfig,optionList);
 		
 		// Sizes
 		serviceProductConfig.setSizes(getCriteriaSetValuesListBySizeCode(productDetail.getExternalProductId(),productDetail.getProductConfigurations().get(0),SIZE_GROUP_CRITERIACODES));
@@ -882,6 +883,7 @@ public class ConfigurationsParser {
 			shippingEstimate=new ShippingEstimate();
 			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
 				shippingItemValue=productLookupParser.findSizeValueListDetails(shippingItemValue, currentCriteriaSetValue.getCriteriaCode(), currentCriteriaSetValue.getValue(), productDetail.getExternalProductId()).get(0);
+				if(shippingItemValue.getUnit() == null) shippingItemValue.setUnit(currentCriteriaSetValue.getCriteriaValueDetail());
 				shippingEstimate.setNumberOfItems(shippingItemValue);
 			}
 		}
