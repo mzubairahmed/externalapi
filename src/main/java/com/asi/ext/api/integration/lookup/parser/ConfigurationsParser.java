@@ -503,6 +503,7 @@ public class ConfigurationsParser {
 				}
 				colorsList.add(currentColor);
 			}
+			if(colorsList.size()>0)
 			serviceProductConfig.setColors(colorsList);
 		}
 		
@@ -517,6 +518,7 @@ public class ConfigurationsParser {
 				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), currentOrigin);	
 				originsList.add(currentOrigin);
 			}
+			if(originsList.size()>0)
 			serviceProductConfig.setOrigins(originsList);
 		}
 		
@@ -534,6 +536,7 @@ public class ConfigurationsParser {
 						criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), packageName);
 						packageList.add(packageName);
 					}
+					if(packageList.size()>0)
 					serviceProductConfig.setPackaging(packageList);
 				}
 		// Shapes
@@ -548,6 +551,7 @@ public class ConfigurationsParser {
 				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), crntShape);
 				shapesList.add(crntShape);
 			}
+			if(shapesList.size()>0)
 			serviceProductConfig.setShapes(shapesList);
 		}
 		
@@ -564,6 +568,7 @@ public class ConfigurationsParser {
 				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), currentTheme);
 				themes.add(currentTheme);
 			}
+			if(themes.size()>0)
 			serviceProductConfig.setThemes(themes);
 		}
 		
@@ -577,6 +582,8 @@ public class ConfigurationsParser {
 			String[] imprintColrsAry;
 			List<String> imprColrValues=null;
 			HashMap<String,String> imprintColorByValueTypeCode=getImprintColorsByTypeCode(currentCriteriaSetValueList,productDetail.getExternalProductId());
+			if(imprintColorByValueTypeCode==null)
+				currentImprintcolor=null;
 			@SuppressWarnings("rawtypes")
 			Iterator itr = imprintColorByValueTypeCode.entrySet().iterator();
 		    while (itr.hasNext()) {
@@ -615,7 +622,8 @@ public class ConfigurationsParser {
 				currentImprintSizeLocation.setLocation(imprintSizeLocation.substring(imprintSizeLocation.indexOf("|")+1));
 				imprintSzLnList.add(currentImprintSizeLocation);
 				}
-			}			
+			}
+			if(imprintSzLnList.size()>0)
 			serviceProductConfig.setImprintSizeLocations(imprintSzLnList);		
 		}
 		
@@ -638,7 +646,8 @@ public class ConfigurationsParser {
 				}
 				
 				rushTimeList.add(rushTime);
-			}		
+			}	
+			if(rushTimeList.size()>0)
 			serviceProductConfig.setRushTime(rushTimeList);
 		}
 		
@@ -684,6 +693,7 @@ public class ConfigurationsParser {
 				}
 				materialList.add(material);
 		}
+			if(materialList.size()>0)
 		serviceProductConfig.setMaterials(materialList);
 		}
 
@@ -748,6 +758,7 @@ public class ConfigurationsParser {
 			}*/			
 			}
 		_LOGGER.info(tradeNamesList);
+		if(tradeNamesList.size()>0)
 			serviceProductConfig.setTradeNames(tradeNamesList);
 		}
 		// Production Time
@@ -767,13 +778,15 @@ public class ConfigurationsParser {
 					if(null!=currentProductionTimeDetail && !currentProductionTimeDetail.isEmpty()) currentProductionTime.setDetails(currentProductionTimeDetail);
 					prodTimeList.add(currentProductionTime);
 			}
+			if(prodTimeList.size()>0)
 			serviceProductConfig.setProductionTime(prodTimeList);
 		}
 		// Samples
 		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_PRODUCT_SAMPLE_CRITERIA_CODE);
 		String sampleType="";
-		Samples samples=new Samples();
+		Samples samples=null;
 		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
+			samples=new Samples();
 			//criteriaSetParser.addCriteriaSetByCode(productDetail.getExternalProductId(), currentCriteriaSetValueList.get(0).getCriteriaCode(), currentCriteriaSetValueList.get(0).getCriteriaSetId());
 			samples.setProductSampleAvailable(false);
 			samples.setSpecSampleAvailable(false);
@@ -930,6 +943,7 @@ public class ConfigurationsParser {
 		}
 		serviceProductConfig.setShippingEstimates(shippingEstimate);
 		serviceProduct.setProductBreakoutBy(breakoutBy);
+		if(fobPointsList.size()>0)
 		serviceProduct.setFobPoints(fobPointsList);
 		serviceProduct.setProductConfigurations(serviceProductConfig);
 		return serviceProduct;

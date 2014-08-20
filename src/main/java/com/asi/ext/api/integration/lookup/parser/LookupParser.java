@@ -673,8 +673,10 @@ public class LookupParser {
 			}
 
 		}
-
+		if(productNumberList.size()>0)
 		return productNumberList;
+		else
+			return null;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

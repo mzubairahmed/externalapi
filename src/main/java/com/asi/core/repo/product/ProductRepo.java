@@ -303,6 +303,7 @@ public class ProductRepo {
         for (SelectedSafetyWarnings currentSafetyWrng : safetyWarningsList) {
             finalSafetyWrngs.add(lookupDataStore.getSelectedSafetyWarningNameByCode(currentSafetyWrng.getCode()));
         }
+        if(finalSafetyWrngs.size()>0)
         serviceProduct.setSafetyWarnings(finalSafetyWrngs);
 
         // Status Code
@@ -319,6 +320,7 @@ public class ProductRepo {
                         .getComplianceCertId())));
         	}
         }
+        if(finalComplianceCerts.size()>0)
         serviceProduct.setComplianceCerts(finalComplianceCerts);
 
         // Keywords
