@@ -21,17 +21,19 @@ public class ProductMediaItemProcessor {
     private final static Logger LOGGER           = Logger.getLogger(ProductMediaItemProcessor.class.getName());
     private final static String IMAGE_SERVER_URL = "http://media.asicdn.com/images/jpgb/";
 
+    private ProductDataStore    productDatastore = new ProductDataStore();
+
     public List<ProductMediaItems> getProductImages(List<Image> imagesToProcess, String companyId, String productId,
-            List<ProductMediaItems> existingMediaItems,String externalProductId) {
+            List<ProductMediaItems> existingMediaItems, String externalProductId) {
         if (imagesToProcess != null && !imagesToProcess.isEmpty()) {
-            return getProductMediaItems(imagesToProcess, companyId, productId, existingMediaItems,externalProductId);
+            return getProductMediaItems(imagesToProcess, companyId, productId, existingMediaItems, externalProductId);
         } else {
             return new ArrayList<ProductMediaItems>();
         }
     }
 
     private List<ProductMediaItems> getProductMediaItems(List<Image> imagesToProcess, String companyId, String productId,
-            List<ProductMediaItems> existingMediaItems,String externalProductId) {
+            List<ProductMediaItems> existingMediaItems, String externalProductId) {
         LOGGER.info("Started processing product images");
 
         boolean checkExisting = (existingMediaItems != null && !existingMediaItems.isEmpty());
@@ -56,10 +58,11 @@ public class ProductMediaItemProcessor {
                 productMediaItems.setMediaRank(image.getRank());
                 productMediaItems.setMediaId(String.valueOf(mediaId--));
                 productMediaItems.setIsPrimary(image.getIsPrimary());
-                productMediaItems.setMedia(createNewMedia(image, companyId, productMediaItems.getMediaId(),externalProductId));
+                productMediaItems.setMedia(createNewMedia(image, companyId, productMediaItems.getMediaId(), externalProductId));
             } else {
                 productMediaItems.setIsPrimary(image.getIsPrimary());
                 productMediaItems.setMediaRank(image.getRank());
+                productMediaItems.setMedia(comapreAndUpdateMediaCriteriaMatches(productMediaItems.getMedia(), image, externalProductId));
             }
             if (productMediaItems.getIsPrimary()) {
                 isPrimaryImageFound = true;
@@ -74,30 +77,85 @@ public class ProductMediaItemProcessor {
         return processedImages;
     }
 
-    private Media createNewMedia(Image img, String companyId, String mediaId,String externalProductId) {
+    private Media comapreAndUpdateMediaCriteriaMatches(Media media, Image serImage, String xid) {
+        List<Configurations> mediaConfigs = serImage.getConfigurations();
+
+        if (mediaConfigs != null && !mediaConfigs.isEmpty()) {
+            List<MediaCriteriaMatches> finalMediaCriteriaMatches = new ArrayList<MediaCriteriaMatches>();
+
+            Map<String, MediaCriteriaMatches> existingMediaCriteriaMap = new HashMap<String, MediaCriteriaMatches>();
+            if (media.getMediaCriteriaMatches() != null && media.getMediaCriteriaMatches().length > 0) {
+                for (MediaCriteriaMatches medMatche : media.getMediaCriteriaMatches()) {
+                    existingMediaCriteriaMap.put(medMatche.getCriteriaSetValueId(), medMatche);
+                }
+            }
+            CriteriaInfo criteriaInfo = null;
+
+            for (Configurations config : mediaConfigs) {
+                
+                criteriaInfo = ProductDataStore.getCriteriaInfoByDescription(config.getCriteria(), xid);
+                if (criteriaInfo != null) {
+                    String criteriaSetValueId = ProductDataStore.findCriteriaSetValueIdForValue(xid, criteriaInfo.getCode(),
+                            String.valueOf(config.getValue()));
+                    if (criteriaSetValueId != null) {
+                        MediaCriteriaMatches currentMediaCriteriaMatch = existingMediaCriteriaMap.get(criteriaSetValueId);
+                        if (currentMediaCriteriaMatch == null) {
+                            currentMediaCriteriaMatch = new MediaCriteriaMatches();
+                            currentMediaCriteriaMatch.setCriteriaSetValueId(criteriaSetValueId);
+                            currentMediaCriteriaMatch.setMediaId(media.getId());
+                        }
+                        finalMediaCriteriaMatches.add(currentMediaCriteriaMatch);
+                    } else {
+                        productDatastore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+                                "Criteria value specified for Media is not exist in product, Criteria : " + config.getCriteria()
+                                        + "Value : " + String.valueOf(config.getValue()));
+                    }
+                } else {
+                    productDatastore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+                            "Criteria specified for Media is not valid, Criteria : " + config.getCriteria());
+                }
+            }
+            media.setMediaCriteriaMatches(finalMediaCriteriaMatches.toArray(new MediaCriteriaMatches[0]));
+        } else {
+            media.setMediaCriteriaMatches(new MediaCriteriaMatches[] {});
+        }
+        return media;
+    }
+
+    private Media createNewMedia(Image img, String companyId, String mediaId, String externalProductId) {
         Media media = new Media();
-        MediaCriteriaMatches[] mediaCriteriaMatchesAry={};
-      
-        CriteriaInfo tempCriteriaInfo=new CriteriaInfo();
+        List<MediaCriteriaMatches> mediaCriteriaMatchesList = new ArrayList<MediaCriteriaMatches>();
+
+        CriteriaInfo tempCriteriaInfo = new CriteriaInfo();
         media.setId(mediaId);
         media.setCompanyID(companyId);
         media.setUrl(img.getImageURL());
         media.setDescription("");
         media.setMediaTypeCode(ApplicationConstants.CONST_MEDIA_TYPE_CODE);
         media.setImageQualityCode(ApplicationConstants.CONST_IMAGE_QUALITY_CODE);
-        //media.setMediaCriteriaMatches(new MediaCriteriaMatches[0]);
+        // media.setMediaCriteriaMatches(new MediaCriteriaMatches[0]);
         if (img.getConfigurations() != null && !img.getConfigurations().isEmpty()) {
-            mediaCriteriaMatchesAry=new MediaCriteriaMatches[img.getConfigurations().size()];
-            int configId=0;
-            for(Configurations currentConfig:img.getConfigurations()){
+            for (Configurations currentConfig : img.getConfigurations()) {
                 MediaCriteriaMatches currentMediaCriteriaMatches = new MediaCriteriaMatches();
-            	tempCriteriaInfo=ProductDataStore.getCriteriaInfoByDescription(currentConfig.getCriteria(), externalProductId);
-            	currentMediaCriteriaMatches.setCriteriaSetValueId(ProductDataStore.findCriteriaSetValueIdForValue(externalProductId,tempCriteriaInfo.getCode(),currentConfig.getValue().toString()));
-            	currentMediaCriteriaMatches.setMediaId(mediaId);
-            	mediaCriteriaMatchesAry[configId]=currentMediaCriteriaMatches;
-            	configId++;
+                tempCriteriaInfo = ProductDataStore.getCriteriaInfoByDescription(currentConfig.getCriteria(), externalProductId);
+                if (tempCriteriaInfo != null) {
+                    String criteriaSetValueId = ProductDataStore.findCriteriaSetValueIdForValue(externalProductId,
+                            tempCriteriaInfo.getCode(), String.valueOf(currentConfig.getValue()));
+                    if (criteriaSetValueId != null) {
+                        currentMediaCriteriaMatches.setCriteriaSetValueId(criteriaSetValueId);
+                        currentMediaCriteriaMatches.setMediaId(mediaId);
+                        mediaCriteriaMatchesList.add(currentMediaCriteriaMatches);
+                    } else {
+                        productDatastore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+                                "Criteria value specified for Media is not exist in product, Criteria : " + currentConfig.getCriteria()
+                                        + "Value : " + String.valueOf(currentConfig.getValue()));
+                    }
+                } else {
+                    productDatastore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+                            "Criteria specified for Media is not valid, Criteria : " + currentConfig.getCriteria());
+                }
             }
-            media.setMediaCriteriaMatches(mediaCriteriaMatchesAry);
+            media.setMediaCriteriaMatches(mediaCriteriaMatchesList.toArray(new MediaCriteriaMatches[0]));
         }
         return media;
     }
