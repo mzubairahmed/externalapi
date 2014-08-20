@@ -887,7 +887,7 @@ public final class JsonToLookupTableConverter {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public static ProductMediaCitations jsonToMediaCitation(LinkedList<?> responseList, String productID, String catalogName, String catalogPageNumber) {
 
-		ProductMediaCitations mediaCitation = new ProductMediaCitations();
+		ProductMediaCitations mediaCitation = null;
 		List<ProductMediaCitationReferences> productMediaCitationReferences;
 		ProductMediaCitationReferences productMediaCitationReference;
 		MediaCitationReference mediaCitationReference;
@@ -904,10 +904,10 @@ public final class JsonToLookupTableConverter {
             	current = (LinkedHashMap) iter.next();
             	
             	if(current.get("Name").toString().equalsIgnoreCase(catalogName)) {
-            		
-            		mediaCitation.setId(String.valueOf(newMediaCitationID));
+            	    mediaCitation = new ProductMediaCitations();
+            		//mediaCitation.setId(String.valueOf(newMediaCitationID));
             		mediaCitation.setProductId(productID);
-            		mediaCitation.setMediaCitationId(current.get("ID").toString());
+            		mediaCitation.setMediaCitationId(String.valueOf(current.get("ID")));
             		mediaCitation.setIsInitMediaCitation("false");
             		
             		productCitationReferences = (ArrayList<LinkedHashMap>) current.get("MediaCitationReferences");

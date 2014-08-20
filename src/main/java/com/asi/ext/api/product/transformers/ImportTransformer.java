@@ -28,6 +28,7 @@ import com.asi.ext.api.product.criteria.processor.ProductSelectedSafetyWarningPr
 import com.asi.ext.api.product.criteria.processor.ProductShapeProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductSizeGroupProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductSpecSampleProcessor;
+import com.asi.ext.api.product.criteria.processor.ProductThemeProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductTradeNameProcessor;
 import com.asi.ext.api.product.criteria.processor.ProductionTimeProcessor;
 import com.asi.ext.api.product.criteria.processor.RushTimeProcessor;
@@ -70,6 +71,7 @@ public class ImportTransformer {
     private ProductColorProcessor                  colorProcessor              = new ProductColorProcessor(-201, "0");
     private ProductMateriaProcessor                materialProcessor           = new ProductMateriaProcessor(-301, "0");
     private ProductShapeProcessor                  shapeProcessor              = new ProductShapeProcessor(-401, "0");
+    private ProductThemeProcessor				   themeProcessor			   = new ProductThemeProcessor(-501, "0");
     private ProductTradeNameProcessor              tradeNameProcessor          = new ProductTradeNameProcessor(-601, "0");
     private ProductImprintColorProcessor           imprintColorProcessor       = new ProductImprintColorProcessor(-701, "0");
     private ProductImprintSizeAndLocationProcessor imszProcessor               = new ProductImprintSizeAndLocationProcessor(-801,
@@ -210,7 +212,7 @@ public class ImportTransformer {
         // Selected Line name processing
         if (serviceProduct.getLineNames() != null && !serviceProduct.getLineNames().isEmpty()) {
             productToSave.setSelectedLineNames(selectedLineProcessor.getSelectedLines(serviceProduct.getLineNames(),
-                    existingRadarModel));
+                    productToSave));
         }
         // Process Product Configurations
 
@@ -309,6 +311,15 @@ public class ImportTransformer {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_SHAPE_CRITERIA_CODE);
         }
 
+        // Product Theme Processing
+        if (serviceProdConfigs.getThemes() != null && !serviceProdConfigs.getThemes().isEmpty()) {
+            tempCriteriaSet = themeProcessor.getThemeCriteriaSet(serviceProdConfigs.getThemes(), rdrProduct, existingCriteriaSetMap.get(ApplicationConstants.CONST_THEME_CRITERIA_CODE), configId);
+            existingCriteriaSetMap.put(ApplicationConstants.CONST_THEME_CRITERIA_CODE, tempCriteriaSet);
+        } else {
+            existingCriteriaSetMap.remove(ApplicationConstants.CONST_THEME_CRITERIA_CODE);
+        }
+
+        
         // Product TradeName Processing
         if (serviceProdConfigs.getTradeNames() != null && !serviceProdConfigs.getTradeNames().isEmpty()) {
             tempCriteriaSet = tradeNameProcessor.getTradenames(serviceProdConfigs.getTradeNames(), rdrProduct,

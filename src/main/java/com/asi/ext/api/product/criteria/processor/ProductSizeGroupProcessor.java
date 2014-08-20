@@ -296,7 +296,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
         List<CriteriaSetValues> criteriaSetValuesAry = new ArrayList<CriteriaSetValues>();
 
         //Value[] valueAry = null;
-        List<Value> valueAry = new ArrayList<Value>();
+        
 
         if (null != productSizes && !productSizes.trim().equals("")) {
             // If Product has any Size Groups
@@ -313,7 +313,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
             String tempValueElement = null;
 
             for (int criteriaSetValuesCntr = 0; criteriaSetValuesCntr < individualSizes.length; criteriaSetValuesCntr++) {
-
+                List<Value> valueAry = new ArrayList<Value>();
                 if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_DIMENSION)
                         && !CommonUtilities.isValidDimension(individualSizes[criteriaSetValuesCntr])) {
                     productDataStore.addErrorToBatchLogCollection(product.getExternalProductId().trim(),
@@ -735,7 +735,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
 
                 criteriaSetValue.setCriteriaSetCodeValues(criteriaSetCodeValues);
 
-                if (criteriaSetValuesList.size() > cntr) {
+                if (criteriaSetValuesList != null) {
                     criteriaSetValuesList.add(criteriaSetValue);
                     // Adding a this criteriaSet entry details to reference table, so later can be referenced easily
                     productDataStore.updateCriteriaSetValueReferenceTable(product.getExternalProductId(), criteriaCode,
@@ -1199,6 +1199,9 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                 criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
                 criteriaSetValue.setValue(new Value[] { value });
             }
+        }
+        if (criteriaSetValue != null) {
+            criteriaSetValue.setCriteriaValueDetail(shippingEstimate.getNumberOfItems().getUnit());
         }
         updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE,
                 String.valueOf(ProductParserUtil.getShippingItem(shippingEstimate)), criteriaSetValue);

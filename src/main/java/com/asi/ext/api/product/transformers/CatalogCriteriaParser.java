@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.asi.ext.api.service.model.Catalog;
+import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductMediaCitations;
 
@@ -22,17 +23,18 @@ public class CatalogCriteriaParser {
             LOGGER.trace("User provided catalogs : " + catalogs);
         }
     	
-        Integer newProductMediaCitationId = -1;
+        //Integer newProductMediaCitationId = -1;
         List<ProductMediaCitations> productMediaCitations = new ArrayList<ProductMediaCitations>();
         ProductMediaCitations productMediaCitation;
         
         if(catalogs != null && !catalogs.isEmpty()) {
 	    	for (Catalog catalog : catalogs) {
 	    		productMediaCitation = productDataStore.getMediaCitationsByName(radProduct.getID(), catalog.getCatalogName(), catalog.getCatalogPage(), radProduct.getCompanyId());
-	    		if(Integer.parseInt(productMediaCitation.getId()) < 0) {
-	    			productMediaCitation.setId(String.valueOf(--newProductMediaCitationId));
+	    		if (productMediaCitation != null) { 
+	    		    productMediaCitations.add(productMediaCitation);
+	    		} else {
+	    		    productDataStore.addErrorToBatchLogCollection(radProduct.getExternalProductId(), ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Catalog name '" + catalog.getCatalogName() + "' not found in lookups");
 	    		}
-	    		productMediaCitations.add(productMediaCitation);
 	    	}
         }
         LOGGER.info("Catalog processed...");

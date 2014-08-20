@@ -1178,6 +1178,10 @@ public class ProductDataStore {
             }
             return CommonUtilities.getKeysByValueGen(productShapesLookupTable, setCodeValueId);
         } else if (ApplicationConstants.CONST_THEME_CRITERIA_CODE.equalsIgnoreCase(criteriaCode)) {
+            if (productThemesLookupTable == null || productThemesLookupTable.isEmpty()) {
+                getSetCodeValueIdForProductTheme("Holidays");
+            }
+            return CommonUtilities.getKeysByValueGen(productThemesLookupTable, setCodeValueId);
 
         } else if (ApplicationConstants.CONST_TRADE_NAME_CODE.equalsIgnoreCase(criteriaCode)) {
 
