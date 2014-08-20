@@ -1006,8 +1006,11 @@ public class ConfigurationsParser {
 				blendMaterial.setPercentage(currentSetCodeValue.getChildCriteriaSetCodeValue().getCodeValue());
 				finalBlendMaterial.add(blendMaterial);
 			}			
-		}		
+		}
+		if(finalBlendMaterial.size()>0)
 		return finalBlendMaterial;
+		else
+			return null;
 	}
 	
 }
