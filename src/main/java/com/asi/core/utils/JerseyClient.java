@@ -42,7 +42,7 @@ public final class JerseyClient {
         return restResponse;
     }
     public static String getDataSourceByBatchId(String batchId) throws URISyntaxException, JsonParseException, JsonMappingException, IOException {
-    	URI uri=new URI("http://stage-espupdates.asinetwork.local/api/api/batch/"+batchId);
+    	URI uri=new URI("http://stage-espupdates.asicentral.com/api/api/batch/"+batchId);
         String restResponse = null;
         Client client = Client.create();
         client.setConnectTimeout(5000);
