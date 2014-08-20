@@ -264,7 +264,7 @@ public class PriceGridParser extends ProductParser {
             if (criteriaInfo == null) {
                 // TODO: LOG Validation ERROR
                 productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
-                        "Criteria specified for product dosen't exist");
+                        "Criteria specified for product doesn’t exist");
                 continue;
             }
 
@@ -272,7 +272,7 @@ public class PriceGridParser extends ProductParser {
                     pConfig.getValue());
             if (criteriaSetValueId == null) {
                 productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
-                        "Criteria value specified for product dosen't exist, value : " + pConfig.getValue());
+                        "Criteria value specified for product doesn’t exist, value : " + pConfig.getValue());
             } else {
                 finalPricingItems.add(getPricingItem(criteriaSetValueId, pGridId, productId, isBasePrice, extPItem));
             }
@@ -436,7 +436,7 @@ public class PriceGridParser extends ProductParser {
 
                                 productDataStore.addErrorToBatchLogCollection(product.getExternalProductId().trim(),
                                         ApplicationConstants.CONST_BATCH_ERR_LOOKUP_VALUE_NOT_EXIST,
-                                        "PriceGrid - Given Criteria value " + criteria + " dosen't exist");
+                                        "PriceGrid - Given Criteria value " + criteria + " doesn’t exist");
                             }
                         }
                         return pricingItemsList;

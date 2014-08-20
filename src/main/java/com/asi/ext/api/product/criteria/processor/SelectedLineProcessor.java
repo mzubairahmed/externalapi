@@ -44,7 +44,7 @@ public class SelectedLineProcessor {
             } else {
                 productDataStore.addErrorToBatchLogCollection(product.getExternalProductId(),
                         ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Given selected line name " + lineName
-                                + "dosen't existing in lookup");
+                                + "doesn’t exist in lookup");
             }
         }
         LOGGER.info("Completed processing selected line names");
