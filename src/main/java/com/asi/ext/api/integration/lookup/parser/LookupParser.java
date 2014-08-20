@@ -389,7 +389,7 @@ public class LookupParser {
 				.getRelationships();
 		ImprintParser imprintParser = new ImprintParser();
 		if (null != relationShipList && relationShipList.size() > 0) {
-			String imprintMethod = "", minQty = "", artwork = "";// ,sold_unimprintedFlag="",personalizationFlag="";
+			String imprintMethod = "", minQty = "", artwork = "",tempArtwork="";// ,sold_unimprintedFlag="",personalizationFlag="";
 			int imprintCntr = 0;
 			for (Relationship crntRelationship : relationShipList) {
 				imprintParser.updateCriteriaValuePathsByParent(
@@ -456,12 +456,12 @@ public class LookupParser {
 										.equalsIgnoreCase("null")) ? ""
 										: relationValueAry[1];
 								imprntArtwork.setValue(artwork);
-								if (minQtyStr.contains(":")) {
-									imprintMinOrder.setUnit(minQty.substring(0,
-											minQty.indexOf(":") - 2));
+								if (minQty.contains(":")) {
+									imprintMinOrder.setValue(minQty.substring(0,
+											minQty.indexOf(":")));
 									imprintMinOrder
-											.setValue(minQty.substring(minQty
-													.indexOf(":") - 1));
+											.setUnit(minQty.substring(minQty
+													.indexOf(":") + 1));
 								} else {
 									imprintMinOrder = null;
 								}
@@ -528,11 +528,11 @@ public class LookupParser {
 												.equalsIgnoreCase("null")) ? ""
 												: tempRelationValueAry[1]));
 								if (minQtyStr.contains(":")) {
-									imprintMinOrder.setUnit(minQtyStr
+									imprintMinOrder.setValue(minQtyStr
 											.substring(0,
 													minQtyStr.indexOf(":")));
 									imprintMinOrder
-											.setValue(minQtyStr
+											.setUnit(minQtyStr
 													.substring(minQtyStr
 															.indexOf(":") + 1));
 								} else {
@@ -550,13 +550,34 @@ public class LookupParser {
 						artworkValueAry = imprntArtwork.getValue().split(",");
 						for (String currentArtwork : artworkValueAry) {
 							tempImprntArtwork = new Artwork();
-							tempImprntArtwork.setValue(currentArtwork);
+							if(currentArtwork.contains(":")){
+								tempImprntArtwork.setValue(currentArtwork.substring(0,
+										currentArtwork.indexOf(":")));
+								if(!currentArtwork.trim().endsWith(":"))
+								tempImprntArtwork.setComments(currentArtwork
+													.substring(currentArtwork
+															.indexOf(":") + 1));
+							}
 							serviceImprintMethod.getArtwork().add(
 									tempImprntArtwork);
 						}
-					}
+					}else if(null != imprntArtwork && null != imprntArtwork.getValue()){
+						tempImprntArtwork = new Artwork();
+						tempArtwork=imprntArtwork.getValue();
+						if(tempArtwork.contains(":")){ 
+						tempImprntArtwork.setValue(tempArtwork.substring(0,
+								tempArtwork.indexOf(":")));
+						if(!tempArtwork.trim().endsWith(":"))
+						tempImprntArtwork.setComments(tempArtwork
+											.substring(tempArtwork
+													.indexOf(":") + 1));
+						}
+						serviceImprintMethod.getArtwork().add(
+								tempImprntArtwork);
+							}						
 
 					serviceImprintMethod.setMinimumOrder(imprintMinOrder);
+					if(serviceImprintMethod.getType()!=null)
 					imprintMethodList.add(serviceImprintMethod);
 				}
 				imprintCntr++;
@@ -652,8 +673,10 @@ public class LookupParser {
 			}
 
 		}
-
+		if(productNumberList.size()>0)
 		return productNumberList;
+		else
+			return null;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -719,9 +742,9 @@ public class LookupParser {
 						currentOption.getValues().add(currentOptValue);
 					}
 					currentOption.setCanOnlyOrderOne(Boolean
-							.valueOf(optionAryList.get(1)));
+							.valueOf((optionAryList.get(1).equalsIgnoreCase("Y")?"true":"false")));
 					currentOption.setRequiredForOrder(Boolean
-							.valueOf(optionAryList.get(2)));
+							.valueOf((optionAryList.get(2).equalsIgnoreCase("Y")?"true":"false")));
 					currentOption
 							.setAdditionalInformation(optionAryList.get(3));
 
