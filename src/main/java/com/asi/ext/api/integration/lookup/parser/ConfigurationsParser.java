@@ -815,7 +815,7 @@ public class ConfigurationsParser {
 		}
 
 		imprintMethodsList=productLookupParser.setServiceImprintMethods(productDetail,imprintMethods,criteriaSetParser);
-		if(null!=imprintMethodsList && imprintMethodsList.size()>0 && imprintMethodsList.get(0).getType()!=null)
+		if(null!=imprintMethodsList && imprintMethodsList.size()>0)
 		serviceProductConfig.setImprintMethods(imprintMethodsList);
 		
 		

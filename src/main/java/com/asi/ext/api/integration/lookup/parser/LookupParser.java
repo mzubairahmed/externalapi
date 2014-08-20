@@ -557,6 +557,7 @@ public class LookupParser {
 					}
 
 					serviceImprintMethod.setMinimumOrder(imprintMinOrder);
+					if(serviceImprintMethod.getType()!=null)
 					imprintMethodList.add(serviceImprintMethod);
 				}
 				imprintCntr++;
