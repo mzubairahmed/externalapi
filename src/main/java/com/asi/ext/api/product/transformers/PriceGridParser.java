@@ -216,6 +216,9 @@ public class PriceGridParser extends ProductParser {
 
         List<PriceGrid> finalPGrids = new ArrayList<PriceGrid>();
         for (com.asi.ext.api.service.model.PriceGrid serPGrid : servicePriceGrids) {
+            if (new com.asi.ext.api.service.model.PriceGrid().equals(serPGrid)) {
+                continue;
+            }
             PriceGrid newPGrid = new PriceGrid();
             // Basic fields
             newPGrid.setID(String.valueOf(--priceGridId));

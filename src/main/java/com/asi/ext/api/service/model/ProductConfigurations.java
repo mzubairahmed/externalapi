@@ -3,6 +3,9 @@ package com.asi.ext.api.service.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -62,6 +65,8 @@ public class ProductConfigurations {
     private ShippingEstimate    shippingEstimates    = null;
 
     @JsonProperty("Colors")
+    @XmlElementWrapper(name = "Colors")
+    @XmlElement(name = "Color")
     public List<Color> getColors() {
         return colors;
     }
@@ -72,6 +77,8 @@ public class ProductConfigurations {
     }
 
     @JsonProperty("Materials")
+    @XmlElementWrapper(name = "Materials")
+    @XmlElement(name = "Material")
     public List<Material> getMaterials() {
         return materials;
     }
@@ -92,6 +99,8 @@ public class ProductConfigurations {
     }
 
     @JsonProperty("Shapes")
+    @XmlElementWrapper(name = "Shapes")
+    @XmlElement(name = "Shape")
     public List<String> getShapes() {
         return shapes;
     }
@@ -100,7 +109,9 @@ public class ProductConfigurations {
     public void setShapes(List<String> shapes) {
         this.shapes = shapes;
     }
-
+    
+    @XmlElementWrapper(name = "Themes")
+    @XmlElement(name = "Theme")
     public List<String> getThemes() {
 		return themes;
 	}
@@ -110,6 +121,8 @@ public class ProductConfigurations {
 	}
 
 	@JsonProperty("Options")
+    @XmlElementWrapper(name = "Options")
+    @XmlElement(name = "Option")
     public List<Option> getOptions() {
         return options;
     }
@@ -120,6 +133,8 @@ public class ProductConfigurations {
     }
 
     @JsonProperty("Origins")
+    @XmlElementWrapper(name = "Origins")
+    @XmlElement(name = "Origin")
     public List<String> getOrigins() {
         return origins;
     }
@@ -130,6 +145,8 @@ public class ProductConfigurations {
     }
 
     @JsonProperty("Packaging")
+    @XmlElementWrapper(name = "Packagings")
+    @XmlElement(name = "Packaging")
     public List<String> getPackaging() {
         return packaging;
     }
@@ -140,6 +157,8 @@ public class ProductConfigurations {
     }
 
     @JsonProperty("TradeNames")
+    @XmlElementWrapper(name = "TradeNames")
+    @XmlElement(name = "TradeName")
     public List<String> getTradeNames() {
         return tradeNames;
     }
@@ -150,6 +169,8 @@ public class ProductConfigurations {
     }
 
     @JsonProperty("ImprintMethods")
+    @XmlElementWrapper(name = "ImprintMethods")
+    @XmlElement(name = "ImprintMethod")
     public List<ImprintMethod> getImprintMethods() {
         return imprintMethods;
     }
@@ -160,6 +181,8 @@ public class ProductConfigurations {
     }
 
     @JsonProperty("ProductionTime")
+    @XmlElementWrapper(name = "ProductionTimes")
+    @XmlElement(name = "ProductionTime")
     public List<ProductionTime> getProductionTime() {
         return productionTime;
     }
@@ -170,6 +193,8 @@ public class ProductConfigurations {
     }
 
     @JsonProperty("RushTime")
+    @XmlElementWrapper(name = "RushTimes")
+    @XmlElement(name = "RushTime")
     public List<RushTime> getRushTime() {
         return rushTime;
     }
@@ -180,6 +205,8 @@ public class ProductConfigurations {
     }
 
     @JsonProperty("AdditionalColors")
+    @XmlElementWrapper(name = "AdditionalColors")
+    @XmlElement(name = "AdditionalColor")
     public List<String> getAdditionalColors() {
         return additionalColors;
     }
@@ -190,6 +217,8 @@ public class ProductConfigurations {
     }
 
     @JsonProperty("AdditionalLocations")
+    @XmlElementWrapper(name = "AdditionalLocations")
+    @XmlElement(name = "AdditionalLocation")
     public List<String> getAdditionalLocations() {
         return additionalLocations;
     }
@@ -210,6 +239,8 @@ public class ProductConfigurations {
     }
 
     @JsonProperty("ImprintSizeLocations")
+    @XmlElementWrapper(name = "ImprintSizeLocations")
+    @XmlElement(name = "ImprintSizeLocation")
     public List<ImprintSizeLocation> getImprintSizeLocations() {
         return imprintSizeLocations;
     }
