@@ -1,6 +1,5 @@
 package com.asi.ext.api.service.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -8,8 +7,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonInclude(Include.NON_NULL)
 public class Material {
 
@@ -20,7 +19,7 @@ public class Material {
     @JsonProperty("Combo")
     private Combo         combos         = null;
     @JsonProperty("BlendMaterials")
-    private List<BlendMaterial> blendMaterials = new ArrayList<BlendMaterial>();
+    private List<BlendMaterial> blendMaterials = null;
 
     @JsonProperty("Name")
     public String getName() {

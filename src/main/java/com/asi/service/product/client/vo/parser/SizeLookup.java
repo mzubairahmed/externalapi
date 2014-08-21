@@ -22,6 +22,7 @@ import com.asi.ext.api.service.model.Size;
 import com.asi.ext.api.service.model.Value;
 import com.asi.ext.api.service.model.Values;
 import com.asi.ext.api.service.model.Volume;
+import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.service.product.client.vo.CriteriaSetValues;
 
 
@@ -102,6 +103,8 @@ public class SizeLookup {
 			if(null!=otherValue && !otherValue.equalsIgnoreCase("other"))
 			valueObj.setUnit(otherValue);
 			valueObj.setValue(valueMap.get("UnitValue").toString());
+			if(criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION))
+			valueObj.setAttribute(getSizesElementValue("ID", criteriaAttributes, valueMap.get("CriteriaAttributeId").toString()));
 			valuesList.add(valueObj);
 			}
 		}

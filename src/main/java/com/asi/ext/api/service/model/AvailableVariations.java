@@ -7,6 +7,7 @@ public class AvailableVariations {
 	private String parentValue;
 	@JsonProperty("ChildValue")
 	private Object childValue;
+	
 	public String getParentValue() {
 		return parentValue;
 	}
