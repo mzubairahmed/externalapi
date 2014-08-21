@@ -421,9 +421,6 @@ public class ProductRepo {
         serviceProduct.setAdditionalProductInfo(radProduct.getAdditionalInfo());
         serviceProduct.setAdditionalShippingInfo(radProduct.getAdditionalShippingInfo());
         serviceProduct.setPriceConfirmedThru(radProduct.getPriceConfirmationDate());
-        serviceProduct.setCanOrderLessThanMimimum(String.valueOf(radProduct.getIsOrderLessThanMinimumAllowed()));
-        
-        
         
         return serviceProduct;
     }
