@@ -1,10 +1,11 @@
 package com.asi.ext.api.service.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -45,8 +46,12 @@ public class Product {
     @JsonProperty("BreakoutByPrice")
     private String             breakOutByPrice;
     @JsonProperty("LineNames")
+    @XmlElementWrapper(name="LineNames")
+    @XmlElement(name="LineName")
     private List<String>       lineNames               = null;
     @JsonProperty("Catalogs")
+    @XmlElementWrapper(name="Catalogs")
+    @XmlElement(name="Catalog")
     private List<Catalog>      catalogs                = null;
     @JsonProperty("DistributorOnly")
     private String             distributorOnly         = null;
@@ -153,21 +158,36 @@ public class Product {
     }
 
     @JsonProperty("FOBPoints")
+    @XmlElementWrapper(name="FOBPoints")
+    @XmlElement(name="FOBPoint")
     private List<String>          fobPoints       = null;
-
     @JsonProperty("ProductKeywords")
+    @XmlElementWrapper(name="ProductKeywords")
+    @XmlElement(name="ProductKeyword")
     private List<String>          productKeywords = null;
     @JsonProperty("Categories")
+    @XmlElementWrapper(name="Categories")
+    @XmlElement(name="Category")
     private List<String>          categories      = null;
     @JsonProperty("ComplianceCerts")
+    @XmlElementWrapper(name="ComplianceCerts")
+    @XmlElement(name="ComplianceCert")
     private List<String>          complianceCerts = null;
     @JsonProperty("SafetyWarnings")
+    @XmlElementWrapper(name="SafetyWarnings")
+    @XmlElement(name="SafetyWarning")
     private List<String>          safetyWarnings  = null;
     @JsonProperty("Images")
+    @XmlElementWrapper(name="Images")
+    @XmlElement(name="Image")
     private List<Image>           images          = null;
     @JsonProperty("PriceGrids")
+    @XmlElementWrapper(name = "PriceGrids")
+    @XmlElement(name = "PriceGrid")
     private List<PriceGrid>       priceGrids      = null;
     @JsonProperty("ProductNumbers")
+    @XmlElementWrapper(name="ProductNumbers")
+    @XmlElement(name="ProductNumber")
     private List<ProductNumber>   productNumbers  = null;
     @JsonProperty("ProductConfigurations")
     private ProductConfigurations productConfigurations;

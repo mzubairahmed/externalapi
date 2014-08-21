@@ -132,6 +132,8 @@ public class ImportTransformer {
             productToSave.setRushServiceFlag("U");
             productToSave.setWorkflowStatusCode("INPR");
             productToSave.setWorkflowStatusStateCode("INCP");
+            //LMIN Process
+            //productToSave.setIsOrderLessThanMinimumAllowed()
         }
         // DataSourceId
         productToSave.setDataSourceId(dataSourceId);
@@ -387,7 +389,7 @@ public class ImportTransformer {
         }
 
         // Product Samples and Spec Sample Processing
-        if (serviceProdConfigs.getSamples() != null) {
+        if (serviceProdConfigs.getSamples() != null && !serviceProdConfigs.getSamples().isNull()) {
             tempCriteriaSet = specSampleProcessor.getProductSamplesCriteriaSet(serviceProdConfigs.getSamples(), rdrProduct,
                     existingCriteriaSetMap.get(ApplicationConstants.CONST_PRODUCT_SAMPLE_CRITERIA_CODE), configId);
             existingCriteriaSetMap.put(ApplicationConstants.CONST_PRODUCT_SAMPLE_CRITERIA_CODE, tempCriteriaSet);
@@ -479,7 +481,11 @@ public class ImportTransformer {
     }
 
     private List<com.asi.service.product.client.vo.PriceGrid> getPriceGrids(List<PriceGrid> priceGrids, ProductDetail product) {
-        return priceGridParser.getPriceGrids(priceGrids, product);
+        if (priceGrids != null && !priceGrids.isEmpty()) {
+            return priceGridParser.getPriceGrids(priceGrids, product);
+        } else {
+            return new ArrayList<>();
+        }
 
     }
 

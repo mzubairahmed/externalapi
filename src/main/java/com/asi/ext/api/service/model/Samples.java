@@ -4,6 +4,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Samples {
@@ -90,6 +91,26 @@ public class Samples {
     @Override
     public boolean equals(Object other) {
         return EqualsBuilder.reflectionEquals(this, other);
+    }
+    @JsonIgnore
+    public boolean isNull() {
+        if (this == null) {
+            return true;
+        }
+        if (this.equals(new Samples())) {
+            return true;
+        }
+        if (this.specSampleAvailable == null && this.productSampleAvailable == null) {
+            return true;
+        }
+        if (this.specSampleAvailable == null && this.productSampleAvailable != null) {
+            this.specSampleAvailable = false;
+        }
+        
+        if (this.specSampleAvailable != null && this.productSampleAvailable == null) {
+            this.productSampleAvailable = false;
+        }
+        return false;
     }
 
 }

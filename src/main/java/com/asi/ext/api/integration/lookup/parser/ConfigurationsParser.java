@@ -923,15 +923,15 @@ public class ConfigurationsParser {
 				valuesList=productLookupParser.findSizeValueListDetails(shippingItemValue, currentCriteriaSetValue.getCriteriaCode(), currentCriteriaSetValue.getValue(), productDetail.getExternalProductId());
 			for(Value currntValueObj:valuesList)
 				{
-				if(sdimCntr==0){
+				if(currntValueObj.getAttribute().equalsIgnoreCase("length")){
 				// Length
 				shippingDimensions.setLength(currntValueObj.getValue());
 				shippingDimensions.setLengthUnit(currntValueObj.getUnit());				
-			}else if(sdimCntr==1){
+			}else if(currntValueObj.getAttribute().equalsIgnoreCase("width")){
 				// Width
 				shippingDimensions.setWidth(currntValueObj.getValue());
 				shippingDimensions.setWidthUnit(currntValueObj.getUnit());
-			}else if(sdimCntr==2){
+			}else if(currntValueObj.getAttribute().equalsIgnoreCase("height")){
 				// Height
 				shippingDimensions.setHeight(currntValueObj.getValue());
 				shippingDimensions.setHeightUnit(currntValueObj.getUnit());				
@@ -942,7 +942,14 @@ public class ConfigurationsParser {
 			shippingEstimate.setDimensions(shippingDimensions);
 		}
 		serviceProductConfig.setShippingEstimates(shippingEstimate);
+		
+		// LMIN
+		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_LESS_THAN_MIN_CRT_CODE);
+		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0 && productDetail.getIsOrderLessThanMinimumAllowed())
+		serviceProduct.setCanOrderLessThanMimimum(String.valueOf(productDetail.getIsOrderLessThanMinimumAllowed()));
+		
 		serviceProduct.setProductBreakoutBy(breakoutBy);
+		breakoutBy=null;
 		if(fobPointsList.size()>0)
 		serviceProduct.setFobPoints(fobPointsList);
 		serviceProduct.setProductConfigurations(serviceProductConfig);
