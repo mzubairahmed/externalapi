@@ -1,6 +1,5 @@
 package com.asi.ext.api.service.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
