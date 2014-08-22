@@ -672,7 +672,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                             unitValueAry = new String[] { ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_PANT_SIZE_WAIST,
                                     ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_PANT_SIZE_INSEAM };
                         Value valueObj = null;
-                        Value[] valueAry = new Value[unitValueAry.length];
+                        List<Value> valueAry = new ArrayList<>();
                         String[] untValueFnlAry = new String[unitValueAry.length];
                         String validUnit = null;
                         if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_DRS_SHRT_SIZE))
@@ -707,11 +707,13 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                                     unitValueAry[untValCntr]));
                             valueObj.setUnitValue(untValueFnlAry[untValCntr].trim());
                             if (!valueObj.getUnitValue().equalsIgnoreCase(ApplicationConstants.CONST_STRING_EMPTY)) {
-                                valueAry[untValCntr] = valueObj;
-                            } else
-                                valueAry = Arrays.copyOf(valueAry, valueAry.length - 1);
+                                valueAry.add(valueObj);
+                            } else {
+                                // Check this later
+                                //valueAry = Arrays.copyOf(valueAry, valueAry.length - 1);
+                            }
                         }
-                        criteriaSetValue.setValue(valueAry);
+                        criteriaSetValue.setValue(valueAry.toArray(new Value[0]));
                     }
 
                     isOtherSize = false;
