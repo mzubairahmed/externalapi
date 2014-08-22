@@ -41,6 +41,7 @@ import com.asi.service.product.client.vo.ProductDataSheet;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductInventoryLink;
 import com.asi.service.product.client.vo.ProductKeywords;
+import com.asi.service.product.client.vo.ProductMediaCitationReferences;
 import com.asi.service.product.client.vo.ProductMediaCitations;
 import com.asi.service.product.client.vo.ProductMediaItems;
 import com.asi.service.product.client.vo.SelectedComplianceCert;
@@ -401,14 +402,17 @@ public class ProductRepo {
 
         // Catalog
         if(null!=radProduct.getProductMediaCitations() && radProduct.getProductMediaCitations().size()>0){
-        	List<Catalog> catalogsList=new ArrayList<>();
-        	Catalog catalog=null;
+        	Catalog catalog;
+        	List<Catalog> catalogsList = new ArrayList<>();
         	for(ProductMediaCitations currentMediaCitation:radProduct.getProductMediaCitations()){
-        		catalog=new Catalog();
-                catalogsList.add(ProductDataStore.getMediaCitationById(currentMediaCitation.getMediaCitationId(),
-                        currentMediaCitation.getProductMediaCitationReferences().get(0).getMediaCitationReferenceId(),
-                        radProduct.getCompanyId()));
-        	}        	
+        		List<ProductMediaCitationReferences> references = currentMediaCitation.getProductMediaCitationReferences();
+        		if(references != null && !references.isEmpty()) {
+        			catalog = ProductDataStore.getMediaCitationById(currentMediaCitation.getMediaCitationId(), references.get(0).getMediaCitationReferenceId(), radProduct.getCompanyId());
+        		} else {
+        			catalog = ProductDataStore.getMediaCitationByIdWithoutReference(currentMediaCitation.getMediaCitationId(), radProduct.getCompanyId());
+        		}
+        		catalogsList.add(catalog);
+        	}
         	serviceProduct.setCatalogs(catalogsList);
         }
 
