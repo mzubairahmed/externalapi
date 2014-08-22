@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
@@ -156,11 +155,9 @@ public class ProductRepo {
 
     public ExternalAPIResponse updateProduct(String authToken, String companyId, String xid, com.asi.ext.api.service.model.Product serviceProduct) {
         ProductDetail existingRadarProduct = null;
-        boolean isLoggedIn = false;
         try {
 //            existingRadarProduct = productClient.getRadarProduct(companyId, serviceProduct.getExternalProductId());
         	existingRadarProduct = productClient.doIt(authToken, companyId, serviceProduct.getExternalProductId());
-        	isLoggedIn = true;
         } catch (ProductNotFoundException e) {
             _LOGGER.info("Product Not found with Existing, going to create new Product");
         } catch (ExternalApiAuthenticationException ea) {
@@ -172,7 +169,10 @@ public class ProductRepo {
                     generateBatchDataSourceId(companyId), companyId);
         } catch (Exception e) {
             _LOGGER.error("Exception while generating Radar product", e);
-            return productClient.convertExceptionToResponseModel(e);
+            ExternalAPIResponse response = productClient.convertExceptionToResponseModel(e);
+            response = appendErrorLogsToResponse(response, xid);
+            doCleanUp(existingRadarProduct.getExternalProductId());
+            return response;
         }
 
         // Saving product to Radar API

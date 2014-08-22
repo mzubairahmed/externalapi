@@ -3,6 +3,9 @@ package com.asi.ext.api.service.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -103,6 +106,8 @@ public class PriceGrid {
     }
 
     @JsonProperty("Prices")
+    @XmlElementWrapper(name = "Prices")
+    @XmlElement(name = "Price")
     public List<Price> getPrices() {
         return prices;
     }
@@ -113,6 +118,8 @@ public class PriceGrid {
     }
 
     @JsonProperty("PriceConfigurations")
+    @XmlElementWrapper(name = "PriceConfigurations")
+    @XmlElement(name = "PriceConfiguration")
     public List<PriceConfiguration> getPriceConfigurations() {
         return priceConfigurations;
     }
