@@ -80,6 +80,11 @@ public class CriteriaSetParser {
     	if(null!=criteriaSetReference)
     	 criteriaSetReference.remove(externalId);
     }
+    public void removeCriteriaReferencesForSizesByExternalId(String externalId)
+    {
+    	if(null!=criteriaSetValueReference)
+    		criteriaSetValueReference.remove(externalId);
+    }
     public Object findSizesCriteriaSetById(String extPrdId, String criteriaSetValueId) {
         if (criteriaSetValueReference == null || criteriaSetValueReference.isEmpty()) {
             return null;

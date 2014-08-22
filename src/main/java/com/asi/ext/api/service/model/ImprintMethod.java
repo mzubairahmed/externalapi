@@ -1,14 +1,11 @@
 package com.asi.ext.api.service.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+@JsonInclude(Include.NON_NULL)
 public class ImprintMethod {
 
     @JsonProperty("Type")
@@ -18,7 +15,7 @@ public class ImprintMethod {
     @JsonProperty("MinimumOrder")
     private MinimumOrder  minimumOrder;
     @JsonProperty("Artwork")
-    private List<Artwork> artwork = new ArrayList<Artwork>();
+    private List<Artwork> artwork = null;
 
     @JsonProperty("Type")
     public String getType() {
@@ -60,19 +57,6 @@ public class ImprintMethod {
         this.artwork = artwork;
     }
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
 
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        return EqualsBuilder.reflectionEquals(this, other);
-    }
 
 }

@@ -4,14 +4,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class AvailableVariations {
 	@JsonProperty("ParentValue")
-	private String parentValue;
+	private Object parentValue;
 	@JsonProperty("ChildValue")
 	private Object childValue;
 	
-	public String getParentValue() {
+	public Object getParentValue() {
 		return parentValue;
 	}
-	public void setParentValue(String parentValue) {
+	public void setParentValue(Object parentValue) {
 		this.parentValue = parentValue;
 	}
 	public Object getChildValue() {
