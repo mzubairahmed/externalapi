@@ -97,7 +97,7 @@ public class ProductColorProcessor extends SimpleCriteriaProcessor {
                 criteriaSetValue = new CriteriaSetValues();
                 criteriaSetValue.setId(String.valueOf(--uniqueSetValueId));
                 criteriaSetValue.setCriteriaCode(ApplicationConstants.CONST_COLORS_CRITERIA_CODE);
-                if (hasCombo) { 
+                if (hasCombo) {
                     criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_LIST);
                 } else {
                     criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_LOOK);
@@ -106,33 +106,39 @@ public class ProductColorProcessor extends SimpleCriteriaProcessor {
                 criteriaSetValue.setIsSetValueMeasurement(ApplicationConstants.CONST_STRING_FALSE_SMALL);
                 criteriaSetValue.setCriteriaSetId(matchedCriteriaSet.getCriteriaSetId());
                 CriteriaSetCodeValues[] setCodeValues = null;
-                if (hasCombo) { 
+                if (hasCombo) {
                     setCodeValues = getCriteriaSetCodeValuesForCombo(setCodeValueId, criteriaSetValue.getId(), color.getCombos());
-                    //criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValuesForCombo(setCodeValueId, criteriaSetValue.getId(), color.getCombos()));
+                    // criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValuesForCombo(setCodeValueId,
+                    // criteriaSetValue.getId(), color.getCombos()));
                 } else {
                     setCodeValues = getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId());
-                    //criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
-                    
+                    // criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId,
+                    // criteriaSetValue.getId()));
+
                 }
                 if (!CommonUtilities.isValueNull(color.getRGBHex()) && setCodeValues != null && setCodeValues.length > 0) {
                     setCodeValues[0].setCodeValue(color.getRGBHex());
                 }
                 criteriaSetValue.setCriteriaSetCodeValues(setCodeValues);
-                
+
                 if (hasAliace) {
                     criteriaSetValue.setValue(color.getAlias());
                 } else {
                     criteriaSetValue.setValue(color.getName());
                 }
             } else {
-                if (criteriaSetValue.getCriteriaSetCodeValues() != null &&  criteriaSetValue.getCriteriaSetCodeValues().length > 0) {
+                if (hasCombo) {
+                    criteriaSetValue = updateComboValues(color, criteriaSetValue, setCodeValueId);
+                } else if (criteriaSetValue.getCriteriaSetCodeValues() != null && criteriaSetValue.getCriteriaSetCodeValues().length > 0) {
                     criteriaSetValue.getCriteriaSetCodeValues()[0].setCodeValue(color.getRGBHex());
-                } 
+                }
             }
 
-            updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_COLORS_CRITERIA_CODE,
-                    processSourceCriteriaValueByCriteriaCode(hasAliace ? color.getAlias() : color.getName(), ApplicationConstants.CONST_COLORS_CRITERIA_CODE),
-                    criteriaSetValue);
+            updateReferenceTable(
+                    existingProduct.getExternalProductId(),
+                    ApplicationConstants.CONST_COLORS_CRITERIA_CODE,
+                    processSourceCriteriaValueByCriteriaCode(hasAliace ? color.getAlias() : color.getName(),
+                            ApplicationConstants.CONST_COLORS_CRITERIA_CODE), criteriaSetValue);
 
             finalCriteriaSetValues.add(criteriaSetValue);
         }
@@ -144,18 +150,19 @@ public class ProductColorProcessor extends SimpleCriteriaProcessor {
         return matchedCriteriaSet;
     }
 
-    protected CriteriaSetCodeValues[] getCriteriaSetCodeValuesForCombo(String setCodeValueId, String setValueId, List<Combo> comboColors) {
+    protected CriteriaSetCodeValues[] getCriteriaSetCodeValuesForCombo(String setCodeValueId, String setValueId,
+            List<Combo> comboColors) {
         List<CriteriaSetCodeValues> setCodeValues = new ArrayList<CriteriaSetCodeValues>();
-        
+
         CriteriaSetCodeValues primarySetCodeValue = new CriteriaSetCodeValues();
         primarySetCodeValue.setCriteriaSetValueId(setValueId);
         primarySetCodeValue.setSetCodeValueId(setCodeValueId);
         primarySetCodeValue.setCodeValue("");
         primarySetCodeValue.setCodeValueDetail("main");
         primarySetCodeValue.setId(ApplicationConstants.CONST_STRING_ZERO);
-        
+
         setCodeValues.add(primarySetCodeValue);
-        
+
         if (comboColors != null && !comboColors.isEmpty()) {
             for (Combo combo : comboColors) {
                 String childColorSetCodeValId = getSetCodeValueId(combo.getName());
@@ -175,9 +182,37 @@ public class ProductColorProcessor extends SimpleCriteriaProcessor {
 
         return setCodeValues.toArray(new CriteriaSetCodeValues[0]);
     }
-    
-    private String getSearchKeyForComboColor(Color color) {
 
+    private CriteriaSetValues updateComboValues(Color color, CriteriaSetValues criteriaSetValue, String parentSetCodeValueId) {
+        if (criteriaSetValue.getCriteriaSetCodeValues() != null && criteriaSetValue.getCriteriaSetCodeValues().length > 0) {
+            List<CriteriaSetCodeValues> setCodeValueList = new ArrayList<CriteriaSetCodeValues>();
+            CriteriaSetCodeValues parentSetCodeValue = null;
+            
+            for (Combo combo : color.getCombos()) {
+                boolean matchFound = false;
+                String setCodeValueIdForCombo = getSetCodeValueId(combo.getName());
+                for (CriteriaSetCodeValues comboSetCodeValue : criteriaSetValue.getCriteriaSetCodeValues()) {
+                    if (comboSetCodeValue.getSetCodeValueId().equalsIgnoreCase(parentSetCodeValueId) && parentSetCodeValue == null) {
+                        parentSetCodeValue = comboSetCodeValue;
+                        comboSetCodeValue.setCodeValue(color.getRGBHex());
+                        setCodeValueList.add(comboSetCodeValue);
+                    } else if (comboSetCodeValue.getSetCodeValueId().equalsIgnoreCase(setCodeValueIdForCombo)) {
+                        comboSetCodeValue.setCodeValueDetail(combo.getType());
+                        comboSetCodeValue.setCodeValue(combo.getRgbhex());
+                        setCodeValueList.add(comboSetCodeValue);
+                        matchFound = true;
+                    }
+                }
+                if (!matchFound) {
+                    setCodeValueList.add(getCriteriaSetCodeValue(setCodeValueIdForCombo, criteriaSetValue.getCriteriaSetId(), combo.getRgbhex(), combo.getType()));
+                }
+            }
+            criteriaSetValue.setCriteriaSetCodeValues(setCodeValueList.toArray(new CriteriaSetCodeValues[0]));
+        }
+        return criteriaSetValue;
+    }
+
+    private String getSearchKeyForComboColor(Color color) {
         return color.getAlias();
     }
 

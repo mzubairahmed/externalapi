@@ -94,7 +94,7 @@ public class ProductImprintSizeAndLocationProcessor extends SimpleCriteriaProces
             if (CommonUtilities.isValueNull(setCodeValueId)) {
                 addErrorToBatchLogCollection(existingProduct.getExternalProductId(),
                         ApplicationConstants.CONST_BATCH_ERR_LOOKUP_VALUE_NOT_EXIST, "Shape Value " + value
-                                + " doesn’t exist in lookup values");
+                                + " doesn't exist in lookup values");
                 continue;
             }
             CriteriaSetValues criteriaSetValue = null;

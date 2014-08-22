@@ -77,7 +77,7 @@ public class ProductOriginProcessor extends SimpleCriteriaProcessor {
                 // LOG Batch Error
                 addErrorToBatchLogCollection(existingProduct.getExternalProductId(),
                         ApplicationConstants.CONST_BATCH_ERR_LOOKUP_VALUE_NOT_EXIST, "Origin value " + value
-                                + " doesn’t exist in lookup values");
+                                + " doesn't exist in lookup values");
                 continue;
             }
             CriteriaSetValues criteriaSetValue = null;
