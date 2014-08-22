@@ -1,6 +1,5 @@
 package com.asi.ext.api.service.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -21,27 +20,27 @@ public class ProductConfigurations {
     @JsonProperty("Samples")
     private Samples                   samples;
     @JsonProperty("Colors")
-    private List<Color>               colors               = new ArrayList<Color>();
+    private List<Color>               colors               = null;
     @JsonProperty("Materials")
-    private List<Material>            materials            = new ArrayList<Material>();
+    private List<Material>            materials            = null;
     @JsonProperty("Sizes")
     private Size                	  sizes                = new Size();
     @JsonProperty("Shapes")
-    private List<String>              shapes               = new ArrayList<String>();
+    private List<String>              shapes               = null;
     @JsonProperty("Themes")
-    private List<String>			  themes				= new ArrayList<String>();
+    private List<String>			  themes				= null;
     @JsonProperty("Options")
-    private List<Option>              options              = new ArrayList<Option>();
+    private List<Option>              options              = null;
     @JsonProperty("Origins")
-    private List<String>              origins              = new ArrayList<String>();
+    private List<String>              origins              = null;
     @JsonProperty("Packaging")
-    private List<String>              packaging            = new ArrayList<String>();
+    private List<String>              packaging            = null;
     @JsonProperty("TradeNames")
-    private List<String>              tradeNames           = new ArrayList<String>();
+    private List<String>              tradeNames           = null;
     @JsonProperty("ImprintMethods")
-    private List<ImprintMethod>       imprintMethods       = new ArrayList<ImprintMethod>();
+    private List<ImprintMethod>       imprintMethods       = null;
     @JsonProperty("ProductionTime")
-    private List<ProductionTime>      productionTime       = new ArrayList<ProductionTime>();
+    private List<ProductionTime>      productionTime       = null;
     @JsonProperty("SameDayRush")
     private SameDayRush sameDayRush=null;
     
@@ -54,13 +53,13 @@ public class ProductConfigurations {
 	}
 
 	@JsonProperty("RushTime")
-    private List<RushTime>            rushTime             = new ArrayList<RushTime>();
+    private List<RushTime>            rushTime             = null;
     @JsonProperty("AdditionalColors")
-    private List<String>              additionalColors     = new ArrayList<String>();
+    private List<String>              additionalColors     = null;
     @JsonProperty("AdditionalLocations")
-    private List<String>              additionalLocations  = new ArrayList<String>();
+    private List<String>              additionalLocations  = null;
     @JsonProperty("ImprintSizeLocations")
-    private List<ImprintSizeLocation> imprintSizeLocations = new ArrayList<ImprintSizeLocation>();
+    private List<ImprintSizeLocation> imprintSizeLocations = null;
     @JsonProperty("ShippingEstimates")
     private ShippingEstimate    shippingEstimates    = null;
 

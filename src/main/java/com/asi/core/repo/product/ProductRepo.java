@@ -267,6 +267,7 @@ public class ProductRepo {
 
     public com.asi.ext.api.service.model.Product getServiceProduct(String authToken, String companyId, String xid) {
         com.asi.ext.api.service.model.Product serviceProduct = null;
+        CriteriaSetParser criteriaSetParser=new CriteriaSetParser();
         try {
             productDetail = getProductFromService(authToken, companyId, xid);
             // serviceProduct=prepairServiceProduct();
@@ -277,6 +278,9 @@ public class ProductRepo {
                 serviceProduct=configurationParser.setProductWithConfigurations(productDetail, serviceProduct);
                 serviceProduct=priceGridParser.setProductWithPriceGrids(productDetail,serviceProduct);
                 serviceProduct = setBasicProductDetails(productDetail, serviceProduct);
+              
+				criteriaSetParser.removeCriteriaReferencesByExternalId(serviceProduct.getExternalProductId());
+        		criteriaSetParser.removeCriteriaReferencesForSizesByExternalId(serviceProduct.getExternalProductId());
                 /*
                  * List<com.asi.ext.api.service.model.PriceGrid> priceGridList = new ArrayList<>();
                  * serviceProduct.setPriceGrids(priceGridList);

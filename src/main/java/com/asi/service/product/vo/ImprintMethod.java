@@ -6,11 +6,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @XmlRootElement(namespace = "http://www.asicentral.com/schema/product" , name = "imprintMethod")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder={"methodName","minimumOrder","artworkName"})
-
+@JsonInclude(Include.NON_NULL)
 @JsonPropertyOrder({"methodName","minimumOrder","artworkName"})
 public class ImprintMethod {
 	@XmlElement(name="methodName")
