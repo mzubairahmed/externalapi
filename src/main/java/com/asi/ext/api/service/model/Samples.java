@@ -11,11 +11,11 @@ public class Samples {
 
     @JsonProperty("SpecSampleAvailable")
     private Boolean specSampleAvailable;
-    @JsonProperty("SpecDetails")
+    @JsonProperty("SpecInfo")
     private String  specDetails;
     @JsonProperty("ProductSampleAvailable")
     private Boolean productSampleAvailable;
-    @JsonProperty("ProductSampleDetails")
+    @JsonProperty("ProductSampleInfo")
     private String  productSampleDetails;
 
     /**

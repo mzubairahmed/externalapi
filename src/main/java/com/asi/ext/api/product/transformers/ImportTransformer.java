@@ -38,6 +38,7 @@ import com.asi.ext.api.service.model.PriceGrid;
 import com.asi.ext.api.service.model.Product;
 import com.asi.ext.api.service.model.ProductConfigurations;
 import com.asi.ext.api.util.ApplicationConstants;
+import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.ProductParserUtil;
 import com.asi.service.product.client.vo.ProductConfiguration;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
@@ -45,6 +46,7 @@ import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductMediaCitations;
 import com.asi.service.product.client.vo.ProductMediaItems;
 import com.asi.service.product.client.vo.ProductNumber;
+import com.asi.service.product.exception.InvalidProductException;
 
 /**
  * ImportTransformer consist logic for processing each individual Product,
@@ -59,10 +61,11 @@ public class ImportTransformer {
     private ProductCriteriaSets[]                  productCriteriaSetsAry      = null;
 
     private PriceGridParser                        priceGridParser             = new PriceGridParser();
+    private ProductDataStore                       productDataStore            = new ProductDataStore();
 
     private ProductSelectedSafetyWarningProcessor  safetyWarningProcessor      = new ProductSelectedSafetyWarningProcessor();
     private ProductKeywordProcessor                keywordProcessor            = new ProductKeywordProcessor();
-    //private ProductCategoriesProcessor             categoryProcessor           = new ProductCategoriesProcessor();
+    // private ProductCategoriesProcessor categoryProcessor = new ProductCategoriesProcessor();
     private ProductSelectedComplianceCertProcessor complianceCertProcessor     = new ProductSelectedComplianceCertProcessor();
     // Product Media related
     private ProductMediaItemProcessor              productImageProcessor       = new ProductMediaItemProcessor();
@@ -71,7 +74,7 @@ public class ImportTransformer {
     private ProductColorProcessor                  colorProcessor              = new ProductColorProcessor(-201, "0");
     private ProductMateriaProcessor                materialProcessor           = new ProductMateriaProcessor(-301, "0");
     private ProductShapeProcessor                  shapeProcessor              = new ProductShapeProcessor(-401, "0");
-    private ProductThemeProcessor				   themeProcessor			   = new ProductThemeProcessor(-501, "0");
+    private ProductThemeProcessor                  themeProcessor              = new ProductThemeProcessor(-501, "0");
     private ProductTradeNameProcessor              tradeNameProcessor          = new ProductTradeNameProcessor(-601, "0");
     private ProductImprintColorProcessor           imprintColorProcessor       = new ProductImprintColorProcessor(-701, "0");
     private ProductImprintSizeAndLocationProcessor imszProcessor               = new ProductImprintSizeAndLocationProcessor(-801,
@@ -95,8 +98,9 @@ public class ImportTransformer {
 
     private final static Logger                    LOGGER                      = Logger.getLogger(ImportTransformer.class.getName());
 
+
     public ProductDetail generateRadarProduct(com.asi.ext.api.service.model.Product serviceProduct,
-            ProductDetail existingRadarModel, String dataSourceId, String companyId) {
+            ProductDetail existingRadarModel, String dataSourceId, String companyId) throws InvalidProductException {
         LOGGER.info("Started processing product conversion");
         long processingTime = System.currentTimeMillis(); // For evaluating application performance
 
@@ -132,8 +136,8 @@ public class ImportTransformer {
             productToSave.setRushServiceFlag("U");
             productToSave.setWorkflowStatusCode("INPR");
             productToSave.setWorkflowStatusStateCode("INCP");
-            //LMIN Process
-            //productToSave.setIsOrderLessThanMinimumAllowed()
+            // LMIN Process
+            // productToSave.setIsOrderLessThanMinimumAllowed()
         }
         // DataSourceId
         productToSave.setDataSourceId(dataSourceId);
@@ -147,20 +151,25 @@ public class ImportTransformer {
         productToSave.setAdditionalInfo(serviceProduct.getAdditionalProductInfo());
         productToSave.setDistributorComments(serviceProduct.getDistributorOnlyComments());
         productToSave.setAdditionalShippingInfo(serviceProduct.getAdditionalShippingInfo());
-        
+
         // Object Type Elements
         productToSave.setProductInventoryLink(ProductParserUtil.getInventoryLink(serviceProduct.getProductInventoryLink(),
                 existingRadarModel, companyId));
         productToSave.setProductDataSheet(ProductParserUtil.getDataSheet(serviceProduct.getProductDataSheet(), existingRadarModel,
                 companyId));
 
+        // Check for required validations of Product
+        if (!isProductHasValidProductNumber(serviceProduct)) {
+            throw new InvalidProductException(serviceProduct.getExternalProductId(), "Product cannot be saved, validation failed");
+        }
+
         // Basic Collections
         // Process Keyword
         productToSave.setProductKeywords(keywordProcessor.getProductKeywords(serviceProduct.getProductKeywords(),
                 existingRadarModel, true));
 
-        productToSave.setSelectedProductCategories(new ProductCategoriesProcessor().getCategories(serviceProduct.getCategories(), productId, xid,
-                existingRadarModel));
+        productToSave.setSelectedProductCategories(new ProductCategoriesProcessor().getCategories(serviceProduct.getCategories(),
+                productId, xid, existingRadarModel));
 
         // Safety Warning Start
         productToSave.setSelectedSafetyWarnings(safetyWarningProcessor.getSafetyWarnings(serviceProduct.getSafetyWarnings(), xid,
@@ -169,7 +178,6 @@ public class ImportTransformer {
         // Compliance Cert Processing
         productToSave.setSelectedComplianceCerts(complianceCertProcessor.getSelectedComplianceCertList(
                 serviceProduct.getComplianceCerts(), companyId, productId, existingRadarModel));
-
 
         Map<String, ProductCriteriaSets> existingCriteriaSetMap = new HashMap<>();
         Map<String, List<ProductCriteriaSets>> optionsCriteriaSet = new HashMap<>();
@@ -210,14 +218,14 @@ public class ImportTransformer {
 
         // Selected Line name processing
         if (serviceProduct.getLineNames() != null && !serviceProduct.getLineNames().isEmpty()) {
-            productToSave.setSelectedLineNames(selectedLineProcessor.getSelectedLines(serviceProduct.getLineNames(),
-                    productToSave));
+            productToSave
+                    .setSelectedLineNames(selectedLineProcessor.getSelectedLines(serviceProduct.getLineNames(), productToSave));
         }
         // Process Product Configurations
 
         productToSave.setProductConfigurations(processProductConfigurations(configId, existingCriteriaSetMap, optionsCriteriaSet,
                 serviceProduct.getProductConfigurations(), productToSave, isNewProduct));
-        
+
         // Product Media Item processing
         productToSave.setProductMediaItems(getProductMediaItems(companyId, productId, serviceProduct.getImages(),
                 productToSave.getProductMediaItems(), serviceProduct.getExternalProductId()));
@@ -256,7 +264,9 @@ public class ImportTransformer {
         productToSave.setPriceGrids(getPriceGrids(serviceProduct.getPriceGrids(), productToSave));
 
         // Product Number Processing
-        productToSave.setProductNumbers(getProductNumbers(serviceProduct, productToSave));
+        if (!isProductNumberAssociatedWithPriceGrid(xid)) {
+            productToSave.setProductNumbers(getProductNumbers(serviceProduct, productToSave));            
+        }
 
         // Product Catalogs
         productToSave.setProductMediaCitations(getProductMediaCitations(serviceProduct, productToSave));
@@ -316,13 +326,13 @@ public class ImportTransformer {
 
         // Product Theme Processing
         if (serviceProdConfigs.getThemes() != null && !serviceProdConfigs.getThemes().isEmpty()) {
-            tempCriteriaSet = themeProcessor.getThemeCriteriaSet(serviceProdConfigs.getThemes(), rdrProduct, existingCriteriaSetMap.get(ApplicationConstants.CONST_THEME_CRITERIA_CODE), configId);
+            tempCriteriaSet = themeProcessor.getThemeCriteriaSet(serviceProdConfigs.getThemes(), rdrProduct,
+                    existingCriteriaSetMap.get(ApplicationConstants.CONST_THEME_CRITERIA_CODE), configId);
             existingCriteriaSetMap.put(ApplicationConstants.CONST_THEME_CRITERIA_CODE, tempCriteriaSet);
         } else {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_THEME_CRITERIA_CODE);
         }
 
-        
         // Product TradeName Processing
         if (serviceProdConfigs.getTradeNames() != null && !serviceProdConfigs.getTradeNames().isEmpty()) {
             tempCriteriaSet = tradeNameProcessor.getTradenames(serviceProdConfigs.getTradeNames(), rdrProduct,
@@ -480,6 +490,32 @@ public class ImportTransformer {
 
     }
 
+    public boolean isProductHasValidProductNumber(Product serProduct) {
+        boolean pnoFound = false;
+        if (serProduct.getPriceGrids() != null && !serProduct.getPriceGrids().isEmpty()) {
+            for (PriceGrid pg : serProduct.getPriceGrids()) {
+                if (pg != null && !CommonUtilities.isValueNull(pg.getProductNumber())) {
+                    pnoFound = true;
+                    ProductDataStore.productNumberAssociation.put(serProduct.getExternalProductId(), "PRCG");
+                    break;
+                }
+            }
+        }
+        if (serProduct.getProductNumbers() != null && !serProduct.getProductNumbers().isEmpty()) {
+            if (pnoFound) { // Already configured in PriceGrid Level
+                productDataStore.addErrorToBatchLogCollection(serProduct.getExternalProductId(),
+                        ApplicationConstants.CONST_BATCH_ERR_GENERIC_ERROR,
+                        "ProductNumber is configured in PriceGrid and Criteria Level");
+
+                return false;
+            } else {
+                ProductDataStore.productNumberAssociation.put(serProduct.getExternalProductId(), "PNOCRT");
+                return true;
+            }
+        }
+        return true;
+    }
+
     private List<com.asi.service.product.client.vo.PriceGrid> getPriceGrids(List<PriceGrid> priceGrids, ProductDetail product) {
         if (priceGrids != null && !priceGrids.isEmpty()) {
             return priceGridParser.getPriceGrids(priceGrids, product);
@@ -488,6 +524,22 @@ public class ImportTransformer {
         }
 
     }
+
+    private boolean isProductNumberAssociatedWithPriceGrid(String xid) {
+        if (ProductDataStore.productNumberAssociation.get(xid) != null) {
+            return ProductDataStore.productNumberAssociation.get(xid).equalsIgnoreCase("PRCG");
+        } else {
+            return false;
+        }
+    }
+
+/*    private boolean isProductNumberAssociatedWithCriteria(String xid) {
+        if (ProductDataStore.productNumberAssociation.get(xid) != null) {
+            return ProductDataStore.productNumberAssociation.get(xid).equalsIgnoreCase("PNOCRT");
+        } else {
+            return false;
+        }
+    }*/
 
     /*
      * public Object transformMessage(Object muleMessage, String arg1) {

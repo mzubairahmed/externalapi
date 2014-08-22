@@ -81,6 +81,19 @@ public abstract class SimpleCriteriaProcessor {
 
         return new CriteriaSetCodeValues[] { criteriaSetCodeValue };
     }
+    
+    protected CriteriaSetCodeValues getCriteriaSetCodeValue(String setCodeValueId, String setValueId, String codeValue, String codeValueDetail) {
+        CriteriaSetCodeValues criteriaSetCodeValue = new CriteriaSetCodeValues();
+
+        criteriaSetCodeValue.setCriteriaSetValueId(setValueId);
+        criteriaSetCodeValue.setSetCodeValueId(setCodeValueId);
+        criteriaSetCodeValue.setCodeValue(codeValue);
+        criteriaSetCodeValue.setCodeValueDetail(codeValueDetail);
+        criteriaSetCodeValue.setId(ApplicationConstants.CONST_STRING_ZERO);
+
+        return criteriaSetCodeValue;
+    }
+
 
     @SuppressWarnings("unchecked")
     protected String getKeyFromValue(CriteriaSetValues value) {

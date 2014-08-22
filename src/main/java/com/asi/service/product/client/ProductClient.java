@@ -20,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import com.asi.ext.api.product.transformers.JerseyClientPost;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.exception.ExternalApiAuthenticationException;
+import com.asi.service.product.exception.InvalidProductException;
 import com.asi.service.product.exception.ProductNotFoundException;
 import com.asi.service.resource.response.ExternalAPIResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -148,6 +149,9 @@ public class ProductClient {
             } else {
                 return getExternalAPIResponse(((ExternalApiAuthenticationException) e).getMessage(), HttpStatus.BAD_REQUEST, null);
             }
+        } else if (e instanceof InvalidProductException) {
+            return getExternalAPIResponse(e.getMessage(),
+                    HttpStatus.BAD_REQUEST, null);
         } else {
             return getExternalAPIResponse("Unhandled Exception while processing request, failed to process product",
                     HttpStatus.INTERNAL_SERVER_ERROR, null);
