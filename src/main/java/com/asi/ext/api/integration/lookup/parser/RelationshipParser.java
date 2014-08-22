@@ -177,7 +177,7 @@ public class RelationshipParser {
 							availability.setParentCriteria(tempCriteria);
 						}else{
 							if(isParentOptionCriteria){
-								optionValue=tempCriteria.substring(tempCriteria.indexOf(":")+1);
+								optionValue=tempCriteria.substring(tempCriteria.indexOf(":"));
 								tempCriteria=tempCriteria.substring(0,tempCriteria.indexOf(":"));
 								}
 							availability.setParentCriteria(ProductDataStore.getCriteriaInfoForCriteriaCode(tempCriteria).getDescription());
@@ -189,7 +189,7 @@ public class RelationshipParser {
 							availability.setChildCriteria(tempCriteria);
 						}else{
 							if(isChildOptionCriteria){
-							optionValue=tempCriteria.substring(tempCriteria.indexOf(":")+1);
+							optionValue=tempCriteria.substring(tempCriteria.indexOf(":"));
 							tempCriteria=tempCriteria.substring(0,tempCriteria.indexOf(":"));
 							}
 							availability.setChildCriteria(ProductDataStore.getCriteriaInfoForCriteriaCode(tempCriteria).getDescription());
@@ -198,20 +198,28 @@ public class RelationshipParser {
 			}
 				availabileVariationsList=new ArrayList<>();
 				List<CriteriaSetValuePath> tempCriteriaSetValuePaths=currentRelationship.getCriteriaSetValuePaths();	
+				String tempValue=null;
 				for(CriteriaSetValuePath currentCriteriaSetValuePath:currentRelationship.getCriteriaSetValuePaths()){
+					tempValue=null;
 					availableVariations=new AvailableVariations();
 					if(!currentCriteriaSetValuePath.getIsParent() ){
 						criteriaValue=criteriaSetParser.findCriteriaSetValueById(extPrdId,String.valueOf(currentCriteriaSetValuePath.getCriteriaSetValueId()));
 						if(isChildOptionCriteria){
 							
 							tempCriteria=criteriaValue.substring(criteriaValue.indexOf("__")+2);
-							availableVariations.setChildValue(tempCriteria.substring(tempCriteria.indexOf(":")+2));
+							tempValue=tempCriteria.substring(tempCriteria.indexOf(":")+1);
+							if(tempValue.startsWith("_")) tempValue=tempValue.substring(1);
+							availableVariations.setChildValue(tempValue);
 						}else{
 							if(null==criteriaValue){
 								availableVariations.setChildValue(criteriaSetParser.findSizesCriteriaSetById(extPrdId, String.valueOf(currentCriteriaSetValuePath.getCriteriaSetValueId())));
 							}else{
-								if(criteriaValue.indexOf("__")+2<criteriaValue.length())
-								availableVariations.setChildValue(criteriaValue.substring(criteriaValue.indexOf("__")+2));
+								if(criteriaValue.indexOf("__")+1<criteriaValue.length()){
+									tempValue=criteriaValue.substring(criteriaValue.indexOf("__")+1);
+									if(tempValue.startsWith("_")) tempValue=tempValue.substring(1);
+									availableVariations.setChildValue(tempValue);
+									
+								}
 							}
 						}
 						tempId=currentCriteriaSetValuePath.getID();
@@ -219,10 +227,22 @@ public class RelationshipParser {
 							if(tempId==pairingCriteriaSetPath.getID() && pairingCriteriaSetPath.getIsParent()){
 								criteriaValue=criteriaSetParser.findCriteriaSetValueById(extPrdId,String.valueOf(pairingCriteriaSetPath.getCriteriaSetValueId()));
 								if(isParentOptionCriteria){
-									tempCriteria=criteriaValue.substring(criteriaValue.indexOf("__")+2);
-									availableVariations.setParentValue(tempCriteria.substring(tempCriteria.indexOf(":")+2));
+									if(null==criteriaValue){
+										availableVariations.setParentValue(criteriaSetParser.findSizesCriteriaSetById(extPrdId, String.valueOf(pairingCriteriaSetPath.getCriteriaSetValueId())));
+									}else{
+										tempCriteria=criteriaValue.substring(criteriaValue.indexOf("__")+2);
+										tempValue=tempCriteria.substring(tempCriteria.indexOf(":")+1);
+										if(tempValue.startsWith("_")) tempValue=tempValue.substring(1);
+										availableVariations.setParentValue(tempValue);
+									}
 								}else{
-									availableVariations.setParentValue(criteriaValue.substring(criteriaValue.indexOf("__")+2));
+									if(null==criteriaValue){
+										availableVariations.setParentValue(criteriaSetParser.findSizesCriteriaSetById(extPrdId, String.valueOf(pairingCriteriaSetPath.getCriteriaSetValueId())));
+									}else{
+										tempValue=criteriaValue.substring(criteriaValue.indexOf("__")+1);
+										if(tempValue.startsWith("_")) tempValue=tempValue.substring(1);
+										availableVariations.setParentValue(tempValue);
+									}
 								}
 								availabileVariationsList.add(availableVariations);
 							}

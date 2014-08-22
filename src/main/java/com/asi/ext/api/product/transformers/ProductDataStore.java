@@ -88,6 +88,8 @@ public class ProductDataStore {
     public static LinkedList<LinkedHashMap>							  sizelookupsResponse		= null;
     public static LinkedList<LinkedHashMap>                           sizeElementsResponse           = null;
     
+    public static Map<String, String>                                 productNumberAssociation    = new ConcurrentHashMap<String, String>();
+    
     public ProductDataStore() {
 
         if (GLOBAL_BATCH_LOG_COLLECTION == null) {
@@ -1611,6 +1613,10 @@ public class ProductDataStore {
         // Clean Error logs of product
         if (GLOBAL_BATCH_LOG_COLLECTION != null) {
             GLOBAL_BATCH_LOG_COLLECTION.remove(xid);
+        }
+        
+        if (productNumberAssociation != null) {
+            productNumberAssociation.remove(xid);
         }
         
     }

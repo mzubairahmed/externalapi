@@ -495,7 +495,7 @@ public class ConfigurationsParser {
 				}else{
 				currentColor.setAlias(currentCriteriaSetValue.getValue().toString());
 				crntColor=ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_COLORS_CRITERIA_CODE);
-						criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), crntColor);		
+						criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), currentColor.getAlias());		
 				currentColor.setName(crntColor);				
 				}
 				if (!CommonUtilities.isValueNull(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getCodeValue())) {
@@ -795,10 +795,10 @@ public class ConfigurationsParser {
 				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), ApplicationConstants.CONST_PRODUCT_SAMPLE_CRITERIA_CODE, Integer.parseInt(currentCriteriaSetValue.getId()), currentCriteriaSetValue.getValue().toString());
 				if(sampleType.equalsIgnoreCase("Spec Sample")){
 					samples.setSpecSampleAvailable(true);
-					samples.setSpecDetails(currentCriteriaSetValue.getValue().toString());
+					samples.setSpecDetails(currentCriteriaSetValue.getCriteriaValueDetail());
 				}else if(sampleType.equalsIgnoreCase("Product Sample")){
 					samples.setProductSampleAvailable(true);
-					samples.setProductSampleDetails(currentCriteriaSetValue.getValue().toString());
+					samples.setProductSampleDetails(currentCriteriaSetValue.getCriteriaValueDetail());
 				}
 			}
 			serviceProductConfig.setSamples(samples);
@@ -913,7 +913,6 @@ public class ConfigurationsParser {
 			
 		}		
 		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION);
-		int sdimCntr=0;
 		Dimensions  shippingDimensions;
 		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
 			//criteriaSetParser.addCriteriaSetByCode(productDetail.getExternalProductId(), currentCriteriaSetValueList.get(0).getCriteriaCode(), currentCriteriaSetValueList.get(0).getCriteriaSetId());
@@ -923,10 +922,11 @@ public class ConfigurationsParser {
 				valuesList=productLookupParser.findSizeValueListDetails(shippingItemValue, currentCriteriaSetValue.getCriteriaCode(), currentCriteriaSetValue.getValue(), productDetail.getExternalProductId());
 			for(Value currntValueObj:valuesList)
 				{
+				if(null!=currntValueObj.getValue() && !currntValueObj.getValue().trim().isEmpty()){
 				if(currntValueObj.getAttribute().equalsIgnoreCase("length")){
 				// Length
-				shippingDimensions.setLength(currntValueObj.getValue());
-				shippingDimensions.setLengthUnit(currntValueObj.getUnit());				
+				shippingDimensions.setLength(currntValueObj.getValue());				
+				shippingDimensions.setLengthUnit(currntValueObj.getUnit());
 			}else if(currntValueObj.getAttribute().equalsIgnoreCase("width")){
 				// Width
 				shippingDimensions.setWidth(currntValueObj.getValue());
@@ -936,9 +936,7 @@ public class ConfigurationsParser {
 				shippingDimensions.setHeight(currntValueObj.getValue());
 				shippingDimensions.setHeightUnit(currntValueObj.getUnit());				
 			}
-			sdimCntr++;
-				}
-				}
+				}}}
 			shippingEstimate.setDimensions(shippingDimensions);
 		}
 		serviceProductConfig.setShippingEstimates(shippingEstimate);
@@ -952,7 +950,7 @@ public class ConfigurationsParser {
 		breakoutBy=null;
 		if(fobPointsList.size()>0)
 		serviceProduct.setFobPoints(fobPointsList);
-		serviceProduct.setProductConfigurations(serviceProductConfig);
+		serviceProduct.setProductConfigurations(serviceProductConfig);		
 		return serviceProduct;
 	}
 

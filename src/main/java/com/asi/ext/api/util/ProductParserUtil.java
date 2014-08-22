@@ -11,6 +11,8 @@ import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.ext.api.service.model.Availability;
 import com.asi.ext.api.service.model.Capacity;
 import com.asi.ext.api.service.model.Dimension;
+import com.asi.ext.api.service.model.PriceGrid;
+import com.asi.ext.api.service.model.Product;
 import com.asi.ext.api.service.model.ShippingEstimate;
 import com.asi.ext.api.service.model.Size;
 import com.asi.ext.api.service.model.Value;
@@ -413,6 +415,27 @@ public final class ProductParserUtil {
         }
         // criteriaSetValueId = getCriteriaSetValueId(xid, criteriaCode, valueToSearch);
         return valueToSearch;
+    }
+    
+    
+    public boolean isProductHasValidProductNumber(Product serProduct) {
+        boolean pnoFound = false;
+        if (serProduct.getPriceGrids() != null && !serProduct.getPriceGrids().isEmpty()) {
+            for (PriceGrid pg : serProduct.getPriceGrids()) {
+                if (pg != null && !CommonUtilities.isValueNull(pg.getProductNumber())) {
+                    pnoFound = true;
+                    break;
+                }
+            }
+        }
+        if (serProduct.getProductNumbers() != null && !serProduct.getProductNumbers().isEmpty()) {
+            if (pnoFound) { // Already configured in PriceGrid Level
+                return false;
+            } else {
+                return true;
+            }
+        }
+        return true;
     }
 
 }

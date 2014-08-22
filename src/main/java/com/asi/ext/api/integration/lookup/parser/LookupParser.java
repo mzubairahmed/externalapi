@@ -375,15 +375,19 @@ public class LookupParser {
 		Artwork imprntArtwork = null;
 		Artwork tempImprntArtwork = null;
 		MinimumOrder imprintMinOrder = null;
-
+		List<Artwork> artworkList=new ArrayList<>();
 		imprintRelationMap = new ConcurrentHashMap<>();
 		// String
 		// currentImprintMethod=processProductLst.getProductConfigurationsList().getImprintMethod();
 		ArrayList<String> imrintMethodsList = new ArrayList<>();
-		if (null != imprintMethods && imprintMethods.contains("||")) {
+		if (null != imprintMethods){
+			if(imprintMethods.contains("||")) {
 			imprintMethods = imprintMethods.toLowerCase();
 			imrintMethodsList = new ArrayList<String>(
 					Arrays.asList(imprintMethods.split("\\|\\|")));
+		}else{
+			imrintMethodsList.add(imprintMethods);
+			}
 		}
 		ArrayList<Relationship> relationShipList = (ArrayList<Relationship>) productDetail
 				.getRelationships();
@@ -405,6 +409,7 @@ public class LookupParser {
 			Map.Entry relationEntry : imprintRelationMap.entrySet()) {
 				serviceImprintMethod = new ImprintMethod();
 				imprntArtwork = new Artwork();
+				artworkList=new ArrayList<>();
 				imprintMinOrder = new MinimumOrder();
 				imprintMethodKey = relationEntry.getKey().toString();
 				relationValue = relationEntry.getValue().toString();
@@ -558,8 +563,7 @@ public class LookupParser {
 													.substring(currentArtwork
 															.indexOf(":") + 1));
 							}
-							serviceImprintMethod.getArtwork().add(
-									tempImprntArtwork);
+							artworkList.add(tempImprntArtwork);
 						}
 					}else if(null != imprntArtwork && null != imprntArtwork.getValue()){
 						tempImprntArtwork = new Artwork();
@@ -572,10 +576,10 @@ public class LookupParser {
 											.substring(tempArtwork
 													.indexOf(":") + 1));
 						}
-						serviceImprintMethod.getArtwork().add(
-								tempImprntArtwork);
+						artworkList.add(tempImprntArtwork);
 							}						
-
+					if(artworkList.size()>0)
+					serviceImprintMethod.setArtwork(artworkList);
 					serviceImprintMethod.setMinimumOrder(imprintMinOrder);
 					if(serviceImprintMethod.getType()!=null)
 					imprintMethodList.add(serviceImprintMethod);
@@ -588,13 +592,27 @@ public class LookupParser {
 					if (!ArrayUtils.contains(inValidImprintMethods,
 							impMeth.toUpperCase())) {
 						if (null != imprintMethod && null != impMeth
-								&& !imprintMethod.equals(""))
-							imprintMethod += "||" + impMeth.toUpperCase();
+								&& !imprintMethod.equals("")){
+							imprintMethod += "||" + impMeth.toUpperCase();							
+						}
 						else {
 							if (cntr == 0)
 								imprintMethod = impMeth.toUpperCase();
 							else
 								imprintMethod += "||" + impMeth.toUpperCase();
+						}
+						if (impMeth.contains(":")) {
+							serviceImprintMethod
+									.setType(impMeth.substring(0,
+											impMeth.indexOf(":")).toUpperCase());
+							serviceImprintMethod.setAlias(impMeth
+									.substring(impMeth
+											.indexOf(":") + 1));
+						} else {
+						serviceImprintMethod.setType(impMeth.toUpperCase());
+						serviceImprintMethod.setAlias(serviceImprintMethod.getType());
+						serviceImprintMethod.setMinimumOrder(null);
+						imprintMethodList.add(serviceImprintMethod);
 						}
 						cntr++;
 					}
@@ -668,8 +686,10 @@ public class LookupParser {
 					}
 					if(null!=currentCriteria.getCriteria()) criteriaList.add(currentCriteria);
 				}
-				if(criteriaList.size()>0) currentServiceProductNumber.setConfigurations(criteriaList);
-				productNumberList.add(currentServiceProductNumber);
+				if(criteriaList.size()>0) {
+					currentServiceProductNumber.setConfigurations(criteriaList);
+					productNumberList.add(currentServiceProductNumber);
+				}				
 			}
 
 		}
