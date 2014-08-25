@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.web.client.RestTemplate;
 
@@ -1527,13 +1528,20 @@ public class ProductDataStore {
         // TODO Auto-generated method stub
         return null;
     }
+    
+    public static Catalog getMediaCitationByIdWithoutReference(String mediaCitationId, String companyId) {
+    	return getMediaCitationById(mediaCitationId, null, companyId);
+    }
 
-	public static Catalog getMediaCitationById(String mediaCitationId,
-			String mediaCitationReferenceId,String companyId) {
-        LinkedList<?> responseList = lookupRestTemplate.getForObject((RestAPIProperties
-                .get(ApplicationConstants.PRODUCT_MEDIA_CITATION)+companyId),LinkedList.class);
-        Catalog currentCatalogs= JsonToLookupTableConverter.jsonToCatalogs(responseList,mediaCitationId,mediaCitationReferenceId);
-	return currentCatalogs;
+	public static Catalog getMediaCitationById(String mediaCitationId, String mediaCitationReferenceId, String companyId) {
+        
+		LinkedList<?> responseList = lookupRestTemplate.getForObject((RestAPIProperties.get(ApplicationConstants.PRODUCT_MEDIA_CITATION)+companyId),LinkedList.class);
+
+        if(StringUtils.isEmpty(mediaCitationReferenceId)) {
+        	return JsonToLookupTableConverter.jsonToCatalogsWithoutReference(responseList, mediaCitationId);
+        } else {
+        	return JsonToLookupTableConverter.jsonToCatalogs(responseList, mediaCitationId, mediaCitationReferenceId);
+        }
 	}
 		
 	public static ProductMediaCitations getMediaCitationsByName(String productId, String catalogName, String catalogPageNumber, String companyId) {

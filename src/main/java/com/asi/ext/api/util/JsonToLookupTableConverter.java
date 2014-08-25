@@ -859,24 +859,35 @@ public final class JsonToLookupTableConverter {
         }
         return fobPointsLookupTable;
     }
+    
+    public static Catalog jsonToCatalogsWithoutReference(LinkedList<?> responseList,String mediaCitationId) {
+    	return jsonToCatalogs(responseList, mediaCitationId, null);
+    }
 
-	@SuppressWarnings("unchecked")
-	public static Catalog jsonToCatalogs(LinkedList<?> responseList,String mediaCitationId,String mediaCitationReferenceId) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static Catalog jsonToCatalogs(LinkedList<?> responseList, String mediaCitationId, String mediaCitationReferenceId) {
 		Catalog returnCatalog=new Catalog();
 		try {
             Iterator<?> iter = responseList.iterator();
             LinkedHashMap crntValue=null;
             ArrayList<LinkedHashMap> productCitationReferences=null;
             while(iter.hasNext()){
-            	    crntValue = (LinkedHashMap) iter.next();
-            	    if(crntValue.get("ID").toString().equals(mediaCitationId)){
+        	    crntValue = (LinkedHashMap) iter.next();
+        	    if(crntValue.get("ID").toString().equals(mediaCitationId)){
                     returnCatalog.setCatalogName(crntValue.get("Name").toString());
                     productCitationReferences = (ArrayList<LinkedHashMap>) crntValue.get("MediaCitationReferences");
-                    for(LinkedHashMap citationReference:productCitationReferences){
-                    		if(mediaCitationReferenceId.equals(citationReference.get("ID").toString()))
+                    // changed: the reference can be left empty/blank - reference UI.
+                    if(!StringUtils.isEmpty(mediaCitationReferenceId)) {
+                        for(LinkedHashMap citationReference : productCitationReferences) {
+                    		if(mediaCitationReferenceId.equals(citationReference.get("ID").toString())) {
                     			returnCatalog.setCatalogPage(citationReference.get("Number").toString());
-                    	}                                                    	
+                    		}
+                    	}
+            	    } else {
+            	    	returnCatalog.setCatalogPage("");
             	    }
+                    break;
+                }
             }            
 	    } catch (Exception pe) {
             pe.printStackTrace();
