@@ -34,7 +34,7 @@ import com.asi.service.product.exception.ProductNotFoundException;
 import com.asi.service.resource.response.ExternalAPIResponse;
 
 @RestController
-@RequestMapping("api")
+@RequestMapping("product")
 public class ProductServiceResource {
 
     @Autowired

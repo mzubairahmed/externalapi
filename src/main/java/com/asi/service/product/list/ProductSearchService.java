@@ -32,7 +32,7 @@ import com.asi.service.product.vo.Imprints;
 import com.asi.service.product.vo.ItemPriceDetail;
 
 @RestController
-@RequestMapping("api")
+@RequestMapping("product")
 public class ProductSearchService {
     @Autowired
     ProductDetail       serviceResponse;
