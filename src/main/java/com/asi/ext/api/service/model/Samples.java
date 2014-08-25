@@ -12,11 +12,11 @@ public class Samples {
     @JsonProperty("SpecSampleAvailable")
     private Boolean specSampleAvailable;
     @JsonProperty("SpecInfo")
-    private String  specDetails;
+    private String  specInfo;
     @JsonProperty("ProductSampleAvailable")
     private Boolean productSampleAvailable;
     @JsonProperty("ProductSampleInfo")
-    private String  productSampleDetails;
+    private String  productSampleInfo;
 
     /**
      * @return the specSampleAvailable
@@ -36,16 +36,16 @@ public class Samples {
     /**
      * @return the specDetails
      */
-    public String getSpecDetails() {
-        return specDetails;
+    public String getSpecInfo() {
+        return specInfo;
     }
 
     /**
      * @param specDetails
      *            the specDetails to set
      */
-    public void setSpecDetails(String specDetails) {
-        this.specDetails = specDetails;
+    public void setSpecInfo(String specDetails) {
+        this.specInfo = specDetails;
     }
 
     /**
@@ -66,16 +66,16 @@ public class Samples {
     /**
      * @return the productSampleDetails
      */
-    public String getProductSampleDetails() {
-        return productSampleDetails;
+    public String getProductSampleInfo() {
+        return productSampleInfo;
     }
 
     /**
      * @param productSampleDetails
      *            the productSampleDetails to set
      */
-    public void setProductSampleDetails(String productSampleDetails) {
-        this.productSampleDetails = productSampleDetails;
+    public void setProductSampleInfo(String productSampleDetails) {
+        this.productSampleInfo = productSampleDetails;
     }
 
     @Override

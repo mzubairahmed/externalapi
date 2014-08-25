@@ -432,10 +432,8 @@ public class LookupParser {
 							imprintMethod = imprintMethod
 									.substring(imprintMethod.indexOf("__") + 2);
 							if (!imrintMethodsList.isEmpty()
-									&& imrintMethodsList.contains(imprintMethod
-											.toLowerCase()))
-								imrintMethodsList.remove(imprintMethod
-										.toLowerCase());
+									&& imrintMethodsList.contains(imprintMethod))
+								imrintMethodsList.remove(imprintMethod);
 							relationValueAry = imprintParser
 									.getImprintRelations(individualRelations,
 											productDetail
@@ -686,7 +684,7 @@ public class LookupParser {
 					}
 					if(null!=currentCriteria.getCriteria()) criteriaList.add(currentCriteria);
 				}
-				if(criteriaList.size()>0) {
+				if(criteriaList.size()>0 && null==crntProductNumber.getPriceGridId()) {
 					currentServiceProductNumber.setConfigurations(criteriaList);
 					productNumberList.add(currentServiceProductNumber);
 				}				

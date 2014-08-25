@@ -100,6 +100,7 @@ public class SizeLookup {
 			valueObj=new Value();
 			LinkedHashMap<?, ?> valueMap=(LinkedHashMap<?, ?>)sizeValuesItr.next();
 			otherValue=getSizesElementValue("UNITS", criteriaAttributes,valueMap.get("UnitOfMeasureCode").toString()).replaceAll("\"", "in");
+			otherValue=otherValue.replace("'", "ft");
 			if(null!=otherValue && !otherValue.equalsIgnoreCase("other"))
 			valueObj.setUnit(otherValue);
 			valueObj.setValue(valueMap.get("UnitValue").toString());
@@ -442,7 +443,9 @@ public class SizeLookup {
 
 	public String findUnitOfMeasureByFormat(String format,@SuppressWarnings("rawtypes") LinkedList<LinkedHashMap> criteriaAttributes) 
 	{
-		
-		return getSizesElementValue("UNITS", criteriaAttributes,format);
+		String unitOfmeasureCode=getSizesElementValue("UNITS", criteriaAttributes,format);
+		if(null!=unitOfmeasureCode && unitOfmeasureCode.equals("\"")) unitOfmeasureCode="in";
+		if(null!=unitOfmeasureCode && unitOfmeasureCode.equals("'")) unitOfmeasureCode="ft";
+		return unitOfmeasureCode;
 	}
 }

@@ -1,19 +1,30 @@
 package com.asi.ext.api.service.model;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+@JsonInclude(Include.NON_NULL)
 public class Configurations {
 
     @JsonProperty("Criteria")
     private String criteria;
+    @JsonProperty("OptionName")
+    private String optionName;
     @JsonProperty("Value")
     private Object value;
 
-    @JsonProperty("Criteria")
+    public String getOptionName() {
+		return optionName;
+	}
+
+	public void setOptionName(String optionName) {
+		this.optionName = optionName;
+	}
+
+	@JsonProperty("Criteria")
     public String getCriteria() {
         return criteria;
     }
@@ -32,19 +43,5 @@ public class Configurations {
         this.value = value;
     }
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        return EqualsBuilder.reflectionEquals(this, other);
-    }
 
 }

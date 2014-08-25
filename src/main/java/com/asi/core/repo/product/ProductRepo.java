@@ -23,6 +23,7 @@ import com.asi.ext.api.integration.lookup.parser.ConfigurationsParser;
 import com.asi.ext.api.integration.lookup.parser.CriteriaSetParser;
 import com.asi.ext.api.integration.lookup.parser.ImprintParser;
 import com.asi.ext.api.integration.lookup.parser.LookupParser;
+import com.asi.ext.api.integration.lookup.parser.PricesParser;
 import com.asi.ext.api.integration.lookup.parser.RelationshipParser;
 import com.asi.ext.api.product.transformers.ImportTransformer;
 import com.asi.ext.api.product.transformers.PriceGridParser;
@@ -31,6 +32,7 @@ import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.ext.api.service.model.Catalog;
 import com.asi.ext.api.service.model.Configurations;
 import com.asi.ext.api.service.model.Image;
+import com.asi.ext.api.service.model.Value;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.ProductClient;
@@ -367,6 +369,8 @@ public class ProductRepo {
         if(null!=radProduct.getProductMediaItems() && radProduct.getProductMediaItems().size()>0){
         	List<Image> imagesList=new ArrayList<>();
         	Image currentImage=null;
+        	String tempValue=null;
+        	Object mediaItemsObj=null;
         	List<Configurations> mediaConfigurations=null;
         	Configurations currentConfiguration=null;
         	String mediaCriteriaStr=null;
@@ -389,9 +393,24 @@ public class ProductRepo {
                             criteriaInfo = ProductDataStore.getCriteriaInfoForCriteriaCode(mediaCriteriaStr.substring(0,
                                     mediaCriteriaStr.indexOf("_")));
                             currentConfiguration.setCriteria(criteriaInfo.getDescription());
-                            currentConfiguration.setValue(mediaCriteriaStr.substring(mediaCriteriaStr.indexOf("__") + 2));
-        				mediaConfigurations.add(currentConfiguration);
+                            tempValue=mediaCriteriaStr.substring(mediaCriteriaStr.indexOf("__") + 2);
+                            if(tempValue.contains(":")){
+                            	currentConfiguration.setOptionName(tempValue.substring(0,tempValue.indexOf(":")));
+                            	currentConfiguration.setValue(tempValue.substring(tempValue.indexOf(":")));
+                            }else
+                            	currentConfiguration.setValue(tempValue);
+                    		mediaConfigurations.add(currentConfiguration);
+        				}else{
+        					PricesParser pricesParser=new PricesParser();
+        					mediaItemsObj=criteriaSetParser.findSizesCriteriaSetById(radProduct.getExternalProductId(), String.valueOf(currentMediaCriteriaMatch.getCriteriaSetValueId()));
+        					
+        					tempValue=ProductDataStore.getCriteriaInfoForCriteriaCode(pricesParser.getCriteriaCode(mediaItemsObj).toString()).getDescription().replace("Size-", "").trim();
+        					tempValue=tempValue.replace("SIZE -","").trim();
+        					currentConfiguration.setCriteria(tempValue);
+        					currentConfiguration.setValue(mediaItemsObj);
+        					//mediaConfigurations.add(currentConfiguration);
         				}
+        		
         			}
         			currentImage.setConfigurations(mediaConfigurations);
         		}
