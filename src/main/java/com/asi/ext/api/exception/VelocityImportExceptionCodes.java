@@ -21,12 +21,14 @@ public final class VelocityImportExceptionCodes {
     public static final String  HTTP_RESOURCE_NOT_FOUND        = "VIMHPRNTF404";
     // If any required fields are missing or if any of the fields in model contains in valid data API will throw this error
     public static final String  HTTP_INVALID_PRD_FIELD_MISSING = "VIMINPFLDINLD";
+    public static final String  HTTP_INVALID_PRD_FIELD_ISSUES  = "VIM_INVALID_MOD_ISSUE";
 
     // Possible error messages from API
     public static final String PRODUCT_NOT_ACTIVE             = "{\"Message\":\"Not Valid\"}";
     public static final String PRODUCT_NOT_VALID_ERR          = "{\"Errors\"";
     public static final String PRODUCT_VALIDATION_FAILED      = "{\"Message\":";
     public static final String PRODUCT_MODEL_FIELD_MISSING    = "{\"model";
+    public static final String PRODUCT_MODEL_FIELD_ISSUES     = "[{\"msg\"";
 
     /**
      * Checks for the exception is public or private
