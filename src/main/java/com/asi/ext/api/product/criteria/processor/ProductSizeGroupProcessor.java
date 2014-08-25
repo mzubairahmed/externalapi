@@ -536,11 +536,11 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
             if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_HSR_UNIFORM)) {
                 curntCriteria = curntCriteria.toUpperCase();
             }
-            if (initSizeGroup.contains(ApplicationConstants.CONST_STRING_APPAREL)
-                    || criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_BRA)
+            if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_BRA)
                     || criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_STD_NUM)
                     || criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_OTHER_CODE)
-                    || criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_DRS_SHRT_SIZE)) {
+                    || criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_DRS_SHRT_SIZE)
+                    || criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_PANT_SIZE)) {
                 String tempCriteria = curntCriteria;
                 if (null == sizesWSResponse) {
                     sizesWSResponse = JerseyClientPost.getLookupsResponse(RestAPIProperties
@@ -586,6 +586,8 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                         isCustomValue = true;
                     }
                 }
+            } else {
+                curntCriteria = null;
             }
 
             if (null != curntCriteria && !curntCriteria.equalsIgnoreCase(ApplicationConstants.CONST_STRING_NULL_SMALL)) {
