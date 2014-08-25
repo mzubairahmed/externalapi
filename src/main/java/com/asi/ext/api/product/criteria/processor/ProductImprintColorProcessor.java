@@ -42,17 +42,21 @@ public class ProductImprintColorProcessor extends SimpleCriteriaProcessor {
             productDataStore.addErrorToBatchLogCollection(existingProduct.getExternalProductId(),
                     ApplicationConstants.CONST_BATCH_ERR_LOOKUP_VALUE_NOT_EXIST, "Imprint Color value collection cannot be empty");
         }
-        String imprintColors = CommonUtilities.convertStringListToCSV(imprintColor.getValues());
         String typeCode = null;
         if (CommonUtilities.isValueNull(imprintColor.getType())) {
-            typeCode = ApplicationConstants.CONST_VALUE_TYPE_CODE_COLOR;
+            productDataStore.addErrorToBatchLogCollection(existingProduct.getExternalProductId(),
+                    ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Imprint Color type cannot be empty");
+            return matchedCriteriaSet;
         } else if (imprintColor.getType().equalsIgnoreCase(ApplicationConstants.CONST_VALUE_TYPE_CODE_COLOR)) {
             typeCode = imprintColor.getType().toUpperCase().trim();
         } else if (imprintColor.getType().equalsIgnoreCase(ApplicationConstants.CONST_VALUE_TYPE_CODE_PMS)) {
             typeCode = imprintColor.getType().toUpperCase().trim();
         } else {
-            typeCode = ApplicationConstants.CONST_VALUE_TYPE_CODE_COLOR;
+            productDataStore.addErrorToBatchLogCollection(existingProduct.getExternalProductId(),
+                    ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Invalid Imprint Color type "+imprintColor.getType());
+            return matchedCriteriaSet;
         }
+        String imprintColors = CommonUtilities.convertStringListToCSV(imprintColor.getValues());
 
         return getCriteriaSet(imprintColors, typeCode, existingProduct, matchedCriteriaSet, 0);
     }
