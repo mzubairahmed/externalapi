@@ -14,7 +14,7 @@ import com.asi.ext.api.service.model.login.Credential;
 import com.asi.service.login.client.vo.AccessData;
 
 @RestController
-@RequestMapping("/api/Login")
+@RequestMapping("Login")
 public class LoginService {
 
     private static Logger _LOGGER = LoggerFactory.getLogger(LoginService.class);
