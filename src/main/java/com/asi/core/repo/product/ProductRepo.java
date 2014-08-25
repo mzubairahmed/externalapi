@@ -364,9 +364,10 @@ public class ProductRepo {
         List<String> finalCategoriesList = new ArrayList<>();
         int categoryCntr = 0;
         for (SelectedProductCategory currentCategory : productCategoriesList) {
-            if (!currentCategory.getAdCategoryFlg() && categoryCntr < 5)
-                finalCategoriesList.add(lookupDataStore.findCategoryNameByCode(currentCategory.getCode()));
-            categoryCntr++;
+            if (!currentCategory.getAdCategoryFlg() && categoryCntr < 5) {
+            	finalCategoriesList.add(lookupDataStore.findCategoryNameByCode(currentCategory.getCode()));
+                categoryCntr++;
+            }
         }
         serviceProduct.setCategories(finalCategoriesList);
 
