@@ -1021,7 +1021,12 @@ public class ProductDataStore {
         if (loadCriteriaSetAttributes()) {
             HashMap<String, String> unitOfMeasures = unitOfMeasureCodes.get(criteriaCode);
             if (unitOfMeasures != null && !unitOfMeasures.isEmpty()) {
-                return unitOfMeasures.get(unit.toUpperCase());
+                String uom = unitOfMeasures.get(unit.toUpperCase());
+                if (CommonUtilities.isValueNull(uom)) {
+                    return unitOfMeasures.get(ApplicationConstants.CONST_STRING_OTHER.toUpperCase());
+                } else {
+                    return uom;
+                }
             } else {
                 return null;
             }

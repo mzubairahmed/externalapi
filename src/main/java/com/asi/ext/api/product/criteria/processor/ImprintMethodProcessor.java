@@ -137,6 +137,9 @@ public class ImprintMethodProcessor extends SimpleCriteriaProcessor {
 
             if (immdCriteriaSetValue != null && impMethod.getArtwork() != null && !impMethod.getArtwork().isEmpty()) {
                 for (Artwork art : impMethod.getArtwork()) {
+                    if (art != null && art.getValue() == null) {
+                        continue;
+                    }
                     CriteriaSetValues artwCriteriaSetValue = artworkProcessor.getArtworkCriteriaSetValue(
                             exisitingProduct.getExternalProductId(), art, artwCriteriaId);
                     if (artwCriteriaSetValue != null) {
