@@ -183,7 +183,7 @@ public final class ProductParserUtil {
                     individualSize = CommonUtilities.appendValue(individualSize, "", ";");
                 }
                 individualSize = CommonUtilities.appendValue(individualSize, v.getValue(), ":");
-                individualSize = CommonUtilities.appendValue(individualSize, v.getUnit(), "");
+                individualSize = CommonUtilities.appendValue(individualSize, v.getUnit(), ":");
             }
 
             if (!volumeValues.isEmpty()) {

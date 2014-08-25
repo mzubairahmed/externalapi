@@ -27,9 +27,10 @@ public final class RestAPIMessageHandler implements java.io.Serializable {
     private static final long                  serialVersionUID       = -91361236961946629L;
 
     private static final RestAPIMessageHandler velocityMessageHandler = new RestAPIMessageHandler();
+    private ProductDataStore    productDataStore = new ProductDataStore();
 
     private enum VelocityMessageCodes {
-        PROD_INVALID, PROD_FIELD_MISSING, PROD_VALIDATION, PROD_ERR, PROD_UNK
+        PROD_INVALID, PROD_FIELD_MISSING, PROD_VALIDATION, PROD_ERR, PROD_UNK, HTTP_INVALID_PRD_FIELD_ISSUES
     }
 
     // Disable creation of new object
@@ -41,7 +42,8 @@ public final class RestAPIMessageHandler implements java.io.Serializable {
     }
 
     private boolean isLoggableException(VelocityMessageCodes code) {
-        if (code.equals(VelocityMessageCodes.PROD_VALIDATION) || code.equals(VelocityMessageCodes.PROD_FIELD_MISSING)) {
+        if (code.equals(VelocityMessageCodes.PROD_VALIDATION) || code.equals(VelocityMessageCodes.PROD_FIELD_MISSING)
+                || code.equals(VelocityMessageCodes.HTTP_INVALID_PRD_FIELD_ISSUES)) {
             return true;
         } else {
             return false;
@@ -58,6 +60,8 @@ public final class RestAPIMessageHandler implements java.io.Serializable {
             return VelocityMessageCodes.PROD_FIELD_MISSING;
         } else if (message.startsWith(VelocityImportExceptionCodes.PRODUCT_VALIDATION_FAILED)) {
             return VelocityMessageCodes.PROD_VALIDATION;
+        } else if (message.startsWith(VelocityImportExceptionCodes.PRODUCT_MODEL_FIELD_ISSUES)) {
+            return VelocityMessageCodes.HTTP_INVALID_PRD_FIELD_ISSUES;
         } else {
             return VelocityMessageCodes.PROD_UNK;
         }
@@ -66,7 +70,8 @@ public final class RestAPIMessageHandler implements java.io.Serializable {
     private boolean registerException(String batchId, String xid, final Set<String> messages) {
         String finalMessage = null;
         for (String s : messages) {
-            ProductDataStore.addUnhandledErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_GENERIC_ERROR, s);
+            productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_GENERIC_ERROR, s);
+            //ProductDataStore.addUnhandledErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_GENERIC_ERROR, s);
         }
         return !messages.isEmpty();
     }
@@ -75,6 +80,13 @@ public final class RestAPIMessageHandler implements java.io.Serializable {
         VelocityMessageCodes code = identifyException(message);
         if (isLoggableException(code)) {
             if (code == VelocityMessageCodes.PROD_FIELD_MISSING) {
+                // Message will be in a JSON key/value pair
+                try {
+                    return JsonProcessor.getErrorMessageFromJson(message);
+                } catch (Exception e) {
+                    LOGGER.error("Some error occured while processing error message", e);
+                }
+            } else if (code == VelocityMessageCodes.HTTP_INVALID_PRD_FIELD_ISSUES) {
                 // Message will be in a JSON key/value pair
                 try {
                     return JsonProcessor.getErrorMessageFromJson(message);
@@ -118,5 +130,13 @@ public final class RestAPIMessageHandler implements java.io.Serializable {
             return false;
         }
         return startErrorLogging(batchId, externalProductId, message);
+    }
+    
+    public boolean handleMessage(String externalProductId, String message) {
+        if (CommonUtilities.isValueNull(externalProductId)) {
+            LOGGER.info("There is no XID found for this message, without XID we can't log a error");
+            return false;
+        }
+        return startErrorLogging(null, externalProductId, message);
     }
 }

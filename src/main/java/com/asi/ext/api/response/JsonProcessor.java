@@ -1542,17 +1542,36 @@ public class JsonProcessor {
         };
         Set<String> errorMessages = new HashSet<String>();
         try {
-            LinkedHashMap<?, ?> errorMessageMap = (LinkedHashMap<?, ?>) parser.parse(json, containerFactory);
-            if (errorMessageMap != null && !errorMessageMap.isEmpty()) {
-                Iterator<?> jsonListItr = errorMessageMap.values().iterator();
-                while (jsonListItr.hasNext()) {
-                    String message =  String.valueOf(jsonListItr.next());
-                    if (!CommonUtilities.isValueNull(message)) {
-                        errorMessages.add(message);
+            Object errorMessageObject = parser.parse(json, containerFactory);
+            if (errorMessageObject instanceof Map<?, ?>) {
+                Map<?, ?> errorMessageMap = (Map<?, ?>) errorMessageObject;
+                if (errorMessageMap != null && !errorMessageMap.isEmpty()) {
+                    Iterator<?> jsonListItr = errorMessageMap.values().iterator();
+                    while (jsonListItr.hasNext()) {
+                        String message =  String.valueOf(jsonListItr.next());
+                        if (!CommonUtilities.isValueNull(message)) {
+                            errorMessages.add(message);
+                        }
+                    }
+                } else {
+                    return errorMessages;
+                }
+            } else if (errorMessageObject instanceof List) {
+                List<Map> errorMessageList = (List<Map>) errorMessageObject;
+                for (Map errorMessageMap : errorMessageList) {
+                   
+                    if (errorMessageMap != null && !errorMessageMap.isEmpty()) {
+                        Iterator<?> jsonListItr = errorMessageMap.values().iterator();
+                        while (jsonListItr.hasNext()) {
+                            String message =  String.valueOf(jsonListItr.next());
+                            if (!CommonUtilities.isValueNull(message)) {
+                                errorMessages.add(message);
+                            }
+                        }
+                    } else {
+                        return errorMessages;
                     }
                 }
-            } else {
-                return errorMessages;
             }
 
         } catch (ParseException e) {

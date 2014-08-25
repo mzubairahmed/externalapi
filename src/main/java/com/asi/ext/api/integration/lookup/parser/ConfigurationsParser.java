@@ -795,10 +795,10 @@ public class ConfigurationsParser {
 				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), ApplicationConstants.CONST_PRODUCT_SAMPLE_CRITERIA_CODE, Integer.parseInt(currentCriteriaSetValue.getId()), currentCriteriaSetValue.getValue().toString());
 				if(sampleType.equalsIgnoreCase("Spec Sample")){
 					samples.setSpecSampleAvailable(true);
-					samples.setSpecDetails(currentCriteriaSetValue.getCriteriaValueDetail());
+					samples.setSpecInfo(currentCriteriaSetValue.getCriteriaValueDetail());
 				}else if(sampleType.equalsIgnoreCase("Product Sample")){
 					samples.setProductSampleAvailable(true);
-					samples.setProductSampleDetails(currentCriteriaSetValue.getCriteriaValueDetail());
+					samples.setProductSampleInfo(currentCriteriaSetValue.getCriteriaValueDetail());
 				}
 			}
 			serviceProductConfig.setSamples(samples);

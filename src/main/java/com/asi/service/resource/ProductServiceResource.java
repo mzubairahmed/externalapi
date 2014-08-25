@@ -76,6 +76,23 @@ public class ProductServiceResource {
         ExternalAPIResponse message = null;
         if (authToken == null) {
             return new ResponseEntity<ExternalAPIResponse>(message, null, HttpStatus.UNAUTHORIZED);
+        } else if (requestEntity == null || requestEntity.getBody() == null) {
+            message = new ExternalAPIResponse();
+            message.setStatusCode(HttpStatus.BAD_REQUEST);
+            message.setMessage("Invalid request, request body can't be null");
+            return new ResponseEntity<ExternalAPIResponse>(message, null, HttpStatus.BAD_REQUEST);
+        } else if (requestEntity.getBody().getExternalProductId() == null || requestEntity.getBody().getExternalProductId().isEmpty()) {
+            // External ProductID required
+            message = new ExternalAPIResponse();
+            message.setMessage("Invalid request, ExternalProductId can't be null/empty");
+            message.setStatusCode(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<ExternalAPIResponse>(message, null, HttpStatus.BAD_REQUEST);
+        } else if (!requestEntity.getBody().getExternalProductId().trim().equalsIgnoreCase(xid.trim())) {
+            // ExternalProductId in the product is not matched with path param
+            message = new ExternalAPIResponse();
+            message.setStatusCode(HttpStatus.BAD_REQUEST);
+            message.setMessage("Invalid request, ExternalProductId provided in the Product is not matching with path");
+            return new ResponseEntity<ExternalAPIResponse>(message, null, HttpStatus.BAD_REQUEST);
         }
         try {
             message = productService.updateProduct(authToken, companyId, xid, requestEntity.getBody());
