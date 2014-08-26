@@ -53,7 +53,7 @@ public class ProductConfigurations {
 	}
 
 	@JsonProperty("RushTime")
-    private List<RushTime>            rushTime             = null;
+    private RushTime            rushTime             = null;
     @JsonProperty("AdditionalColors")
     private List<String>              additionalColors     = null;
     @JsonProperty("AdditionalLocations")
@@ -192,14 +192,12 @@ public class ProductConfigurations {
     }
 
     @JsonProperty("RushTime")
-    @XmlElementWrapper(name = "RushTimes")
-    @XmlElement(name = "RushTime")
-    public List<RushTime> getRushTime() {
+    public RushTime getRushTime() {
         return rushTime;
     }
 
     @JsonProperty("RushTime")
-    public void setRushTime(List<RushTime> rushTime) {
+    public void setRushTime(RushTime rushTime) {
         this.rushTime = rushTime;
     }
 

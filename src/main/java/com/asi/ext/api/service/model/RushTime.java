@@ -1,51 +1,31 @@
 package com.asi.ext.api.service.model;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class RushTime {
+	@JsonProperty("Available")
+	private boolean available;
 
-    @JsonProperty("BusinessDays")
-    private Integer businessDays;
-    @JsonProperty("Details")
-    private String  details;
+	@JsonProperty("Values")
+	private List<RushTimeValue> rushTimeValues=null;
 
-    @JsonProperty("BusinessDays")
-    public Integer getBusinessDays() {
-        return businessDays;
-    }
+	public boolean isAvailable() {
+		return available;
+	}
 
-    @JsonProperty("BusinessDays")
-    public void setBusinessDays(Integer businessDays) {
-        this.businessDays = businessDays;
-    }
+	public void setAvailable(boolean available) {
+		this.available = available;
+	}
 
-    @JsonProperty("Details")
-    public String getDetails() {
-        return details;
-    }
+	public List<RushTimeValue> getRushTimeValues() {
+		return rushTimeValues;
+	}
 
-    @JsonProperty("Details")
-    public void setDetails(String details) {
-        this.details = details;
-    }
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        return EqualsBuilder.reflectionEquals(this, other);
-    }
-
+	public void setRushTimeValues(List<RushTimeValue> rushTimeValues) {
+		this.rushTimeValues = rushTimeValues;
+	}
+	
+    
 }
