@@ -36,6 +36,12 @@
 			<property name="env" value="${Ext.env}"></property>
 			<property name="lookupRestTemplate" ref="restTemplate"></property>
 		</bean>
+		
+		<bean id="loginService" class="com.asi.ext.api.service.impl.LoginServiceImpl">
+			<property name="restTemplate" ref="restTemplate" />
+			<property name="loginAPIUrl" value="${ws.api.login}" />
+		</bean>
+		
 		<bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" p:config-location="classpath:ehcache.xml"/> 
 		<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" p:cache-manager-ref="ehcache"/> 	
 		<context:property-placeholder  location="classpath:${Ext.env}-environment.properties, classpath:velocity-import.properties" order="1"/>
@@ -66,9 +72,9 @@
 	    <bean id="productServiceClient" class="com.asi.service.product.client.ProductClient">
 	    	<property name="productSearchUrl" value="${ws.api.product.import}"></property> 
 	    </bean>	    
-	    <bean id="loginService" class="com.asi.service.resource.LoginService">
+	   <!--  <bean id="loginService" class="com.asi.service.resource.LoginService">
 	    	<property name="loginAPIUrl" value="${ws.api.login}"></property>
-	    </bean>
+	    </bean> -->
 	    <!-- <bean id="lookupDataStore" class="com.asi.ext.api.product.transformers.ProductDataStore">
 		    <property name="lookupRestTemplate" ref="restTemplate"/>
 		     <property name="lookupConverter" ref="jsonlookupConvertor" />	    
