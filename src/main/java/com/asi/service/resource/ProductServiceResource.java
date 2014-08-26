@@ -16,6 +16,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -101,6 +102,22 @@ public class ProductServiceResource {
         }
 
         return new ResponseEntity<ExternalAPIResponse>(message, null, message.getStatusCode());
+    }
+    
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorMessage> handleUnsupportedEncodingException(HttpMessageNotReadableException ex, HttpServletRequest request) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String errorMessage = "Invalid Data Provided: " + ex.getMessage();
+        String errorURL = request.getRequestURL().toString();
+        ErrorMessage errorInfo = new ErrorMessage();
+        errorInfo.setErrorMessage(errorMessage);
+        errorInfo.setErrorURL(errorURL);
+        errorInfo.setStatusCode(HttpStatus.NOT_FOUND);
+        List<String> errorsList = new ArrayList<String>();
+        errorsList.add(ex.getMessage());
+        errorInfo.setErrors(errorsList);
+        _LOGGER.error(errorMessage + errorURL);
+        return new ResponseEntity<ErrorMessage>(errorInfo, null, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ProductNotFoundException.class)

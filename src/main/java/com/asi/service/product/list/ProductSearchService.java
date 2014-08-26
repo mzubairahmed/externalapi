@@ -26,6 +26,7 @@ import com.asi.core.exception.ErrorMessageHandler;
 import com.asi.core.repo.product.ProductRepo;
 import com.asi.ext.api.service.model.Product;
 import com.asi.service.product.client.vo.ProductDetail;
+import com.asi.service.product.exception.ExternalApiAuthenticationException;
 import com.asi.service.product.exception.ProductNotFoundException;
 import com.asi.service.product.exception.UnhandledException;
 import com.asi.service.product.vo.Imprints;
@@ -50,7 +51,7 @@ public class ProductSearchService {
     @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.GET, headers = "content-type=application/json, application/xml", produces = {
             "application/xml", "application/json" })
     public ResponseEntity<Product> getProduct(@RequestHeader("AuthToken") String authToken, @PathVariable("companyid") String companyId, @PathVariable("xid") String xid)
-            throws UnsupportedEncodingException, ProductNotFoundException, UnhandledException {
+            throws UnsupportedEncodingException, ProductNotFoundException, UnhandledException, ExternalApiAuthenticationException {
         if (_LOGGER.isDebugEnabled()) _LOGGER.debug("calling service");
         
         Product productResponse = null;
@@ -60,6 +61,10 @@ public class ProductSearchService {
         try {
 
             productResponse = repository.getServiceProduct(authToken, companyId, xid);
+        } catch (RuntimeException re) {
+        	if(re.getCause() instanceof ExternalApiAuthenticationException) {
+        		throw (ExternalApiAuthenticationException) re.getCause();
+        	}
         } catch (Exception e) {
             e.printStackTrace();
             // throw new UnhandledException(e.getMessage());
@@ -88,6 +93,13 @@ public class ProductSearchService {
         // repository.getProductImprintMethods(companyId, xid);
         return null;// new ResponseEntity<Imprints>(productResponse, null,
                     // HttpStatus.OK);
+    }
+    
+
+    @ExceptionHandler(ExternalApiAuthenticationException.class)
+    public ResponseEntity<ErrorMessage> handleIOException(ExternalApiAuthenticationException ex, HttpServletRequest request) {
+        ErrorMessage errorInfo = errorMessageHandler.prepairError("error.authentication.id", request, null, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<ErrorMessage>(errorInfo, null, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(IOException.class)
