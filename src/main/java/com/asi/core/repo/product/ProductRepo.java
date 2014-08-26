@@ -319,6 +319,7 @@ public class ProductRepo {
         } catch (ExternalApiAuthenticationException eau) {
             // TODO Auto-generated catch block
             eau.printStackTrace();
+            throw new RuntimeException(eau);
         }
 
         return serviceProduct;
@@ -391,7 +392,7 @@ public class ProductRepo {
             Image currentImage = null;
         	String tempValue=null;
         	Object mediaItemsObj=null;
-            List<Configurations> mediaConfigurations = null;
+            List<Configurations> mediaConfigurations = new ArrayList<>();
             Configurations currentConfiguration = null;
             String mediaCriteriaStr = null;
             CriteriaInfo criteriaInfo = null;
@@ -403,7 +404,6 @@ public class ProductRepo {
                 currentImage.setImageURL(currentProductMediaItems.getMedia().getUrl());
                 if (null != currentProductMediaItems.getMedia().getMediaCriteriaMatches()
                         && currentProductMediaItems.getMedia().getMediaCriteriaMatches().length > 0) {
-                    mediaConfigurations = new ArrayList<>();
                     for (MediaCriteriaMatches currentMediaCriteriaMatch : currentProductMediaItems.getMedia()
                             .getMediaCriteriaMatches()) {
                         currentConfiguration = new Configurations();
@@ -431,8 +431,8 @@ public class ProductRepo {
         				//	mediaConfigurations.add(currentConfiguration);
                         }
                     }
-                    currentImage.setConfigurations(mediaConfigurations);
                 }
+                currentImage.setConfigurations(mediaConfigurations);
                 imagesList.add(currentImage);
             }
             serviceProduct.setImages(imagesList);
