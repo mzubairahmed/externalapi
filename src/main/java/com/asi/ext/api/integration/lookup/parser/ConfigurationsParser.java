@@ -24,6 +24,7 @@ import com.asi.ext.api.service.model.ImprintSizeLocation;
 import com.asi.ext.api.service.model.Material;
 import com.asi.ext.api.service.model.ProductionTime;
 import com.asi.ext.api.service.model.RushTime;
+import com.asi.ext.api.service.model.RushTimeValue;
 import com.asi.ext.api.service.model.SameDayRush;
 import com.asi.ext.api.service.model.Samples;
 import com.asi.ext.api.service.model.ShippingEstimate;
@@ -455,7 +456,7 @@ public class ConfigurationsParser {
 			com.asi.ext.api.service.model.Product serviceProduct) {
 		com.asi.ext.api.service.model.ProductConfigurations serviceProductConfig=new com.asi.ext.api.service.model.ProductConfigurations(); 
 		// Break out check
-		 if(productDetail.getIsPriceBreakoutFlag()){
+		 if(productDetail.getIsProductNumberBreakout()){
 			 breakoutBy="Product Number";		 			
 		 		}
 		 serviceProduct.setBreakOutByPrice(String.valueOf(productDetail.getIsPriceBreakoutFlag()));
@@ -632,23 +633,28 @@ public class ConfigurationsParser {
 		
 		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
 			//criteriaSetParser.addCriteriaSetByCode(productDetail.getExternalProductId(), currentCriteriaSetValueList.get(0).getCriteriaCode(), currentCriteriaSetValueList.get(0).getCriteriaSetId());
-			List<RushTime> rushTimeList=new ArrayList<>();
-			RushTime rushTime;
+		//	List<RushTime> rushTimeList=new ArrayList<>();
+			RushTime rushTime=new RushTime();
+			RushTimeValue rushTimeValue=null;
+			List<RushTimeValue> rushtimeValueList=new ArrayList<>();
+			rushTime.setAvailable(true);
 			for(CriteriaSetValues currentCriteriasetValue:currentCriteriaSetValueList){
-				rushTime=new RushTime();
+				rushTimeValue=new RushTimeValue();
 				if(currentCriteriasetValue.getValue() instanceof List){
-				rushTime.setBusinessDays(Integer.parseInt(productLookupParser.getTimeText(currentCriteriasetValue.getValue())));
+					rushTimeValue.setBusinessDays(Integer.parseInt(productLookupParser.getTimeText(currentCriteriasetValue.getValue())));
 				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriasetValue.getCriteriaCode(), Integer.parseInt(currentCriteriasetValue.getId()), productLookupParser.getTimeText(currentCriteriasetValue.getValue()));
-				rushTime.setDetails(currentCriteriasetValue.getCriteriaValueDetail());
+				rushTimeValue.setDetails(currentCriteriasetValue.getCriteriaValueDetail());
 				}else{
-					rushTime.setDetails("");
-					rushTime.setBusinessDays(0);
+					rushTimeValue.setDetails("");
+					rushTimeValue.setBusinessDays(0);
 				}
 				
-				rushTimeList.add(rushTime);
+				rushtimeValueList.add(rushTimeValue);
 			}	
-			if(rushTimeList.size()>0)
-			serviceProductConfig.setRushTime(rushTimeList);
+			if(rushtimeValueList.size()>0){
+				rushTime.setRushTimeValues(rushtimeValueList);
+				serviceProductConfig.setRushTime(rushTime);
+			}
 		}
 		
 		// Materials
@@ -831,7 +837,7 @@ public class ConfigurationsParser {
 					currentImprintMethod=currentImprintMethod+":"+currentCriteriaSetValue.getValue().toString();
 				}
 				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), ApplicationConstants.CONST_IMPRINT_METHOD_CODE, Integer.parseInt(currentCriteriaSetValue.getId()), currentImprintMethod);
-				if(null!=currentImprintMethod && !currentImprintMethod.equalsIgnoreCase("Unimprinted") && !currentImprintMethod.equalsIgnoreCase("Personalization")){
+				if(null!=currentImprintMethod){
 				if(imprintCntr==0){
 					imprintMethods=currentImprintMethod;
 				}else{

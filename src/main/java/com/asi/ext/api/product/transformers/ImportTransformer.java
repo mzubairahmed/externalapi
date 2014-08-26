@@ -408,13 +408,14 @@ public class ImportTransformer {
         }
 
         // RUSH Time Processing
-        if (serviceProdConfigs.getRushTime() != null) {
+        // I am commenting as Rush time Updation and insertion is pending
+     /*   if (serviceProdConfigs.getRushTime() != null) {
             tempCriteriaSet = rushTimeProcessor.getRushTimeCriteriaSet(serviceProdConfigs.getRushTime(), rdrProduct,
                     existingCriteriaSetMap.get(ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE), configId);
             existingCriteriaSetMap.put(ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE, tempCriteriaSet);
         } else {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE);
-        }
+        }*/
 
         // Product Time Processing
         if (serviceProdConfigs.getProductionTime() != null) {

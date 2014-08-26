@@ -4,7 +4,6 @@
 package com.asi.ext.api.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 
 import com.asi.core.repo.product.ProductRepo;
 import com.asi.ext.api.service.ProductService;

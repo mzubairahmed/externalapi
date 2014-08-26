@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.web.client.RestTemplate;
@@ -80,7 +79,7 @@ public class LookupParser {
 			.getName());
 	private ProductDataStore productDataStore = new ProductDataStore();
 	private String serverURL;
-	private String[] inValidImprintMethods = { "PERSONALIZATION", "UNIMPRINTED" };
+//	private String[] inValidImprintMethods = { "PERSONALIZATION", "UNIMPRINTED" };
 
 	public String getServerURL() {
 		return serverURL;
@@ -382,7 +381,7 @@ public class LookupParser {
 		ArrayList<String> imrintMethodsList = new ArrayList<>();
 		if (null != imprintMethods){
 			if(imprintMethods.contains("||")) {
-			imprintMethods = imprintMethods.toLowerCase();
+			//imprintMethods = imprintMethods.toLowerCase();
 			imrintMethodsList = new ArrayList<String>(
 					Arrays.asList(imprintMethods.split("\\|\\|")));
 		}else{
@@ -423,12 +422,8 @@ public class LookupParser {
 						if (null != imprintMethod
 								&& imprintMethod.substring(0,
 										imprintMethod.indexOf("__"))
-										.equalsIgnoreCase("IMMD")
-								&& !ArrayUtils.contains(
-										inValidImprintMethods,
-										imprintMethod.substring(
-												imprintMethod.indexOf("__"))
-												.toUpperCase())) {
+										.equalsIgnoreCase("IMMD")) //&& !ArrayUtils.contains(inValidImprintMethods,imprintMethod.substring(imprintMethod.indexOf("__")).toUpperCase())
+									{
 							imprintMethod = imprintMethod
 									.substring(imprintMethod.indexOf("__") + 2);
 							if (!imrintMethodsList.isEmpty()
@@ -482,19 +477,11 @@ public class LookupParser {
 								&& tempImprintMethod.substring(0,
 										tempImprintMethod.indexOf("__"))
 										.equalsIgnoreCase("IMMD")
-								&& !ArrayUtils.contains(
-										inValidImprintMethods,
-										tempImprintMethod
-												.substring(
-														tempImprintMethod
-																.indexOf("__"))
-												.toUpperCase())) {
+								) {//&& !ArrayUtils.contains(inValidImprintMethods,	tempImprintMethod.substring(tempImprintMethod.indexOf("__")).toUpperCase())
 							tempImprintMethod = tempImprintMethod
 									.substring(tempImprintMethod.indexOf("__") + 2);
-							if (imrintMethodsList.contains(tempImprintMethod
-									.toLowerCase()))
-								imrintMethodsList.remove(tempImprintMethod
-										.toLowerCase());
+							if (imrintMethodsList.contains(tempImprintMethod))
+								imrintMethodsList.remove(tempImprintMethod);
 							imprintMethod += "||" + tempImprintMethod;
 							tempRelationValueAry = imprintParser
 									.getImprintRelations(individualRelations,
@@ -560,8 +547,9 @@ public class LookupParser {
 								tempImprntArtwork.setComments(currentArtwork
 													.substring(currentArtwork
 															.indexOf(":") + 1));
+								artworkList.add(tempImprntArtwork);
 							}
-							artworkList.add(tempImprntArtwork);
+							
 						}
 					}else if(null != imprntArtwork && null != imprntArtwork.getValue()){
 						tempImprntArtwork = new Artwork();
@@ -573,8 +561,8 @@ public class LookupParser {
 						tempImprntArtwork.setComments(tempArtwork
 											.substring(tempArtwork
 													.indexOf(":") + 1));
-						}
 						artworkList.add(tempImprntArtwork);
+						}
 							}						
 					if(artworkList.size()>0)
 					serviceImprintMethod.setArtwork(artworkList);
@@ -585,10 +573,11 @@ public class LookupParser {
 				imprintCntr++;
 			}
 			int cntr = 0;
+			
 			if (!imrintMethodsList.isEmpty()) {
 				for (String impMeth : imrintMethodsList) {
-					if (!ArrayUtils.contains(inValidImprintMethods,
-							impMeth.toUpperCase())) {
+					serviceImprintMethod=new ImprintMethod();
+			//		if (!ArrayUtils.contains(inValidImprintMethods,	impMeth.toUpperCase())) {
 						if (null != imprintMethod && null != impMeth
 								&& !imprintMethod.equals("")){
 							imprintMethod += "||" + impMeth.toUpperCase();							
@@ -610,10 +599,10 @@ public class LookupParser {
 						serviceImprintMethod.setType(impMeth.toUpperCase());
 						serviceImprintMethod.setAlias(serviceImprintMethod.getType());
 						serviceImprintMethod.setMinimumOrder(null);
-						imprintMethodList.add(serviceImprintMethod);
 						}
+						imprintMethodList.add(serviceImprintMethod);
 						cntr++;
-					}
+					//}
 				}
 			}
 
