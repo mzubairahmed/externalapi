@@ -58,8 +58,8 @@ public class ApplicationConstants {
     public static final String                       PACKAGING_LOOKUP                            = "lookup.packaging.url";
     public static final String                       BATCH_PROCESSING                            = "lookup.batch.processing";
     public static final String                       BATCH_PROCESSING_FINALIZE                   = "lookup.batch.processing.finalize";
-    public static final String 						PRODUCT_MEDIA_CITATION						=	"lookup.media.citation.url";
-    
+    public static final String                       PRODUCT_MEDIA_CITATION                      = "lookup.media.citation.url";
+
     public static final String                       OPTION_PRODUCT_LOOKUP                       = "lookup.options.product.url";
     public static final String                       OPTION_SHIPPING_LOOKUP                      = "lookup.options.shipping.url";
     public static final String                       OPTION_IMPRINT_LOOKUP                       = "lookup.options.imprint.url";
@@ -77,10 +77,10 @@ public class ApplicationConstants {
     public static final String                       IMPRINT_COLOR_LOOKUP                        = "lookup.imprintcolor.url";
     public static final String                       IMPRINT_SIZE_LOOKUP                         = "lookup.imprintsize.url";
     public static final String                       LESS_THAN_MIN_LOOKUP                        = "lookup.pricing.less.than.min.url";
-    public static final String                       PRODUCT_TYPECODE_LOOKUP_URL              	 = "lookup.product.typecodes.url";
-    public static final String 						 SELECTED_LINES_LOOKUP 						 = "lookup.product.selected.lines.url";;
-    public static final String 						FOBP_POINTS_LOOKUP 							 = "lookup.product.fob.points.url";
-    
+    public static final String                       PRODUCT_TYPECODE_LOOKUP_URL                 = "lookup.product.typecodes.url";
+    public static final String                       SELECTED_LINES_LOOKUP                       = "lookup.product.selected.lines.url";                                 ;
+    public static final String                       FOBP_POINTS_LOOKUP                          = "lookup.product.fob.points.url";
+
     public static final int                          PRD_DESCRIPTION_MAX_LENGTH                  = 800;
 
     // Application Constants - CODE
@@ -274,12 +274,11 @@ public class ApplicationConstants {
     private static final String[]                    UPCHARGE_PRICE_CRITERIA_CODES               = { "ADCL", "ADLN", "CAPS",
             "DIMS", "IMCL", "IMMD", "IMOP", "IMSZ", "LMIN", "MTRL", "ORGN", "PCKG", "FOBP", "PRCL", "PROP", "RUSH", "SABR", "SAHU",
             "SAIT", "SANS", "SAWI", "SDRU", "SHAP", "SHOP", "SMPL", "SOTH", "SSNM", "SVWT"      };
-	
-    public final static List<String>       SIZE_GROUP_CRITERIACODES    = Arrays.asList(ProductSizeGroupProcessor.SIZE_GROUP_CRITERIACODES);
-    
-    public static final String CONST_SELECTED_LINE_NAMES = "LNNM";
-	
-	
+
+    public final static List<String>                 SIZE_GROUP_CRITERIACODES                    = Arrays.asList(ProductSizeGroupProcessor.SIZE_GROUP_CRITERIACODES);
+
+    public static final String                       CONST_SELECTED_LINE_NAMES                   = "LNNM";
+    public static final String                       CONST_PROD_UNDER_REVIEW                     = "INRV";
 
     // Load required elements at the startup
     static {

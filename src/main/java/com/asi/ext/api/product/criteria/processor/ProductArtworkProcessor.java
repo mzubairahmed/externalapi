@@ -37,12 +37,19 @@ public class ProductArtworkProcessor extends SimpleCriteriaProcessor {
                 if (CommonUtilities.isValueNull(setCodeValueId)) {
                     setCodeValueId = getSetCodeValueId(artworks.getValue(), true);
                     criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_CUST);
-                }
+                } 
                 criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
-                criteriaSetValue.getCriteriaSetCodeValues()[0].setCodeValue(artworks.getComments());
+                
+                if (criteriaSetValue.getValueTypeCode().equalsIgnoreCase(ApplicationConstants.CONST_VALUE_TYPE_CODE_CUST)) {
+                    criteriaSetValue.getCriteriaSetCodeValues()[0].setCodeValue(artworks.getValue());
+                } else {
+                    criteriaSetValue.getCriteriaSetCodeValues()[0].setCodeValue(artworks.getComments());
+                }
                 criteriaSetValue.setValue(artworks.getValue());
             } else {
-                criteriaSetValue.getCriteriaSetCodeValues()[0].setCodeValue(artworks.getComments());
+                if (!criteriaSetValue.getValueTypeCode().equalsIgnoreCase(ApplicationConstants.CONST_VALUE_TYPE_CODE_CUST)) {
+                    criteriaSetValue.getCriteriaSetCodeValues()[0].setCodeValue(artworks.getValue());
+                } 
             }
             
             updateReferenceTable(xid, ApplicationConstants.CONST_ARTWORK_CODE, artworks.getValue(), criteriaSetValue);

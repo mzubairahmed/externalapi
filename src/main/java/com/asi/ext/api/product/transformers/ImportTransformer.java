@@ -98,7 +98,6 @@ public class ImportTransformer {
 
     private final static Logger                    LOGGER                      = Logger.getLogger(ImportTransformer.class.getName());
 
-
     public ProductDetail generateRadarProduct(com.asi.ext.api.service.model.Product serviceProduct,
             ProductDetail existingRadarModel, String dataSourceId, String companyId) throws InvalidProductException {
         LOGGER.info("Started processing product conversion");
@@ -159,8 +158,8 @@ public class ImportTransformer {
                 companyId));
 
         // Check for required validations of Product
-        if (!isProductHasValidProductNumber(serviceProduct)) {
-            throw new InvalidProductException(serviceProduct.getExternalProductId(), "Product cannot be saved, validation failed");
+        if (validateProductRequirement(serviceProduct, existingRadarModel)) {
+            LOGGER.info("Product is valid for save");
         }
 
         // Basic Collections
@@ -265,7 +264,7 @@ public class ImportTransformer {
 
         // Product Number Processing
         if (!isProductNumberAssociatedWithPriceGrid(xid)) {
-            productToSave.setProductNumbers(getProductNumbers(serviceProduct, productToSave));            
+            productToSave.setProductNumbers(getProductNumbers(serviceProduct, productToSave));
         }
 
         // Product Catalogs
@@ -491,6 +490,22 @@ public class ImportTransformer {
 
     }
 
+    private boolean validateProductRequirement(Product serProduct, ProductDetail extProduct) throws InvalidProductException {
+        if (extProduct != null && extProduct.getWorkflowStatusCode() != null
+                && extProduct.getWorkflowStatusCode().equalsIgnoreCase(ApplicationConstants.CONST_PROD_UNDER_REVIEW)) {
+            productDataStore.addErrorToBatchLogCollection(serProduct.getExternalProductId(),
+                    ApplicationConstants.CONST_BATCH_ERR_GENERIC_ERROR,
+                    "Product is under review by ASI and cannot accept changes");
+            throw new InvalidProductException(serProduct.getExternalProductId(), "Product cannot be saved, validation failed");
+        }
+        
+        if (!isProductHasValidProductNumber(serProduct)) {
+            throw new InvalidProductException(serProduct.getExternalProductId(), "Product cannot be saved, validation failed");
+        }
+        
+        return true;
+    }
+
     public boolean isProductHasValidProductNumber(Product serProduct) {
         boolean pnoFound = false;
         if (serProduct.getPriceGrids() != null && !serProduct.getPriceGrids().isEmpty()) {
@@ -534,13 +549,15 @@ public class ImportTransformer {
         }
     }
 
-/*    private boolean isProductNumberAssociatedWithCriteria(String xid) {
-        if (ProductDataStore.productNumberAssociation.get(xid) != null) {
-            return ProductDataStore.productNumberAssociation.get(xid).equalsIgnoreCase("PNOCRT");
-        } else {
-            return false;
-        }
-    }*/
+    /*
+     * private boolean isProductNumberAssociatedWithCriteria(String xid) {
+     * if (ProductDataStore.productNumberAssociation.get(xid) != null) {
+     * return ProductDataStore.productNumberAssociation.get(xid).equalsIgnoreCase("PNOCRT");
+     * } else {
+     * return false;
+     * }
+     * }
+     */
 
     /*
      * public Object transformMessage(Object muleMessage, String arg1) {

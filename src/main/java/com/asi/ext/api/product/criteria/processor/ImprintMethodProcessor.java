@@ -43,12 +43,6 @@ public class ImprintMethodProcessor extends SimpleCriteriaProcessor {
 
     private int valuePathUniqId = -1;
 
-    /*
-     * imprintMethodString = CommonUtilities.appendValue(imprintMethodString,
-     * getImprintString(impMethod.getType(), impMethod.getAlias()), "|");
-     * minQtyString = CommonUtilities.appendValue(minQtyString, getMINOString(impMethod.getMinimumOrder()), "|");
-     * artworkString = CommonUtilities.appendValue(artworkString, getArtworkValue(impMethod.getArtwork()), "|");
-     */
 
     public ImprintRelationData getImprintCriteriaSet(List<ImprintMethod> imprintMethods, ProductDetail exisitingProduct,
             Map<String, ProductCriteriaSets> existingCriteriaSetMap, String configId) {
