@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import com.asi.ext.api.product.transformers.ProductDataStore;
 
 import com.asi.ext.api.service.model.RushTime;
+import com.asi.ext.api.service.model.RushTimeValue;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.service.product.client.vo.CriteriaSetValues;
@@ -33,15 +34,27 @@ public class RushTimeProcessor extends SimpleCriteriaProcessor {
         this.configId = configId;
     }
 
-    public ProductCriteriaSets getRushTimeCriteriaSet(List<RushTime> rushTimes, ProductDetail existingProduct,
+    public ProductCriteriaSets getRushTimeCriteriaSet(RushTime rushTime, ProductDetail existingProduct,
             ProductCriteriaSets matchedCriteriaSet, String configId) {
 
         this.configId = configId;
-
-        return getCriteriaSetForRushTimes(rushTimes, existingProduct, matchedCriteriaSet, 0);
+        if (rushTime != null && rushTime.isAvailable() && rushTime.getRushTimeValues() != null
+                && !rushTime.getRushTimeValues().isEmpty()) {
+            //existingProduct.setRushServiceFlag(ApplicationConstants.CONST_STRING_TRUE_SMALL);
+            return getCriteriaSetForRushTimes(rushTime.getRushTimeValues(), existingProduct, matchedCriteriaSet, 0);
+        } else if (rushTime != null && rushTime.isAvailable()
+                && (rushTime.getRushTimeValues() == null || rushTime.getRushTimeValues().isEmpty())) {
+            rushTime.setRushTimeValues(new ArrayList<RushTimeValue>());
+            RushTimeValue rTimeValue = new RushTimeValue();
+            //rTimeValue.setBusinessDays(ApplicationConstants.CONST_STRING_RUSH_SERVICE);
+            rushTime.getRushTimeValues().add(rTimeValue);            
+            return getCriteriaSetForRushTimes(rushTime.getRushTimeValues(), existingProduct, matchedCriteriaSet, 0);
+        } else {
+            return null;
+        }
     }
 
-    public ProductCriteriaSets getCriteriaSetForRushTimes(List<RushTime> rushTimes, ProductDetail existingProduct,
+    public ProductCriteriaSets getCriteriaSetForRushTimes(List<RushTimeValue> rushTimes, ProductDetail existingProduct,
             ProductCriteriaSets matchedCriteriaSet, int currentCriteriaId) {
 
         LOGGER.info("Started Processing of Rush Time values of product " + rushTimes);
@@ -66,39 +79,42 @@ public class RushTimeProcessor extends SimpleCriteriaProcessor {
             matchedCriteriaSet.setIsDefaultConfiguration(ApplicationConstants.CONST_STRING_FALSE_SMALL);
         }
 
-        for (RushTime rushTime : rushTimes) {
+        for (RushTimeValue rushTime : rushTimes) {
             if (rushTime == null) {
                 continue;
             }
             String setCodeValueId = getSetCodeValueId(RUSH_SERVICE);
             CriteriaSetValues criteriaSetValue = null;
-            Value value=null;//getValueForRushTime(existingProduct.getExternalProductId(), rushTime.getBusinessDays());
-           /* if (value == null) {
-                continue;
-            } else {*/
-                String key = getKeyFromValue(value);
-                if (checkExistingElements) {
-                    criteriaSetValue = existingValueMap.get(key);
-                }
+            Value value = null;// getValueForRushTime(existingProduct.getExternalProductId(), rushTime.getBusinessDays());
+            /*
+             * if (value == null) {
+             * continue;
+             * } else {
+             */
+            String key = getKeyFromValue(value);
+            if (checkExistingElements) {
+                criteriaSetValue = existingValueMap.get(key);
+            }
 
-                if (criteriaSetValue == null) {
-                    // If no match found in the existing list
-                    // Set basic properties for a criteriaSetValue
-                    criteriaSetValue = new CriteriaSetValues();
-                    criteriaSetValue.setId(String.valueOf(--uniqueSetValueId));
-                  //  criteriaSetValue.setCriteriaValueDetail(rushTime.getRushTimeValues());
-                    criteriaSetValue.setCriteriaCode(ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE);
-                    criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_CUST);
-                    criteriaSetValue.setIsSubset(ApplicationConstants.CONST_STRING_FALSE_SMALL);
-                    criteriaSetValue.setIsSetValueMeasurement(ApplicationConstants.CONST_STRING_FALSE_SMALL);
-                    criteriaSetValue.setCriteriaSetId(matchedCriteriaSet.getCriteriaSetId());
-                    criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
-                    criteriaSetValue.setValue(new Value[] { value });
-                } else {
-                  //  criteriaSetValue.setCriteriaValueDetail(rushTime.getDetails());
-                }
-          //  }
-         //   updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE, String.valueOf(rushTime.getBusinessDays()), criteriaSetValue);
+            if (criteriaSetValue == null) {
+                // If no match found in the existing list
+                // Set basic properties for a criteriaSetValue
+                criteriaSetValue = new CriteriaSetValues();
+                criteriaSetValue.setId(String.valueOf(--uniqueSetValueId));
+                // criteriaSetValue.setCriteriaValueDetail(rushTime.getRushTimeValues());
+                criteriaSetValue.setCriteriaCode(ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE);
+                criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_CUST);
+                criteriaSetValue.setIsSubset(ApplicationConstants.CONST_STRING_FALSE_SMALL);
+                criteriaSetValue.setIsSetValueMeasurement(ApplicationConstants.CONST_STRING_FALSE_SMALL);
+                criteriaSetValue.setCriteriaSetId(matchedCriteriaSet.getCriteriaSetId());
+                criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
+                criteriaSetValue.setValue(new Value[] { value });
+            } else {
+                // criteriaSetValue.setCriteriaValueDetail(rushTime.getDetails());
+            }
+            // }
+            // updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE,
+            // String.valueOf(rushTime.getBusinessDays()), criteriaSetValue);
 
             finalCriteriaSetValues.add(criteriaSetValue);
         }
