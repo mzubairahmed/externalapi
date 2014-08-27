@@ -29,6 +29,7 @@ public class ProductionTimeProcessor extends SimpleCriteriaProcessor {
      * @param configId
      */
     public ProductionTimeProcessor(int uniqueSetValueId, String configId) {
+        this.uniqueCriteriaSetId = uniqueSetValueId;
         this.configId = configId;
     }
 
@@ -59,7 +60,7 @@ public class ProductionTimeProcessor extends SimpleCriteriaProcessor {
         } else {
             matchedCriteriaSet = new ProductCriteriaSets();
             // Set Basic elements
-            matchedCriteriaSet.setCriteriaSetId(String.valueOf(--uniqueCriteriaSetId));
+            matchedCriteriaSet.setCriteriaSetId(String.valueOf(uniqueCriteriaSetId));
             matchedCriteriaSet.setProductId(existingProduct.getID());
             matchedCriteriaSet.setCompanyId(existingProduct.getCompanyId());
             matchedCriteriaSet.setConfigId(this.configId);
@@ -90,7 +91,11 @@ public class ProductionTimeProcessor extends SimpleCriteriaProcessor {
                     // Set basic properties for a criteriaSetValue
                     criteriaSetValue = new CriteriaSetValues();
                     criteriaSetValue.setId(String.valueOf(--uniqueSetValueId));
-                    criteriaSetValue.setCriteriaValueDetail(productionTime.getDetails());
+                    if (CommonUtilities.isValueNull(productionTime.getDetails())) {                        
+                        criteriaSetValue.setCriteriaValueDetail("");
+                    } else {
+                        criteriaSetValue.setCriteriaValueDetail(productionTime.getDetails());
+                    }
                     criteriaSetValue.setCriteriaCode(ApplicationConstants.CONST_PRODUCTION_TIME_CRITERIA_CODE);
                     criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_CUST);
                     criteriaSetValue.setIsSubset(ApplicationConstants.CONST_STRING_FALSE_SMALL);

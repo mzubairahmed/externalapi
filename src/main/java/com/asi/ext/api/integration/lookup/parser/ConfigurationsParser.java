@@ -777,7 +777,7 @@ public class ConfigurationsParser {
 			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
 					currentProductionTime=new ProductionTime();
 					if(currentCriteriaSetValue.getValue() instanceof List){
-						currentProductionTime.setBusinessDays(Integer.parseInt(productLookupParser.getTimeText(currentCriteriaSetValue.getValue())));
+						currentProductionTime.setBusinessDays(productLookupParser.getTimeText(currentCriteriaSetValue.getValue()));
 						criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), productLookupParser.getTimeWithUnitsInText(currentCriteriaSetValue.getValue()));
 					}
 					currentProductionTimeDetail=currentCriteriaSetValue.getCriteriaValueDetail();
