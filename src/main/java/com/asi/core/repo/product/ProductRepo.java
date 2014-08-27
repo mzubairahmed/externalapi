@@ -59,7 +59,7 @@ import com.asi.service.resource.response.ExternalAPIResponse;
 public class ProductRepo {
     private final static Logger   _LOGGER                = LoggerFactory.getLogger(ProductRepo.class);
     private ImportTransformer     productTransformer     = new ImportTransformer();
-
+    public final String[] OPTION_CRITERIACODES={"IMOP","SHOP","PROP"};
     private ProductDataStore      lookupDataStore        = new ProductDataStore();
     private RestAPIMessageHandler velocityMessageHandler = RestAPIMessageHandler.getInstance();
 
@@ -392,7 +392,7 @@ public class ProductRepo {
             Image currentImage = null;
         	String tempValue=null;
         	Object mediaItemsObj=null;
-            List<Configurations> mediaConfigurations = new ArrayList<>();
+            List<Configurations> mediaConfigurations = null;
             Configurations currentConfiguration = null;
             String mediaCriteriaStr = null;
             CriteriaInfo criteriaInfo = null;
@@ -404,6 +404,7 @@ public class ProductRepo {
                 currentImage.setImageURL(currentProductMediaItems.getMedia().getUrl());
                 if (null != currentProductMediaItems.getMedia().getMediaCriteriaMatches()
                         && currentProductMediaItems.getMedia().getMediaCriteriaMatches().length > 0) {
+                	mediaConfigurations = new ArrayList<>();
                     for (MediaCriteriaMatches currentMediaCriteriaMatch : currentProductMediaItems.getMedia()
                             .getMediaCriteriaMatches()) {
                         currentConfiguration = new Configurations();
@@ -414,11 +415,16 @@ public class ProductRepo {
                                     mediaCriteriaStr.indexOf("_")));
                             currentConfiguration.setCriteria(criteriaInfo.getDescription());
                             tempValue=mediaCriteriaStr.substring(mediaCriteriaStr.indexOf("__") + 2);
-                            if(tempValue.contains(":")){
+                            if(tempValue.contains(":") && Arrays.asList(OPTION_CRITERIACODES).contains(criteriaInfo.getCode())){
                             	currentConfiguration.setOptionName(tempValue.substring(0,tempValue.indexOf(":")));
                             	currentConfiguration.setValue(tempValue.substring(tempValue.indexOf(":")+1));
-                            }else
-                            	currentConfiguration.setValue(tempValue);
+                            }else{
+                            	if(tempValue.contains(":")){
+                            		currentConfiguration.setValue(tempValue.substring(tempValue.indexOf(":")+1));
+                            	}else{
+                            		currentConfiguration.setValue(tempValue);
+                            	}
+                            }
                             mediaConfigurations.add(currentConfiguration);
         				}else{
         					PricesParser pricesParser=new PricesParser();
