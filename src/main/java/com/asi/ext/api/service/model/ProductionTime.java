@@ -11,17 +11,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ProductionTime {
 
     @JsonProperty("BusinessDays")
-    private Integer businessDays;
+    private String businessDays;
     @JsonProperty("Details")
     private String  details;
 
     @JsonProperty("BusinessDays")
-    public Integer getBusinessDays() {
+    public String getBusinessDays() {
         return businessDays;
     }
 
     @JsonProperty("BusinessDays")
-    public void setBusinessDays(Integer businessDays) {
+    public void setBusinessDays(String businessDays) {
         this.businessDays = businessDays;
     }
 

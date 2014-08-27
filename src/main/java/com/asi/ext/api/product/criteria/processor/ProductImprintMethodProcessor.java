@@ -33,14 +33,15 @@ public class ProductImprintMethodProcessor extends SimpleCriteriaProcessor {
             criteriaSetValue.setId(String.valueOf(--uniqueSetValueId));
             criteriaSetValue.setCriteriaCode(ApplicationConstants.CONST_IMPRINT_METHOD_CODE);
             if (customValue) { 
-                criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_CUST);
+                criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_LOOK);
+                criteriaSetValue.setBaseLookupValue(ApplicationConstants.CONST_STRING_OTHER);
             } else {
                 criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_LOOK);
             }
             criteriaSetValue.setIsSubset(ApplicationConstants.CONST_STRING_FALSE_SMALL);
             criteriaSetValue.setIsSetValueMeasurement(ApplicationConstants.CONST_STRING_FALSE_SMALL);
             criteriaSetValue.setCriteriaSetId(criteriaSetId);
-            criteriaSetValue.setCriteriaValueDetail(aliace);
+            //criteriaSetValue.setCriteriaValueDetail(aliace);
             criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
             criteriaSetValue.setValue(aliace);
         } else {

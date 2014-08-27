@@ -108,7 +108,7 @@ public final class ProductParserUtil {
             return null;
         }
         CriteriaInfo criteriaInfo = ProductDataStore.getCriteriaInfoByDescription(criteria, xid);
-        return criteria != null ? criteriaInfo.getCode() : null;
+        return criteriaInfo != null ? criteriaInfo.getCode() : null;
     }
 
     public static String getCriteriaNameFromCriteriaCode(String criteria) {

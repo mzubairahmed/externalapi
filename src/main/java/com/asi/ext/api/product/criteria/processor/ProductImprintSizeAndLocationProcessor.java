@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.StringUtils;
 
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.service.model.ImprintSizeLocation;
@@ -40,7 +41,7 @@ public class ProductImprintSizeAndLocationProcessor extends SimpleCriteriaProces
         }
         this.configId = configId;
 
-        return getCriteriaSet(getImprintSizeLocationString(imprintSizeAndLocations), existingProduct, matchedCriteriaSet, 0);
+        return getCriteriaSet(imprintSizeAndLocations, existingProduct, matchedCriteriaSet, 0);
     }
 
     private String getImprintSizeLocationString(List<ImprintSizeLocation> imprintSizeLocations) {
@@ -52,22 +53,17 @@ public class ProductImprintSizeAndLocationProcessor extends SimpleCriteriaProces
         return finalImprintSizeAndLocation;
     }
 
-    @Override
-    public ProductCriteriaSets getCriteriaSet(String values, ProductDetail existingProduct, ProductCriteriaSets matchedCriteriaSet,
-            int currentSetValueId) {
+    public ProductCriteriaSets getCriteriaSet(List<ImprintSizeLocation> imprintSizeLocations, ProductDetail existingProduct,
+            ProductCriteriaSets matchedCriteriaSet, int currentSetValueId) {
 
-        if (!updateNeeded(matchedCriteriaSet, values)) {
+        if (!updateNeeded(matchedCriteriaSet, String.valueOf(imprintSizeLocations))) {
             return null;
         }
 
         LOGGER.info("Started processing imprint size and location");
         // First verify and process value to desired format
 
-        if (!isValueIsValid(values)) {
-            return null;
-        }
-
-        String[] finalValues = processValues(values);
+        // String[] finalValues = processValues(values);
         List<CriteriaSetValues> finalCriteriaSetValues = new ArrayList<>();
 
         boolean checkExistingElements = matchedCriteriaSet != null;
@@ -88,8 +84,11 @@ public class ProductImprintSizeAndLocationProcessor extends SimpleCriteriaProces
             matchedCriteriaSet.setIsDefaultConfiguration(ApplicationConstants.CONST_STRING_FALSE_SMALL);
         }
 
-        for (String value : finalValues) {
-            String setCodeValueId = getSetCodeValueId(value);
+        for (ImprintSizeLocation value : imprintSizeLocations) {
+            if (value == null && value.equals(new ImprintSizeLocation())) {
+                continue;
+            }
+            String setCodeValueId = getSetCodeValueId(value.getLocation());
 
             if (CommonUtilities.isValueNull(setCodeValueId)) {
                 addErrorToBatchLogCollection(existingProduct.getExternalProductId(),
@@ -100,7 +99,8 @@ public class ProductImprintSizeAndLocationProcessor extends SimpleCriteriaProces
             CriteriaSetValues criteriaSetValue = null;
 
             if (checkExistingElements) {
-                criteriaSetValue = existingValueMap.get(value.toUpperCase() + "_" + setCodeValueId);
+                criteriaSetValue = existingValueMap.get(String.valueOf(value.getSize()).toUpperCase() + "|"
+                        + String.valueOf(value.getLocation()).toUpperCase() + "_" + setCodeValueId);
             }
             if (criteriaSetValue == null) {
                 // If no match found in the existing list
@@ -113,11 +113,11 @@ public class ProductImprintSizeAndLocationProcessor extends SimpleCriteriaProces
                 criteriaSetValue.setIsSetValueMeasurement(ApplicationConstants.CONST_STRING_FALSE_SMALL);
                 criteriaSetValue.setCriteriaSetId(matchedCriteriaSet.getCriteriaSetId());
                 criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
-                criteriaSetValue.setValue(value);
+                criteriaSetValue.setValue(String.valueOf(value.getSize()) + "|" + String.valueOf(value.getLocation()));
             }
 
             updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_IMPRINT_SIZE_CRITERIA_CODE,
-                    value, criteriaSetValue);
+                    String.valueOf(criteriaSetValue.getValue()), criteriaSetValue);
 
             finalCriteriaSetValues.add(criteriaSetValue);
         }
@@ -139,7 +139,8 @@ public class ProductImprintSizeAndLocationProcessor extends SimpleCriteriaProces
         Map<String, CriteriaSetValues> existing = new HashMap<String, CriteriaSetValues>();
         try {
             for (CriteriaSetValues setValues : existingCriteriaSetValues) {
-                if (setValues != null && setValues.getCriteriaSetCodeValues() != null && setValues.getCriteriaSetCodeValues().length > 0) {
+                if (setValues != null && setValues.getCriteriaSetCodeValues() != null
+                        && setValues.getCriteriaSetCodeValues().length > 0) {
                     String setCodeValue = setValues.getCriteriaSetCodeValues()[0].getSetCodeValueId();
                     existing.put(String.valueOf(setValues.getValue()).toUpperCase() + "_" + setCodeValue, setValues);
                 }
@@ -159,39 +160,41 @@ public class ProductImprintSizeAndLocationProcessor extends SimpleCriteriaProces
     @Override
     protected String[] processValues(String value) {
 
-        /*if (value.contains(",")) {
-            // x1,x2|y1,y2
-            String[] imprintAttributes = value.split("\\|");
-            String[] imprintSizes = imprintAttributes.length > 0 ? imprintAttributes[0].split(",") : new String[] {};
-            String[] imprintLocation = imprintAttributes.length > 1 ? imprintAttributes[1].split(",") : new String[] {};
-            // if the array length is not matching then make it equal
-            if (imprintSizes.length != imprintLocation.length) {
-                if (imprintSizes.length > imprintLocation.length) {
-
-                    String[] tempArray = new String[imprintSizes.length];
-                    Arrays.fill(tempArray, "");
-                    System.arraycopy(imprintLocation, 0, tempArray, 0, imprintLocation.length);
-
-                    imprintLocation = tempArray;
-                } else if (imprintLocation.length > imprintSizes.length) {
-                    String[] tempArray = new String[imprintLocation.length];
-                    Arrays.fill(tempArray, "");
-                    System.arraycopy(imprintSizes, 0, tempArray, 0, imprintSizes.length);
-
-                    imprintSizes = tempArray;
-                }
-            }
-            if (imprintSizes.length == imprintLocation.length) {
-                value = "";
-                for (int imprintCntr = 0; imprintCntr < imprintSizes.length; imprintCntr++) {
-                    if (imprintCntr < imprintSizes.length - 1)
-                        value += imprintSizes[imprintCntr] + "|" + imprintLocation[imprintCntr] + ",";
-                    else
-                        value += imprintSizes[imprintCntr] + "|" + imprintLocation[imprintCntr];
-                }
-            }
-
-        }*/
+        /*
+         * if (value.contains(",")) {
+         * // x1,x2|y1,y2
+         * String[] imprintAttributes = value.split("\\|");
+         * String[] imprintSizes = imprintAttributes.length > 0 ? imprintAttributes[0].split(",") : new String[] {};
+         * String[] imprintLocation = imprintAttributes.length > 1 ? imprintAttributes[1].split(",") : new String[] {};
+         * // if the array length is not matching then make it equal
+         * if (imprintSizes.length != imprintLocation.length) {
+         * if (imprintSizes.length > imprintLocation.length) {
+         * 
+         * String[] tempArray = new String[imprintSizes.length];
+         * Arrays.fill(tempArray, "");
+         * System.arraycopy(imprintLocation, 0, tempArray, 0, imprintLocation.length);
+         * 
+         * imprintLocation = tempArray;
+         * } else if (imprintLocation.length > imprintSizes.length) {
+         * String[] tempArray = new String[imprintLocation.length];
+         * Arrays.fill(tempArray, "");
+         * System.arraycopy(imprintSizes, 0, tempArray, 0, imprintSizes.length);
+         * 
+         * imprintSizes = tempArray;
+         * }
+         * }
+         * if (imprintSizes.length == imprintLocation.length) {
+         * value = "";
+         * for (int imprintCntr = 0; imprintCntr < imprintSizes.length; imprintCntr++) {
+         * if (imprintCntr < imprintSizes.length - 1)
+         * value += imprintSizes[imprintCntr] + "|" + imprintLocation[imprintCntr] + ",";
+         * else
+         * value += imprintSizes[imprintCntr] + "|" + imprintLocation[imprintCntr];
+         * }
+         * }
+         * 
+         * }
+         */
         return value.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
     }
 
@@ -199,6 +202,16 @@ public class ProductImprintSizeAndLocationProcessor extends SimpleCriteriaProces
     protected boolean updateCriteriaSet(String value) {
         // TODO Auto-generated method stub
         return false;
+    }
+
+    /* (non-Javadoc)
+     * @see com.asi.ext.api.product.criteria.processor.SimpleCriteriaProcessor#getCriteriaSet(java.lang.String, com.asi.service.product.client.vo.ProductDetail, com.asi.service.product.client.vo.ProductCriteriaSets, int)
+     */
+    @Override
+    protected ProductCriteriaSets getCriteriaSet(String values, ProductDetail existingProduct,
+            ProductCriteriaSets matchedCriteriaSet, int currentSetValueId) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

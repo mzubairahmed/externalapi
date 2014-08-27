@@ -219,6 +219,8 @@ public class ImportTransformer {
         if (serviceProduct.getLineNames() != null && !serviceProduct.getLineNames().isEmpty()) {
             productToSave
                     .setSelectedLineNames(selectedLineProcessor.getSelectedLines(serviceProduct.getLineNames(), productToSave));
+        } else {
+            productToSave.setSelectedLineNames(null);
         }
         // Process Product Configurations
 
@@ -407,14 +409,14 @@ public class ImportTransformer {
         }
 
         // RUSH Time Processing
-        // I am commenting as Rush time Updation and insertion is pending
-     /*   if (serviceProdConfigs.getRushTime() != null) {
+    
+        if (serviceProdConfigs.getRushTime() != null && serviceProdConfigs.getRushTime().isAvailable()) {
             tempCriteriaSet = rushTimeProcessor.getRushTimeCriteriaSet(serviceProdConfigs.getRushTime(), rdrProduct,
                     existingCriteriaSetMap.get(ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE), configId);
             existingCriteriaSetMap.put(ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE, tempCriteriaSet);
         } else {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE);
-        }*/
+        }
 
         // Product Time Processing
         if (serviceProdConfigs.getProductionTime() != null) {

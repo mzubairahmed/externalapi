@@ -641,20 +641,20 @@ public class ConfigurationsParser {
 			for(CriteriaSetValues currentCriteriasetValue:currentCriteriaSetValueList){
 				rushTimeValue=new RushTimeValue();
 				if(currentCriteriasetValue.getValue() instanceof List){
-					rushTimeValue.setBusinessDays(Integer.parseInt(productLookupParser.getTimeText(currentCriteriasetValue.getValue())));
+					rushTimeValue.setBusinessDays(productLookupParser.getTimeText(currentCriteriasetValue.getValue()));
 				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriasetValue.getCriteriaCode(), Integer.parseInt(currentCriteriasetValue.getId()), productLookupParser.getTimeText(currentCriteriasetValue.getValue()));
 				rushTimeValue.setDetails(currentCriteriasetValue.getCriteriaValueDetail());
 				}else{
-					rushTimeValue.setDetails("");
-					rushTimeValue.setBusinessDays(0);
+					//rushTimeValue.setDetails("");
+					//rushTimeValue.setBusinessDays("");
 				}
-				
+				if(null!=rushTimeValue.getBusinessDays())
 				rushtimeValueList.add(rushTimeValue);
 			}	
 			if(rushtimeValueList.size()>0){
 				rushTime.setRushTimeValues(rushtimeValueList);
-				serviceProductConfig.setRushTime(rushTime);
 			}
+			serviceProductConfig.setRushTime(rushTime);
 		}
 		
 		// Materials
@@ -777,7 +777,7 @@ public class ConfigurationsParser {
 			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
 					currentProductionTime=new ProductionTime();
 					if(currentCriteriaSetValue.getValue() instanceof List){
-						currentProductionTime.setBusinessDays(Integer.parseInt(productLookupParser.getTimeText(currentCriteriaSetValue.getValue())));
+						currentProductionTime.setBusinessDays(productLookupParser.getTimeText(currentCriteriaSetValue.getValue()));
 						criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), productLookupParser.getTimeWithUnitsInText(currentCriteriaSetValue.getValue()));
 					}
 					currentProductionTimeDetail=currentCriteriaSetValue.getCriteriaValueDetail();
