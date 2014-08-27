@@ -33,22 +33,19 @@ public class AdditionalLocationProcessor extends SimpleCriteriaProcessor {
     public ProductCriteriaSets getAdditionalLocationCriteriaSet(List<String> additionalLocation, ProductDetail product,
             ProductCriteriaSets matchedCriteriaSet, String configId) {
         this.configId = configId;
-        return getCriteriaSet(CommonUtilities.convertStringListToCSV(additionalLocation), product, matchedCriteriaSet, 0);
+        return getCriteriaSet(additionalLocation, product, matchedCriteriaSet, 0);
     }
 
-    public ProductCriteriaSets getCriteriaSet(String values, ProductDetail existingProduct, ProductCriteriaSets matchedCriteriaSet,
+    public ProductCriteriaSets getCriteriaSet(List<String> additionalLocation, ProductDetail existingProduct, ProductCriteriaSets matchedCriteriaSet,
             int currentSetValueId) {
-        if (!updateNeeded(matchedCriteriaSet, values)) {
+        if (!updateNeeded(matchedCriteriaSet, String.valueOf(additionalLocation))) {
             return null;
         }
         LOGGER.info("Started Processing of Additional location");
         // First verify and process value to desired format
 
-        if (!isValueIsValid(values)) {
-            return null;
-        }
 
-        String[] finalValues = processValues(values);
+        //String[] finalValues = processValues(values);
         List<CriteriaSetValues> finalCriteriaSetValues = new ArrayList<>();
 
         boolean checkExistingElements = matchedCriteriaSet != null;
@@ -69,7 +66,10 @@ public class AdditionalLocationProcessor extends SimpleCriteriaProcessor {
             matchedCriteriaSet.setIsDefaultConfiguration(ApplicationConstants.CONST_STRING_FALSE_SMALL);
         }
 
-        for (String value : finalValues) {
+        for (String value : additionalLocation) {
+            if (CommonUtilities.isValueNull(value)) {
+                continue;
+            }
             String setCodeValueId = getSetCodeValueId(value);
 
             if (CommonUtilities.isValueNull(setCodeValueId)) {
@@ -163,6 +163,16 @@ public class AdditionalLocationProcessor extends SimpleCriteriaProcessor {
         LOGGER.info("Completed existing Additional location values of product");
 
         return false;
+    }
+
+    /* (non-Javadoc)
+     * @see com.asi.ext.api.product.criteria.processor.SimpleCriteriaProcessor#getCriteriaSet(java.lang.String, com.asi.service.product.client.vo.ProductDetail, com.asi.service.product.client.vo.ProductCriteriaSets, int)
+     */
+    @Override
+    protected ProductCriteriaSets getCriteriaSet(String values, ProductDetail existingProduct,
+            ProductCriteriaSets matchedCriteriaSet, int currentSetValueId) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

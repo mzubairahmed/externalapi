@@ -33,23 +33,18 @@ public class AdditionalColorProcessor extends SimpleCriteriaProcessor {
     public ProductCriteriaSets getAdditionalColorCriteriaSet(List<String> additionalColor, ProductDetail product,
             ProductCriteriaSets matchedCriteriaSet, String configId) {
         this.configId = configId;
-        return getCriteriaSet(CommonUtilities.convertStringListToCSV(additionalColor), product, matchedCriteriaSet, 0);
+        return getCriteriaSet(additionalColor, product, matchedCriteriaSet, 0);
     }
 
-    public ProductCriteriaSets getCriteriaSet(String values, ProductDetail existingProduct, ProductCriteriaSets matchedCriteriaSet,
+    public ProductCriteriaSets getCriteriaSet(List<String> additionalColors, ProductDetail existingProduct, ProductCriteriaSets matchedCriteriaSet,
             int currentSetValueId) {
-        if (!updateNeeded(matchedCriteriaSet, values)) {
+        if (!updateNeeded(matchedCriteriaSet, String.valueOf(additionalColors))) {
             return null;
         }
         LOGGER.info("Started Processing of Additional Colors");
         ProductDataStore productDataStore = new ProductDataStore();
         // First verify and process value to desired format
 
-        if (!isValueIsValid(values)) {
-            return null;
-        }
-
-        String[] finalValues = processValues(values);
         List<CriteriaSetValues> finalCriteriaSetValues = new ArrayList<>();
 
         boolean checkExistingElements = matchedCriteriaSet != null;
@@ -70,7 +65,10 @@ public class AdditionalColorProcessor extends SimpleCriteriaProcessor {
             matchedCriteriaSet.setIsDefaultConfiguration(ApplicationConstants.CONST_STRING_FALSE_SMALL);
         }
 
-        for (String value : finalValues) {
+        for (String value : additionalColors) {
+            if (CommonUtilities.isValueNull(value)) {
+                continue;
+            }
             String setCodeValueId = getSetCodeValueId(value);
 
             if (CommonUtilities.isValueNull(setCodeValueId)) {
@@ -170,6 +168,16 @@ public class AdditionalColorProcessor extends SimpleCriteriaProcessor {
         LOGGER.info("Completed existing Additional color values of product");
 
         return false;
+    }
+
+    /* (non-Javadoc)
+     * @see com.asi.ext.api.product.criteria.processor.SimpleCriteriaProcessor#getCriteriaSet(java.lang.String, com.asi.service.product.client.vo.ProductDetail, com.asi.service.product.client.vo.ProductCriteriaSets, int)
+     */
+    @Override
+    protected ProductCriteriaSets getCriteriaSet(String values, ProductDetail existingProduct,
+            ProductCriteriaSets matchedCriteriaSet, int currentSetValueId) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

@@ -219,6 +219,8 @@ public class ImportTransformer {
         if (serviceProduct.getLineNames() != null && !serviceProduct.getLineNames().isEmpty()) {
             productToSave
                     .setSelectedLineNames(selectedLineProcessor.getSelectedLines(serviceProduct.getLineNames(), productToSave));
+        } else {
+            productToSave.setSelectedLineNames(null);
         }
         // Process Product Configurations
 
