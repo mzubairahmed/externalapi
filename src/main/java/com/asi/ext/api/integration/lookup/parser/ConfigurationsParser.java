@@ -641,20 +641,20 @@ public class ConfigurationsParser {
 			for(CriteriaSetValues currentCriteriasetValue:currentCriteriaSetValueList){
 				rushTimeValue=new RushTimeValue();
 				if(currentCriteriasetValue.getValue() instanceof List){
-					rushTimeValue.setBusinessDays(Integer.parseInt(productLookupParser.getTimeText(currentCriteriasetValue.getValue())));
+					rushTimeValue.setBusinessDays(productLookupParser.getTimeText(currentCriteriasetValue.getValue()));
 				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriasetValue.getCriteriaCode(), Integer.parseInt(currentCriteriasetValue.getId()), productLookupParser.getTimeText(currentCriteriasetValue.getValue()));
 				rushTimeValue.setDetails(currentCriteriasetValue.getCriteriaValueDetail());
 				}else{
-					rushTimeValue.setDetails("");
-					rushTimeValue.setBusinessDays(0);
+					//rushTimeValue.setDetails("");
+					//rushTimeValue.setBusinessDays("");
 				}
-				
+				if(null!=rushTimeValue.getBusinessDays())
 				rushtimeValueList.add(rushTimeValue);
 			}	
 			if(rushtimeValueList.size()>0){
 				rushTime.setRushTimeValues(rushtimeValueList);
-				serviceProductConfig.setRushTime(rushTime);
 			}
+			serviceProductConfig.setRushTime(rushTime);
 		}
 		
 		// Materials

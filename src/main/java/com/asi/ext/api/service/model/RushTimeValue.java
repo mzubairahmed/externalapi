@@ -1,16 +1,18 @@
 package com.asi.ext.api.service.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+@JsonInclude(Include.NON_NULL)
 public class RushTimeValue {
 	@JsonProperty("BusinessDays")
-    private Integer businessDays;
+    private String businessDays=null;
     @JsonProperty("Details")
     private String  details;
-	public Integer getBusinessDays() {
+	public String getBusinessDays() {
 		return businessDays;
 	}
-	public void setBusinessDays(Integer businessDays) {
+	public void setBusinessDays(String businessDays) {
 		this.businessDays = businessDays;
 	}
 	public String getDetails() {
