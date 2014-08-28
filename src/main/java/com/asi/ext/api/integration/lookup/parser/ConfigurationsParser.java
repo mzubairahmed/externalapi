@@ -459,7 +459,7 @@ public class ConfigurationsParser {
 		 if(productDetail.getIsProductNumberBreakout()){
 			 breakoutBy="Product Number";		 			
 		 		}
-		 serviceProduct.setBreakOutByPrice(String.valueOf(productDetail.getIsPriceBreakoutFlag()));
+		 serviceProduct.setBreakOutByPrice(productDetail.getIsPriceBreakoutFlag());
 		// Product Color
 		List<com.asi.service.product.client.vo.CriteriaSetValues> currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_COLORS_CRITERIA_CODE);
 		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0){
@@ -950,7 +950,7 @@ public class ConfigurationsParser {
 		// LMIN
 		currentCriteriaSetValueList=getCriteriaSetValuesListByCode(productDetail.getProductConfigurations().get(0),ApplicationConstants.CONST_LESS_THAN_MIN_CRT_CODE);
 		if(null!=currentCriteriaSetValueList && currentCriteriaSetValueList.size()>0 && productDetail.getIsOrderLessThanMinimumAllowed())
-		serviceProduct.setCanOrderLessThanMimimum(String.valueOf(productDetail.getIsOrderLessThanMinimumAllowed()));
+		serviceProduct.setCanOrderLessThanMimimum(productDetail.getIsOrderLessThanMinimumAllowed());
 		
 		serviceProduct.setProductBreakoutBy(breakoutBy);
 		breakoutBy=null;

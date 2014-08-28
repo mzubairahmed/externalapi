@@ -257,8 +257,8 @@ public class ImportTransformer {
             }
         }
 
-        if (!StringUtils.isEmpty(serviceProduct.getBreakOutByPrice())) {
-            productToSave.setIsPriceBreakoutFlag(Boolean.parseBoolean(serviceProduct.getBreakOutByPrice()));
+        if (serviceProduct != null) {
+            productToSave.setIsPriceBreakoutFlag(serviceProduct.isBreakOutByPrice());
         }
 
         // PriceGrid processing

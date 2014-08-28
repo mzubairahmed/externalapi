@@ -22,68 +22,85 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Product {
 
     @JsonProperty("ExternalProductId")
-    private String             externalProductId;
+    private String                externalProductId;
     @JsonProperty("Name")
-    private String             name;
+    private String                name;
     @JsonProperty("Description")
-    private String             description;
+    private String                description;
     @JsonProperty("Summary")
-    private String             summary;
+    private String                summary;
     @JsonProperty("AsiProdNo")
-    private String             asiProdNo;
-    @JsonProperty("ProductType")
-    private String             productType;
-    @JsonProperty("StatusCode")
-    private String             statusCode;
+    private String                asiProdNo;
     @JsonProperty("ProductInventoryLink")
-    private String             productInventoryLink;
+    private String                productInventoryLink;
     @JsonProperty("ProductDataSheet")
-    private String             productDataSheet;
+    private String                productDataSheet;
     @JsonProperty("ShipperBillsBy")
-    private String             shipperBillsBy;
+    private String                shipperBillsBy;
     @JsonProperty("ProductBreakoutBy")
-    private String             productBreakoutBy;
+    private String                productBreakoutBy;
     @JsonProperty("BreakoutByPrice")
-    private String             breakOutByPrice;
+    private boolean               breakOutByPrice;
+    @JsonProperty("IsShippableInPlainBox")
+    private boolean               isShippableInPlainBox;
     @JsonProperty("LineNames")
-    @XmlElementWrapper(name="LineNames")
-    @XmlElement(name="LineName")
-    private List<String>       lineNames               = null;
+    @XmlElementWrapper(name = "LineNames")
+    @XmlElement(name = "LineName")
+    private List<String>          lineNames               = null;
     @JsonProperty("Catalogs")
-    @XmlElementWrapper(name="Catalogs")
-    @XmlElement(name="Catalog")
-    private List<Catalog>      catalogs                = null;
+    @XmlElementWrapper(name = "Catalogs")
+    @XmlElement(name = "Catalog")
+    private List<Catalog>         catalogs                = null;
     @JsonProperty("DistributorOnly")
-    private String             distributorOnly         = null;
+    private boolean               distributorOnly         = false;
     @JsonProperty("DistributorOnlyComments")
-    private String             distributorOnlyComments = null;
+    private String                distributorOnlyComments = null;
     @JsonProperty("ProductDisclaimer")
-    private String             productDisclaimer       = null;
+    private String                productDisclaimer       = null;
     @JsonProperty("AdditionalProductInfo")
-    private String             additionalProductInfo   = null;
+    private String                additionalProductInfo   = null;
     @JsonProperty("AdditionalShippingInfo")
-    private String             additionalShippingInfo  = null;
+    private String                additionalShippingInfo  = null;
     @JsonProperty("PriceConfirmedThru")
-    private String             priceConfirmedThru      = null;
+    private String                priceConfirmedThru      = null;
     @JsonProperty("CanOrderLessThanMimimum")
-    private String             canOrderLessThanMimimum = null;
+    private boolean               canOrderLessThanMimimum = false;
     @JsonProperty("Availability")
-    private List<Availability> availability;
-
-    /**
-     * @return the availability
-     */
-	public List<Availability> getAvailability() {
-        return availability;
-    }
-
-    /**
-     * @param availability
-     *            the availability to set
-     */
-	public void setAvailability(List<Availability> availability) {
-        this.availability = availability;
-    }
+    private List<Availability>    availability;
+    @JsonProperty("FOBPoints")
+    @XmlElementWrapper(name = "FOBPoints")
+    @XmlElement(name = "FOBPoint")
+    private List<String>          fobPoints               = null;
+    @JsonProperty("ProductKeywords")
+    @XmlElementWrapper(name = "ProductKeywords")
+    @XmlElement(name = "ProductKeyword")
+    private List<String>          productKeywords         = null;
+    @JsonProperty("Categories")
+    @XmlElementWrapper(name = "Categories")
+    @XmlElement(name = "Category")
+    private List<String>          categories              = null;
+    @JsonProperty("ComplianceCerts")
+    @XmlElementWrapper(name = "ComplianceCerts")
+    @XmlElement(name = "ComplianceCert")
+    private List<String>          complianceCerts         = null;
+    @JsonProperty("SafetyWarnings")
+    @XmlElementWrapper(name = "SafetyWarnings")
+    @XmlElement(name = "SafetyWarning")
+    private List<String>          safetyWarnings          = null;
+    @JsonProperty("Images")
+    @XmlElementWrapper(name = "Images")
+    @XmlElement(name = "Image")
+    private List<Image>           images                  = null;
+    @JsonProperty("PriceGrids")
+    @XmlElementWrapper(name = "PriceGrids")
+    @XmlElement(name = "PriceGrid")
+    private List<PriceGrid>       priceGrids              = null;
+    @JsonProperty("ProductNumbers")
+    @XmlElementWrapper(name = "ProductNumbers")
+    @XmlElement(name = "ProductNumber")
+    private List<ProductNumber>   productNumbers          = null;
+    @JsonProperty("ProductConfigurations")
+    private ProductConfigurations productConfigurations;
 
     public String getDistributorOnlyComments() {
         return distributorOnlyComments;
@@ -125,27 +142,48 @@ public class Product {
         this.priceConfirmedThru = priceConfirmedThru;
     }
 
-    public String getCanOrderLessThanMimimum() {
+    /**
+     * @return the canOrderLessThanMimimum
+     */
+    public boolean isCanOrderLessThanMimimum() {
         return canOrderLessThanMimimum;
     }
 
-    public void setCanOrderLessThanMimimum(String canOrderLessThanMimimum) {
+    /**
+     * @param canOrderLessThanMimimum
+     *            the canOrderLessThanMimimum to set
+     */
+    public void setCanOrderLessThanMimimum(boolean canOrderLessThanMimimum) {
         this.canOrderLessThanMimimum = canOrderLessThanMimimum;
     }
 
-    public String getDistributorOnly() {
+    /**
+     * @return the distributorOnly
+     */
+    public boolean isDistributorOnly() {
         return distributorOnly;
     }
 
-    public void setDistributorOnly(String distributorOnly) {
+    /**
+     * @param distributorOnly
+     *            the distributorOnly to set
+     */
+    public void setDistributorOnly(boolean distributorOnly) {
         this.distributorOnly = distributorOnly;
     }
 
-    public String getBreakOutByPrice() {
+    /**
+     * @return the breakOutByPrice
+     */
+    public boolean isBreakOutByPrice() {
         return breakOutByPrice;
     }
 
-    public void setBreakOutByPrice(String breakOutByPrice) {
+    /**
+     * @param breakOutByPrice
+     *            the breakOutByPrice to set
+     */
+    public void setBreakOutByPrice(boolean breakOutByPrice) {
         this.breakOutByPrice = breakOutByPrice;
     }
 
@@ -156,41 +194,6 @@ public class Product {
     public void setLineNames(List<String> lineNames) {
         this.lineNames = lineNames;
     }
-
-    @JsonProperty("FOBPoints")
-    @XmlElementWrapper(name="FOBPoints")
-    @XmlElement(name="FOBPoint")
-    private List<String>          fobPoints       = null;
-    @JsonProperty("ProductKeywords")
-    @XmlElementWrapper(name="ProductKeywords")
-    @XmlElement(name="ProductKeyword")
-    private List<String>          productKeywords = null;
-    @JsonProperty("Categories")
-    @XmlElementWrapper(name="Categories")
-    @XmlElement(name="Category")
-    private List<String>          categories      = null;
-    @JsonProperty("ComplianceCerts")
-    @XmlElementWrapper(name="ComplianceCerts")
-    @XmlElement(name="ComplianceCert")
-    private List<String>          complianceCerts = null;
-    @JsonProperty("SafetyWarnings")
-    @XmlElementWrapper(name="SafetyWarnings")
-    @XmlElement(name="SafetyWarning")
-    private List<String>          safetyWarnings  = null;
-    @JsonProperty("Images")
-    @XmlElementWrapper(name="Images")
-    @XmlElement(name="Image")
-    private List<Image>           images          = null;
-    @JsonProperty("PriceGrids")
-    @XmlElementWrapper(name = "PriceGrids")
-    @XmlElement(name = "PriceGrid")
-    private List<PriceGrid>       priceGrids      = null;
-    @JsonProperty("ProductNumbers")
-    @XmlElementWrapper(name="ProductNumbers")
-    @XmlElement(name="ProductNumber")
-    private List<ProductNumber>   productNumbers  = null;
-    @JsonProperty("ProductConfigurations")
-    private ProductConfigurations productConfigurations;
 
     public String getExternalProductId() {
         return externalProductId;
@@ -232,22 +235,6 @@ public class Product {
         this.asiProdNo = asiProdNo;
     }
 
-    public String getProductType() {
-        return productType;
-    }
-
-    public void setProductType(String productType) {
-        this.productType = productType;
-    }
-
-    public String getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(String statusCode) {
-        this.statusCode = statusCode;
-    }
-
     public String getProductInventoryLink() {
         return productInventoryLink;
     }
@@ -270,6 +257,21 @@ public class Product {
 
     public void setShipperBillsBy(String shipperBillsBy) {
         this.shipperBillsBy = shipperBillsBy;
+    }
+
+    /**
+     * @return the availability
+     */
+    public List<Availability> getAvailability() {
+        return availability;
+    }
+
+    /**
+     * @param availability
+     *            the availability to set
+     */
+    public void setAvailability(List<Availability> availability) {
+        this.availability = availability;
     }
 
     public List<String> getProductKeywords() {
@@ -380,6 +382,21 @@ public class Product {
 
     public void setCatalogs(List<Catalog> catalogs) {
         this.catalogs = catalogs;
+    }
+
+    /**
+     * @return the isShippableInPlainBox
+     */
+    public boolean isShippableInPlainBox() {
+        return isShippableInPlainBox;
+    }
+
+    /**
+     * @param isShippableInPlainBox
+     *            the isShippableInPlainBox to set
+     */
+    public void setShippableInPlainBox(boolean isShippableInPlainBox) {
+        this.isShippableInPlainBox = isShippableInPlainBox;
     }
 
 }
