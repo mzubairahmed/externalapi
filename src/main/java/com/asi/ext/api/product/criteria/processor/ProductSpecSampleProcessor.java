@@ -36,8 +36,6 @@ public class ProductSpecSampleProcessor extends SimpleCriteriaProcessor { // SPE
     public ProductCriteriaSets getProductSamplesCriteriaSet(Samples samples, ProductDetail existingProduct,
             ProductCriteriaSets matchedCriteriaSet, String configId) {
         this.configId = configId;
-        String specSample = samples.getSpecSampleAvailable() ? samples.getSpecInfo() : null;
-        String prodSample = samples.getProductSampleAvailable() ? samples.getProductSampleInfo() : null;
 
         return getCriteriaSetForMultiple(samples, existingProduct, matchedCriteriaSet, 0);
     }
