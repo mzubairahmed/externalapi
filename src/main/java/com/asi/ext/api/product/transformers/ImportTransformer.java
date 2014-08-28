@@ -138,6 +138,7 @@ public class ImportTransformer {
             // LMIN Process
             // productToSave.setIsOrderLessThanMinimumAllowed()
         }
+        productToSave.setIsShippableInPlainBox(serviceProduct.isCanShipInPlainBox());
         // DataSourceId
         productToSave.setDataSourceId(dataSourceId);
         // Direct Elements
