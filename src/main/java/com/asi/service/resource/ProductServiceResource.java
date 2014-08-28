@@ -7,8 +7,7 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -29,6 +28,7 @@ import org.springframework.web.client.RestClientException;
 import com.asi.core.exception.ErrorMessage;
 import com.asi.core.exception.ExistingProductException;
 import com.asi.core.exception.ResponseNotValidException;
+import com.asi.ext.api.exception.handler.ExternalApiExceptionHandler;
 import com.asi.ext.api.service.ProductService;
 import com.asi.ext.api.service.model.Product;
 import com.asi.service.product.exception.ProductNotFoundException;
@@ -41,7 +41,7 @@ public class ProductServiceResource {
     @Autowired
     ProductService                   productService;
 
-    private static Logger            _LOGGER = LoggerFactory.getLogger(ProductServiceResource.class);
+    private static Logger            _LOGGER = Logger.getLogger(ProductServiceResource.class);
     @Autowired
     private MessageSource            messageSource;
 
@@ -107,17 +107,18 @@ public class ProductServiceResource {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorMessage> handleUnsupportedEncodingException(HttpMessageNotReadableException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
-        String errorMessage = "Invalid Data Provided: " + ex.getMessage();
+        String errorMessage = ExternalApiExceptionHandler.getMessageFromExceptionForInvalidProductData(ex);
         String errorURL = request.getRequestURL().toString();
         ErrorMessage errorInfo = new ErrorMessage();
         errorInfo.setErrorMessage(errorMessage);
         errorInfo.setErrorURL(errorURL);
-        errorInfo.setStatusCode(HttpStatus.NOT_FOUND);
-        List<String> errorsList = new ArrayList<String>();
-        errorsList.add(ex.getMessage());
-        errorInfo.setErrors(errorsList);
-        _LOGGER.error(errorMessage + errorURL);
-        return new ResponseEntity<ErrorMessage>(errorInfo, null, HttpStatus.NOT_FOUND);
+        errorInfo.setStatusCode(HttpStatus.BAD_REQUEST);
+        //List<String> errorsList = new ArrayList<String>();
+        //errorsList.add(ex.getMessage());
+        //errorInfo.setErrors(errorsList);
+        _LOGGER.error("URL : " + errorURL);
+        _LOGGER.error("Exception ", ex);
+        return new ResponseEntity<ErrorMessage>(errorInfo, null, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ProductNotFoundException.class)
