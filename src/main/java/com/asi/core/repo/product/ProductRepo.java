@@ -1,3 +1,4 @@
+
 package com.asi.core.repo.product;
 
 import java.io.UnsupportedEncodingException;
@@ -474,7 +475,7 @@ public class ProductRepo {
         serviceProduct.setAdditionalProductInfo(radProduct.getAdditionalInfo());
         serviceProduct.setAdditionalShippingInfo(radProduct.getAdditionalShippingInfo());
         serviceProduct.setPriceConfirmedThru(radProduct.getPriceConfirmationDate());
-
+        serviceProduct.setCanShipInPlainBox(radProduct.getIsShippableInPlainBox());
         return serviceProduct;
     }
 
