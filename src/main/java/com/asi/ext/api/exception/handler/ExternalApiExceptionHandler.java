@@ -55,7 +55,7 @@ public class ExternalApiExceptionHandler {
         } else if (exType.equals(ExceptionTypes.JSON_MAPPING)) {
             buf.append("Invalid JSON : ");
             buf.append(getMessageFromJsonMappingException(e.getCause()));
-            buf.append(". Please check your data");
+            buf.append(". Please check your JSON model");
             return buf.toString();
         } else {
             return e.getMessage();
