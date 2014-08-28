@@ -10,11 +10,14 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.springframework.http.HttpStatus;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @XmlRootElement(namespace = "http://www.asicentral.com/schema/error" , name="errorInfo")
 @XmlType(propOrder={"errorMessage","errorURL","statusCode","errors","errorDate","remoteHost"})
 @JsonPropertyOrder({"errorMessage","errorURL","statusCode","errors","errorDate","remoteHost"})
+@JsonInclude(Include.NON_NULL)
 public class ErrorMessage {
 	private String errorMessage=null;
 	private String errorURL;

@@ -1,3 +1,4 @@
+
 package com.asi.core.repo.product;
 
 import java.io.UnsupportedEncodingException;
@@ -336,7 +337,7 @@ public class ProductRepo {
         if (finalSafetyWrngs.size() > 0) serviceProduct.setSafetyWarnings(finalSafetyWrngs);
 
         // Status Code
-        serviceProduct.setStatusCode(radProduct.getStatusCode().equalsIgnoreCase("ACTV") ? "Active" : "In Active");
+        //serviceProduct.setStatusCode(radProduct.getStatusCode().equalsIgnoreCase("ACTV") ? "Active" : "In Active");
 
         // Compliance certs
         List<SelectedComplianceCert> complianceCertsList = radProduct.getSelectedComplianceCerts();
@@ -380,11 +381,11 @@ public class ProductRepo {
         if (null != prodDatasheet) serviceProduct.setProductDataSheet(prodDatasheet.getUrl());
 
         // Product Type Code
-        if (null != radProduct.getProductTypeCode() && !radProduct.getProductTypeCode().trim().isEmpty()) {
+        /*if (null != radProduct.getProductTypeCode() && !radProduct.getProductTypeCode().trim().isEmpty()) {
             serviceProduct.setProductType(lookupDataStore.findProdTypeNameByCode(radProduct.getProductTypeCode()));
         } else {
             serviceProduct.setProductType(ApplicationConstants.CONST_STRING_EMPTY);
-        }
+        }*/
 
         // Imaging
         if (null != radProduct.getProductMediaItems() && radProduct.getProductMediaItems().size() > 0) {
@@ -468,14 +469,13 @@ public class ProductRepo {
                 productDetail.getExternalProductId()));
 
         // Miscellaneous
-        serviceProduct.setDistributorOnly(radProduct.getIncludeAppOfferList().equalsIgnoreCase("ESPN") ? "true" : (radProduct
-                .getIncludeAppOfferList().equalsIgnoreCase("ESPW") ? "false" : null));
+        serviceProduct.setDistributorOnly(radProduct.getIncludeAppOfferList().equalsIgnoreCase("ESPN"));
         serviceProduct.setDistributorOnlyComments(radProduct.getDistributorComments());
         serviceProduct.setProductDisclaimer(radProduct.getDisclaimer());
         serviceProduct.setAdditionalProductInfo(radProduct.getAdditionalInfo());
         serviceProduct.setAdditionalShippingInfo(radProduct.getAdditionalShippingInfo());
         serviceProduct.setPriceConfirmedThru(radProduct.getPriceConfirmationDate());
-
+        serviceProduct.setCanShipInPlainBox(radProduct.getIsShippableInPlainBox());
         return serviceProduct;
     }
 

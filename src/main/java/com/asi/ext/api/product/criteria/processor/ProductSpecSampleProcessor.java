@@ -36,13 +36,11 @@ public class ProductSpecSampleProcessor extends SimpleCriteriaProcessor { // SPE
     public ProductCriteriaSets getProductSamplesCriteriaSet(Samples samples, ProductDetail existingProduct,
             ProductCriteriaSets matchedCriteriaSet, String configId) {
         this.configId = configId;
-        String specSample = samples.getSpecSampleAvailable() ? samples.getSpecInfo() : null;
-        String prodSample = samples.getProductSampleAvailable() ? samples.getProductSampleInfo() : null;
 
-        return getCriteriaSetForMultiple(specSample, prodSample, existingProduct, matchedCriteriaSet, 0);
+        return getCriteriaSetForMultiple(samples, existingProduct, matchedCriteriaSet, 0);
     }
 
-    public ProductCriteriaSets getCriteriaSetForMultiple(String specSample, String prodSample, ProductDetail existingProduct,
+    public ProductCriteriaSets getCriteriaSetForMultiple(Samples sample, ProductDetail existingProduct,
             ProductCriteriaSets matchedCriteriaSet, int currentSetValueId) {
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("Started processing ProductSpecSampleProcessor.getCriteriaSetForMultiple()");
@@ -72,51 +70,48 @@ public class ProductSpecSampleProcessor extends SimpleCriteriaProcessor { // SPE
             productSampleCriteriaSetValue = existingMap.get("ProductSample");
             specSampleCriteriaSetValue = existingMap.get("SpecSample");
         }
-        if (CommonUtilities.isUpdateNeeded(prodSample)) {
-            if (!CommonUtilities.isValueNull(prodSample)) {
-                if (productSampleCriteriaSetValue == null
-                        || !String.valueOf(productSampleCriteriaSetValue.getCriteriaValueDetail()).toUpperCase()
-                                .equalsIgnoreCase(prodSample.trim())) {
-                    // Existing criteria value matched
-                    productSampleCriteriaSetValue = createProductSampleSetValue(prodSample, matchedCriteriaSet.getCriteriaSetId());
-                }
-            } else {
-                productSampleCriteriaSetValue = null;
-            }
+        if (productSampleCriteriaSetValue == null && sample.getProductSampleAvailable()) {
+            // Existing criteria value matched
+            productSampleCriteriaSetValue = createProductSampleSetValue(sample.getProductSampleInfo(), matchedCriteriaSet.getCriteriaSetId());
+        } else if (productSampleCriteriaSetValue != null && sample.getProductSampleAvailable()) {
+            productSampleCriteriaSetValue.setValue(sample.getProductSampleInfo());
+            productSampleCriteriaSetValue.setCriteriaValueDetail(sample.getProductSampleInfo() != null ? sample.getProductSampleInfo() : "");
         }
-        if (CommonUtilities.isUpdateNeeded(specSample)) {
-            if (!CommonUtilities.isValueNull(specSample)) {
+        
+        if (specSampleCriteriaSetValue == null && sample.getSpecSampleAvailable()) {
+            // Existing criteria value matched
+            specSampleCriteriaSetValue = createSpecSampleSetValue(sample.getSpecInfo(), matchedCriteriaSet.getCriteriaSetId());
+        } else if (specSampleCriteriaSetValue != null && sample.getSpecSampleAvailable()) {
+            specSampleCriteriaSetValue.setValue(sample.getSpecInfo());
+            specSampleCriteriaSetValue.setCriteriaValueDetail(sample.getSpecInfo() != null ? sample.getSpecInfo() : "");
+        }
 
-                if (specSampleCriteriaSetValue == null
-                        || !String.valueOf(specSampleCriteriaSetValue.getCriteriaValueDetail()).toUpperCase()
-                                .equalsIgnoreCase(specSample.trim())) {
-                    // Existing criteria value matched
-                    specSampleCriteriaSetValue = createSpecSampleSetValue(specSample, matchedCriteriaSet.getCriteriaSetId());
-                }
-            } else {
-                specSampleCriteriaSetValue = null;
-            }
-        }
+        
 
         List<CriteriaSetValues> finalValues = new ArrayList<CriteriaSetValues>();
 
-        if (productSampleCriteriaSetValue != null) {
+        if (sample.getProductSampleAvailable()) {
             updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_PRODUCT_SAMPLE_CRITERIA_CODE,
                     productSampleCriteriaSetValue.getCriteriaValueDetail(), productSampleCriteriaSetValue);
             finalValues.add(productSampleCriteriaSetValue);
         }
-        if (specSampleCriteriaSetValue != null) {
+        if (sample.getSpecSampleAvailable()) {
             updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_PRODUCT_SAMPLE_CRITERIA_CODE,
                     specSampleCriteriaSetValue.getCriteriaValueDetail(), specSampleCriteriaSetValue);
             finalValues.add(specSampleCriteriaSetValue);
         }
+        
+        if (finalValues != null && !finalValues.isEmpty()) {
+            matchedCriteriaSet.setCriteriaSetValues(finalValues);
+            return matchedCriteriaSet;            
+        } else {
+            return null;
+        }
 
-        matchedCriteriaSet.setCriteriaSetValues(finalValues);
-
-        return matchedCriteriaSet;
     }
 
     private CriteriaSetValues createSpecSampleSetValue(String specSample, String criteriaSetId) {
+        specSample = CommonUtilities.isValueNull(specSample) ? "" : specSample;
         CriteriaSetValues crtValue = new CriteriaSetValues();
         crtValue.setId(String.valueOf(--uniqueSetValueId));
         crtValue.setCriteriaSetId(criteriaSetId);
@@ -135,6 +130,7 @@ public class ProductSpecSampleProcessor extends SimpleCriteriaProcessor { // SPE
     }
 
     private CriteriaSetValues createProductSampleSetValue(String prodSample, String criteriaSetId) {
+        prodSample = CommonUtilities.isValueNull(prodSample) ? "" : prodSample;
         CriteriaSetValues crtValue = new CriteriaSetValues();
         crtValue.setId(String.valueOf(--uniqueSetValueId));
         crtValue.setCriteriaSetId(criteriaSetId);

@@ -138,6 +138,7 @@ public class ImportTransformer {
             // LMIN Process
             // productToSave.setIsOrderLessThanMinimumAllowed()
         }
+        productToSave.setIsShippableInPlainBox(serviceProduct.isCanShipInPlainBox());
         // DataSourceId
         productToSave.setDataSourceId(dataSourceId);
         // Direct Elements
@@ -257,8 +258,8 @@ public class ImportTransformer {
             }
         }
 
-        if (!StringUtils.isEmpty(serviceProduct.getBreakOutByPrice())) {
-            productToSave.setIsPriceBreakoutFlag(Boolean.parseBoolean(serviceProduct.getBreakOutByPrice()));
+        if (serviceProduct != null) {
+            productToSave.setIsPriceBreakoutFlag(serviceProduct.isBreakOutByPrice());
         }
 
         // PriceGrid processing
