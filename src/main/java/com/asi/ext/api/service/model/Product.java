@@ -41,8 +41,8 @@ public class Product {
     private String                productBreakoutBy;
     @JsonProperty("BreakoutByPrice")
     private boolean               breakOutByPrice;
-    @JsonProperty("IsShippableInPlainBox")
-    private boolean               isShippableInPlainBox;
+    @JsonProperty("CanShipInPlainBox")
+    private boolean               canShipInPlainBox;
     @JsonProperty("LineNames")
     @XmlElementWrapper(name = "LineNames")
     @XmlElement(name = "LineName")
@@ -385,18 +385,18 @@ public class Product {
     }
 
     /**
-     * @return the isShippableInPlainBox
+     * @return the canShipInPlainBox
      */
-    public boolean isShippableInPlainBox() {
-        return isShippableInPlainBox;
+    public boolean isCanShipInPlainBox() {
+        return canShipInPlainBox;
     }
 
     /**
-     * @param isShippableInPlainBox
-     *            the isShippableInPlainBox to set
+     * @param canShipInPlainBox
+     *            the canShipInPlainBox to set
      */
-    public void setShippableInPlainBox(boolean isShippableInPlainBox) {
-        this.isShippableInPlainBox = isShippableInPlainBox;
+    public void setCanShipInPlainBox(boolean canShipInPlainBox) {
+        this.canShipInPlainBox = canShipInPlainBox;
     }
 
 }
