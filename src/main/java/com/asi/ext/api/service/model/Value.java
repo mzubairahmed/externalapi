@@ -53,14 +53,7 @@ public class Value {
         this.unit = unit;
     }
 
-    @Override
-	public String toString() {
-		return "Value [attribute=" + attribute + ", value=" + value + ", unit="
-				+ unit + ", getAttribute()=" + getAttribute() + ", getValue()="
-				+ getValue() + ", getUnit()=" + getUnit() + ", getClass()="
-				+ getClass() + ", hashCode()=" + hashCode() + ", toString()="
-				+ super.toString() + "]";
-	}
+   
     @XmlElement(name="Unit")
 	@JsonProperty("Unit")
     private String unit;

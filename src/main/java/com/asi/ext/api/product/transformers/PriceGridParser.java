@@ -1043,7 +1043,7 @@ public class PriceGridParser extends ProductParser {
                     if (null != criteriaInfo) {
                         currentCriteria = criteriaInfo.getDescription();
                         if (currentCriteria.contains("Size") || currentCriteria.contains("Apparel")
-                                || currentCriteria.contains("SIZE")) currentCriteria = "Size";
+                                || currentCriteria.contains("SIZE")) currentCriteria = "Sizes";
                         currentPriceConfig.setCriteria(currentCriteria);
                         if (null != bpDetails.getBasePriceCriteria1() && bpDetails.getBasePriceCriteria1() instanceof String) {
                             currentPriceConfig.setValue(getCriteriaValueByCriteria(bpDetails.getBasePriceCriteria1().toString()));
@@ -1055,7 +1055,7 @@ public class PriceGridParser extends ProductParser {
                             currentCriteria = ((Values) bpDetails.getBasePriceCriteria1()).getType();
                             if (null != currentCriteria) {
                                 if (currentCriteria.contains("Size") || currentCriteria.contains("Apparel")
-                                        || currentCriteria.contains("SIZE")) currentCriteria = "Size";
+                                        || currentCriteria.contains("SIZE")) currentCriteria = "Sizes";
                             } else {
                                 currentCriteria = ((Values) bpDetails.getBasePriceCriteria1()).getValue().get(0).getCriteriaType();
                                 currentCriteria = ProductDataStore.getCriteriaInfoForCriteriaCode(currentCriteria).getDescription();
@@ -1077,11 +1077,19 @@ public class PriceGridParser extends ProductParser {
                 if (secondCriteria != null && secondCriteria instanceof String && !secondCriteria.toString().trim().isEmpty()) {
                     currentPriceConfig = new PriceConfiguration();
                     criteriaInfo = ProductDataStore.getCriteriaInfoForCriteriaCode(getCriteriaCode(bpDetails
-                            .getBasePriceCriteria2().toString()));
+                            .getBasePriceCriteria2()));
                     if (null != criteriaInfo) {
-                        currentPriceConfig.setCriteria(criteriaInfo.getDescription());
-                        currentPriceConfig.setValue(getCriteriaValueByCriteria(bpDetails.getBasePriceCriteria2().toString()));
-                    } else {
+           
+                    	 currentCriteria = criteriaInfo.getDescription();
+                         if (currentCriteria.contains("Size") || currentCriteria.contains("Apparel")
+                                 || currentCriteria.contains("SIZE")) currentCriteria = "Sizes";
+                         currentPriceConfig.setCriteria(currentCriteria);
+                         if (null != bpDetails.getBasePriceCriteria2() && bpDetails.getBasePriceCriteria2() instanceof String) {
+                             currentPriceConfig.setValue(getCriteriaValueByCriteria(bpDetails.getBasePriceCriteria2().toString()));
+                         } else {
+                             currentPriceConfig.setValue(bpDetails.getBasePriceCriteria2());
+                         }
+                     } else {
                         currentPriceConfig.setValue(bpDetails.getBasePriceCriteria2());
                     }
 

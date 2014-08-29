@@ -251,11 +251,11 @@ CommonUtilities commonUtilities=new CommonUtilities();
 					if(null==criteriaValues2){
 						criteriaValues2=new Values();						
 					}
-					currentObj=criteriaSetParser.findSizesCriteriaSetById(externalProductId, priceItem.getCriteriaSetValueId());
-					secondCriteria=(String) getCriteriaCode(currentObj);
+					criteriaSet2=criteriaSetParser.findSizesCriteriaSetById(externalProductId, priceItem.getCriteriaSetValueId());
+					secondCriteria=(String) getCriteriaCode(criteriaSet2);
 					if(firstCriteria.equalsIgnoreCase(secondCriteria)){
 						if(currentObj instanceof Value){
-						currentCriteriaObj=(Value)currentObj;
+						currentCriteriaObj=(Value)criteriaSet2;
 						if(APPAREL_SIZE_GROUP_CRITERIACODES.contains(currentCriteriaObj.getCriteriaType())){
 							criteriaValues2.setType(ProductDataStore.getCriteriaInfoForCriteriaCode(currentCriteriaObj.getCriteriaType()).getDescription().replace("Size-", "").trim());						
 						}
@@ -264,10 +264,10 @@ CommonUtilities commonUtilities=new CommonUtilities();
 						criteriaSet1=criteriaValues;	
 						}
 					}else{
-						if(currentObj instanceof Value){
-					currentCriteriaObj2=(Value)currentObj;
-					if(APPAREL_SIZE_GROUP_CRITERIACODES.contains(currentCriteriaObj.getCriteriaType())){
-						criteriaValues2.setType(ProductDataStore.getCriteriaInfoForCriteriaCode(currentCriteriaObj.getCriteriaType()).getDescription().replace("Size-", "").trim());						
+						if(criteriaSet2 instanceof Value){
+					currentCriteriaObj2=(Value)criteriaSet2;
+					if(APPAREL_SIZE_GROUP_CRITERIACODES.contains(currentCriteriaObj2.getCriteriaType())){
+						criteriaValues2.setType(ProductDataStore.getCriteriaInfoForCriteriaCode(currentCriteriaObj2.getCriteriaType()).getDescription().replace("Size-", "").trim());						
 					}
 					valuesList2.add(currentCriteriaObj2);
 					criteriaValues2.setValue(valuesList2);
@@ -362,7 +362,12 @@ CommonUtilities commonUtilities=new CommonUtilities();
         		}
         	}
            if(null!=temp[0]) basePriceDetails.setBasePriceCriteria1(CommonUtilities.isValueNull(temp[0].toString()) ? null : temp[0].toString());
-           if(null!=temp[1]) basePriceDetails.setBasePriceCriteria2(CommonUtilities.isValueNull(temp[1].toString()) ? null : temp[1].toString());
+           if(null!=temp[1]){if(temp[1] instanceof String){
+        	   basePriceDetails.setBasePriceCriteria2(CommonUtilities.isValueNull(temp[1].toString()) ? null : temp[1].toString());
+           }else{
+        	   basePriceDetails.setBasePriceCriteria2(temp[1]);
+           }
+           }
         }else{
         	
         	basePriceDetails.setBasePriceCriteria1(temp[0]);
