@@ -2,15 +2,12 @@ package com.asi.service.product.list;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.HeaderParam;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -48,9 +45,9 @@ public class ProductSearchService {
     private static Logger _LOGGER = LoggerFactory.getLogger(ProductSearchService.class);
 
     // @Secured("ROLE_CUSTOMER")
-    @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.GET, headers = "content-type=application/json, application/xml", produces = {
+    @RequestMapping(value = "pid/{xid}", method = RequestMethod.GET, headers = "content-type=application/json, application/xml", produces = {
             "application/xml; charset=UTF-8", "application/json; charset=UTF-8" })
-    public ResponseEntity<Product> getProduct(@RequestHeader("AuthToken") String authToken, @PathVariable("companyid") String companyId, @PathVariable("xid") String xid)
+    public ResponseEntity<Product> getProduct(@RequestHeader("AuthToken") String authToken, @PathVariable("xid") String xid)
             throws UnsupportedEncodingException, ProductNotFoundException, UnhandledException, ExternalApiAuthenticationException {
         if (_LOGGER.isDebugEnabled()) _LOGGER.debug("calling service");
         
@@ -60,7 +57,7 @@ public class ProductSearchService {
         }
         try {
 
-            productResponse = repository.getServiceProduct(authToken, companyId, xid);
+            productResponse = repository.getServiceProduct(authToken, xid);
         } catch (RuntimeException re) {
         	if(re.getCause() instanceof ExternalApiAuthenticationException) {
         		throw (ExternalApiAuthenticationException) re.getCause();

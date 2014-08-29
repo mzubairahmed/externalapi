@@ -67,10 +67,9 @@ public class ProductServiceResource {
     }
 
     // @Secured("ROLE_CUSTOMER")
-    @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.POST, headers = "content-type=application/json, application/xml", produces = {
+    @RequestMapping(value = "pid/{xid}", method = RequestMethod.POST, headers = "content-type=application/json, application/xml", produces = {
             "application/xml; charset=UTF-8", "application/json; charset=UTF-8" })
-    public ResponseEntity<ExternalAPIResponse> updateProduct(HttpEntity<Product> requestEntity, @RequestHeader("AuthToken") String authToken, @PathVariable("companyid") String companyId,
-            @PathVariable("xid") String xid) throws Exception {
+    public ResponseEntity<ExternalAPIResponse> updateProduct(HttpEntity<Product> requestEntity, @RequestHeader("AuthToken") String authToken, @PathVariable("xid") String xid) throws Exception {
         if (_LOGGER.isDebugEnabled()) {
             _LOGGER.debug("calling service");
         }
@@ -96,7 +95,7 @@ public class ProductServiceResource {
             return new ResponseEntity<ExternalAPIResponse>(message, null, HttpStatus.BAD_REQUEST);
         }
         try {
-            message = productService.updateProduct(authToken, companyId, xid, requestEntity.getBody());
+            message = productService.updateProduct(authToken, xid, requestEntity.getBody());
         } catch (Exception e) {
             throw e;
         }
@@ -106,7 +105,6 @@ public class ProductServiceResource {
     
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorMessage> handleUnsupportedEncodingException(HttpMessageNotReadableException ex, HttpServletRequest request) {
-        Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = ExternalApiExceptionHandler.getMessageFromExceptionForInvalidProductData(ex);
         String errorURL = request.getRequestURL().toString();
         ErrorMessage errorInfo = new ErrorMessage();
