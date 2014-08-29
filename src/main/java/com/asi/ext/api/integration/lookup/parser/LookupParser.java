@@ -613,8 +613,21 @@ public class LookupParser {
 				for (int i = 0; i < temp.length; i++) {
 					String imprintMethod = temp[i];
 					if (imprintMethod != null && !imprintMethod.isEmpty()) { // &&
-																				// isImprintMethod(imprintMethod)
-						imrintMethodsList.add(imprintMethod);
+						serviceImprintMethod=new ImprintMethod();												// isImprintMethod(imprintMethod)
+						if (imprintMethod.contains(":")) {
+							serviceImprintMethod
+									.setType(imprintMethod.substring(0,
+											imprintMethod.indexOf(":")).toUpperCase());
+							serviceImprintMethod.setAlias(imprintMethod
+									.substring(imprintMethod
+											.indexOf(":") + 1));
+						} else {
+						serviceImprintMethod.setType(imprintMethod.toUpperCase());
+						serviceImprintMethod.setAlias(serviceImprintMethod.getType());
+						serviceImprintMethod.setMinimumOrder(null);
+						}
+					
+						imprintMethodList.add(serviceImprintMethod);
 					}
 				}
 				String imprintMethod = "";
