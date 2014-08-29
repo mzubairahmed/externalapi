@@ -3,7 +3,6 @@ package com.asi.ext.api.product.criteria.processor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.service.model.Artwork;
@@ -40,16 +39,12 @@ public class ProductArtworkProcessor extends SimpleCriteriaProcessor {
                 } 
                 criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
                 
-                if (criteriaSetValue.getValueTypeCode().equalsIgnoreCase(ApplicationConstants.CONST_VALUE_TYPE_CODE_CUST)) {
-                    criteriaSetValue.getCriteriaSetCodeValues()[0].setCodeValue(artworks.getValue());
-                } else {
-                    criteriaSetValue.getCriteriaSetCodeValues()[0].setCodeValue(artworks.getComments());
-                }
+                
+                criteriaSetValue.getCriteriaSetCodeValues()[0].setCodeValue(artworks.getComments());
+                
                 criteriaSetValue.setValue(artworks.getValue());
             } else {
-                if (!criteriaSetValue.getValueTypeCode().equalsIgnoreCase(ApplicationConstants.CONST_VALUE_TYPE_CODE_CUST)) {
-                    criteriaSetValue.getCriteriaSetCodeValues()[0].setCodeValue(artworks.getValue());
-                } 
+                criteriaSetValue.getCriteriaSetCodeValues()[0].setCodeValue(artworks.getComments()); 
             }
             
             updateReferenceTable(xid, ApplicationConstants.CONST_ARTWORK_CODE, artworks.getValue(), criteriaSetValue);

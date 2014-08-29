@@ -9,18 +9,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.SerializationUtils;
 import org.apache.log4j.Logger;
+import org.springframework.util.StringUtils;
 
 import com.asi.ext.api.exception.VelocityException;
 import com.asi.ext.api.product.transformers.JerseyClientPost;
 import com.asi.ext.api.product.transformers.ProductDataStore;
-import com.asi.ext.api.radar.model.Product;
-
 import com.asi.ext.api.response.JsonProcessor;
 import com.asi.ext.api.service.model.Apparel;
-import com.asi.ext.api.service.model.Capacity;
-import com.asi.ext.api.service.model.ProductionTime;
 import com.asi.ext.api.service.model.ShippingEstimate;
 import com.asi.ext.api.service.model.Size;
 import com.asi.ext.api.util.ApplicationConstants;
@@ -44,7 +40,6 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
     private HashMap              sizeElementsResponse        = null;
     private String               sizesCriteriaWSResponse     = null;
     private String               sizesShippingDimsWSResponse = null;
-    private String               optionsProdWSResponse       = null;
 
     private String               companyId                   = "0";
     private String               configId                    = "0";
@@ -192,7 +187,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
         return criteriaCode;
     }
 
-    private String findSizeGroupApparalType(Apparel apparel) {
+    protected String findSizeGroupApparalType(Apparel apparel) {
         String criteriaCode = null;
         if (apparel.getType().equalsIgnoreCase(ApplicationConstants.CONST_STRING_APPAREL_INFANT_TODDLER)) {
             criteriaCode = ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_INF_TLDR;
@@ -317,14 +312,12 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                     productDataStore.addErrorToBatchLogCollection(product.getExternalProductId().trim(),
                             ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Invalid format/value for Dimension ");
                     continue;
-                } else if ((sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI) || sizeCriteriaCode
-                        .equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY))
-                        && !CommonUtilities.isValidCapacity(individualSizes[criteriaSetValuesCntr].trim())) {
-                    String temp = sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY) ? "Capacity"
+                } else if ((sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI))) {
+                    /*String temp = sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY) ? "Capacity"
                             : ApplicationConstants.CONST_STRING_VOLUME_WEIGHT;
                     productDataStore.addErrorToBatchLogCollection(product.getExternalProductId().trim(),
                             ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Invalid format/value for " + temp);
-                    continue;
+                    continue;*/
                 }
                 String[] sizeValueElements = individualSizes[criteriaSetValuesCntr].split(";");
                 //valueAry = new Value[sizeValueElements.length];
@@ -489,7 +482,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
 
     public List<CriteriaSetValues> addCriteriaSetForApparals(ProductDetail product, String criteriaCode, String srcCriteria)
             throws VelocityException {
-        String initSizeGroup = criteriaCode;
+        //String initSizeGroup = criteriaCode;
         criteriaCode = criteriaCode.trim();
         srcCriteria = srcCriteria.trim();
         boolean isCustomValue = false;
@@ -520,7 +513,6 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
         isCustomValue = false;
         String[] criteriaElements = srcCriteria.split(",");
 
-        int cntr = 0;
 
         for (String curntCriteria : criteriaElements) {
             String orignalCriteriaValue = processSourceCriteriaValueByCriteriaCode(curntCriteria, criteriaCode);
@@ -539,7 +531,8 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                     || criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_OTHER_CODE)
                     || criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_DRS_SHRT_SIZE)
                     || criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_PANT_SIZE)
-                    || criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_HSR_UNIFORM)) {
+                    || criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_HSR_UNIFORM)
+                    || criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_INF_TLDR)) {
                 String tempCriteria = curntCriteria;
                 if (null == sizesWSResponse) {
                     sizesWSResponse = JerseyClientPost.getLookupsResponse(RestAPIProperties
@@ -685,10 +678,27 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                         }
 
                         if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_DRS_SHRT_SIZE)) {
+                            if (!CommonUtilities.isValueNull(actualCriteria)) {
+                                String neck = "";
+                                String sleeve = "";
+                                int index = 0; 
+                                if (actualCriteria.contains("(")) {
+                                    index = actualCriteria.indexOf("(");
+                                    neck = actualCriteria.substring(0, index);
+                                    sleeve = actualCriteria.substring(index);
+                                    sleeve = sleeve.replaceAll("\\(", "").replaceAll("\\)", "");
+                                    neck = neck.replaceAll("\\)", "").replaceAll("\\(", "");
+                                } else {
+                                    neck = actualCriteria.replaceAll("\\(", "").replaceAll("\\)", "");
+                                    sleeve = ApplicationConstants.CONST_STRING_EMPTY;
+                                }
+                                untValueFnlAry = new String[] { neck, sleeve };
+                            }
+                            /*untValueFnlAry = new String[] { ne, ApplicationConstants.CONST_STRING_EMPTY };
                             if (validUnit.equalsIgnoreCase(ApplicationConstants.CONST_STRING_FALSE_SMALL)) {
                                 untValueFnlAry = new String[] { actualCriteria, ApplicationConstants.CONST_STRING_EMPTY };
                             } else
-                                untValueFnlAry = new String[] { actualCriteria.substring(0, actualCriteria.indexOf("(")), validUnit };
+                                untValueFnlAry = new String[] { actualCriteria.substring(0, actualCriteria.indexOf("(")), validUnit };*/
                         } else {
                             if (actualCriteria.contains("x"))
                                 untValueFnlAry = new String[] { actualCriteria.substring(0, actualCriteria.indexOf("x")), validUnit };
@@ -745,7 +755,6 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                             orignalCriteriaValue, criteriaSetValue.getId());
                 }
                 criteriaSetValue = null;
-                cntr++;
             }
 
         }

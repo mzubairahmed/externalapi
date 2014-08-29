@@ -122,7 +122,7 @@ public class ProductionTimeProcessor extends SimpleCriteriaProcessor {
     }
 
     private Value getValueForProductionTime(String externalProductId, String productionTime) {
-        if (CommonUtilities.isValidProductionTime(productionTime)) {
+
             String criteriaSetAttributeId = getCriteriaSetAttributeId(ApplicationConstants.CONST_PRODUCTION_TIME_CRITERIA_CODE);
             String unitOfMeasureCode = getUnitOfMeasureCode(ApplicationConstants.CONST_PRODUCTION_TIME_CRITERIA_CODE,
                     "Business days");
@@ -140,11 +140,6 @@ public class ProductionTimeProcessor extends SimpleCriteriaProcessor {
                 return null;
             }
 
-        } else {
-            addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
-                    "Invalid value found for Production Time " + productionTime);
-        }
-        return null;
     }
 
     private HashMap<String, CriteriaSetValues> createTableForExistingSetValue(List<CriteriaSetValues> existingCriteriaSetValues) {

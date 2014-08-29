@@ -68,7 +68,7 @@ public class ProductServiceResource {
 
     // @Secured("ROLE_CUSTOMER")
     @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.POST, headers = "content-type=application/json, application/xml", produces = {
-            "application/xml", "application/json" })
+            "application/xml; charset=UTF-8", "application/json; charset=UTF-8" })
     public ResponseEntity<ExternalAPIResponse> updateProduct(HttpEntity<Product> requestEntity, @RequestHeader("AuthToken") String authToken, @PathVariable("companyid") String companyId,
             @PathVariable("xid") String xid) throws Exception {
         if (_LOGGER.isDebugEnabled()) {

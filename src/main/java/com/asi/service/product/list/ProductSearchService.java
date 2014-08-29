@@ -49,7 +49,7 @@ public class ProductSearchService {
 
     // @Secured("ROLE_CUSTOMER")
     @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.GET, headers = "content-type=application/json, application/xml", produces = {
-            "application/xml", "application/json" })
+            "application/xml; charset=UTF-8", "application/json; charset=UTF-8" })
     public ResponseEntity<Product> getProduct(@RequestHeader("AuthToken") String authToken, @PathVariable("companyid") String companyId, @PathVariable("xid") String xid)
             throws UnsupportedEncodingException, ProductNotFoundException, UnhandledException, ExternalApiAuthenticationException {
         if (_LOGGER.isDebugEnabled()) _LOGGER.debug("calling service");

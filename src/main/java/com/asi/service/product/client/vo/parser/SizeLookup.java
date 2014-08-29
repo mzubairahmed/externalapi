@@ -244,6 +244,10 @@ public class SizeLookup {
 											sizeValue=valueMap.get("UnitValue").toString();
 										}
 										else if(getSizesElementValue("ID", criteriaAttributes, valueMap.get("CriteriaAttributeId").toString()).equals("Sleeve")){
+											if(sizeElementValue.contains("(")){
+												sizeValue=valueMap.get("UnitValue").toString();
+											}
+												else
 											sizeValue="("+valueMap.get("UnitValue").toString()+")";
 										}
 										
@@ -256,7 +260,11 @@ public class SizeLookup {
 						if(sizeCntr!=0)
 						{
 							if(criteriaCode.equalsIgnoreCase("SANS")){
-								sizeElementValue+="("+sizeValue.trim()+")";
+								if(sizeValue.contains("(")){
+									sizeElementValue+=sizeValue.trim();
+								}else{
+									sizeElementValue+="("+sizeValue.trim()+")";
+								}
 							}
 								else {
 									sizeElementValue+=delim+sizeValue;

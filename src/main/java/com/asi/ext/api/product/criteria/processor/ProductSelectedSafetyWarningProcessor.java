@@ -117,6 +117,6 @@ public class ProductSelectedSafetyWarningProcessor {
     }
 
     private String[] getValues(String safetyValue) {
-        return CommonUtilities.filterDuplicates(safetyValue.split(ApplicationConstants.CONST_STRING_COMMA_SEP));
+        return safetyValue.split(ApplicationConstants.CONST_STRING_COMMA_SEP);
     }
 }

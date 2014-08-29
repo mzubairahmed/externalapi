@@ -33,24 +33,22 @@ public class ProductPackageProcessor extends SimpleCriteriaProcessor {
     public ProductCriteriaSets getPackageCriteriaSet(List<String> packages, ProductDetail rdrProduct,
             ProductCriteriaSets productCriteriaSets, String configId) {
         this.configId = configId;
-
-        return getCriteriaSet(CommonUtilities.convertStringListToCSV(packages), rdrProduct, productCriteriaSets, 0);
-    }
-
-    protected ProductCriteriaSets getCriteriaSet(String values, ProductDetail existingProduct, ProductCriteriaSets matchedCriteriaSet,
-            int currentSetValueId) {
-        if (!updateNeeded(matchedCriteriaSet, values)) {
+        if (packages != null && !packages.isEmpty()) { 
+            return getCriteriaSet(packages, rdrProduct, productCriteriaSets, 0);
+        } else {
             return null;
         }
+    }
+
+    protected ProductCriteriaSets getCriteriaSet(List<String> packages, ProductDetail existingProduct, ProductCriteriaSets matchedCriteriaSet,
+            int currentSetValueId) {
+      
         LOGGER.info("Started Processing of Product Packages");
         ProductDataStore productDataStore = new ProductDataStore();
         // First verify and process value to desired format
 
-        if (!isValueIsValid(values)) {
-            return null;
-        }
-
-        String[] finalValues = processValues(values);
+    
+        //String[] finalValues = processValues(values);
         List<CriteriaSetValues> finalCriteriaSetValues = new ArrayList<>();
 
         boolean checkExistingElements = matchedCriteriaSet != null;
@@ -71,7 +69,7 @@ public class ProductPackageProcessor extends SimpleCriteriaProcessor {
             matchedCriteriaSet.setIsDefaultConfiguration(ApplicationConstants.CONST_STRING_FALSE_SMALL);
         }
         String setCodeValueForCustomTypes = getSetCodeValueId(ApplicationConstants.CONST_STRING_CUSTOM);
-        for (String value : finalValues) {
+        for (String value : packages) {
             String setCodeValueId = getSetCodeValueId(value);
 
             if (CommonUtilities.isValueNull(setCodeValueId)) {
@@ -166,14 +164,24 @@ public class ProductPackageProcessor extends SimpleCriteriaProcessor {
                     } else {
                         valueToRegister = String.valueOf(criteriaValues.getValue());
                     }
-                    // TODO : updateReferenceTable(externalProductId, ApplicationConstants.CONST_PACKAGE_CRITERIA_CODE,
-                    // valueToRegister, criteriaValues);
+                     updateReferenceTable(externalProductId, ApplicationConstants.CONST_PACKAGE_CRITERIA_CODE,
+                     valueToRegister, criteriaValues);
                 }
             }
         }
         LOGGER.info("Completed existing Package values of product");
 
         return false;
+    }
+
+    /* (non-Javadoc)
+     * @see com.asi.ext.api.product.criteria.processor.SimpleCriteriaProcessor#getCriteriaSet(java.lang.String, com.asi.service.product.client.vo.ProductDetail, com.asi.service.product.client.vo.ProductCriteriaSets, int)
+     */
+    @Override
+    protected ProductCriteriaSets getCriteriaSet(String values, ProductDetail existingProduct,
+            ProductCriteriaSets matchedCriteriaSet, int currentSetValueId) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

@@ -611,6 +611,8 @@ public class CommonUtilities {
     public static boolean isValidProductionTime(String src) {
         if (isValueNull(src)) {
             return false;
+        } else if (!isValueNull(src)) {
+            return true;
         }
         if (src.trim().contains("-")) {
             if (countSpecifiedChar(src.trim(), '-') > 1) {
