@@ -317,9 +317,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                     productDataStore.addErrorToBatchLogCollection(product.getExternalProductId().trim(),
                             ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Invalid format/value for Dimension ");
                     continue;
-                } else if ((sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI) || sizeCriteriaCode
-                        .equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY))
-                        && !CommonUtilities.isValidCapacity(individualSizes[criteriaSetValuesCntr].trim())) {
+                } else if ((sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI))) {
                     String temp = sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY) ? "Capacity"
                             : ApplicationConstants.CONST_STRING_VOLUME_WEIGHT;
                     productDataStore.addErrorToBatchLogCollection(product.getExternalProductId().trim(),
@@ -489,7 +487,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
 
     public List<CriteriaSetValues> addCriteriaSetForApparals(ProductDetail product, String criteriaCode, String srcCriteria)
             throws VelocityException {
-        String initSizeGroup = criteriaCode;
+        //String initSizeGroup = criteriaCode;
         criteriaCode = criteriaCode.trim();
         srcCriteria = srcCriteria.trim();
         boolean isCustomValue = false;

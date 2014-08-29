@@ -132,7 +132,7 @@ public class RushTimeProcessor extends SimpleCriteriaProcessor {
     }
 
     private Object getValueForRushTime(String externalProductId, String rushTime) {
-        if (CommonUtilities.isValidProductionTime(String.valueOf(rushTime))) {
+        if (!String.valueOf(rushTime).equalsIgnoreCase(ApplicationConstants.CONST_STRING_RUSH_SERVICE)) {
             String criteriaSetAttributeId = getCriteriaSetAttributeId(ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE);
             String unitOfMeasureCode = getUnitOfMeasureCode(ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE, "Business days");
 
