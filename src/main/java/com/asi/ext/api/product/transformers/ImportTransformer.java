@@ -99,7 +99,7 @@ public class ImportTransformer {
     private final static Logger                    LOGGER                      = Logger.getLogger(ImportTransformer.class.getName());
 
     public ProductDetail generateRadarProduct(com.asi.ext.api.service.model.Product serviceProduct,
-            ProductDetail existingRadarModel, String dataSourceId, String companyId) throws InvalidProductException {
+            ProductDetail existingRadarModel, String dataSourceId) throws InvalidProductException {
         LOGGER.info("Started processing product conversion");
         long processingTime = System.currentTimeMillis(); // For evaluating application performance
 
@@ -114,13 +114,13 @@ public class ImportTransformer {
 
         if (!isNewProduct) {
             productId = existingRadarModel.getID();
-            companyId = existingRadarModel.getCompanyId();
+//            companyId = existingRadarModel.getCompanyId();
             configId = ProductParserUtil.getConfigId(existingRadarModel.getProductConfigurations());
             productToSave = existingRadarModel;
         } else {
             productToSave = new ProductDetail();
             productToSave.setID(productId);
-            productToSave.setCompanyId(companyId);
+//            productToSave.setCompanyId(companyId);
             productToSave.setExternalProductId(serviceProduct.getExternalProductId());
             // Issue: VELOEXTAPI-230
             // these fields are set for new product case on temporary basis
@@ -153,10 +153,8 @@ public class ImportTransformer {
         productToSave.setAdditionalShippingInfo(serviceProduct.getAdditionalShippingInfo());
 
         // Object Type Elements
-        productToSave.setProductInventoryLink(ProductParserUtil.getInventoryLink(serviceProduct.getProductInventoryLink(),
-                existingRadarModel, companyId));
-        productToSave.setProductDataSheet(ProductParserUtil.getDataSheet(serviceProduct.getProductDataSheet(), existingRadarModel,
-                companyId));
+        productToSave.setProductInventoryLink(ProductParserUtil.getInventoryLink(serviceProduct.getProductInventoryLink(), existingRadarModel));
+        productToSave.setProductDataSheet(ProductParserUtil.getDataSheet(serviceProduct.getProductDataSheet(), existingRadarModel));
 
         // Check for required validations of Product
         if (validateProductRequirement(serviceProduct, existingRadarModel)) {
@@ -177,7 +175,7 @@ public class ImportTransformer {
 
         // Compliance Cert Processing
         productToSave.setSelectedComplianceCerts(complianceCertProcessor.getSelectedComplianceCertList(
-                serviceProduct.getComplianceCerts(), companyId, productId, existingRadarModel));
+                serviceProduct.getComplianceCerts(), productId, existingRadarModel));
 
         Map<String, ProductCriteriaSets> existingCriteriaSetMap = new HashMap<>();
         Map<String, List<ProductCriteriaSets>> optionsCriteriaSet = new HashMap<>();
@@ -229,7 +227,7 @@ public class ImportTransformer {
                 serviceProduct.getProductConfigurations(), productToSave, isNewProduct));
 
         // Product Media Item processing
-        productToSave.setProductMediaItems(getProductMediaItems(companyId, productId, serviceProduct.getImages(),
+        productToSave.setProductMediaItems(getProductMediaItems(productId, serviceProduct.getImages(),
                 productToSave.getProductMediaItems(), serviceProduct.getExternalProductId()));
 
         // Process Breakout Configurations...
@@ -282,9 +280,9 @@ public class ImportTransformer {
         return productToSave;
     }
 
-    private List<ProductMediaItems> getProductMediaItems(String companyId, String productId, List<Image> serviceImages,
+    private List<ProductMediaItems> getProductMediaItems(String productId, List<Image> serviceImages,
             List<ProductMediaItems> existingMediaItems, String externalProductId) {
-        return productImageProcessor.getProductImages(serviceImages, companyId, productId, existingMediaItems, externalProductId);
+        return productImageProcessor.getProductImages(serviceImages, productId, existingMediaItems, externalProductId);
     }
 
     private List<ProductConfiguration> processProductConfigurations(String configId,

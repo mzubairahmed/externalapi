@@ -41,39 +41,39 @@ public final class ProductParserUtil {
         }
     }
 
-    public static ProductInventoryLink getInventoryLink(String inventoryLink, ProductDetail existingProduct, String companyId) {
+    public static ProductInventoryLink getInventoryLink(String inventoryLink, ProductDetail existingProduct) {
         ProductInventoryLink productInventoryLink = null;
         if (existingProduct != null) {
             productInventoryLink = existingProduct.getProductInventoryLink() != null ? existingProduct.getProductInventoryLink()
                     : new ProductInventoryLink();
             productInventoryLink.setUrl(inventoryLink);
             productInventoryLink.setProductId(String.valueOf(existingProduct.getID()));
-            productInventoryLink.setCompanyId(companyId);
+//            productInventoryLink.setCompanyId(companyId);
         } else {
             productInventoryLink = new ProductInventoryLink();
             productInventoryLink.setUrl(inventoryLink);
             productInventoryLink.setProductId(PRODUCT_ID);
             productInventoryLink.setId(ID);
-            productInventoryLink.setCompanyId(companyId);
+//            productInventoryLink.setCompanyId(companyId);
         }
 
         return productInventoryLink;
     }
 
-    public static ProductDataSheet getDataSheet(String productDataSheet, ProductDetail existingProduct, String companyId) {
+    public static ProductDataSheet getDataSheet(String productDataSheet, ProductDetail existingProduct) {
         ProductDataSheet prodDataSheet = new ProductDataSheet();
         if (existingProduct != null) {
             prodDataSheet = existingProduct.getProductDataSheet() != null ? existingProduct.getProductDataSheet()
                     : new ProductDataSheet();
             prodDataSheet.setUrl(productDataSheet);
             prodDataSheet.setProductId(existingProduct.getID());
-            prodDataSheet.setCompanyId(companyId);
+//            prodDataSheet.setCompanyId(companyId);
         } else {
             prodDataSheet = new ProductDataSheet();
             prodDataSheet.setUrl(productDataSheet);
             prodDataSheet.setProductId(PRODUCT_ID);
             prodDataSheet.setId(ID);
-            prodDataSheet.setCompanyId(companyId);
+//            prodDataSheet.setCompanyId(companyId);
         }
         return prodDataSheet;
     }

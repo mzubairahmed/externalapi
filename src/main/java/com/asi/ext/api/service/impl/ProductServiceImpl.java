@@ -25,9 +25,9 @@ public class ProductServiceImpl implements ProductService {
      * @see com.asi.ext.api.service.ProductService#getProduct(java.lang.String, java.lang.String)
      */
     @Override
-    public Product getProduct(String companyId, String xid) {
+    public Product getProduct(String xid) {
         // TODO Auto-generated method stub
-        return productRepo.getProduct(companyId, xid);
+        return productRepo.getProduct(xid);
     }
 
     /*
@@ -37,9 +37,9 @@ public class ProductServiceImpl implements ProductService {
      * com.asi.ext.api.service.model.Product)
      */
     @Override
-    public ExternalAPIResponse updateProduct(String authToken, String companyId, String xid, Product serviceProduct) {
+    public ExternalAPIResponse updateProduct(String authToken, String xid, Product serviceProduct) {
         // TODO Auto-generated method stub
-        return productRepo.updateProduct(authToken, companyId, xid, serviceProduct);
+        return productRepo.updateProduct(authToken, xid, serviceProduct);
     }
 
     /**

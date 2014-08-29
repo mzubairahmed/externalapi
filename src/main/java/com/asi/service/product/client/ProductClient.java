@@ -37,19 +37,15 @@ public class ProductClient {
 	private JerseyClientPost jerseyClientPost = new JerseyClientPost();
     private static Logger    _LOGGER          = LoggerFactory.getLogger(ProductClient.class);
 
-    public ProductDetail doIt(String authToken, String companyID, String productID) throws ProductNotFoundException, ExternalApiAuthenticationException {
-        return searchProduct(authToken, companyID, productID);
+    public ProductDetail doIt(String authToken, String productID) throws ProductNotFoundException, ExternalApiAuthenticationException {
+        return searchProduct(authToken, productID);
     }
 
-    public ProductDetail getRadarProduct(String companyID, String productID) throws ProductNotFoundException {
-        return searchRadarProduct(companyID, productID);
-    }
-
-    private ProductDetail searchProduct(String authToken, String companyID, String productID)
+    private ProductDetail searchProduct(String authToken, String productID)
             throws ProductNotFoundException, ExternalApiAuthenticationException
 
     {
-        String productSearchUrl = getProductSearchUrl() + "?companyId={companyID}&externalProductId={productID}";
+        String productSearchUrl = getProductSearchUrl() + "?externalProductId={productID}";
 
         ProductDetail product = null;
         try {
@@ -63,7 +59,7 @@ public class ProductClient {
             _LOGGER.debug("Hiting the RADAR API...");
             
             ResponseEntity<ProductDetail> response = restTemplate.exchange(productSearchUrl, HttpMethod.GET, requestEntity,
-                    ProductDetail.class, companyID, productID);
+                    ProductDetail.class, productID);
             if(response != null && response.getBody() != null) {
             	product = response.getBody();
             }
@@ -85,24 +81,6 @@ public class ProductClient {
         }  catch (RestClientException ex) {
             _LOGGER.error(ex.getMessage());
             
-        }
-        return product;
-    }
-
-    private ProductDetail searchRadarProduct(String companyID, String productID) throws ProductNotFoundException
-
-    {
-        String productSearchUrl = getProductSearchUrl() + "?companyId={companyID}&externalProductId={productID}";
-
-        ProductDetail product = null;
-        try {
-            // ProductDetailTest details = restTemplate.getForObject(productSearchUrl, ProductDetailTest.class, companyID,
-            // productID);
-            product = restTemplate.getForObject(productSearchUrl, ProductDetail.class, companyID, productID);
-
-        } catch (RestClientException ex) {
-            _LOGGER.error(ex.getMessage());
-            throw new ProductNotFoundException(productID);
         }
         return product;
     }
