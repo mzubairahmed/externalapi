@@ -438,8 +438,9 @@ public class ProductRepo {
         				//	mediaConfigurations.add(currentConfiguration);
                         }
                     }
+                    currentImage.setConfigurations(mediaConfigurations);
                 }
-                currentImage.setConfigurations(mediaConfigurations);
+                
                 imagesList.add(currentImage);
             }
             serviceProduct.setImages(imagesList);
@@ -470,10 +471,10 @@ public class ProductRepo {
 
         // Miscellaneous
         serviceProduct.setDistributorOnly(radProduct.getIncludeAppOfferList().equalsIgnoreCase("ESPN"));
-        serviceProduct.setDistributorOnlyComments(radProduct.getDistributorComments());
-        serviceProduct.setProductDisclaimer(radProduct.getDisclaimer());
-        serviceProduct.setAdditionalProductInfo(radProduct.getAdditionalInfo());
-        serviceProduct.setAdditionalShippingInfo(radProduct.getAdditionalShippingInfo());
+        serviceProduct.setDistributorOnlyComments((radProduct.getDistributorComments()!=null && !radProduct.getDistributorComments().equals(""))?radProduct.getDistributorComments():null);
+        serviceProduct.setProductDisclaimer((radProduct.getDisclaimer()!=null && !radProduct.getDisclaimer().equals(""))?radProduct.getDisclaimer():null);
+        serviceProduct.setAdditionalProductInfo((radProduct.getAdditionalInfo()!=null && !radProduct.getAdditionalInfo().equals(""))?radProduct.getAdditionalInfo():null);
+        serviceProduct.setAdditionalShippingInfo((radProduct.getAdditionalShippingInfo()!=null && !radProduct.getAdditionalShippingInfo().equals(""))?radProduct.getAdditionalShippingInfo():null);
         serviceProduct.setPriceConfirmedThru(radProduct.getPriceConfirmationDate());
         serviceProduct.setCanShipInPlainBox(radProduct.getIsShippableInPlainBox());
         return serviceProduct;
