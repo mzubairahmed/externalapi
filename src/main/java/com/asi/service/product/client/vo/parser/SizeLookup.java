@@ -256,7 +256,11 @@ public class SizeLookup {
 						if(sizeCntr!=0)
 						{
 							if(criteriaCode.equalsIgnoreCase("SANS")){
-								sizeElementValue+="("+sizeValue.trim()+")";
+								if(sizeElementValue.contains("(")){
+									sizeElementValue+=sizeValue.trim();
+								}else{
+									sizeElementValue+="("+sizeValue.trim()+")";
+								}
 							}
 								else {
 									sizeElementValue+=delim+sizeValue;
