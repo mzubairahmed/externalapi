@@ -46,6 +46,10 @@ public class ImprintMethodProcessor extends SimpleCriteriaProcessor {
 
     public ImprintRelationData getImprintCriteriaSet(List<ImprintMethod> imprintMethods, ProductDetail exisitingProduct,
             Map<String, ProductCriteriaSets> existingCriteriaSetMap, String configId) {
+        LOGGER.info("Started processing Imprint Methods");
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Imprint Methods to Process : "+imprintMethods);
+        }
         
         ImprintRelationData imprintRelationData = new ImprintRelationData();
         ProductImprintMethodProcessor imprintMethodProcessor = new ProductImprintMethodProcessor();
@@ -177,8 +181,8 @@ public class ImprintMethodProcessor extends SimpleCriteriaProcessor {
         imprintRelationData.setExistingCriteriaSetMap(existingCriteriaSetMap);
         imprintRelationData.setRelationships(relationships);
 
+        LOGGER.info("Imprint Method Processing completed");
         return imprintRelationData;
-
     }
 
     private ProductCriteriaSets getProductCriteriaSet(ProductDetail exisitingProduct, String configId, String criteriaCode,

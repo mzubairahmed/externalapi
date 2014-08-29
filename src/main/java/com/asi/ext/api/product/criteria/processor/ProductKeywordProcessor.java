@@ -12,7 +12,7 @@ import com.asi.service.product.client.vo.ProductKeywords;
 public class ProductKeywordProcessor {
 
     public List<ProductKeywords> getProductKeywords(List<String> keywordList, ProductDetail extProduct, boolean updateNeeded) {
-        String[] productKeywords = (keywordList != null && !keywordList.isEmpty()) ? CommonUtilities.filterDuplicates(keywordList) : null;
+        String[] productKeywords = (keywordList != null && !keywordList.isEmpty()) ? CommonUtilities.convertStringListToCSV(keywordList).split(",") : null;
         
         if (productKeywords == null) {
             return new ArrayList<ProductKeywords>();
