@@ -432,11 +432,11 @@ public class ProductRepo {
         					tempValue=tempValue.replace("SIZE -","").trim();
         					currentConfiguration.setCriteria(tempValue);
         					currentConfiguration.setValue(mediaItemsObj);
-        				//	mediaConfigurations.add(currentConfiguration);
+        					mediaConfigurations.add(currentConfiguration);
                         }
                     }
-                }
-                currentImage.setConfigurations(mediaConfigurations);
+                    currentImage.setConfigurations(mediaConfigurations);
+                }                
                 imagesList.add(currentImage);
             }
             serviceProduct.setImages(imagesList);

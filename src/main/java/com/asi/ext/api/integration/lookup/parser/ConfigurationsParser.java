@@ -638,12 +638,13 @@ public class ConfigurationsParser {
 			RushTimeValue rushTimeValue=null;
 			List<RushTimeValue> rushtimeValueList=new ArrayList<>();
 			rushTime.setAvailable(true);
+			
 			for(CriteriaSetValues currentCriteriasetValue:currentCriteriaSetValueList){
+				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriasetValue.getCriteriaCode(), Integer.parseInt(currentCriteriasetValue.getId()),currentCriteriasetValue.getFormatValue());
 				rushTimeValue=new RushTimeValue();
 				if(currentCriteriasetValue.getValue() instanceof List){
 					rushTimeValue.setBusinessDays(productLookupParser.getTimeText(currentCriteriasetValue.getValue()));
-				criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriasetValue.getCriteriaCode(), Integer.parseInt(currentCriteriasetValue.getId()), productLookupParser.getTimeText(currentCriteriasetValue.getValue()));
-				rushTimeValue.setDetails(currentCriteriasetValue.getCriteriaValueDetail());
+					rushTimeValue.setDetails(currentCriteriasetValue.getCriteriaValueDetail());
 				}else{
 					//rushTimeValue.setDetails("");
 					//rushTimeValue.setBusinessDays("");
@@ -680,6 +681,11 @@ public class ConfigurationsParser {
 							materialName=ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetCodeValue.getSetCodeValueId(),ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE);
 							material.setName(materialName);
 							material.setBlendMaterials(checkAndSetMaterialBlendInfo(currentCriteriaSetCodeValue.getChildCriteriaSetCodeValues()));
+							if(null!=currentCriteriaSetValue.getValue() && !currentCriteriaSetValue.getValue().toString().isEmpty()){
+								criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), currentCriteriaSetValue.getValue().toString());
+							}else{
+								criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), materialName);
+							}
 							criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), materialName);
 							firstElement=false;
 						}else{
@@ -694,8 +700,12 @@ public class ConfigurationsParser {
 					material.setAlias(currentCriteriaSetValue.getValue().toString());
 					materialName=ProductDataStore.reverseLookupFindAttribute(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getSetCodeValueId(),ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE);
 					material.setName(materialName);
-					criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), materialName);
 					material.setBlendMaterials(checkAndSetMaterialBlendInfo(currentCriteriaSetValue.getCriteriaSetCodeValues()[0].getChildCriteriaSetCodeValues()));
+					if(null!=currentCriteriaSetValue.getValue() && !currentCriteriaSetValue.getValue().toString().isEmpty()){
+						criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), currentCriteriaSetValue.getValue().toString());
+					}else{
+						criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), materialName);
+					}
 				}
 				materialList.add(material);
 		}
@@ -776,9 +786,9 @@ public class ConfigurationsParser {
 			String currentProductionTimeDetail=null;
 			for(com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue:currentCriteriaSetValueList){
 					currentProductionTime=new ProductionTime();
+					criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), currentCriteriaSetValue.getFormatValue());
 					if(currentCriteriaSetValue.getValue() instanceof List){
 						currentProductionTime.setBusinessDays(productLookupParser.getTimeText(currentCriteriaSetValue.getValue()));
-						criteriaSetParser.addReferenceSet(productDetail.getExternalProductId(), currentCriteriaSetValue.getCriteriaCode(), Integer.parseInt(currentCriteriaSetValue.getId()), productLookupParser.getTimeWithUnitsInText(currentCriteriaSetValue.getValue()));
 					}
 					currentProductionTimeDetail=currentCriteriaSetValue.getCriteriaValueDetail();
 					if(null!=currentProductionTimeDetail && !currentProductionTimeDetail.isEmpty()) currentProductionTime.setDetails(currentProductionTimeDetail);
