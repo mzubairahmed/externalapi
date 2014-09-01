@@ -6,13 +6,13 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "themes")
 public class ThemesList {
-	private List<Theme> themes = new ArrayList<>();
+	private List<LookupName> themes = new ArrayList<>();
 
-	public List<Theme> getThemes() {
+	public List<LookupName> getThemes() {
 		return themes;
 	}
 
-	public void setThemes(List<Theme> themes) {
+	public void setThemes(List<LookupName> themes) {
 		this.themes = themes;
 	}
 	

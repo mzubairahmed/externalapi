@@ -28,5 +28,34 @@ public class LookupService {
 		ThemesList themesList = lookupValueRepository.getAllThemes();
 		return new ResponseEntity<ThemesList> (themesList, null, HttpStatus.OK);		
 	}
+	
+	@RequestMapping(value = "colors", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<ColorsList> getColorsList()
+	{
+		ColorsList colorsList = lookupValueRepository.getAllColors();
+		return new ResponseEntity<ColorsList> (colorsList, null, HttpStatus.OK);		
+	}
 
+	@RequestMapping(value = "materials", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<MaterialsList> getMaterialsList()
+	{
+		MaterialsList materialsList = lookupValueRepository.getAllMaterials();
+		return new ResponseEntity<MaterialsList> (materialsList, null, HttpStatus.OK);		
+	}
+
+	@RequestMapping(value = "shapes", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<ShapesList> getShapesList()
+	{
+		ShapesList shapesList = lookupValueRepository.getAllShapes();
+		return new ResponseEntity<ShapesList> (shapesList, null, HttpStatus.OK);		
+	}
+
+	@RequestMapping(value = "packages", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<PackagesList> getPackagingList()
+	{
+		PackagesList packagesList = lookupValueRepository.getAllPackages();
+		return new ResponseEntity<PackagesList> (packagesList, null, HttpStatus.OK);		
+	}
+
+	
 }

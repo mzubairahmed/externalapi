@@ -180,7 +180,7 @@ CommonUtilities commonUtilities=new CommonUtilities();
     public String formatCriteriaValue(String srcString, String criteriaCode) {
         if (srcString != null) {
             if (criteriaCode != null && criteriaCode.equalsIgnoreCase("IMSZ")) {
-			srcString=srcString.replaceAll("\\|", "-");
+			//srcString=srcString.replaceAll("\\|", "-");
             } else if (criteriaCode != null && criteriaCode.equalsIgnoreCase("FOBP") && srcString.contains(",")) {
                 srcString = "\"" + srcString + "\"";
 		}

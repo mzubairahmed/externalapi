@@ -1,6 +1,7 @@
 package com.asi.ext.api.product.transformers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -65,6 +66,8 @@ public class PriceGridParser extends ProductParser {
     protected JerseyClientPost                                      orgnCall                       = new JerseyClientPost();
     private static int                                              uniqPItemId                    = -1;
 
+	private ArrayList<String> SIZE_GROUP_CRITERIACODES=new ArrayList<String>(Arrays.asList("SABR","SAHU","SAIT","SANS","SAWI","SSNM","SVWT","DIMS","CAPS","SOTH"));
+	 
     private String getUsageLevelCode(boolean priceType) {
         return ApplicationConstants.CONST_STRING_NONE_CAP;
     }
@@ -1042,11 +1045,11 @@ public class PriceGridParser extends ProductParser {
                             .getBasePriceCriteria1()));
                     if (null != criteriaInfo) {
                         currentCriteria = criteriaInfo.getDescription();
-                        if (currentCriteria.contains("Size") || currentCriteria.contains("Apparel")
-                                || currentCriteria.contains("SIZE")) currentCriteria = "Sizes";
+                        if (currentCriteria.trim().startsWith("Size") || currentCriteria.contains("Apparel")
+                                || currentCriteria.trim().startsWith("SIZE")) currentCriteria = "Sizes";
                         currentPriceConfig.setCriteria(currentCriteria);
                         if (null != bpDetails.getBasePriceCriteria1() && bpDetails.getBasePriceCriteria1() instanceof String) {
-                            currentPriceConfig.setValue(getCriteriaValueByCriteria(bpDetails.getBasePriceCriteria1().toString()));
+                            currentPriceConfig.setValue(getCriteriaValueByCriteria(bpDetails.getBasePriceCriteria1().toString(),criteriaInfo.getCode()));
                         } else {
                             currentPriceConfig.setValue(bpDetails.getBasePriceCriteria1());
                         }
@@ -1054,13 +1057,13 @@ public class PriceGridParser extends ProductParser {
                         if (null != bpDetails.getBasePriceCriteria1() && bpDetails.getBasePriceCriteria1() instanceof Values) {
                             currentCriteria = ((Values) bpDetails.getBasePriceCriteria1()).getType();
                             if (null != currentCriteria) {
-                                if (currentCriteria.contains("Size") || currentCriteria.contains("Apparel")
-                                        || currentCriteria.contains("SIZE")) currentCriteria = "Sizes";
+                                if (currentCriteria.trim().startsWith("Size") || currentCriteria.contains("Apparel")
+                                        || currentCriteria.trim().startsWith("SIZE")) currentCriteria = "Sizes";
                             } else {
                                 currentCriteria = ((Values) bpDetails.getBasePriceCriteria1()).getValue().get(0).getCriteriaType();
                                 currentCriteria = ProductDataStore.getCriteriaInfoForCriteriaCode(currentCriteria).getDescription();
-                                if (currentCriteria.contains("Size") || currentCriteria.contains("Apparel")
-                                        || currentCriteria.contains("SIZE")) currentCriteria = "Size";
+                                if (currentCriteria.trim().startsWith("Size") || currentCriteria.contains("Apparel")
+                                        || currentCriteria.trim().startsWith("SIZE")) currentCriteria = "Size";
                             }
                             currentPriceConfig.setCriteria(currentCriteria);
                             currentPriceConfig.setValue(bpDetails.getBasePriceCriteria1());
@@ -1081,11 +1084,11 @@ public class PriceGridParser extends ProductParser {
                     if (null != criteriaInfo) {
            
                     	 currentCriteria = criteriaInfo.getDescription();
-                         if (currentCriteria.contains("Size") || currentCriteria.contains("Apparel")
-                                 || currentCriteria.contains("SIZE")) currentCriteria = "Sizes";
+                         if (currentCriteria.trim().startsWith("Size") || currentCriteria.contains("Apparel")
+                                 || currentCriteria.trim().startsWith("SIZE")) currentCriteria = "Sizes";
                          currentPriceConfig.setCriteria(currentCriteria);
                          if (null != bpDetails.getBasePriceCriteria2() && bpDetails.getBasePriceCriteria2() instanceof String) {
-                             currentPriceConfig.setValue(getCriteriaValueByCriteria(bpDetails.getBasePriceCriteria2().toString()));
+                             currentPriceConfig.setValue(getCriteriaValueByCriteria(bpDetails.getBasePriceCriteria2().toString(),criteriaInfo.getCode()));
                          } else {
                              currentPriceConfig.setValue(bpDetails.getBasePriceCriteria2());
                          }
@@ -1108,7 +1111,7 @@ public class PriceGridParser extends ProductParser {
                     criteriaInfo = ProductDataStore.getCriteriaInfoForCriteriaCode(getCriteriaCode(upchargePriceDetail
                             .getUpChargeCriteria1()));
                     currentPriceConfig.setCriteria(criteriaInfo.getDescription());
-                    currentPriceConfig.setValue(getCriteriaValueByCriteria(upchargePriceDetail.getUpChargeCriteria1()));
+                    currentPriceConfig.setValue(getCriteriaValueByCriteria(upchargePriceDetail.getUpChargeCriteria1(),criteriaInfo.getCode()));
                     pricingConfigurations.add(currentPriceConfig);
                 }
                 if (upchargePriceDetail.getUpChargeCriteria2() != null && !upchargePriceDetail.getUpChargeCriteria2().isEmpty()) {
@@ -1116,7 +1119,7 @@ public class PriceGridParser extends ProductParser {
                     criteriaInfo = ProductDataStore.getCriteriaInfoForCriteriaCode(getCriteriaCode(upchargePriceDetail
                             .getUpChargeCriteria2()));
                     currentPriceConfig.setCriteria(criteriaInfo.getDescription());
-                    currentPriceConfig.setValue(getCriteriaValueByCriteria(upchargePriceDetail.getUpChargeCriteria2()));
+                    currentPriceConfig.setValue(getCriteriaValueByCriteria(upchargePriceDetail.getUpChargeCriteria2(),criteriaInfo.getCode()));
                     pricingConfigurations.add(currentPriceConfig);
                 }
             }
@@ -1144,12 +1147,12 @@ public class PriceGridParser extends ProductParser {
         }
     }
 
-    public Object getCriteriaValueByCriteria(String source) {
+    public Object getCriteriaValueByCriteria(String source,String criteriaCode) {
         String criteriaValue = "";
         String[] valueElements = {};
         if (source != null && !source.isEmpty() && source.contains(":")) {
             criteriaValue = source.substring(source.indexOf(":") + 1);
-            if (!criteriaValue.contains(":"))
+            if (!SIZE_GROUP_CRITERIACODES.contains(criteriaCode))
                 return criteriaValue;
             else {
                 valueElements = criteriaValue.split(":");
