@@ -19,7 +19,6 @@ import com.asi.service.product.client.vo.CriteriaSetCodeValues;
 import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
-import com.asi.service.product.client.vo.SetCodeValues;
 
 public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
 

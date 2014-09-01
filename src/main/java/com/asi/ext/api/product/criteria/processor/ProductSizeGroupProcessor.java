@@ -363,6 +363,10 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                             attribute = JsonProcessor.getSizesElementValue("ID", sizeElementsResponse, attribute);
                             units = JsonProcessor.getSizesElementValue(ApplicationConstants.CONST_STRING_UNITS,
                                     sizeElementsResponse, initialUnits.trim());
+                            if (CommonUtilities.isValueNull(units)) {
+                                productDataStore.addErrorToBatchLogCollection(product.getExternalProductId(), ApplicationConstants.CONST_BATCH_ERR_LOOKUP_VALUE_NOT_EXIST, "Invalid unit found for Volume Size Group, Unit : " + initialUnits);
+                                continue;
+                            }
 
                         }
                     } else if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_DIMENSION)

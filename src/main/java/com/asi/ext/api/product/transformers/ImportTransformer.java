@@ -264,7 +264,6 @@ public class ImportTransformer {
 
         // PriceGrid processing
         productToSave.setPriceGrids(getPriceGrids(serviceProduct.getPriceGrids(), productToSave));
-
         // Product Number Processing
         if (!isProductNumberAssociatedWithPriceGrid(xid)) {
             productToSave.setProductNumbers(getProductNumbers(serviceProduct, productToSave));
