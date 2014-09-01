@@ -57,5 +57,10 @@ public class LookupService {
 		return new ResponseEntity<PackagesList> (packagesList, null, HttpStatus.OK);		
 	}
 
-	
+	@RequestMapping(value = "safetywarnings", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<SafetyWarningsList> getSafetyWarnings()
+	{
+		SafetyWarningsList safetyList = lookupValueRepository.getSafetyWarningsList();
+		return new ResponseEntity<SafetyWarningsList> (safetyList, null, HttpStatus.OK);		
+	}
 }

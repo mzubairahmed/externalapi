@@ -18,6 +18,7 @@ import com.asi.ext.api.util.RestAPIProperties;
 import com.asi.service.lookup.ColorsList;
 import com.asi.service.lookup.MaterialsList;
 import com.asi.service.lookup.PackagesList;
+import com.asi.service.lookup.SafetyWarningsList;
 import com.asi.service.lookup.ShapesList;
 import com.asi.service.lookup.vo.CategoriesList;
 import com.asi.service.lookup.vo.Category;
@@ -180,5 +181,29 @@ public class LookupValuesRepo {
 				_LOGGER.info(ex.getMessage());
 			}
 	         return packagesList;
+	}
+
+	public SafetyWarningsList getSafetyWarningsList() {
+		SafetyWarningsList safetyWarningsList=new SafetyWarningsList();
+		List<LookupName> safetyWarningArrayList = new ArrayList<LookupName>();
+		LookupName crntLookupName=null;
+		try{
+		LinkedList<?> productSafetyWarningsResponse = lookupRestTemplate.getForObject(
+	            RestAPIProperties.get(ApplicationConstants.SAFETY_WARNINGS_LOOKUP), LinkedList.class);
+	            
+	         HashMap<String, String> safetyWarningsLookupTable = (HashMap<String, String>) JsonToLookupTableConverter.jsonToSafetyWarningLookupTable(productSafetyWarningsResponse);
+				@SuppressWarnings("rawtypes")
+				Iterator safetyWarningIterator = safetyWarningsLookupTable.keySet()
+						.iterator();
+				while (safetyWarningIterator.hasNext()) {
+					crntLookupName=new LookupName();
+					crntLookupName.setName(safetyWarningIterator.next().toString());
+					safetyWarningArrayList.add(crntLookupName);				
+				}
+				safetyWarningsList.setSafetyWarnings(safetyWarningArrayList);
+			}catch(Exception ex){
+				_LOGGER.info(ex.getMessage());
+			}
+	         return safetyWarningsList;
 	}
 }
