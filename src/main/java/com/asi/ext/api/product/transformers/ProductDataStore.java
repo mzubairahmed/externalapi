@@ -454,7 +454,7 @@ public class ProductDataStore {
         return setCodeValueId;
     }
 
-    public static String getMaterialSetCodeValueId(String materialName) {
+    public static String getMaterialSetCodeValueId(String materialName, boolean checkOther) {
         String setCodeValueId = ApplicationConstants.CONST_STRING_NULL_CAP;
         materialName = materialName.trim().toUpperCase();
         try {
@@ -490,8 +490,10 @@ public class ProductDataStore {
                  * }
                  */
                 // Last try to get Other Group
-                key = ApplicationConstants.CONST_STRING_OTHER.toUpperCase();
-                setCodeValueId = ProductDataStore.productMaterialLookupTable.get(key.toUpperCase());
+                if (checkOther) {
+                    key = ApplicationConstants.CONST_STRING_OTHER.toUpperCase();
+                    setCodeValueId = ProductDataStore.productMaterialLookupTable.get(key.toUpperCase());
+                }
                 if (!CommonUtilities.isValueNull(setCodeValueId)) {
                     return setCodeValueId;
                 } else {
@@ -1172,7 +1174,7 @@ public class ProductDataStore {
         } else if (ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE.equalsIgnoreCase(criteriaCode)) {
             if (productMaterialLookupTable == null || productMaterialLookupTable.isEmpty()) {
                 // getSetCodeValueIdForProductMaterial("Blend");
-                getMaterialSetCodeValueId("Blend");
+                getMaterialSetCodeValueId("Blend", true);
             }
             return CommonUtilities.getKeysByValueGen(productMaterialLookupTable, setCodeValueId);
         } else if (ApplicationConstants.CONST_ORIGIN_CRITERIA_CODE.equalsIgnoreCase(criteriaCode)) {
