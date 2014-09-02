@@ -185,8 +185,7 @@ public class LookupValuesRepo {
 
 	public SafetyWarningsList getSafetyWarningsList() {
 		SafetyWarningsList safetyWarningsList=new SafetyWarningsList();
-		List<LookupName> safetyWarningArrayList = new ArrayList<LookupName>();
-		LookupName crntLookupName=null;
+		List<String> safetyWarningArrayList = new ArrayList<String>();
 		try{
 		LinkedList<?> productSafetyWarningsResponse = lookupRestTemplate.getForObject(
 	            RestAPIProperties.get(ApplicationConstants.SAFETY_WARNINGS_LOOKUP), LinkedList.class);
@@ -196,9 +195,7 @@ public class LookupValuesRepo {
 				Iterator safetyWarningIterator = safetyWarningsLookupTable.keySet()
 						.iterator();
 				while (safetyWarningIterator.hasNext()) {
-					crntLookupName=new LookupName();
-					crntLookupName.setName(safetyWarningIterator.next().toString());
-					safetyWarningArrayList.add(crntLookupName);				
+					safetyWarningArrayList.add(safetyWarningIterator.next().toString());				
 				}
 				safetyWarningsList.setSafetyWarnings(safetyWarningArrayList);
 			}catch(Exception ex){
