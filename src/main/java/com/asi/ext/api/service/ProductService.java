@@ -15,8 +15,8 @@ import com.asi.service.resource.response.ExternalAPIResponse;
  */
 public interface ProductService {
     
-    public Product getProduct(String xid);
+    public Product getProduct(String companyId, String xid);
     
-    public ExternalAPIResponse updateProduct(String authToken, String xid, Product serviceProduct);
+    public ExternalAPIResponse updateProduct(String authToken, String companyId, String xid, Product serviceProduct);
 
 }
