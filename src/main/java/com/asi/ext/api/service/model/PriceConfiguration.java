@@ -3,6 +3,7 @@ package com.asi.ext.api.service.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 @JsonInclude(Include.NON_NULL)
 public class PriceConfiguration {
 
@@ -10,6 +11,8 @@ public class PriceConfiguration {
     private String criteria;
     @JsonProperty("Value")
     private Object value;
+    @JsonProperty("OptionName")
+    private String optionName;
 
     @JsonProperty("Criteria")
     public String getCriteria() {
@@ -25,10 +28,25 @@ public class PriceConfiguration {
     public Object getValue() {
         return value;
     }
+
     @JsonProperty("Value")
     public void setValue(Object value) {
         this.value = value;
     }
 
+    /**
+     * @return the optionName
+     */
+    public String getOptionName() {
+        return optionName;
+    }
+
+    /**
+     * @param optionName
+     *            the optionName to set
+     */
+    public void setOptionName(String optionName) {
+        this.optionName = optionName;
+    }
 
 }

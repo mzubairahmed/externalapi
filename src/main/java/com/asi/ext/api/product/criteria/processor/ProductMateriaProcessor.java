@@ -19,7 +19,6 @@ import com.asi.service.product.client.vo.CriteriaSetCodeValues;
 import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
-import com.asi.service.product.client.vo.SetCodeValues;
 
 public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
 
@@ -85,7 +84,7 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
             boolean hasBlend = (material.getBlendMaterials() != null && !material.getBlendMaterials().isEmpty());
             boolean needToCheckAgain = false;
 
-            String setCodeValueId = getSetCodeValueId(material.getName());
+            String setCodeValueId = getSetCodeValueId(material.getName(), true);
 
             if (CommonUtilities.isValueNull(setCodeValueId)) {
                 // LOG Batch Error
@@ -127,11 +126,12 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
                     List<CriteriaSetCodeValues> criteriaSetCodeValues = new ArrayList<CriteriaSetCodeValues>();
                     if (hasCombo) {
                         criteriaSetCodeValues.addAll(getComboMaterial(material.getCombo(), criteriaSetValue.getId(),
-                                setCodeValueId, existingProduct.getID(), existingProduct.getExternalProductId(), String.valueOf(criteriaSetValue.getValue())));
+                                setCodeValueId, existingProduct.getID(), existingProduct.getExternalProductId(),
+                                String.valueOf(criteriaSetValue.getValue())));
                     }
                     if (hasBlend) {
                         criteriaSetCodeValues.add(getBlendMaterials(material.getBlendMaterials(), criteriaSetValue.getId(),
-                                setCodeValueId, existingProduct.getID(), null));
+                                setCodeValueId, existingProduct.getID(), null, existingProduct.getExternalProductId()));
                     }
                     criteriaSetValue.setCriteriaSetCodeValues(criteriaSetCodeValues.toArray(new CriteriaSetCodeValues[0]));
                 } else {
@@ -148,7 +148,8 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
                         }
                     }
                 }
-            } catch (Exception e) {}// Nothing to for now
+            } catch (Exception e) {
+            }// Nothing to for now
             finalCriteriaSetValues.add(criteriaSetValue);
             updateReferenceTable(
                     existingProduct.getExternalProductId(),
@@ -189,12 +190,12 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
 
         if (isBlendCombo) {
             parentCriteriaSetCodeValue = getBlendMaterials(materialCombo.getBlendMaterials(), criteriaSetValueId,
-                    parentSetCodeValueId, productId, parentCriteriaSetCodeValue);
+                    parentSetCodeValueId, productId, parentCriteriaSetCodeValue, xid);
             setCodeValues.add(parentCriteriaSetCodeValue);
         } else {
             parentCriteriaSetCodeValue.setId(String.valueOf(--criteriaSetCodeValueObjectId));
             setCodeValues.add(parentCriteriaSetCodeValue);
-            String childCriteriaSetCodeValueId = getSetCodeValueId(materialCombo.getName());
+            String childCriteriaSetCodeValueId = getSetCodeValueId(materialCombo.getName(), true);
             if (childCriteriaSetCodeValueId != null) {
                 CriteriaSetCodeValues childSetCodeValue = new CriteriaSetCodeValues();
                 childSetCodeValue.setCodeValue(materialCombo.getName());
@@ -212,7 +213,7 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
     }
 
     private CriteriaSetCodeValues getBlendMaterials(List<BlendMaterial> blendMaterials, String criteriaSetValueId,
-            String parentSetCodeValueId, String productId, CriteriaSetCodeValues parentCriteriaSetCodeValue) {
+            String parentSetCodeValueId, String productId, CriteriaSetCodeValues parentCriteriaSetCodeValue, String xid) {
 
         if (parentCriteriaSetCodeValue == null) {
             parentCriteriaSetCodeValue = new CriteriaSetCodeValues();
@@ -226,9 +227,15 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
         }
         List<ChildCriteriaSetCodeValues> childCriteriaSetCodeValues = new ArrayList<ChildCriteriaSetCodeValues>();
         for (BlendMaterial bMaterial : blendMaterials) {
-            String setCodeValueId = getSetCodeValueId(bMaterial.getName());
-            if (setCodeValueId == null) {
-                // TODO : Log Error Blend material not found
+            if (bMaterial != null && CommonUtilities.isValueNull(bMaterial.getName())) {
+                productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+                        "Blend Material : Blend material name cannot be empty");
+                continue;
+            }
+            String setCodeValueId = getSetCodeValueId(bMaterial.getName(), false);
+            if (CommonUtilities.isValueNull(setCodeValueId)) {
+                productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+                        "Blend Material : Invalid blend material " + bMaterial.getName());
                 continue;
             }
             // For more understanding please refer to Radar Response model
@@ -265,7 +272,10 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
                 if (setCodeValue.getChildCriteriaSetCodeValues() != null && setCodeValue.getChildCriteriaSetCodeValues().length > 0) {
                     for (ChildCriteriaSetCodeValues childCriteriaSetCodeValue : setCodeValue.getChildCriteriaSetCodeValues()) {
                         if (childCriteriaSetCodeValue != null && childCriteriaSetCodeValue.getChildCriteriaSetCodeValue() != null) {
-                            key = CommonUtilities.appendValue(key, childCriteriaSetCodeValue.getChildCriteriaSetCodeValue().getSetCodeValueId(), "+");                            
+                            key = CommonUtilities.appendValue(key, childCriteriaSetCodeValue.getChildCriteriaSetCodeValue()
+                                    .getSetCodeValueId(), "+");
+                            key = CommonUtilities.appendValue(key, childCriteriaSetCodeValue.getChildCriteriaSetCodeValue()
+                                    .getCodeValue(), "+");
                         }
                     }
                 }
@@ -276,14 +286,15 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
         }
         return key;
     }
+
     protected boolean isValueIsValid(String value) {
         // For color no need to validate values
         return true;
     }
 
-    public String getSetCodeValueId(String value) {
+    public String getSetCodeValueId(String value, boolean checkOther) {
         // return ProductDataStore.getSetCodeValueIdForProductMaterial(value);
-        return ProductDataStore.getMaterialSetCodeValueId(value);
+        return ProductDataStore.getMaterialSetCodeValueId(value, checkOther);
     }
 
     @Override
@@ -309,8 +320,10 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
                             criteriaSetValue);
                     // Workaround for Blend and Combo checking
                     try {
-                        tempHashMap.put(String.valueOf(criteriaSetValue.getValue()).toUpperCase() + "_" + getKeyForComoboOrBlendMaterial(criteriaSetValue), criteriaSetValue);
-                    } catch (Exception e){}
+                        tempHashMap.put(String.valueOf(criteriaSetValue.getValue()).toUpperCase() + "_"
+                                + getKeyForComoboOrBlendMaterial(criteriaSetValue), criteriaSetValue);
+                    } catch (Exception e) {
+                    }
                 }
             }
         }
@@ -346,6 +359,17 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
     @Override
     protected ProductCriteriaSets getCriteriaSet(String values, ProductDetail existingProduct,
             ProductCriteriaSets matchedCriteriaSet, int currentSetValueId) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.asi.ext.api.product.criteria.processor.SimpleCriteriaProcessor#getSetCodeValueId(java.lang.String)
+     */
+    @Override
+    public String getSetCodeValueId(String value) {
         // TODO Auto-generated method stub
         return null;
     }

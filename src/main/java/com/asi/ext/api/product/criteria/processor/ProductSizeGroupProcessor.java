@@ -93,6 +93,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
             if (exisitingCriteriaSet != null) {
                 existingCriteriaSetMap.put(criteriaCode, exisitingCriteriaSet);
             }
+            //registerExistingValuesForReference(exisitingCriteriaSet, product.getExternalProductId());
         } else {
             // for clean up
             existingCriteriaSetMap = removeSizeRelatedCriteriaSetFromExisting(existingCriteriaSetMap);
@@ -363,6 +364,10 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                             attribute = JsonProcessor.getSizesElementValue("ID", sizeElementsResponse, attribute);
                             units = JsonProcessor.getSizesElementValue(ApplicationConstants.CONST_STRING_UNITS,
                                     sizeElementsResponse, initialUnits.trim());
+                            if (CommonUtilities.isValueNull(units)) {
+                                productDataStore.addErrorToBatchLogCollection(product.getExternalProductId(), ApplicationConstants.CONST_BATCH_ERR_LOOKUP_VALUE_NOT_EXIST, "Invalid unit found for Volume Size Group, Unit : " + initialUnits);
+                                continue;
+                            }
 
                         }
                     } else if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_DIMENSION)
@@ -777,7 +782,9 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                 for (CriteriaSetValues criteriaSetValue : newlyCreatedCriteriaSet.getCriteriaSetValues()) {
                     String key = newlyCreatedCriteriaSet.getCriteriaCode() + "_" + getKeyFromValue(criteriaSetValue.getValue());
                     if (existingMap.containsKey(key)) {
-                        finalValues.add(existingMap.get(key));
+                        CriteriaSetValues extCriteriaSetValue = existingMap.get(key);
+                        productDataStore.updateCriteriaReferenceValueTableById(existingProduct.getExternalProductId(), newlyCreatedCriteriaSet.getCriteriaCode(), criteriaSetValue.getId(), extCriteriaSetValue.getId());
+                        finalValues.add(extCriteriaSetValue);
                         /*
                          * findSizeValueDetails(criteriaSetValue.getCriteriaCode(), getSizeElementResponse(), existingMap.get(key),
                          * existingProduct.getExternalProductId());
@@ -959,24 +966,25 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
         return false;
     }
 
-    /*
-     * public boolean registerExistingValuesForReference(ProductCriteriaSets criteriaSet, String externalProductId) {
-     * if (criteriaSet == null) {
-     * return false;
-     * }
-     * LOGGER.info("Registering existing Size values of product");
-     * if (criteriaSet.getCriteriaSetValues() != null && criteriaSet.getCriteriaSetValues().length > 0) {
-     * for (CriteriaSetValues criteriaValues : criteriaSet.getCriteriaSetValues()) {
-     * if (criteriaValues.getCriteriaSetCodeValues().length != 0) {
-     * findSizeValueDetails(criteriaSet.getCriteriaCode(), getSizeElementResponse(), criteriaValues, externalProductId);
-     * }
-     * }
-     * }
-     * LOGGER.info("Completed existing Size values of product");
-     * 
-     * return false;
-     * }
-     */
+    
+    public boolean registerExistingValuesForReference(ProductCriteriaSets criteriaSet, String externalProductId) {
+        if (criteriaSet == null) {
+            return false;
+        }
+        LOGGER.info("Registering existing Size values of product");
+        if (criteriaSet.getCriteriaSetValues() != null && !criteriaSet.getCriteriaSetValues().isEmpty()) {
+            for (CriteriaSetValues criteriaValues : criteriaSet.getCriteriaSetValues()) {
+                if (criteriaValues.getCriteriaSetCodeValues().length != 0) {
+                    findSizeValueDetails(criteriaSet.getCriteriaCode(), getSizeElementResponse(), criteriaValues, externalProductId);
+                }
+            }
+        }
+        LOGGER.info("Completed existing Size values of product");
+
+        return false;
+ }
+     
+    
     @SuppressWarnings({ "rawtypes", "unused" })
     private void findSizeValueDetails(String criteriaCode, LinkedList<LinkedHashMap> criteriaAttributes,
             CriteriaSetValues criteriaSetValue, String externalProductId) {

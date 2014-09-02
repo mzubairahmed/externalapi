@@ -112,7 +112,7 @@ public class ProductionTimeProcessor extends SimpleCriteriaProcessor {
                 }
             }
             updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_PRODUCTION_TIME_CRITERIA_CODE,
-                    String.valueOf(productionTime.getBusinessDays()), criteriaSetValue);
+                    String.valueOf(productionTime.getBusinessDays()) + " business days", criteriaSetValue);
 
             finalCriteriaSetValues.add(criteriaSetValue);
         }

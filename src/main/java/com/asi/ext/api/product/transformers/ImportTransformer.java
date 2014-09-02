@@ -151,6 +151,7 @@ public class ImportTransformer {
         productToSave.setAdditionalInfo(serviceProduct.getAdditionalProductInfo());
         productToSave.setDistributorComments(serviceProduct.getDistributorOnlyComments());
         productToSave.setAdditionalShippingInfo(serviceProduct.getAdditionalShippingInfo());
+        productToSave.setSameDayRushFlag("true");
 
         // Object Type Elements
         productToSave.setProductInventoryLink(ProductParserUtil.getInventoryLink(serviceProduct.getProductInventoryLink(),
@@ -264,7 +265,6 @@ public class ImportTransformer {
 
         // PriceGrid processing
         productToSave.setPriceGrids(getPriceGrids(serviceProduct.getPriceGrids(), productToSave));
-
         // Product Number Processing
         if (!isProductNumberAssociatedWithPriceGrid(xid)) {
             productToSave.setProductNumbers(getProductNumbers(serviceProduct, productToSave));
