@@ -149,20 +149,22 @@ public class ProductRepo {
     }
 
     /**
-     * This method get Products from Radar API using the XID and return back as Service Model
+     * This method get Products from Radar API using the companyID and XID and return back as Service Model
      * 
+     * @param companyId
      * @param xid
      * @return
      */
-    public com.asi.ext.api.service.model.Product getProduct(String xid) {
+    public com.asi.ext.api.service.model.Product getProduct(String companyId, String xid) {
         return null;
     }
 
-    public ExternalAPIResponse updateProduct(String authToken, String xid, com.asi.ext.api.service.model.Product serviceProduct) {
+    public ExternalAPIResponse updateProduct(String authToken, String companyId, String xid,
+            com.asi.ext.api.service.model.Product serviceProduct) {
         ProductDetail existingRadarProduct = null;
         try {
             // existingRadarProduct = productClient.getRadarProduct(companyId, serviceProduct.getExternalProductId());
-            existingRadarProduct = productClient.doIt(authToken, serviceProduct.getExternalProductId());
+            existingRadarProduct = productClient.doIt(authToken, companyId, serviceProduct.getExternalProductId());
         } catch (ProductNotFoundException e) {
             _LOGGER.info("Product Not found with Existing, going to create new Product");
         } catch (ExternalApiAuthenticationException ea) {
@@ -170,7 +172,8 @@ public class ProductRepo {
         }
         try {
             // Doing Transformation of Service product to pure Radar object model (Core Component)
-            existingRadarProduct = productTransformer.generateRadarProduct(serviceProduct, existingRadarProduct, generateBatchDataSourceId());
+            existingRadarProduct = productTransformer.generateRadarProduct(serviceProduct, existingRadarProduct,
+                    generateBatchDataSourceId(companyId), companyId);
         } catch (Exception e) {
             _LOGGER.error("Exception while generating Radar product", e);
             ExternalAPIResponse response = productClient.convertExceptionToResponseModel(e);
@@ -213,9 +216,9 @@ public class ProductRepo {
         return response;
     }
 
-    private String generateBatchDataSourceId() {
+    private String generateBatchDataSourceId(String companyId) {
         try {
-            return getDataSourceId();
+            return getDataSourceId(companyId);
         } catch (Exception e) {
             _LOGGER.error("Batch Creation failed ", e);
             return "0";
@@ -227,9 +230,9 @@ public class ProductRepo {
     }
 
     @SuppressWarnings("unused")
-    private Product prepairProduct(String authToken, String productID) throws ProductNotFoundException,
+    private Product prepairProduct(String authToken, String companyID, String productID) throws ProductNotFoundException,
             RestClientException, UnsupportedEncodingException, ExternalApiAuthenticationException {
-        productDetail = getProductFromService(authToken, productID);
+        productDetail = getProductFromService(authToken, companyID, productID);
         Product product = new Product();
         BeanUtils.copyProperties(productDetail, product);
         // product=lookupsParser.setProductConfigurations(productDetail,product);
@@ -246,24 +249,23 @@ public class ProductRepo {
         return product;
     }
 
-    public ProductDetail getProductFromService(String authToken, String productID)
+    public ProductDetail getProductFromService(String authToken, String companyID, String productID)
             throws ProductNotFoundException, ExternalApiAuthenticationException {
-        productDetail = productClient.doIt(authToken, productID);
+        productDetail = productClient.doIt(authToken, companyID, productID);
 
         return productDetail;
 
     }
 
     @SuppressWarnings("unchecked")
-    private String getDataSourceId() throws Exception {
+    private String getDataSourceId(String companyId) throws Exception {
         String dataSourceId = "0";
         Batch batchData = new Batch();
         batchData.setBatchId(0);
         batchData.setBatchTypeCode("IMRT");
         batchData.setStartDate(String.valueOf(new Timestamp(System.currentTimeMillis()).toString()));
         batchData.setStatus("N");
-//        batchData.setCompanyId(String.valueOf(companyId));
-        batchData.setCompanyId("");
+        batchData.setCompanyId(String.valueOf(companyId));
         BatchDataSource batchDataSources = new BatchDataSource();
         batchDataSources.setBatchId(0);
         batchDataSources.setId(0);
@@ -288,12 +290,12 @@ public class ProductRepo {
         return dataSourceId;
     }
 
-    public com.asi.ext.api.service.model.Product getServiceProduct(String authToken, String xid) {
+    public com.asi.ext.api.service.model.Product getServiceProduct(String authToken, String companyId, String xid) {
         com.asi.ext.api.service.model.Product serviceProduct = null;
         String shipperBillsBy=null;
         CriteriaSetParser criteriaSetParser = new CriteriaSetParser();
         try {
-            productDetail = getProductFromService(authToken, xid);
+            productDetail = getProductFromService(authToken, companyId, xid);
             // serviceProduct=prepairServiceProduct();
             if (null != productDetail) {
                 serviceProduct = new com.asi.ext.api.service.model.Product();
@@ -451,7 +453,8 @@ public class ProductRepo {
                         }
                     }
                     currentImage.setConfigurations(mediaConfigurations);
-                }                
+                }
+                
                 imagesList.add(currentImage);
             }
             serviceProduct.setImages(imagesList);

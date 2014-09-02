@@ -17,16 +17,16 @@ public class ProductSelectedComplianceCertProcessor {
 
     private final static Logger LOGGER = Logger.getLogger(ProductSelectedComplianceCertProcessor.class.getName());
 
-    public List<SelectedComplianceCert> getSelectedComplianceCertList(List<String> complianceCertList, String productId,
+    public List<SelectedComplianceCert> getSelectedComplianceCertList(List<String> complianceCertList, String companyId, String productId,
             ProductDetail existingProduct) {
         String complianceCertFinalString = null;
         if (complianceCertList != null && !complianceCertList.isEmpty()) {
             complianceCertFinalString = CommonUtilities.convertStringListToCSV(complianceCertList);
         }
         
-        return getSelectedComplianceCerts(complianceCertFinalString, productId, existingProduct);
+        return getSelectedComplianceCerts(complianceCertFinalString, companyId, productId, existingProduct);
     }
-    private List<SelectedComplianceCert> getSelectedComplianceCerts(String complianceCerts, String productId,
+    private List<SelectedComplianceCert> getSelectedComplianceCerts(String complianceCerts, String companyId, String productId,
             ProductDetail existingProduct) {
 
         if (CommonUtilities.isValueNull(complianceCerts)) {
@@ -61,7 +61,7 @@ public class ProductSelectedComplianceCertProcessor {
                 }
             }
             if (selectedComplianceCerts == null) { // create a new one
-                selectedComplianceCerts= createNewComplianceCert(productId, complianceId, compCert);
+                selectedComplianceCerts= createNewComplianceCert(companyId, productId, complianceId, compCert);
             }
             
             finalComplianceCertsList.add(selectedComplianceCerts);
@@ -72,10 +72,10 @@ public class ProductSelectedComplianceCertProcessor {
     }
     
     
-    private SelectedComplianceCert createNewComplianceCert(String productId, String complianceCertId, String description) {
+    private SelectedComplianceCert createNewComplianceCert(String companyId, String productId, String complianceCertId, String description) {
         
         SelectedComplianceCert compCert = new SelectedComplianceCert();
-//        compCert.setCompanyId(companyId);
+        compCert.setCompanyId(companyId);
         compCert.setProductId(productId);
         compCert.setDescription(description);
         compCert.setComplianceCertId(complianceCertId);

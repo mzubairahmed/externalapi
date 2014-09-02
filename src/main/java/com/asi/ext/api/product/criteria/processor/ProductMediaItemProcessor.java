@@ -23,16 +23,16 @@ public class ProductMediaItemProcessor {
 
     private ProductDataStore    productDatastore = new ProductDataStore();
 
-    public List<ProductMediaItems> getProductImages(List<Image> imagesToProcess, String productId,
+    public List<ProductMediaItems> getProductImages(List<Image> imagesToProcess, String companyId, String productId,
             List<ProductMediaItems> existingMediaItems, String externalProductId) {
         if (imagesToProcess != null && !imagesToProcess.isEmpty()) {
-            return getProductMediaItems(imagesToProcess, productId, existingMediaItems, externalProductId);
+            return getProductMediaItems(imagesToProcess, companyId, productId, existingMediaItems, externalProductId);
         } else {
             return new ArrayList<ProductMediaItems>();
         }
     }
 
-    private List<ProductMediaItems> getProductMediaItems(List<Image> imagesToProcess, String productId,
+    private List<ProductMediaItems> getProductMediaItems(List<Image> imagesToProcess, String companyId, String productId,
             List<ProductMediaItems> existingMediaItems, String externalProductId) {
         LOGGER.info("Started processing product images");
 
@@ -58,7 +58,7 @@ public class ProductMediaItemProcessor {
                 productMediaItems.setMediaRank(image.getRank());
                 productMediaItems.setMediaId(String.valueOf(mediaId--));
                 productMediaItems.setIsPrimary(image.getIsPrimary());
-                productMediaItems.setMedia(createNewMedia(image, productMediaItems.getMediaId(), externalProductId));
+                productMediaItems.setMedia(createNewMedia(image, companyId, productMediaItems.getMediaId(), externalProductId));
             } else {
                 productMediaItems.setIsPrimary(image.getIsPrimary());
                 productMediaItems.setMediaRank(image.getRank());
@@ -122,13 +122,13 @@ public class ProductMediaItemProcessor {
         return media;
     }
 
-    private Media createNewMedia(Image img, String mediaId, String externalProductId) {
+    private Media createNewMedia(Image img, String companyId, String mediaId, String externalProductId) {
         Media media = new Media();
         List<MediaCriteriaMatches> mediaCriteriaMatchesList = new ArrayList<MediaCriteriaMatches>();
 
         CriteriaInfo tempCriteriaInfo = new CriteriaInfo();
         media.setId(mediaId);
-//        media.setCompanyID(companyId);
+        media.setCompanyID(companyId);
         media.setUrl(img.getImageURL());
         media.setDescription("");
         media.setMediaTypeCode(ApplicationConstants.CONST_MEDIA_TYPE_CODE);

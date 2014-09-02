@@ -37,15 +37,15 @@ public class ProductClient {
 	private JerseyClientPost jerseyClientPost = new JerseyClientPost();
     private static Logger    _LOGGER          = LoggerFactory.getLogger(ProductClient.class);
 
-    public ProductDetail doIt(String authToken, String productID) throws ProductNotFoundException, ExternalApiAuthenticationException {
-        return searchProduct(authToken, productID);
+    public ProductDetail doIt(String authToken, String companyID, String productID) throws ProductNotFoundException, ExternalApiAuthenticationException {
+        return searchProduct(authToken, companyID, productID);
     }
 
-    private ProductDetail searchProduct(String authToken, String productID)
+    private ProductDetail searchProduct(String authToken, String companyID, String productID)
             throws ProductNotFoundException, ExternalApiAuthenticationException
 
     {
-        String productSearchUrl = getProductSearchUrl() + "?externalProductId={productID}";
+        String productSearchUrl = getProductSearchUrl() + "?companyId={companyID}&externalProductId={productID}";
 
         ProductDetail product = null;
         try {
@@ -59,7 +59,7 @@ public class ProductClient {
             _LOGGER.debug("Hiting the RADAR API...");
             
             ResponseEntity<ProductDetail> response = restTemplate.exchange(productSearchUrl, HttpMethod.GET, requestEntity,
-                    ProductDetail.class, productID);
+                    ProductDetail.class, companyID, productID);
             if(response != null && response.getBody() != null) {
             	product = response.getBody();
             }
