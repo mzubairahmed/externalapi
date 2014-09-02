@@ -521,6 +521,7 @@ public class PricesParser {
 		String[] criteriaItems = null;
 		// ArrayList<String> valuesList;
 		String currentCriteria = null;
+		String criteriaValue=null;
 		String criteriaCode;
 		if (null != temp && temp instanceof String) {
 			criteriaSet1 = new PriceConfiguration();
@@ -531,8 +532,13 @@ public class PricesParser {
 				criteriaSet1.setCriteria(ProductDataStore
 						.getCriteriaInfoForCriteriaCode(criteriaCode)
 						.getDescription().replace("Size-", "").trim());
-				criteriaSet1.setValue(formatCriteriaValue(criteriaItems[1],
-						criteriaCode));
+				criteriaValue=formatCriteriaValue(criteriaItems[1],
+						criteriaCode);
+				if(criteriaValue.contains(":")){
+					criteriaSet1.setValue(criteriaValue.substring(criteriaValue.indexOf(":")+1));
+				}else{
+					criteriaSet1.setValue(criteriaValue);
+				}
 			}
 		} else {
 			criteriaSet1 = new PriceConfiguration();

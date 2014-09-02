@@ -22,7 +22,7 @@ public class CriteriaSetParser {
             if (criteriaSetReference.get(externalProductId.trim()) == null) {
                 criteriaSetReference.put(externalProductId.trim(), new HashMap<String, String>());
             }
-            criteriaSetReference.get(externalProductId.trim()).put(criteriaSetValueId+"",criteriaCode.trim() + "__" + value.toUpperCase().trim());
+            criteriaSetReference.get(externalProductId.trim()).put(criteriaSetValueId+"",criteriaCode.trim() + "__" + value.trim());
     	} else
     	{
     		return;

@@ -290,6 +290,7 @@ public class ProductRepo {
 
     public com.asi.ext.api.service.model.Product getServiceProduct(String authToken, String xid) {
         com.asi.ext.api.service.model.Product serviceProduct = null;
+        String shipperBillsBy=null;
         CriteriaSetParser criteriaSetParser = new CriteriaSetParser();
         try {
             productDetail = getProductFromService(authToken, xid);
@@ -297,7 +298,21 @@ public class ProductRepo {
             if (null != productDetail) {
                 serviceProduct = new com.asi.ext.api.service.model.Product();
                 BeanUtils.copyProperties(productDetail, serviceProduct);
-                serviceProduct.setShipperBillsBy(productDetail.getShipperBillsByCode());
+                shipperBillsBy=productDetail.getShipperBillsByCode();
+                switch (shipperBillsBy) {
+				case "SIZE":
+					shipperBillsBy="Size of the Package";
+					break;
+				case "WEIG":
+					shipperBillsBy="Weight of the Package";
+					break;
+				case "WSIZ":
+					shipperBillsBy="Weight and Size of the Package";
+					break;
+				default:
+					break;
+				}
+                serviceProduct.setShipperBillsBy(shipperBillsBy);
                 serviceProduct = configurationParser.setProductWithConfigurations(productDetail, serviceProduct);
                 serviceProduct = priceGridParser.setProductWithPriceGrids(productDetail, serviceProduct);
                 serviceProduct = setBasicProductDetails(productDetail, serviceProduct);

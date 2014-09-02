@@ -4,19 +4,17 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.asi.service.lookup.vo.LookupName;
-
 @XmlRootElement(name = "SafetyWarnings")
 public class SafetyWarningsList {
 
 
-		private List<LookupName> safetyWarnings = new ArrayList<>();
+		private List<String> safetyWarnings = new ArrayList<>();
 
-		public List<LookupName> getSafetyWarnings() {
+		public List<String> getSafetyWarnings() {
 			return safetyWarnings;
 		}
 
-		public void setSafetyWarnings(List<LookupName> safetyWarnings) {
+		public void setSafetyWarnings(List<String> safetyWarnings) {
 			this.safetyWarnings = safetyWarnings;
 		}
 			

@@ -856,7 +856,7 @@ public class ConfigurationsParser {
 						productDetail.getExternalProductId(),
 						currentCriteriaSetValue.getCriteriaCode(),
 						Integer.parseInt(currentCriteriaSetValue.getId()),
-						currentCriteriaSetValue.getCriteriaValueDetail());
+						currentCriteriaSetValue.getFormatValue());
 				serviceProductConfig.setSameDayRush(sdrush);
 			}
 		}
