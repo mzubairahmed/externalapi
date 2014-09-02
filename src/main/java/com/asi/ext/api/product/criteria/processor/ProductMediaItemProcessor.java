@@ -12,6 +12,7 @@ import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.ext.api.service.model.Configurations;
 import com.asi.ext.api.service.model.Image;
 import com.asi.ext.api.util.ApplicationConstants;
+import com.asi.ext.api.util.ProductParserUtil;
 import com.asi.service.product.client.vo.Media;
 import com.asi.service.product.client.vo.MediaCriteriaMatches;
 import com.asi.service.product.client.vo.ProductMediaItems;
@@ -95,8 +96,9 @@ public class ProductMediaItemProcessor {
                 
                 criteriaInfo = ProductDataStore.getCriteriaInfoByDescription(config.getCriteria(), xid);
                 if (criteriaInfo != null) {
-                    String criteriaSetValueId = ProductDataStore.findCriteriaSetValueIdForValue(xid, criteriaInfo.getCode(),
-                            String.valueOf(config.getValue()));
+                    Object criteriaValueToSearch = ProductParserUtil.getCriteriaValueFromConfig(config, criteriaInfo.getCode());
+                    String criteriaSetValueId = ProductParserUtil.getCriteriaSetValueIdBaseOnValueType(xid, criteriaInfo.getCode(),
+                            criteriaValueToSearch);
                     if (criteriaSetValueId != null) {
                         MediaCriteriaMatches currentMediaCriteriaMatch = existingMediaCriteriaMap.get(criteriaSetValueId);
                         if (currentMediaCriteriaMatch == null) {

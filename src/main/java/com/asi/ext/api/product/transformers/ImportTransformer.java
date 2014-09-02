@@ -151,6 +151,7 @@ public class ImportTransformer {
         productToSave.setAdditionalInfo(serviceProduct.getAdditionalProductInfo());
         productToSave.setDistributorComments(serviceProduct.getDistributorOnlyComments());
         productToSave.setAdditionalShippingInfo(serviceProduct.getAdditionalShippingInfo());
+        productToSave.setSameDayRushFlag("true");
 
         // Object Type Elements
         productToSave.setProductInventoryLink(ProductParserUtil.getInventoryLink(serviceProduct.getProductInventoryLink(),

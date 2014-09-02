@@ -274,6 +274,8 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
                         if (childCriteriaSetCodeValue != null && childCriteriaSetCodeValue.getChildCriteriaSetCodeValue() != null) {
                             key = CommonUtilities.appendValue(key, childCriteriaSetCodeValue.getChildCriteriaSetCodeValue()
                                     .getSetCodeValueId(), "+");
+                            key = CommonUtilities.appendValue(key, childCriteriaSetCodeValue.getChildCriteriaSetCodeValue()
+                                    .getCodeValue(), "+");
                         }
                     }
                 }

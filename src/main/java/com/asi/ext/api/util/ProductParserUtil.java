@@ -10,6 +10,7 @@ import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.ext.api.service.model.Availability;
 import com.asi.ext.api.service.model.Capacity;
+import com.asi.ext.api.service.model.Configurations;
 import com.asi.ext.api.service.model.Dimension;
 import com.asi.ext.api.service.model.PriceGrid;
 import com.asi.ext.api.service.model.Product;
@@ -436,6 +437,17 @@ public final class ProductParserUtil {
             }
         }
         return true;
+    }
+    
+    public static Object getCriteriaValueFromConfig(Configurations config, String criteriaCode) {
+        
+        if (CommonUtilities.isValueNull(config.getOptionName())) {
+            return config.getValue();
+        } else if (isOptionGroup(criteriaCode) && !CommonUtilities.isValueNull(config.getOptionName())){
+            return config.getOptionName() + ":" + String.valueOf(config.getValue());
+        } else {
+            return config.getValue();
+        }
     }
 
 }

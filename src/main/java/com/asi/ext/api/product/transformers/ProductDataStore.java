@@ -1045,7 +1045,7 @@ public class ProductDataStore {
      *            is the price unit we need to find
      * @return matched {@linkplain PriceUnit} or default {@linkplain PriceUnit}
      */
-    public static com.asi.service.product.client.vo.PriceUnit getPriceUnit(String priceUnit) {
+    public static com.asi.service.product.client.vo.PriceUnit getPriceUnit(String priceUnit, boolean getDefault) {
         try {
             if (ProductDataStore.priceUnitCollection == null || ProductDataStore.priceUnitCollection.isEmpty()) {
                 ProductDataStore.priceUnitCollection = new HashMap<String, PriceUnitJsonModel>();
@@ -1058,12 +1058,15 @@ public class ProductDataStore {
                     .toUpperCase());
             if (priceUnitJsonModel != null) {
                 return priceUnitJsonModel;
-            } else {
+            } else if (getDefault) {
+                
                 priceUnitJsonModel = ProductDataStore.priceUnitCollection
-                        .get(ApplicationConstants.CONST_STRING_OTHER.toUpperCase());
+                        .get(ApplicationConstants.CONST_STRING_PIECE.toUpperCase());
                 return priceUnitJsonModel != null ? priceUnitJsonModel : new PriceUnitJsonModel(
                         ApplicationConstants.CONST_STRING_PRICE_UNIT_DEFAULT_ID, ApplicationConstants.CONST_STRING_PIECE,
                         ApplicationConstants.CONST_STRING_PIECE, "0");
+            } else {
+                return null;
             }
             // return new
             // PriceUnitJsonModel(ApplicationConstants.CONST_STRING_PRICE_UNIT_DEFAULT_ID,
@@ -1078,7 +1081,7 @@ public class ProductDataStore {
   public static boolean isOtherPriceUnit(String priceUnit)
   {
 	  boolean otherpriceUnitChk=false;
-	  com.asi.service.product.client.vo.PriceUnit curentPriceUnit=getPriceUnit(priceUnit);
+	  com.asi.service.product.client.vo.PriceUnit curentPriceUnit=getPriceUnit(priceUnit, false);
 	  if(curentPriceUnit.getDisplayName().equalsIgnoreCase("other"))
 		  otherpriceUnitChk=true;
 	  

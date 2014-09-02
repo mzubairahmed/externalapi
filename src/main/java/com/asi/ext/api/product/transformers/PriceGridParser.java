@@ -95,16 +95,16 @@ public class PriceGridParser extends ProductParser {
         }
     }
 
-    private Currency getCurrencyModel(String serCurrency) {
-        return ProductDataStore.getCurrencyForCode(serCurrency, false);
+    private Currency getCurrencyModel(String serCurrency, boolean getDefault) {
+        return ProductDataStore.getCurrencyForCode(serCurrency, getDefault);
     }
 
     private DiscountRate getDiscountRate(String discountCode) {
         return ProductDataStore.getDiscountRate(discountCode, false);
     }
 
-    private PriceUnit getPriceUnit(com.asi.ext.api.service.model.PriceUnit serPunit) {
-        return ProductDataStore.getPriceUnit(serPunit.getName());
+    private PriceUnit getPriceUnit(String serPunit, boolean getDefault) {
+        return ProductDataStore.getPriceUnit(serPunit, getDefault);
     }
 
     private String getPriceUnitName(com.asi.ext.api.service.model.PriceUnit serPunit) {
@@ -118,7 +118,7 @@ public class PriceGridParser extends ProductParser {
         return ApplicationConstants.CONST_STRING_PIECE;
     }
 
-    private List<com.asi.service.product.client.vo.Price> getPrices(List<Price> prices, String pGridId) {
+    private List<com.asi.service.product.client.vo.Price> getPrices(List<Price> prices, String pGridId, String xid) {
 
         List<com.asi.service.product.client.vo.Price> finalPrices = new ArrayList<com.asi.service.product.client.vo.Price>();
         for (Price serPrice : prices) {
@@ -127,19 +127,60 @@ public class PriceGridParser extends ProductParser {
             veloPrice.setPriceGridId(pGridId);
             veloPrice.setSequenceNumber(serPrice.getSequence());
             veloPrice.setQuantity(serPrice.getQty());
-            if (serPrice.getPriceUnit() != null && serPrice.getPriceUnit().getItemsPerUnit() != null) {
-                veloPrice
-                        .setItemsPerUnit(serPrice.getPriceUnit() != null && serPrice.getPriceUnit().getItemsPerUnit() != null ? Integer
-                                .parseInt(serPrice.getPriceUnit().getItemsPerUnit()) : 1);
-            } else {
+            veloPrice.setItemsPerUnit(1);
+            
+            PriceUnit priceUnit = new PriceUnit();
+            
+            if (serPrice.getPriceUnit() == null) {
+                priceUnit = getPriceUnit(ApplicationConstants.CONST_STRING_PIECE, true);
                 veloPrice.setItemsPerUnit(1);
+                veloPrice.setPriceUnit(priceUnit);
+            } else {
+                priceUnit = getPriceUnit(serPrice.getPriceUnit().getName(), false);
+                if (priceUnit == null) {
+                    productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+                            "Invalid Price Unit given, PriceUnit : " + serPrice.getPriceUnit().getName()
+                            + ", default value (Piece) taken");
+                    priceUnit = getPriceUnit(ApplicationConstants.CONST_STRING_PIECE, true);
+                    veloPrice.setPriceUnit(priceUnit);
+                } else if (priceUnit.getDescription().equalsIgnoreCase(ApplicationConstants.CONST_STRING_OTHER)) {
+                    if (serPrice.getPriceUnit().getPriceUnitName() != null) {
+                        veloPrice.setPriceUnitName(serPrice.getPriceUnit().getPriceUnitName());
+                    } else {
+                        veloPrice.setPriceUnitName(ApplicationConstants.CONST_STRING_OTHER);
+                    }
+                    veloPrice.setPriceUnit(priceUnit);
+                    try {
+                        veloPrice.setItemsPerUnit(Integer.parseInt(serPrice.getPriceUnit().getItemsPerUnit()));
+                    } catch (NumberFormatException nfe) {
+                        productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+                                "Invalid value found for ItemsPerUnit, ItemsPerUnit : " + serPrice.getPriceUnit().getItemsPerUnit()
+                                + ", default value (1) taken");
+                    }
+                } else {
+                    if (priceUnit.getItemsPerUnit().equalsIgnoreCase("0") && serPrice.getPriceUnit().getItemsPerUnit() != null) {
+                        try {
+                            veloPrice.setItemsPerUnit(Integer.parseInt(serPrice.getPriceUnit().getItemsPerUnit()));
+                            veloPrice.setPriceUnitName(serPrice.getPriceUnit().getName());
+                            veloPrice.setPriceUnit(priceUnit);
+                        } catch (NumberFormatException nfe) {
+                            productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+                                    "Incorrect format for ItemsPerUnit, ItemsPerUnit : " + serPrice.getPriceUnit().getItemsPerUnit()
+                                    + ", default value (1) taken");
+                        }
+                    } else {
+                        veloPrice.setItemsPerUnit(Integer.parseInt(priceUnit.getItemsPerUnit()));
+                        veloPrice.setPriceUnit(priceUnit);
+                    }
+                }
             }
+    
 
             veloPrice.setListPrice(Double.parseDouble(serPrice.getListPrice()));
 
             veloPrice.setDiscountRate(getDiscountRate(serPrice.getDiscountCode()));
 
-            veloPrice.setPriceUnit(getPriceUnit(serPrice.getPriceUnit()));
+           // veloPrice.setPriceUnit(getPriceUnit(serPrice.getPriceUnit()));
 
             veloPrice.setPriceUnitName(getPriceUnitName(serPrice.getPriceUnit()));
 
@@ -223,6 +264,8 @@ public class PriceGridParser extends ProductParser {
                 .getProductNumbers());
         boolean hasProductNumber = false;
         boolean foundOnePno = false;
+        int pgCounter = 0;
+        boolean currencyErrorLogged = false;
         List<PriceGrid> finalPGrids = new ArrayList<PriceGrid>();
         for (com.asi.ext.api.service.model.PriceGrid serPGrid : servicePriceGrids) {
             if (new com.asi.ext.api.service.model.PriceGrid().equals(serPGrid)) {
@@ -233,7 +276,7 @@ public class PriceGridParser extends ProductParser {
             if (!foundOnePno && hasProductNumber) {
                 foundOnePno = true;
             }
-
+            pgCounter++;
             PriceGrid newPGrid = new PriceGrid();
             // Basic fields
             newPGrid.setID(String.valueOf(--priceGridId));
@@ -248,7 +291,15 @@ public class PriceGridParser extends ProductParser {
             newPGrid.setIsRange(false);
             newPGrid.setIsSpecial(false);
             // Currency
-            newPGrid.setCurrency(getCurrencyModel(serPGrid.getCurrency()));
+            newPGrid.setCurrency(getCurrencyModel(serPGrid.getCurrency(), false));
+            if (newPGrid.getCurrency() == null) {
+                if (!currencyErrorLogged) {
+                    currencyErrorLogged = true;
+                    productDataStore.addErrorToBatchLogCollection(product.getExternalProductId(),
+                            ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "PriceGrid : Currency not found / Invalid currency, Default currency (USD) assigned");
+                }
+                newPGrid.setCurrency(getCurrencyModel(serPGrid.getCurrency(), true));
+            }
             // Price Grid Type Code
             newPGrid.setUsageLevelCode(getUsageLevelCode(serPGrid.getIsBasePrice()));
             newPGrid.setPriceGridSubTypeCode(getPriceGridSubTypeCode(serPGrid.getIsBasePrice(), serPGrid.getPriceConfigurations(),
@@ -257,7 +308,7 @@ public class PriceGridParser extends ProductParser {
             if (extPriceGrid != null) {
                 newPGrid.setID(extPriceGrid.getID());
             }
-            newPGrid.setPrices(getPrices(serPGrid.getPrices(), newPGrid.getID()));
+            newPGrid.setPrices(getPrices(serPGrid.getPrices(), newPGrid.getID(), product.getExternalProductId()));
             // Pricing Item configs
             Collections.sort(serPGrid.getPriceConfigurations(), new PriceCriteriaComparator());
 
@@ -272,11 +323,12 @@ public class PriceGridParser extends ProductParser {
             if (hasProductNumber) {
                 productNumbers.add(productNumberProcessor.getProductNumberForPriceGrid(newPGrid.getID(),
                         serPGrid.getProductNumber(), newPGrid.getPricingItems(), extPnoMap.get(newPGrid.getID()), product.getID()));
+                product.setProductNumbers(productNumbers); // Using Java Reference by Object Principal
             }
-            
+
             finalPGrids.add(newPGrid);
         }
-        
+
         if (foundOnePno) {
             product.setProductNumbers(productNumbers);
         }
@@ -956,7 +1008,9 @@ public class PriceGridParser extends ProductParser {
                             if (null != currentPrice.getItemsPerUnit() && currentPrice.getItemsPerUnit() > 0)
                                 currentPriceUnit.setItemsPerUnit(String.valueOf(currentPrice.getItemsPerUnit()));
 
-                              currentPriceUnit.setName((null!=currentPrice.getPriceUnit().getDisplayName() && !currentPrice.getPriceUnit().getDisplayName().isEmpty())?currentPrice.getPriceUnit().getDisplayName():null);
+                            currentPriceUnit.setName((null != currentPrice.getPriceUnit().getDisplayName() && !currentPrice
+                                    .getPriceUnit().getDisplayName().isEmpty()) ? currentPrice.getPriceUnit().getDisplayName()
+                                    : null);
                             if (ProductDataStore.isOtherPriceUnit(currentPrice.getPriceUnit().getDisplayName())) {
                                 currentPriceUnit.setPriceUnitName(currentPrice.getPriceUnitName());
                             }
@@ -1079,17 +1133,17 @@ public class PriceGridParser extends ProductParser {
                     criteriaInfo = ProductDataStore.getCriteriaInfoForCriteriaCode(getCriteriaCode(bpDetails
                             .getBasePriceCriteria2()));
                     if (null != criteriaInfo) {
-           
-                    	 currentCriteria = criteriaInfo.getDescription();
-                         if (currentCriteria.contains("Size") || currentCriteria.contains("Apparel")
-                                 || currentCriteria.contains("SIZE")) currentCriteria = "Sizes";
-                         currentPriceConfig.setCriteria(currentCriteria);
-                         if (null != bpDetails.getBasePriceCriteria2() && bpDetails.getBasePriceCriteria2() instanceof String) {
-                             currentPriceConfig.setValue(getCriteriaValueByCriteria(bpDetails.getBasePriceCriteria2().toString()));
-                         } else {
-                             currentPriceConfig.setValue(bpDetails.getBasePriceCriteria2());
-                         }
-                     } else {
+
+                        currentCriteria = criteriaInfo.getDescription();
+                        if (currentCriteria.contains("Size") || currentCriteria.contains("Apparel")
+                                || currentCriteria.contains("SIZE")) currentCriteria = "Sizes";
+                        currentPriceConfig.setCriteria(currentCriteria);
+                        if (null != bpDetails.getBasePriceCriteria2() && bpDetails.getBasePriceCriteria2() instanceof String) {
+                            currentPriceConfig.setValue(getCriteriaValueByCriteria(bpDetails.getBasePriceCriteria2().toString()));
+                        } else {
+                            currentPriceConfig.setValue(bpDetails.getBasePriceCriteria2());
+                        }
+                    } else {
                         currentPriceConfig.setValue(bpDetails.getBasePriceCriteria2());
                     }
 
