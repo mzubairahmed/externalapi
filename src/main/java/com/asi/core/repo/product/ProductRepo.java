@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -62,6 +63,11 @@ public class ProductRepo {
     public final String[] OPTION_CRITERIACODES={"IMOP","SHOP","PROP"};
     private ProductDataStore      lookupDataStore        = new ProductDataStore();
     private RestAPIMessageHandler velocityMessageHandler = RestAPIMessageHandler.getInstance();
+    
+    private static final String SHIPPER_BILL_BY_WEIGHT = "WEIG";
+    private static final String SHIPPER_BILL_BY_SIZE = "SIZE";
+    private static final String SHIPPER_BILL_BY_BOTH = "WSIZ";
+    
 
     /**
      * @return the productClient
@@ -300,20 +306,23 @@ public class ProductRepo {
             if (null != productDetail) {
                 serviceProduct = new com.asi.ext.api.service.model.Product();
                 BeanUtils.copyProperties(productDetail, serviceProduct);
-                shipperBillsBy=productDetail.getShipperBillsByCode();
-                switch (shipperBillsBy) {
-				case "SIZE":
-					shipperBillsBy="Size of the Package";
-					break;
-				case "WEIG":
-					shipperBillsBy="Weight of the Package";
-					break;
-				case "WSIZ":
-					shipperBillsBy="Weight and Size of the Package";
-					break;
-				default:
-					break;
-				}
+                shipperBillsBy = productDetail.getShipperBillsByCode();
+                if(!StringUtils.isEmpty(shipperBillsBy)) {
+                    switch (shipperBillsBy) {
+    				case "SIZE":
+    					shipperBillsBy="Size of the Package";
+    					break;
+    				case "WEIG":
+    					shipperBillsBy="Weight of the Package";
+    					break;
+    				case "WSIZ":
+    					shipperBillsBy="Weight and Size of the Package";
+    					break;
+    				default:
+    					break;
+    				}
+
+                }
                 serviceProduct.setShipperBillsBy(shipperBillsBy);
                 serviceProduct = configurationParser.setProductWithConfigurations(productDetail, serviceProduct);
                 serviceProduct = priceGridParser.setProductWithPriceGrids(productDetail, serviceProduct);
