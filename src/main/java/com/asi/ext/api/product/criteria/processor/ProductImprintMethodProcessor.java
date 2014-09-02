@@ -17,9 +17,12 @@ public class ProductImprintMethodProcessor extends SimpleCriteriaProcessor {
 
     protected Map<String, CriteriaSetValues> existingCriteriaValueMap = new HashMap<String, CriteriaSetValues>();
 
-    public CriteriaSetValues getImprintCriteriaSetValue(String imprintName, String aliace, String criteriaSetId) {
+    public CriteriaSetValues getImprintCriteriaSetValue(String xid, String imprintName, String aliace, String criteriaSetId) {
         
         CriteriaSetValues criteriaSetValue = existingCriteriaValueMap.get(imprintName.toUpperCase());
+        if (criteriaSetValue == null && aliace != null && !aliace.isEmpty()) {
+            criteriaSetValue = existingCriteriaValueMap.get(aliace.toUpperCase());
+        }
         String setCodeValueId = null;
         boolean customValue = false;
         if (criteriaSetValue == null) {
@@ -48,6 +51,8 @@ public class ProductImprintMethodProcessor extends SimpleCriteriaProcessor {
             criteriaSetValue.setValue(aliace);
             criteriaSetValue.setCriteriaValueDetail(aliace);
         }
+        updateReferenceTable(xid, ApplicationConstants.CONST_IMPRINT_METHOD_CODE,
+                String.valueOf(criteriaSetValue.getValue()), criteriaSetValue);
 
         return criteriaSetValue;
 

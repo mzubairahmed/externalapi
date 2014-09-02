@@ -454,7 +454,7 @@ public class ProductDataStore {
         return setCodeValueId;
     }
 
-    public static String getMaterialSetCodeValueId(String materialName) {
+    public static String getMaterialSetCodeValueId(String materialName, boolean checkOther) {
         String setCodeValueId = ApplicationConstants.CONST_STRING_NULL_CAP;
         materialName = materialName.trim().toUpperCase();
         try {
@@ -490,8 +490,10 @@ public class ProductDataStore {
                  * }
                  */
                 // Last try to get Other Group
-                key = ApplicationConstants.CONST_STRING_OTHER.toUpperCase();
-                setCodeValueId = ProductDataStore.productMaterialLookupTable.get(key.toUpperCase());
+                if (checkOther) {
+                    key = ApplicationConstants.CONST_STRING_OTHER.toUpperCase();
+                    setCodeValueId = ProductDataStore.productMaterialLookupTable.get(key.toUpperCase());
+                }
                 if (!CommonUtilities.isValueNull(setCodeValueId)) {
                     return setCodeValueId;
                 } else {
@@ -1043,7 +1045,7 @@ public class ProductDataStore {
      *            is the price unit we need to find
      * @return matched {@linkplain PriceUnit} or default {@linkplain PriceUnit}
      */
-    public static com.asi.service.product.client.vo.PriceUnit getPriceUnit(String priceUnit) {
+    public static com.asi.service.product.client.vo.PriceUnit getPriceUnit(String priceUnit, boolean getDefault) {
         try {
             if (ProductDataStore.priceUnitCollection == null || ProductDataStore.priceUnitCollection.isEmpty()) {
                 ProductDataStore.priceUnitCollection = new HashMap<String, PriceUnitJsonModel>();
@@ -1056,12 +1058,15 @@ public class ProductDataStore {
                     .toUpperCase());
             if (priceUnitJsonModel != null) {
                 return priceUnitJsonModel;
-            } else {
+            } else if (getDefault) {
+                
                 priceUnitJsonModel = ProductDataStore.priceUnitCollection
-                        .get(ApplicationConstants.CONST_STRING_OTHER.toUpperCase());
+                        .get(ApplicationConstants.CONST_STRING_PIECE.toUpperCase());
                 return priceUnitJsonModel != null ? priceUnitJsonModel : new PriceUnitJsonModel(
                         ApplicationConstants.CONST_STRING_PRICE_UNIT_DEFAULT_ID, ApplicationConstants.CONST_STRING_PIECE,
                         ApplicationConstants.CONST_STRING_PIECE, "0");
+            } else {
+                return null;
             }
             // return new
             // PriceUnitJsonModel(ApplicationConstants.CONST_STRING_PRICE_UNIT_DEFAULT_ID,
@@ -1076,7 +1081,7 @@ public class ProductDataStore {
   public static boolean isOtherPriceUnit(String priceUnit)
   {
 	  boolean otherpriceUnitChk=false;
-	  com.asi.service.product.client.vo.PriceUnit curentPriceUnit=getPriceUnit(priceUnit);
+	  com.asi.service.product.client.vo.PriceUnit curentPriceUnit=getPriceUnit(priceUnit, false);
 	  if(curentPriceUnit.getDisplayName().equalsIgnoreCase("other"))
 		  otherpriceUnitChk=true;
 	  
@@ -1172,7 +1177,7 @@ public class ProductDataStore {
         } else if (ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE.equalsIgnoreCase(criteriaCode)) {
             if (productMaterialLookupTable == null || productMaterialLookupTable.isEmpty()) {
                 // getSetCodeValueIdForProductMaterial("Blend");
-                getMaterialSetCodeValueId("Blend");
+                getMaterialSetCodeValueId("Blend", true);
             }
             return CommonUtilities.getKeysByValueGen(productMaterialLookupTable, setCodeValueId);
         } else if (ApplicationConstants.CONST_ORIGIN_CRITERIA_CODE.equalsIgnoreCase(criteriaCode)) {

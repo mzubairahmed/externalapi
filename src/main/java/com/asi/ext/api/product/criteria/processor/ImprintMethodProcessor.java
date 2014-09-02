@@ -119,7 +119,7 @@ public class ImprintMethodProcessor extends SimpleCriteriaProcessor {
         for (ImprintMethod impMethod : imprintMethods) {
             CriteriaSetValues immdCriteriaSetValue = null;
             if (impMethod.getType() != null && !impMethod.getType().isEmpty()) {
-                immdCriteriaSetValue = imprintMethodProcessor.getImprintCriteriaSetValue(impMethod.getType(), impMethod.getAlias(),
+                immdCriteriaSetValue = imprintMethodProcessor.getImprintCriteriaSetValue(exisitingProduct.getExternalProductId(), impMethod.getType(), impMethod.getAlias(),
                         immdCriteriaId);
                 immdCriteriaValues.put(impMethod.getType().toUpperCase(), immdCriteriaSetValue);
             }

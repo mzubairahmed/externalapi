@@ -127,7 +127,7 @@ public class ProductNumberCriteriaParser {
         }
 
         extPno.setProductNumberConfigurations(getPnoConfigsForPriceGrid(pricingItems, extPno));
-
+        extPno.setValue(productNumber);
         return extPno;
     }
 

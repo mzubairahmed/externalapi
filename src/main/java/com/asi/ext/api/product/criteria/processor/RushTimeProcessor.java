@@ -118,8 +118,13 @@ public class RushTimeProcessor extends SimpleCriteriaProcessor {
                     criteriaSetValue.setCriteriaValueDetail(rushTime.getDetails());
                 }
             }
-            updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE,
-                    String.valueOf(rushTime.getBusinessDays()), criteriaSetValue);
+            if (rushTime.getBusinessDays().equalsIgnoreCase(ApplicationConstants.CONST_STRING_RUSH_SERVICE)) {
+                updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE,
+                        String.valueOf(rushTime.getBusinessDays()), criteriaSetValue);
+            } else {
+                updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE,
+                        String.valueOf(rushTime.getBusinessDays()) + " business days", criteriaSetValue);
+            }
 
             finalCriteriaSetValues.add(criteriaSetValue);
         }
