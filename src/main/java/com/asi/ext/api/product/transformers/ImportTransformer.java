@@ -82,6 +82,7 @@ public class ImportTransformer {
     private ProductPackageProcessor                packagingProcessor          = new ProductPackageProcessor(-901, "0");
     private ProductionTimeProcessor                productionTimeProcessor     = new ProductionTimeProcessor(-1001, "0");
     private RushTimeProcessor                      rushTimeProcessor           = new RushTimeProcessor(-1101, "0");
+    
     private AdditionalColorProcessor               additionalColorProcessor    = new AdditionalColorProcessor(-1201, "0");
     private AdditionalLocationProcessor            additionalLocationProcessor = new AdditionalLocationProcessor(-1301, "0");
     private ProductSpecSampleProcessor             specSampleProcessor         = new ProductSpecSampleProcessor(-1401, "0");
@@ -426,6 +427,17 @@ public class ImportTransformer {
         } else {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE);
         }
+        
+        // Same Day Rush Time Processing..
+        if (serviceProdConfigs.getSameDayRush() != null && serviceProdConfigs.getSameDayRush().isAvailable()) {
+//        	tempCriteriaSet = sameDayServiceProcessor.getCriteriaSetForSameDayService(null, , serviceProdConfigs.getSameDayRush().getDetails(), configId);
+        			
+            tempCriteriaSet = rushTimeProcessor.getSameDayRushTimeCriteriaSet(serviceProdConfigs.getSameDayRush(), rdrProduct, existingCriteriaSetMap.get(ApplicationConstants.CONST_STRING_SAME_DAY_RUSH_SERVICE), configId);
+            existingCriteriaSetMap.put(ApplicationConstants.CONST_STRING_SAME_DAY_RUSH_SERVICE, tempCriteriaSet);
+        } else {
+            existingCriteriaSetMap.remove(ApplicationConstants.CONST_STRING_SAME_DAY_RUSH_SERVICE);
+        }
+        
 
         // Product Time Processing
         if (serviceProdConfigs.getProductionTime() != null) {
