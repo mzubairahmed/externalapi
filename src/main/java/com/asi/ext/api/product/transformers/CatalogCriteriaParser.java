@@ -16,7 +16,7 @@ public class CatalogCriteriaParser {
     public ProductDataStore     productDataStore = new ProductDataStore();
     
     @SuppressWarnings("static-access")
-	public List<ProductMediaCitations> prepareProductCatalog(List<Catalog> catalogs, ProductDetail radProduct) {
+	public List<ProductMediaCitations> prepareProductCatalog(List<Catalog> catalogs, ProductDetail radProduct, String authToken) {
 
     	LOGGER.info("Started processing Product Media Citations (Catalogs)");
         if (LOGGER.isTraceEnabled()) {
@@ -29,7 +29,7 @@ public class CatalogCriteriaParser {
         
         if(catalogs != null && !catalogs.isEmpty()) {
 	    	for (Catalog catalog : catalogs) {
-	    		productMediaCitation = productDataStore.getMediaCitationsByName(radProduct.getID(), catalog.getCatalogName(), catalog.getCatalogPage(), radProduct.getCompanyId());
+	    		productMediaCitation = productDataStore.getMediaCitationsByName(radProduct.getID(), catalog.getCatalogName(), catalog.getCatalogPage(), authToken);
 	    		if (productMediaCitation != null) { 
 	    		    productMediaCitations.add(productMediaCitation);
 	    		} else {

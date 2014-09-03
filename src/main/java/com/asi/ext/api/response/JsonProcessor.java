@@ -2,13 +2,11 @@ package com.asi.ext.api.response;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
@@ -24,16 +22,12 @@ import org.json.simple.parser.ContainerFactory;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.asi.ext.api.rest.JersyClientGet;
+import com.asi.ext.api.product.transformers.ProductDataStore;
+import com.asi.ext.api.radar.lookup.model.SetCodeValueJsonModel;
 import com.asi.ext.api.radar.model.Currency;
 import com.asi.ext.api.radar.model.PriceUnit;
 import com.asi.ext.api.radar.model.Product;
-import com.asi.ext.api.radar.lookup.model.PriceUnitJsonModel;
-import com.asi.ext.api.radar.lookup.model.SetCodeValueJsonModel;
-import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.util.ApplicationConstants;
-import com.asi.ext.api.util.CommonUtilities;
-import com.asi.ext.api.util.RestAPIProperties;
 
 /**
  * JsonProcessor contains function which related to JSON processing and Lookups. Methods including
@@ -292,7 +286,7 @@ public class JsonProcessor {
 		    //ProductParser.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD, "Currency code empty for Pricing");
 		    srchValue="USD";
 		}
-		Currency currency = new Currency();
+		//Currency currency = new Currency();
 		// String returnValue="NON";
 		
 		boolean matchFound = false;
@@ -1528,9 +1522,14 @@ public class JsonProcessor {
         }
     }*/
     
-    public static Set<String> getErrorMessageFromJson(String json) {
-        
-        JSONParser parser = new JSONParser();
+    public static List<RadarExceptionResponseModel> getErrorMessageFromJson(String json) {
+        try {
+            List<RadarExceptionResponseModel> errorMessage = convertJsonToBeanCollection(json, RadarExceptionResponseModel.class);
+            return errorMessage;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        /*JSONParser parser = new JSONParser();
         ContainerFactory containerFactory = new ContainerFactory() {
             public List<?> creatArrayContainer() {
                 return new LinkedList<Object>();
@@ -1577,8 +1576,8 @@ public class JsonProcessor {
         } catch (ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }
-        return errorMessages;
+        }*/
+        return null;
     }
     
 }

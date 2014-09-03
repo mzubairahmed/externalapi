@@ -165,33 +165,32 @@ public class ProductRepo {
         return null;
     }
 
-    public ExternalAPIResponse updateProduct(String authToken, String companyId, String xid,
-            com.asi.ext.api.service.model.Product serviceProduct) {
+    public ExternalAPIResponse updateProduct(String authToken, com.asi.ext.api.service.model.Product serviceProduct) {
         ProductDetail existingRadarProduct = null;
         try {
             // existingRadarProduct = productClient.getRadarProduct(companyId, serviceProduct.getExternalProductId());
-            existingRadarProduct = productClient.doIt(authToken, companyId, serviceProduct.getExternalProductId());
+            existingRadarProduct = productClient.doIt(authToken, serviceProduct.getExternalProductId());
         } catch (ProductNotFoundException e) {
             _LOGGER.info("Product Not found with Existing, going to create new Product");
         } catch (ExternalApiAuthenticationException ea) {
             return productClient.convertExceptionToResponseModel(ea);
         }
         try {
+            
             // Doing Transformation of Service product to pure Radar object model (Core Component)
-            existingRadarProduct = productTransformer.generateRadarProduct(serviceProduct, existingRadarProduct,
-                    generateBatchDataSourceId(companyId), companyId);
+            existingRadarProduct = productTransformer.generateRadarProduct(serviceProduct, existingRadarProduct, authToken);
         } catch (Exception e) {
             _LOGGER.error("Exception while generating Radar product", e);
             ExternalAPIResponse response = productClient.convertExceptionToResponseModel(e);
-            response = appendErrorLogsToResponse(response, xid);
-            doCleanUp(existingRadarProduct.getExternalProductId());
+            response = appendErrorLogsToResponse(response, serviceProduct.getExternalProductId());
+            doCleanUp(serviceProduct.getExternalProductId());
             return response;
         }
 
         // Saving product to Radar API
         ExternalAPIResponse response = productClient.saveProduct(authToken, existingRadarProduct);
         if (response != null && response.getStatusCode() != null & response.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
-            response = tryReadingRadarResponse(response, xid);
+            response = tryReadingRadarResponse(response, existingRadarProduct.getExternalProductId());
         }
 
         response = appendErrorLogsToResponse(response, existingRadarProduct.getExternalProductId());
@@ -218,10 +217,16 @@ public class ProductRepo {
 
     private ExternalAPIResponse appendErrorLogsToResponse(ExternalAPIResponse response, String xid) {
         Set<String> errors = ProductDataStore.getBatchErrors(xid);
+        Set<String> infoError = ProductDataStore.getBatchErrors(xid + "_MAIN");
+        if (infoError != null && !infoError.isEmpty()) {
+            String message = infoError.iterator().next();
+            response.setMessage(message);
+        }
         response.setAdditionalInfo(errors);
         return response;
     }
 
+    @SuppressWarnings("unused")
     private String generateBatchDataSourceId(String companyId) {
         try {
             return getDataSourceId(companyId);
@@ -236,9 +241,9 @@ public class ProductRepo {
     }
 
     @SuppressWarnings("unused")
-    private Product prepairProduct(String authToken, String companyID, String productID) throws ProductNotFoundException,
+    private Product prepairProduct(String authToken, String productID) throws ProductNotFoundException,
             RestClientException, UnsupportedEncodingException, ExternalApiAuthenticationException {
-        productDetail = getProductFromService(authToken, companyID, productID);
+        productDetail = getProductFromService(authToken, productID);
         Product product = new Product();
         BeanUtils.copyProperties(productDetail, product);
         // product=lookupsParser.setProductConfigurations(productDetail,product);
@@ -255,9 +260,9 @@ public class ProductRepo {
         return product;
     }
 
-    public ProductDetail getProductFromService(String authToken, String companyID, String productID)
+    public ProductDetail getProductFromService(String authToken, String productID)
             throws ProductNotFoundException, ExternalApiAuthenticationException {
-        productDetail = productClient.doIt(authToken, companyID, productID);
+        productDetail = productClient.doIt(authToken, productID);
 
         return productDetail;
 
@@ -296,12 +301,12 @@ public class ProductRepo {
         return dataSourceId;
     }
 
-    public com.asi.ext.api.service.model.Product getServiceProduct(String authToken, String companyId, String xid) {
+    public com.asi.ext.api.service.model.Product getServiceProduct(String authToken, String xid) {
         com.asi.ext.api.service.model.Product serviceProduct = null;
         String shipperBillsBy=null;
         CriteriaSetParser criteriaSetParser = new CriteriaSetParser();
         try {
-            productDetail = getProductFromService(authToken, companyId, xid);
+            productDetail = getProductFromService(authToken, xid);
             // serviceProduct=prepairServiceProduct();
             if (null != productDetail) {
                 serviceProduct = new com.asi.ext.api.service.model.Product();
