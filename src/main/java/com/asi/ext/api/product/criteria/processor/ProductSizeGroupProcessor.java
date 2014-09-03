@@ -417,7 +417,12 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                     value.setUnitValue(sizeValue);
                     value.setUnitOfMeasureCode(units);
                     
-                    valueAry.add(value);
+                    
+                    if (isValueObjectValidForSize(sizeCriteriaCode, value)) { 
+                        valueAry.add(value);
+                    } else {
+                        // TODO : Add error messages
+                    }
                 }
 
                 CriteriaSetCodeValues criteriaSetCodeValuesNew = new CriteriaSetCodeValues();
@@ -1281,6 +1286,39 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                             + ", value : " + shippingItemValue.getValue());
         }
         return null;
+    }
+    
+    
+    private boolean isValueObjectValidForSize(String criteriaCode, Value v) {
+        if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_DIMENSION)) {
+            if (CommonUtilities.isValueNull(v.getCriteriaAttributeId())) {
+                return false;
+            } else if (CommonUtilities.isValueNull(v.getUnitOfMeasureCode())) {
+                return false;
+            } else if (CommonUtilities.isValueNull(v.getUnitValue())) {
+                return false;
+            }
+            return true;
+        } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY)) {
+            if (CommonUtilities.isValueNull(v.getCriteriaAttributeId())) {
+                return false;
+            } else if (CommonUtilities.isValueNull(v.getUnitOfMeasureCode())) {
+                return false;
+            } else if (CommonUtilities.isValueNull(v.getUnitValue())) {
+                return false;
+            }
+            return true;
+        } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI)) {
+            if (CommonUtilities.isValueNull(v.getCriteriaAttributeId())) {
+                return false;
+            } else if (CommonUtilities.isValueNull(v.getUnitOfMeasureCode())) {
+                return false;
+            } else if (CommonUtilities.isValueNull(v.getUnitValue())) {
+                return false;
+            }
+            return true;
+        }
+        return true;
     }
 
 }

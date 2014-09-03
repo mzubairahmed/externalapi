@@ -1631,6 +1631,7 @@ public class ProductDataStore {
         // Clean Error logs of product
         if (GLOBAL_BATCH_LOG_COLLECTION != null) {
             GLOBAL_BATCH_LOG_COLLECTION.remove(xid);
+            GLOBAL_BATCH_LOG_COLLECTION.remove(xid + "_MAIN");            
         }
         
         if (productNumberAssociation != null) {

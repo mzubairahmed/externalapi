@@ -1528,9 +1528,14 @@ public class JsonProcessor {
         }
     }*/
     
-    public static Set<String> getErrorMessageFromJson(String json) {
-        
-        JSONParser parser = new JSONParser();
+    public static List<RadarExceptionResponseModel> getErrorMessageFromJson(String json) {
+        try {
+            List<RadarExceptionResponseModel> errorMessage = convertJsonToBeanCollection(json, RadarExceptionResponseModel.class);
+            return errorMessage;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        /*JSONParser parser = new JSONParser();
         ContainerFactory containerFactory = new ContainerFactory() {
             public List<?> creatArrayContainer() {
                 return new LinkedList<Object>();
@@ -1577,8 +1582,8 @@ public class JsonProcessor {
         } catch (ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }
-        return errorMessages;
+        }*/
+        return null;
     }
     
 }

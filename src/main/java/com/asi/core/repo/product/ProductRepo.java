@@ -217,10 +217,16 @@ public class ProductRepo {
 
     private ExternalAPIResponse appendErrorLogsToResponse(ExternalAPIResponse response, String xid) {
         Set<String> errors = ProductDataStore.getBatchErrors(xid);
+        Set<String> infoError = ProductDataStore.getBatchErrors(xid + "_MAIN");
+        if (infoError != null && !infoError.isEmpty()) {
+            String message = infoError.iterator().next();
+            response.setMessage(message);
+        }
         response.setAdditionalInfo(errors);
         return response;
     }
 
+    @SuppressWarnings("unused")
     private String generateBatchDataSourceId(String companyId) {
         try {
             return getDataSourceId(companyId);
