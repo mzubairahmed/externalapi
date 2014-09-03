@@ -3,12 +3,15 @@ package com.asi.ext.api.interceptor;
 /**
  * 
  */
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import com.asi.ext.api.exception.VelocityImportExceptionCodes;
 import com.asi.ext.api.response.JsonProcessor;
+import com.asi.ext.api.response.RadarExceptionResponseModel;
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
@@ -60,7 +63,7 @@ public final class RestAPIMessageHandler implements java.io.Serializable {
             return VelocityMessageCodes.PROD_FIELD_MISSING;
         } else if (message.startsWith(VelocityImportExceptionCodes.PRODUCT_VALIDATION_FAILED)) {
             return VelocityMessageCodes.PROD_VALIDATION;
-        } else if (message.startsWith(VelocityImportExceptionCodes.PRODUCT_MODEL_FIELD_ISSUES)) {
+        } else if (message.startsWith(VelocityImportExceptionCodes.PRODUCT_MODEL_FIELD_ISSUES) || message.startsWith("[")) {
             return VelocityMessageCodes.HTTP_INVALID_PRD_FIELD_ISSUES;
         } else {
             return VelocityMessageCodes.PROD_UNK;
@@ -76,7 +79,12 @@ public final class RestAPIMessageHandler implements java.io.Serializable {
         return !messages.isEmpty();
     }
 
-    private Set<String> processErrorMessage(String message) {
+    private void registerInfoException(String batchId, String xid, String message) {
+        
+        productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_GENERIC_ERROR, message);
+        //ProductDataStore.addUnhandledErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_GENERIC_ERROR, s);
+    }
+    private List<RadarExceptionResponseModel> processErrorMessage(String message) {
         VelocityMessageCodes code = identifyException(message);
         if (isLoggableException(code)) {
             if (code == VelocityMessageCodes.PROD_FIELD_MISSING) {
@@ -102,10 +110,22 @@ public final class RestAPIMessageHandler implements java.io.Serializable {
     }
 
     private boolean startErrorLogging(String batchId, String externalProductId, String message) {
-        Set<String> finalMessages = processErrorMessage(message);
+        List<RadarExceptionResponseModel> finalMessages = processErrorMessage(message);
 
         if (finalMessages != null && !finalMessages.isEmpty()) {
-            return registerException(batchId, externalProductId, finalMessages);
+            Set<String> errorMessageToLog = new HashSet<>();
+            boolean infoProcessed = false;
+            for (RadarExceptionResponseModel response : finalMessages) {
+                if (response != null) {
+                    if (response.getType().equalsIgnoreCase("info") && !infoProcessed) {
+                        registerInfoException(batchId, externalProductId + "_MAIN", response.getMsg());
+                        infoProcessed = true;
+                    } else {
+                        errorMessageToLog.add(response.getMsg());
+                    }
+                }
+            }
+            return registerException(batchId, externalProductId, errorMessageToLog);
         } else {
             return false;
         }

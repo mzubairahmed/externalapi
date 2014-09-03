@@ -67,10 +67,9 @@ public class ProductServiceResource {
     }
 
     // @Secured("ROLE_CUSTOMER")
-    @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.POST, headers = "content-type=application/json, application/xml", produces = {
+    @RequestMapping(method = RequestMethod.POST, headers = "content-type=application/json, application/xml", produces = {
             "application/xml; charset=UTF-8", "application/json; charset=UTF-8" })
-    public ResponseEntity<ExternalAPIResponse> updateProduct(HttpEntity<Product> requestEntity, @RequestHeader("AuthToken") String authToken, @PathVariable("companyid") String companyId,
-            @PathVariable("xid") String xid) throws Exception {
+    public ResponseEntity<ExternalAPIResponse> updateProduct(HttpEntity<Product> requestEntity, @RequestHeader("AuthToken") String authToken) throws Exception {
         if (_LOGGER.isDebugEnabled()) {
             _LOGGER.debug("calling service");
         }
@@ -88,15 +87,9 @@ public class ProductServiceResource {
             message.setMessage("Invalid request, ExternalProductId can't be null/empty");
             message.setStatusCode(HttpStatus.BAD_REQUEST);
             return new ResponseEntity<ExternalAPIResponse>(message, null, HttpStatus.BAD_REQUEST);
-        } else if (!requestEntity.getBody().getExternalProductId().trim().equalsIgnoreCase(xid.trim())) {
-            // ExternalProductId in the product is not matched with path param
-            message = new ExternalAPIResponse();
-            message.setStatusCode(HttpStatus.BAD_REQUEST);
-            message.setMessage("Invalid request, ExternalProductId provided in the Product is not matching with path");
-            return new ResponseEntity<ExternalAPIResponse>(message, null, HttpStatus.BAD_REQUEST);
-        }
+        } 
         try {
-            message = productService.updateProduct(authToken, companyId, xid, requestEntity.getBody());
+            message = productService.updateProduct(authToken, requestEntity.getBody());
         } catch (Exception e) {
             throw e;
         }
