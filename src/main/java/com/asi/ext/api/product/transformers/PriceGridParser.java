@@ -72,9 +72,11 @@ public class PriceGridParser extends ProductParser {
     private Set<String> getPriceCriteriaCodes(List<PriceConfiguration> priceConfigs, String xid) {
         Set<String> criteriaCodes = new HashSet<String>();
         for (PriceConfiguration config : priceConfigs) {
-            CriteriaInfo crtInfo = ProductDataStore.getCriteriaInfoByDescription(config.getCriteria(), xid);
-            if (crtInfo != null) {
-                criteriaCodes.add(crtInfo.getCode());
+            if (config != null && !new PriceConfiguration().equals(config) && config.getCriteria() != null) {
+                CriteriaInfo crtInfo = ProductDataStore.getCriteriaInfoByDescription(config.getCriteria(), xid);
+                if (crtInfo != null) {
+                    criteriaCodes.add(crtInfo.getCode());
+                }
             }
         }
         return criteriaCodes;
@@ -128,9 +130,9 @@ public class PriceGridParser extends ProductParser {
             veloPrice.setSequenceNumber(serPrice.getSequence());
             veloPrice.setQuantity(serPrice.getQty());
             veloPrice.setItemsPerUnit(1);
-            
+
             PriceUnit priceUnit = new PriceUnit();
-            
+
             if (serPrice.getPriceUnit() == null) {
                 priceUnit = getPriceUnit(ApplicationConstants.CONST_STRING_PIECE, true);
                 veloPrice.setItemsPerUnit(1);
@@ -140,7 +142,7 @@ public class PriceGridParser extends ProductParser {
                 if (priceUnit == null) {
                     productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
                             "Invalid Price Unit given, PriceUnit : " + serPrice.getPriceUnit().getName()
-                            + ", default value (Piece) taken");
+                                    + ", default value (Piece) taken");
                     priceUnit = getPriceUnit(ApplicationConstants.CONST_STRING_PIECE, true);
                     veloPrice.setPriceUnit(priceUnit);
                 } else if (priceUnit.getDescription().equalsIgnoreCase(ApplicationConstants.CONST_STRING_OTHER)) {
@@ -155,7 +157,7 @@ public class PriceGridParser extends ProductParser {
                     } catch (NumberFormatException nfe) {
                         productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
                                 "Invalid value found for ItemsPerUnit, ItemsPerUnit : " + serPrice.getPriceUnit().getItemsPerUnit()
-                                + ", default value (1) taken");
+                                        + ", default value (1) taken");
                     }
                 } else {
                     if (priceUnit.getItemsPerUnit().equalsIgnoreCase("0") && serPrice.getPriceUnit().getItemsPerUnit() != null) {
@@ -165,8 +167,8 @@ public class PriceGridParser extends ProductParser {
                             veloPrice.setPriceUnit(priceUnit);
                         } catch (NumberFormatException nfe) {
                             productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
-                                    "Incorrect format for ItemsPerUnit, ItemsPerUnit : " + serPrice.getPriceUnit().getItemsPerUnit()
-                                    + ", default value (1) taken");
+                                    "Incorrect format for ItemsPerUnit, ItemsPerUnit : "
+                                            + serPrice.getPriceUnit().getItemsPerUnit() + ", default value (1) taken");
                         }
                     } else {
                         veloPrice.setItemsPerUnit(Integer.parseInt(priceUnit.getItemsPerUnit()));
@@ -174,13 +176,12 @@ public class PriceGridParser extends ProductParser {
                     }
                 }
             }
-    
 
             veloPrice.setListPrice(serPrice.getListPrice());
 
             veloPrice.setDiscountRate(getDiscountRate(serPrice.getDiscountCode()));
 
-           // veloPrice.setPriceUnit(getPriceUnit(serPrice.getPriceUnit()));
+            // veloPrice.setPriceUnit(getPriceUnit(serPrice.getPriceUnit()));
 
             veloPrice.setPriceUnitName(getPriceUnitName(serPrice.getPriceUnit()));
 
@@ -296,7 +297,8 @@ public class PriceGridParser extends ProductParser {
                 if (!currencyErrorLogged) {
                     currencyErrorLogged = true;
                     productDataStore.addErrorToBatchLogCollection(product.getExternalProductId(),
-                            ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "PriceGrid : Currency not found / Invalid currency, Default currency (USD) assigned");
+                            ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+                            "PriceGrid : Currency not found / Invalid currency, Default currency (USD) assigned");
                 }
                 newPGrid.setCurrency(getCurrencyModel(serPGrid.getCurrency(), true));
             }
@@ -340,23 +342,24 @@ public class PriceGridParser extends ProductParser {
         List<PricingItem> finalPricingItems = new ArrayList<PricingItem>();
 
         for (PriceConfiguration pConfig : priceConfigs) {
-            CriteriaInfo criteriaInfo = ProductDataStore.getCriteriaInfoByDescription(pConfig.getCriteria(), xid);
-            if (criteriaInfo == null) {
-                // TODO: LOG Validation ERROR
-                productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
-                        "Criteria specified for product doesn't exist");
-                continue;
-            }
+            if (pConfig != null && !new PriceConfiguration().equals(pConfig) && pConfig.getCriteria() != null) {
+                CriteriaInfo criteriaInfo = ProductDataStore.getCriteriaInfoByDescription(pConfig.getCriteria(), xid);
+                if (criteriaInfo == null) {
+                    // TODO: LOG Validation ERROR
+                    productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+                            "Criteria specified for product doesn't exist");
+                    continue;
+                }
 
-            String criteriaSetValueId = ProductParserUtil.getCriteriaSetValueIdBaseOnValueType(xid, criteriaInfo.getCode(),
-                    pConfig.getValue());
-            if (criteriaSetValueId == null) {
-                productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
-                        "Criteria value specified for product doesn't exist, value : " + pConfig.getValue());
-            } else {
-                finalPricingItems.add(getPricingItem(criteriaSetValueId, pGridId, productId, isBasePrice, extPItem));
+                String criteriaSetValueId = ProductParserUtil.getCriteriaSetValueIdBaseOnValueType(xid, criteriaInfo.getCode(),
+                        pConfig.getValue());
+                if (criteriaSetValueId == null) {
+                    productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+                            "Criteria value specified for product doesn't exist, value : " + pConfig.getValue());
+                } else {
+                    finalPricingItems.add(getPricingItem(criteriaSetValueId, pGridId, productId, isBasePrice, extPItem));
+                }
             }
-
         }
         return finalPricingItems;
     }
@@ -1065,61 +1068,58 @@ public class PriceGridParser extends ProductParser {
 
     private List<PriceConfiguration> setPriceGridWithItsPriceCriteria(com.asi.service.product.client.vo.PriceGrid currentPriceGrid,
             ProductDetail productDetail) {
-		List<PriceConfiguration> pricingConfigurations = new ArrayList<>();
-		// PriceConfiguration currentPriceConfig = null;
-		upChargeLookup.setUpchargeTypelookupAPI(RestAPIProperties
-				.get(ApplicationConstants.PRICING_SUBTYPECODE_LOOKUP));
-		upChargeLookup.setUsageLevelLookupAPI(RestAPIProperties
-				.get(ApplicationConstants.PRICING_USAGELEVEL_LOOKUP));
-		PricesParser pricesParser = new PricesParser();
-		// Object firstCriteria = "";
-		// Object secondCriteria = "";
-		// String currentCriteria = "";
-		// CriteriaInfo criteriaInfo = null;
-		// UpChargePriceDetails upchargePriceDetail = new
-		// UpChargePriceDetails();
-		// boolean checkNeeded = false;
-		// boolean isCriteriaString=false;
-		// / boolean setCurrency = true;
-		if (currentPriceGrid != null) {
-			// if (currentPriceGrid.getIsBasePrice()) {
-			pricingConfigurations = pricesParser.getPricingConfigurations(
-					productDetail.getExternalProductId(),
-					currentPriceGrid.getPricingItems());
-			/*
-			 * } else { upchargePriceDetail =
-			 * pricesParser.getUpChargePriceDetails
-			 * (productDetail.getExternalProductId(), currentPriceGrid,
-			 * upChargeLookup); if (upchargePriceDetail.getUpChargeCriteria1()
-			 * != null && !upchargePriceDetail.getUpChargeCriteria1().isEmpty())
-			 * { currentPriceConfig = new PriceConfiguration(); criteriaInfo =
-			 * ProductDataStore
-			 * .getCriteriaInfoForCriteriaCode(getCriteriaCode(upchargePriceDetail
-			 * .getUpChargeCriteria1()));
-			 * currentPriceConfig.setCriteria(criteriaInfo.getDescription());
-			 * currentPriceConfig
-			 * .setValue(getCriteriaValueByCriteria(upchargePriceDetail
-			 * .getUpChargeCriteria1(),criteriaInfo.getCode()));
-			 * if(!isCriteriaString
-			 * )pricingConfigurations.add(currentPriceConfig); } if
-			 * (upchargePriceDetail.getUpChargeCriteria2() != null &&
-			 * !upchargePriceDetail.getUpChargeCriteria2().isEmpty()) {
-			 * currentPriceConfig = new PriceConfiguration(); criteriaInfo =
-			 * ProductDataStore
-			 * .getCriteriaInfoForCriteriaCode(getCriteriaCode(upchargePriceDetail
-			 * .getUpChargeCriteria2()));
-			 * currentPriceConfig.setCriteria(criteriaInfo.getDescription());
-			 * currentPriceConfig
-			 * .setValue(getCriteriaValueByCriteria(upchargePriceDetail
-			 * .getUpChargeCriteria2(),criteriaInfo.getCode()));
-			 * if(!isCriteriaString
-			 * )pricingConfigurations.add(currentPriceConfig); } }
-			 */}
-		if (pricingConfigurations.size() > 0)
-			return pricingConfigurations;
-		else
-			return null;
-	}
+        List<PriceConfiguration> pricingConfigurations = new ArrayList<>();
+        // PriceConfiguration currentPriceConfig = null;
+        upChargeLookup.setUpchargeTypelookupAPI(RestAPIProperties.get(ApplicationConstants.PRICING_SUBTYPECODE_LOOKUP));
+        upChargeLookup.setUsageLevelLookupAPI(RestAPIProperties.get(ApplicationConstants.PRICING_USAGELEVEL_LOOKUP));
+        PricesParser pricesParser = new PricesParser();
+        // Object firstCriteria = "";
+        // Object secondCriteria = "";
+        // String currentCriteria = "";
+        // CriteriaInfo criteriaInfo = null;
+        // UpChargePriceDetails upchargePriceDetail = new
+        // UpChargePriceDetails();
+        // boolean checkNeeded = false;
+        // boolean isCriteriaString=false;
+        // / boolean setCurrency = true;
+        if (currentPriceGrid != null) {
+            // if (currentPriceGrid.getIsBasePrice()) {
+            pricingConfigurations = pricesParser.getPricingConfigurations(productDetail.getExternalProductId(),
+                    currentPriceGrid.getPricingItems());
+            /*
+             * } else { upchargePriceDetail =
+             * pricesParser.getUpChargePriceDetails
+             * (productDetail.getExternalProductId(), currentPriceGrid,
+             * upChargeLookup); if (upchargePriceDetail.getUpChargeCriteria1()
+             * != null && !upchargePriceDetail.getUpChargeCriteria1().isEmpty())
+             * { currentPriceConfig = new PriceConfiguration(); criteriaInfo =
+             * ProductDataStore
+             * .getCriteriaInfoForCriteriaCode(getCriteriaCode(upchargePriceDetail
+             * .getUpChargeCriteria1()));
+             * currentPriceConfig.setCriteria(criteriaInfo.getDescription());
+             * currentPriceConfig
+             * .setValue(getCriteriaValueByCriteria(upchargePriceDetail
+             * .getUpChargeCriteria1(),criteriaInfo.getCode()));
+             * if(!isCriteriaString
+             * )pricingConfigurations.add(currentPriceConfig); } if
+             * (upchargePriceDetail.getUpChargeCriteria2() != null &&
+             * !upchargePriceDetail.getUpChargeCriteria2().isEmpty()) {
+             * currentPriceConfig = new PriceConfiguration(); criteriaInfo =
+             * ProductDataStore
+             * .getCriteriaInfoForCriteriaCode(getCriteriaCode(upchargePriceDetail
+             * .getUpChargeCriteria2()));
+             * currentPriceConfig.setCriteria(criteriaInfo.getDescription());
+             * currentPriceConfig
+             * .setValue(getCriteriaValueByCriteria(upchargePriceDetail
+             * .getUpChargeCriteria2(),criteriaInfo.getCode()));
+             * if(!isCriteriaString
+             * )pricingConfigurations.add(currentPriceConfig); } }
+             */}
+        if (pricingConfigurations.size() > 0)
+            return pricingConfigurations;
+        else
+            return null;
+    }
 
     public Object getCriteriaCode(Object source) {
         List<Value> tempList = null;
