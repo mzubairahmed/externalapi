@@ -5,18 +5,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class SameDayRush {
 
 	@JsonProperty("Available")
-	private String available;
+	private boolean available;
+
 	@JsonProperty("Details")
 	private String details;
-	public String getAvailable() {
+
+	public boolean isAvailable() {
 		return available;
 	}
-	public void setAvailable(String available) {
+	
+	public void setAvailable(boolean available) {
 		this.available = available;
 	}
+
 	public String getDetails() {
 		return details;
 	}
+
 	public void setDetails(String details) {
 		this.details = details;
 	}

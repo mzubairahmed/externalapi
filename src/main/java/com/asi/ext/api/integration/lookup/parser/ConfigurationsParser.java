@@ -849,7 +849,7 @@ public class ConfigurationsParser {
 			// currentCriteriaSetValueList.get(0).getCriteriaSetId());
 			sdrush = new SameDayRush();
 			for (com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue : currentCriteriaSetValueList) {
-				sdrush.setAvailable("true");
+				sdrush.setAvailable(true);
 				sdrush.setDetails(currentCriteriaSetValue
 						.getCriteriaValueDetail());
 				criteriaSetParser.addReferenceSet(
