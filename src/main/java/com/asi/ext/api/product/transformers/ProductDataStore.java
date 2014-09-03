@@ -15,6 +15,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import com.asi.ext.api.radar.lookup.model.PriceUnitJsonModel;
@@ -28,6 +33,7 @@ import com.asi.ext.api.util.JsonToLookupTableConverter;
 import com.asi.ext.api.util.RestAPIProperties;
 import com.asi.service.product.client.vo.Currency;
 import com.asi.service.product.client.vo.DiscountRate;
+import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductMediaCitations;
 
 /**
@@ -1286,12 +1292,21 @@ public class ProductDataStore {
         return value;
     }
 
-    public static String getSetCodeValueIdForSelectedLineName(String value, String companyId) {
+    public static String getSetCodeValueIdForSelectedLineName(String value, String authToken) {
     	 
         try {
-
-            LinkedList<?> selectedNamesResponse = lookupRestTemplate.getForObject(
-                    RestAPIProperties.get(ApplicationConstants.SELECTED_LINES_LOOKUP) + companyId, LinkedList.class);
+            String URL = RestAPIProperties.get(ApplicationConstants.SELECTED_LINES_LOOKUP).replaceAll("\\?company_id=", "");
+            HttpHeaders header = new HttpHeaders();
+            header.add("AuthToken", authToken);
+            header.setContentType(MediaType.APPLICATION_JSON);
+            
+            HttpEntity<String> requestEntity = new HttpEntity<String>(header);
+            
+            ResponseEntity<LinkedList> responseList = lookupRestTemplate.exchange(URL, HttpMethod.GET, requestEntity, LinkedList.class);
+            
+            LinkedList<?> selectedNamesResponse = responseList != null ? responseList.getBody() : null;
+                    
+//            LinkedList<?> selectedNamesResponse = lookupRestTemplate.getForObject(RestAPIProperties.get(ApplicationConstants.SELECTED_LINES_LOOKUP) + companyId, LinkedList.class);
             if (selectedNamesResponse == null || selectedNamesResponse.isEmpty()) {
                 // Report error to API that we are not able to fetch data
                 // for additional color
@@ -1313,12 +1328,23 @@ public class ProductDataStore {
         }
     	 return selectedNamesLookupTable.get(value);    		
 	}
-    public static String getSetCodeValueIdForFobPoints(String value, String companyId) {
+    public static String getSetCodeValueIdForFobPoints(String value, String authToken) {
             // Create FOBPoint Lookup table
             try {
 
-                LinkedList<?> fobPointsResponse = lookupRestTemplate.getForObject(
-                        RestAPIProperties.get(ApplicationConstants.FOBP_POINTS_LOOKUP)+companyId, LinkedList.class);
+                String URL = RestAPIProperties.get(ApplicationConstants.FOBP_POINTS_LOOKUP).replaceAll("\\?company_id=", "");
+                HttpHeaders header = new HttpHeaders();
+                header.add("AuthToken", authToken);
+                header.setContentType(MediaType.APPLICATION_JSON);
+                
+                HttpEntity<String> requestEntity = new HttpEntity<String>(header);
+                
+                ResponseEntity<LinkedList> responseList = lookupRestTemplate.exchange(URL, HttpMethod.GET, requestEntity, LinkedList.class);
+                
+                LinkedList<?> fobPointsResponse = responseList != null ? responseList.getBody() : null;
+                
+                /*LinkedList<?> fobPointsResponse = lookupRestTemplate.getForObject(
+                        RestAPIProperties.get(ApplicationConstants.FOBP_POINTS_LOOKUP)+companyId, LinkedList.class);*/
                 if (fobPointsResponse == null || fobPointsResponse.isEmpty()) {
                     // Report error to API that we are not able to fetch data
                     // for fob points throw new
@@ -1554,11 +1580,18 @@ public class ProductDataStore {
         }
 	}
 		
-	public static ProductMediaCitations getMediaCitationsByName(String productId, String catalogName, String catalogPageNumber, String companyId) {
+	public static ProductMediaCitations getMediaCitationsByName(String productId, String catalogName, String catalogPageNumber, String authToken) {
 
-		String URL = RestAPIProperties.get(ApplicationConstants.PRODUCT_MEDIA_CITATION) + companyId;
-		LinkedList<?> responseList = lookupRestTemplate.getForObject(URL, LinkedList.class);
-		return JsonToLookupTableConverter.jsonToMediaCitation(responseList, productId, catalogName, catalogPageNumber);
+		String URL = RestAPIProperties.get(ApplicationConstants.PRODUCT_MEDIA_CITATION).replaceAll("\\?company_id=", "");
+		HttpHeaders header = new HttpHeaders();
+        header.add("AuthToken", authToken);
+        header.setContentType(MediaType.APPLICATION_JSON);
+        
+        HttpEntity<String> requestEntity = new HttpEntity<String>(header);
+        
+        ResponseEntity<LinkedList> responseList = lookupRestTemplate.exchange(URL, HttpMethod.GET, requestEntity, LinkedList.class);
+        //LinkedList<?> responseList = lookupRestTemplate.getForObject(URL, LinkedList.class);
+		return JsonToLookupTableConverter.jsonToMediaCitation(responseList.getBody(), productId, catalogName, catalogPageNumber);
 	}
 	
 	public static String getSetCodeValueIdForShippingItem(String value) {

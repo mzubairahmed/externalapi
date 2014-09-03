@@ -98,7 +98,7 @@ public class ImportTransformer {
 
     private final static Logger                    LOGGER                      = Logger.getLogger(ImportTransformer.class.getName());
 
-    public ProductDetail generateRadarProduct(com.asi.ext.api.service.model.Product serviceProduct, ProductDetail existingRadarModel)
+    public ProductDetail generateRadarProduct(com.asi.ext.api.service.model.Product serviceProduct, ProductDetail existingRadarModel, String authToken)
             throws InvalidProductException {
         LOGGER.info("Started processing product conversion");
         long processingTime = System.currentTimeMillis(); // For evaluating application performance
@@ -219,7 +219,7 @@ public class ImportTransformer {
         // FOB points processing
         if (serviceProduct.getFobPoints() != null && !serviceProduct.getFobPoints().isEmpty()) {
             ProductCriteriaSets tempCriteriaSet = fobPointProcessor.getFOBPCriteriaSet(serviceProduct.getFobPoints(),
-                    productToSave, existingCriteriaSetMap.get(ApplicationConstants.CONST_CRITERIA_CODE_FOBP), configId);
+                    productToSave, existingCriteriaSetMap.get(ApplicationConstants.CONST_CRITERIA_CODE_FOBP), configId, authToken);
             existingCriteriaSetMap.put(ApplicationConstants.CONST_CRITERIA_CODE_FOBP, tempCriteriaSet);
         } else {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_CRITERIA_CODE_FOBP);
@@ -228,7 +228,7 @@ public class ImportTransformer {
         // Selected Line name processing
         if (serviceProduct.getLineNames() != null && !serviceProduct.getLineNames().isEmpty()) {
             productToSave
-                    .setSelectedLineNames(selectedLineProcessor.getSelectedLines(serviceProduct.getLineNames(), productToSave));
+                    .setSelectedLineNames(selectedLineProcessor.getSelectedLines(serviceProduct.getLineNames(), productToSave, authToken));
         } else {
             productToSave.setSelectedLineNames(null);
         }
@@ -279,7 +279,7 @@ public class ImportTransformer {
         }
 
         // Product Catalogs
-        productToSave.setProductMediaCitations(getProductMediaCitations(serviceProduct, productToSave));
+        productToSave.setProductMediaCitations(getProductMediaCitations(serviceProduct, productToSave, authToken));
 
         // Product Availability processing
         productToSave.setRelationships(availabilityProcessor.getProductAvailabilities(productToSave,
@@ -488,9 +488,9 @@ public class ImportTransformer {
         }
     }
 
-    private List<ProductMediaCitations> getProductMediaCitations(Product serviceProduct, ProductDetail product) {
+    private List<ProductMediaCitations> getProductMediaCitations(Product serviceProduct, ProductDetail product, String authToken) {
         if (serviceProduct.getCatalogs() != null && !serviceProduct.getCatalogs().isEmpty()) {
-            return catalogCriteriaProcessor.prepareProductCatalog(serviceProduct.getCatalogs(), product);
+            return catalogCriteriaProcessor.prepareProductCatalog(serviceProduct.getCatalogs(), product, authToken);
         } else {
             return new ArrayList<>();
         }

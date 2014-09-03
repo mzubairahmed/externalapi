@@ -25,7 +25,7 @@ public class SelectedLineProcessor {
 
     private ProductDataStore    productDataStore = new ProductDataStore();
 
-    public List<SelectedLineNames> getSelectedLines(List<String> selectedLines, ProductDetail product) {
+    public List<SelectedLineNames> getSelectedLines(List<String> selectedLines, ProductDetail product, String authToken) {
         LOGGER.info("Started processing selected line names");
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("Selected names to process : " + selectedLines);
@@ -33,7 +33,7 @@ public class SelectedLineProcessor {
         Map<String, SelectedLineNames> extLineNames = getExistingLineNames(product.getSelectedLineNames());
         List<SelectedLineNames> finalLineNames = new ArrayList<SelectedLineNames>();
         for (String lineName : selectedLines) {
-            String lineId = getLineId(lineName, product.getCompanyId());
+            String lineId = getLineId(lineName, authToken);
 
             if (lineId != null) {
                 SelectedLineNames sLineName = extLineNames.get(lineId);
@@ -72,7 +72,7 @@ public class SelectedLineProcessor {
         return lineName;
     }
 
-    private String getLineId(String selectedLine, String companyId) {
-        return ProductDataStore.getSetCodeValueIdForSelectedLineName(selectedLine, companyId);
+    private String getLineId(String selectedLine, String authToken) {
+        return ProductDataStore.getSetCodeValueIdForSelectedLineName(selectedLine, authToken);
     }
 }

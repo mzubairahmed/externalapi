@@ -178,7 +178,7 @@ public class ProductRepo {
         try {
             
             // Doing Transformation of Service product to pure Radar object model (Core Component)
-            existingRadarProduct = productTransformer.generateRadarProduct(serviceProduct, existingRadarProduct);
+            existingRadarProduct = productTransformer.generateRadarProduct(serviceProduct, existingRadarProduct, authToken);
         } catch (Exception e) {
             _LOGGER.error("Exception while generating Radar product", e);
             ExternalAPIResponse response = productClient.convertExceptionToResponseModel(e);
@@ -241,9 +241,9 @@ public class ProductRepo {
     }
 
     @SuppressWarnings("unused")
-    private Product prepairProduct(String authToken, String companyID, String productID) throws ProductNotFoundException,
+    private Product prepairProduct(String authToken, String productID) throws ProductNotFoundException,
             RestClientException, UnsupportedEncodingException, ExternalApiAuthenticationException {
-        productDetail = getProductFromService(authToken, companyID, productID);
+        productDetail = getProductFromService(authToken, productID);
         Product product = new Product();
         BeanUtils.copyProperties(productDetail, product);
         // product=lookupsParser.setProductConfigurations(productDetail,product);
@@ -260,7 +260,7 @@ public class ProductRepo {
         return product;
     }
 
-    public ProductDetail getProductFromService(String authToken, String companyID, String productID)
+    public ProductDetail getProductFromService(String authToken, String productID)
             throws ProductNotFoundException, ExternalApiAuthenticationException {
         productDetail = productClient.doIt(authToken, productID);
 
@@ -301,12 +301,12 @@ public class ProductRepo {
         return dataSourceId;
     }
 
-    public com.asi.ext.api.service.model.Product getServiceProduct(String authToken, String companyId, String xid) {
+    public com.asi.ext.api.service.model.Product getServiceProduct(String authToken, String xid) {
         com.asi.ext.api.service.model.Product serviceProduct = null;
         String shipperBillsBy=null;
         CriteriaSetParser criteriaSetParser = new CriteriaSetParser();
         try {
-            productDetail = getProductFromService(authToken, companyId, xid);
+            productDetail = getProductFromService(authToken, xid);
             // serviceProduct=prepairServiceProduct();
             if (null != productDetail) {
                 serviceProduct = new com.asi.ext.api.service.model.Product();

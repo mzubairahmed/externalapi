@@ -34,10 +34,10 @@ public class FOBPointProcessor extends SimpleCriteriaProcessor {
     }
 
     public ProductCriteriaSets getFOBPCriteriaSet(List<String> fobPoints, ProductDetail product,
-            ProductCriteriaSets matchedCriteriaSet, String configId) {
+            ProductCriteriaSets matchedCriteriaSet, String configId, String authToken) {
         this.configId = configId;
         this.companyId = product.getCompanyId();
-        return getCriteriaSet(CommonUtilities.convertStringListToCSV(fobPoints), product, matchedCriteriaSet, 0);
+        return getCriteriaSet(CommonUtilities.convertStringListToCSV(fobPoints), product, matchedCriteriaSet, 0, authToken);
     }
     
     /*
@@ -46,9 +46,8 @@ public class FOBPointProcessor extends SimpleCriteriaProcessor {
      * @see com.asi.ext.api.product.criteria.processor.SimpleCriteriaProcessor#getCriteriaSet(java.lang.String,
      * com.asi.service.product.client.vo.ProductDetail, com.asi.service.product.client.vo.ProductCriteriaSets, int)
      */
-    @Override
     protected ProductCriteriaSets getCriteriaSet(String values, ProductDetail existingProduct,
-            ProductCriteriaSets matchedCriteriaSet, int currentSetValueId) {
+            ProductCriteriaSets matchedCriteriaSet, int currentSetValueId, String authToken) {
 
         if (!updateNeeded(matchedCriteriaSet, values)) {
             return null;
@@ -82,7 +81,7 @@ public class FOBPointProcessor extends SimpleCriteriaProcessor {
         }
 
         for (String value : finalValues) {
-            String setCodeValueId = getSetCodeValueId(value);
+            String setCodeValueId = getSetCodeValueId(value, authToken);
 
             if (CommonUtilities.isValueNull(setCodeValueId)) {
                 // LOG Batch Error
@@ -139,7 +138,10 @@ public class FOBPointProcessor extends SimpleCriteriaProcessor {
      * 
      * @see com.asi.ext.api.product.criteria.processor.SimpleCriteriaProcessor#getSetCodeValueId(java.lang.String)
      */
-    @Override
+    public String getSetCodeValueId(String value, String authToken) {
+        return ProductDataStore.getSetCodeValueIdForFobPoints(value, authToken);
+    }
+
     public String getSetCodeValueId(String value) {
         return ProductDataStore.getSetCodeValueIdForFobPoints(value, companyId);
     }
@@ -174,6 +176,16 @@ public class FOBPointProcessor extends SimpleCriteriaProcessor {
     protected boolean updateCriteriaSet(String value) {
         // TODO Auto-generated method stub
         return false;
+    }
+
+    /* (non-Javadoc)
+     * @see com.asi.ext.api.product.criteria.processor.SimpleCriteriaProcessor#getCriteriaSet(java.lang.String, com.asi.service.product.client.vo.ProductDetail, com.asi.service.product.client.vo.ProductCriteriaSets, int)
+     */
+    @Override
+    protected ProductCriteriaSets getCriteriaSet(String values, ProductDetail existingProduct,
+            ProductCriteriaSets matchedCriteriaSet, int currentSetValueId) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
