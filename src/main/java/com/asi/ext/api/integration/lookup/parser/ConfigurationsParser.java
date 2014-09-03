@@ -1181,6 +1181,11 @@ public class ConfigurationsParser {
 			// currentCriteriaSetValueList.get(0).getCriteriaCode(),
 			// currentCriteriaSetValueList.get(0).getCriteriaSetId());
 			for (com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue : currentCriteriaSetValueList) {
+				criteriaSetParser.addReferenceSet(productDetail
+						.getExternalProductId(),
+						ApplicationConstants.CONST_CRITERIA_CODE_FOBP, Integer
+								.parseInt(currentCriteriaSetValue.getId()),
+				currentCriteriaSetValue.getValue().toString());
 				if (null != ProductDataStore.getSetCodeValueIdForFobPoints(
 						currentCriteriaSetValue.getValue().toString(),
 						productDetail.getCompanyId())) {

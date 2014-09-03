@@ -176,7 +176,7 @@ public class PriceGridParser extends ProductParser {
             }
     
 
-            veloPrice.setListPrice(serPrice.getListPrice());
+            veloPrice.setListPrice(Double.parseDouble(serPrice.getListPrice()));
 
             veloPrice.setDiscountRate(getDiscountRate(serPrice.getDiscountCode()));
 
@@ -1065,121 +1065,61 @@ public class PriceGridParser extends ProductParser {
 
     private List<PriceConfiguration> setPriceGridWithItsPriceCriteria(com.asi.service.product.client.vo.PriceGrid currentPriceGrid,
             ProductDetail productDetail) {
-        List<PriceConfiguration> pricingConfigurations = new ArrayList<>();
-        PriceConfiguration currentPriceConfig = null;
-        upChargeLookup.setUpchargeTypelookupAPI(RestAPIProperties.get(ApplicationConstants.PRICING_SUBTYPECODE_LOOKUP));
-        upChargeLookup.setUsageLevelLookupAPI(RestAPIProperties.get(ApplicationConstants.PRICING_USAGELEVEL_LOOKUP));
-        PricesParser pricesParser = new PricesParser();
-        Object firstCriteria = "";
-        Object secondCriteria = "";
-        String currentCriteria = "";
-        CriteriaInfo criteriaInfo = null;
-        UpChargePriceDetails upchargePriceDetail = new UpChargePriceDetails();
-        boolean checkNeeded = false;
-        boolean setCurrency = true;
-        if (currentPriceGrid != null) {
-            if (currentPriceGrid.getIsBasePrice()) {
-
-                BasePriceDetails bpDetails = pricesParser.getBasePriceDetails(productDetail.getExternalProductId(),
-                        currentPriceGrid, setCurrency, firstCriteria.toString(), secondCriteria.toString());
-
-                if (bpDetails.getBasePriceCriteria1() != null && !bpDetails.getBasePriceCriteria1().toString().isEmpty()
-                        && !checkNeeded) {
-                    firstCriteria = getCriteriaCode(bpDetails.getBasePriceCriteria1());
-                    secondCriteria = getCriteriaCode(bpDetails.getBasePriceCriteria2());
-                    checkNeeded = true;
-                }
-                // basePriceDetailsList.add(bpDetails);
-                if (firstCriteria != null && firstCriteria instanceof String && !firstCriteria.toString().trim().isEmpty()) {
-                    currentPriceConfig = new PriceConfiguration();
-                    criteriaInfo = ProductDataStore.getCriteriaInfoForCriteriaCode(getCriteriaCode(bpDetails
-                            .getBasePriceCriteria1()));
-                    if (null != criteriaInfo) {
-                        currentCriteria = criteriaInfo.getDescription();
-                        if (currentCriteria.contains("Size") || currentCriteria.contains("Apparel")
-                                || currentCriteria.contains("SIZE")) currentCriteria = "Sizes";
-                        currentPriceConfig.setCriteria(currentCriteria);
-                        if (null != bpDetails.getBasePriceCriteria1() && bpDetails.getBasePriceCriteria1() instanceof String) {
-                            currentPriceConfig.setValue(getCriteriaValueByCriteria(bpDetails.getBasePriceCriteria1().toString()));
-                        } else {
-                            currentPriceConfig.setValue(bpDetails.getBasePriceCriteria1());
-                        }
-                    } else {
-                        if (null != bpDetails.getBasePriceCriteria1() && bpDetails.getBasePriceCriteria1() instanceof Values) {
-                            currentCriteria = ((Values) bpDetails.getBasePriceCriteria1()).getType();
-                            if (null != currentCriteria) {
-                                if (currentCriteria.contains("Size") || currentCriteria.contains("Apparel")
-                                        || currentCriteria.contains("SIZE")) currentCriteria = "Sizes";
-                            } else {
-                                currentCriteria = ((Values) bpDetails.getBasePriceCriteria1()).getValue().get(0).getCriteriaType();
-                                currentCriteria = ProductDataStore.getCriteriaInfoForCriteriaCode(currentCriteria).getDescription();
-                                if (currentCriteria.contains("Size") || currentCriteria.contains("Apparel")
-                                        || currentCriteria.contains("SIZE")) currentCriteria = "Size";
-                            }
-                            currentPriceConfig.setCriteria(currentCriteria);
-                            currentPriceConfig.setValue(bpDetails.getBasePriceCriteria1());
-                        } else {
-                            currentPriceConfig.setValue(bpDetails.getBasePriceCriteria1());
-                        }
-                    }
-                    pricingConfigurations.add(currentPriceConfig);
-                } else if (firstCriteria != null && !firstCriteria.toString().trim().isEmpty()) {
-                    currentPriceConfig = new PriceConfiguration();
-                    currentPriceConfig.setValue(bpDetails.getBasePriceCriteria1());
-                    pricingConfigurations.add(currentPriceConfig);
-                }
-                if (secondCriteria != null && secondCriteria instanceof String && !secondCriteria.toString().trim().isEmpty()) {
-                    currentPriceConfig = new PriceConfiguration();
-                    criteriaInfo = ProductDataStore.getCriteriaInfoForCriteriaCode(getCriteriaCode(bpDetails
-                            .getBasePriceCriteria2()));
-                    if (null != criteriaInfo) {
-
-                        currentCriteria = criteriaInfo.getDescription();
-                        if (currentCriteria.contains("Size") || currentCriteria.contains("Apparel")
-                                || currentCriteria.contains("SIZE")) currentCriteria = "Sizes";
-                        currentPriceConfig.setCriteria(currentCriteria);
-                        if (null != bpDetails.getBasePriceCriteria2() && bpDetails.getBasePriceCriteria2() instanceof String) {
-                            currentPriceConfig.setValue(getCriteriaValueByCriteria(bpDetails.getBasePriceCriteria2().toString()));
-                        } else {
-                            currentPriceConfig.setValue(bpDetails.getBasePriceCriteria2());
-                        }
-                    } else {
-                        currentPriceConfig.setValue(bpDetails.getBasePriceCriteria2());
-                    }
-
-                    pricingConfigurations.add(currentPriceConfig);
-                } else if (secondCriteria != null && !secondCriteria.toString().trim().isEmpty()) {
-                    currentPriceConfig = new PriceConfiguration();
-                    currentPriceConfig.setValue(bpDetails.getBasePriceCriteria2());
-                    if (null != currentPriceConfig.getValue()) pricingConfigurations.add(currentPriceConfig);
-                }
-                setCurrency = false;
-            } else {
-                upchargePriceDetail = pricesParser.getUpChargePriceDetails(productDetail.getExternalProductId(), currentPriceGrid,
-                        upChargeLookup);
-                if (upchargePriceDetail.getUpChargeCriteria1() != null && !upchargePriceDetail.getUpChargeCriteria1().isEmpty()) {
-                    currentPriceConfig = new PriceConfiguration();
-                    criteriaInfo = ProductDataStore.getCriteriaInfoForCriteriaCode(getCriteriaCode(upchargePriceDetail
-                            .getUpChargeCriteria1()));
-                    currentPriceConfig.setCriteria(criteriaInfo.getDescription());
-                    currentPriceConfig.setValue(getCriteriaValueByCriteria(upchargePriceDetail.getUpChargeCriteria1()));
-                    pricingConfigurations.add(currentPriceConfig);
-                }
-                if (upchargePriceDetail.getUpChargeCriteria2() != null && !upchargePriceDetail.getUpChargeCriteria2().isEmpty()) {
-                    currentPriceConfig = new PriceConfiguration();
-                    criteriaInfo = ProductDataStore.getCriteriaInfoForCriteriaCode(getCriteriaCode(upchargePriceDetail
-                            .getUpChargeCriteria2()));
-                    currentPriceConfig.setCriteria(criteriaInfo.getDescription());
-                    currentPriceConfig.setValue(getCriteriaValueByCriteria(upchargePriceDetail.getUpChargeCriteria2()));
-                    pricingConfigurations.add(currentPriceConfig);
-                }
-            }
-        }
-        if (pricingConfigurations.size() > 0)
-            return pricingConfigurations;
-        else
-            return null;
-    }
+		List<PriceConfiguration> pricingConfigurations = new ArrayList<>();
+		// PriceConfiguration currentPriceConfig = null;
+		upChargeLookup.setUpchargeTypelookupAPI(RestAPIProperties
+				.get(ApplicationConstants.PRICING_SUBTYPECODE_LOOKUP));
+		upChargeLookup.setUsageLevelLookupAPI(RestAPIProperties
+				.get(ApplicationConstants.PRICING_USAGELEVEL_LOOKUP));
+		PricesParser pricesParser = new PricesParser();
+		// Object firstCriteria = "";
+		// Object secondCriteria = "";
+		// String currentCriteria = "";
+		// CriteriaInfo criteriaInfo = null;
+		// UpChargePriceDetails upchargePriceDetail = new
+		// UpChargePriceDetails();
+		// boolean checkNeeded = false;
+		// boolean isCriteriaString=false;
+		// / boolean setCurrency = true;
+		if (currentPriceGrid != null) {
+			// if (currentPriceGrid.getIsBasePrice()) {
+			pricingConfigurations = pricesParser.getPricingConfigurations(
+					productDetail.getExternalProductId(),
+					currentPriceGrid.getPricingItems());
+			/*
+			 * } else { upchargePriceDetail =
+			 * pricesParser.getUpChargePriceDetails
+			 * (productDetail.getExternalProductId(), currentPriceGrid,
+			 * upChargeLookup); if (upchargePriceDetail.getUpChargeCriteria1()
+			 * != null && !upchargePriceDetail.getUpChargeCriteria1().isEmpty())
+			 * { currentPriceConfig = new PriceConfiguration(); criteriaInfo =
+			 * ProductDataStore
+			 * .getCriteriaInfoForCriteriaCode(getCriteriaCode(upchargePriceDetail
+			 * .getUpChargeCriteria1()));
+			 * currentPriceConfig.setCriteria(criteriaInfo.getDescription());
+			 * currentPriceConfig
+			 * .setValue(getCriteriaValueByCriteria(upchargePriceDetail
+			 * .getUpChargeCriteria1(),criteriaInfo.getCode()));
+			 * if(!isCriteriaString
+			 * )pricingConfigurations.add(currentPriceConfig); } if
+			 * (upchargePriceDetail.getUpChargeCriteria2() != null &&
+			 * !upchargePriceDetail.getUpChargeCriteria2().isEmpty()) {
+			 * currentPriceConfig = new PriceConfiguration(); criteriaInfo =
+			 * ProductDataStore
+			 * .getCriteriaInfoForCriteriaCode(getCriteriaCode(upchargePriceDetail
+			 * .getUpChargeCriteria2()));
+			 * currentPriceConfig.setCriteria(criteriaInfo.getDescription());
+			 * currentPriceConfig
+			 * .setValue(getCriteriaValueByCriteria(upchargePriceDetail
+			 * .getUpChargeCriteria2(),criteriaInfo.getCode()));
+			 * if(!isCriteriaString
+			 * )pricingConfigurations.add(currentPriceConfig); } }
+			 */}
+		if (pricingConfigurations.size() > 0)
+			return pricingConfigurations;
+		else
+			return null;
+	}
 
     public Object getCriteriaCode(Object source) {
         List<Value> tempList = null;
