@@ -6,6 +6,8 @@ package com.asi.ext.api.util;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.util.StringUtils;
+
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.ext.api.service.model.Availability;
@@ -39,6 +41,28 @@ public final class ProductParserUtil {
             return productConfigurations.get(0).getID() + "";
         } else {
             return ApplicationConstants.CONST_STRING_ZERO;
+        }
+    }
+    
+    public static String getShippersBillsBy(String shipperBillsBy) {
+        if(!StringUtils.isEmpty(shipperBillsBy)) {
+            switch (shipperBillsBy) {
+            case "size of the package":
+                shipperBillsBy="SIZE";
+                break;
+            case "weight of the package":
+                shipperBillsBy="WEIG";
+                break;
+            case "weight and size of the package":
+                shipperBillsBy="WSIZ";
+                break;
+            default:
+                shipperBillsBy = null;
+                break;
+            }
+            return shipperBillsBy;
+        } else {
+            return "";
         }
     }
 

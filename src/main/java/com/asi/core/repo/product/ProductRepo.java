@@ -165,33 +165,32 @@ public class ProductRepo {
         return null;
     }
 
-    public ExternalAPIResponse updateProduct(String authToken, String companyId, String xid,
-            com.asi.ext.api.service.model.Product serviceProduct) {
+    public ExternalAPIResponse updateProduct(String authToken, com.asi.ext.api.service.model.Product serviceProduct) {
         ProductDetail existingRadarProduct = null;
         try {
             // existingRadarProduct = productClient.getRadarProduct(companyId, serviceProduct.getExternalProductId());
-            existingRadarProduct = productClient.doIt(authToken, companyId, serviceProduct.getExternalProductId());
+            existingRadarProduct = productClient.doIt(authToken, serviceProduct.getExternalProductId());
         } catch (ProductNotFoundException e) {
             _LOGGER.info("Product Not found with Existing, going to create new Product");
         } catch (ExternalApiAuthenticationException ea) {
             return productClient.convertExceptionToResponseModel(ea);
         }
         try {
+            
             // Doing Transformation of Service product to pure Radar object model (Core Component)
-            existingRadarProduct = productTransformer.generateRadarProduct(serviceProduct, existingRadarProduct,
-                    generateBatchDataSourceId(companyId), companyId);
+            existingRadarProduct = productTransformer.generateRadarProduct(serviceProduct, existingRadarProduct);
         } catch (Exception e) {
             _LOGGER.error("Exception while generating Radar product", e);
             ExternalAPIResponse response = productClient.convertExceptionToResponseModel(e);
-            response = appendErrorLogsToResponse(response, xid);
-            doCleanUp(existingRadarProduct.getExternalProductId());
+            response = appendErrorLogsToResponse(response, serviceProduct.getExternalProductId());
+            doCleanUp(serviceProduct.getExternalProductId());
             return response;
         }
 
         // Saving product to Radar API
         ExternalAPIResponse response = productClient.saveProduct(authToken, existingRadarProduct);
         if (response != null && response.getStatusCode() != null & response.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
-            response = tryReadingRadarResponse(response, xid);
+            response = tryReadingRadarResponse(response, existingRadarProduct.getExternalProductId());
         }
 
         response = appendErrorLogsToResponse(response, existingRadarProduct.getExternalProductId());
@@ -257,7 +256,7 @@ public class ProductRepo {
 
     public ProductDetail getProductFromService(String authToken, String companyID, String productID)
             throws ProductNotFoundException, ExternalApiAuthenticationException {
-        productDetail = productClient.doIt(authToken, companyID, productID);
+        productDetail = productClient.doIt(authToken, productID);
 
         return productDetail;
 

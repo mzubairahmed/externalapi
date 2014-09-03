@@ -98,8 +98,8 @@ public class ImportTransformer {
 
     private final static Logger                    LOGGER                      = Logger.getLogger(ImportTransformer.class.getName());
 
-    public ProductDetail generateRadarProduct(com.asi.ext.api.service.model.Product serviceProduct,
-            ProductDetail existingRadarModel, String dataSourceId, String companyId) throws InvalidProductException {
+    public ProductDetail generateRadarProduct(com.asi.ext.api.service.model.Product serviceProduct, ProductDetail existingRadarModel)
+            throws InvalidProductException {
         LOGGER.info("Started processing product conversion");
         long processingTime = System.currentTimeMillis(); // For evaluating application performance
 
@@ -108,6 +108,7 @@ public class ImportTransformer {
 
         String configId = "0";
         String productId = "0";
+        String companyId = "0";
         String xid = serviceProduct.getExternalProductId();
         // list for product configurations that are already processed for RADAR API and need to figure out the brokenout feature...
         List<ProductConfiguration> productConfigurations;
@@ -140,13 +141,20 @@ public class ImportTransformer {
         }
         productToSave.setIsShippableInPlainBox(serviceProduct.isCanShipInPlainBox());
         // DataSourceId
-        productToSave.setDataSourceId(dataSourceId);
+        // productToSave.setDataSourceId(dataSourceId);
         // Direct Elements
         productToSave.setName(serviceProduct.getName());
         productToSave.setAsiProdNo(serviceProduct.getAsiProdNo());
         productToSave.setDescription(serviceProduct.getDescription());
         productToSave.setSummary(serviceProduct.getSummary());
-        productToSave.setShipperBillsByCode(serviceProduct.getShipperBillsBy());
+
+        productToSave.setShipperBillsByCode(ProductParserUtil.getShippersBillsBy(serviceProduct.getShipperBillsBy()));
+        if (productToSave.getShipperBillsByCode() == null) {
+            productToSave.setShipperBillsByCode("");
+            productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+                    "Invalid value provided for ShippersBillsBy : " + serviceProduct.getShipperBillsBy());
+        }
+
         productToSave.setDisclaimer(serviceProduct.getProductDisclaimer());
         productToSave.setAdditionalInfo(serviceProduct.getAdditionalProductInfo());
         productToSave.setDistributorComments(serviceProduct.getDistributorOnlyComments());
@@ -410,7 +418,7 @@ public class ImportTransformer {
         }
 
         // RUSH Time Processing
-    
+
         if (serviceProdConfigs.getRushTime() != null && serviceProdConfigs.getRushTime().isAvailable()) {
             tempCriteriaSet = rushTimeProcessor.getRushTimeCriteriaSet(serviceProdConfigs.getRushTime(), rdrProduct,
                     existingCriteriaSetMap.get(ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE), configId);
@@ -497,15 +505,14 @@ public class ImportTransformer {
         if (extProduct != null && extProduct.getWorkflowStatusCode() != null
                 && extProduct.getWorkflowStatusCode().equalsIgnoreCase(ApplicationConstants.CONST_PROD_UNDER_REVIEW)) {
             productDataStore.addErrorToBatchLogCollection(serProduct.getExternalProductId(),
-                    ApplicationConstants.CONST_BATCH_ERR_GENERIC_ERROR,
-                    "Product is under review by ASI and cannot accept changes");
+                    ApplicationConstants.CONST_BATCH_ERR_GENERIC_ERROR, "Product is under review by ASI and cannot accept changes");
             throw new InvalidProductException(serProduct.getExternalProductId(), "Product cannot be saved, validation failed");
         }
-        
+
         if (!isProductHasValidProductNumber(serProduct)) {
             throw new InvalidProductException(serProduct.getExternalProductId(), "Product cannot be saved, validation failed");
         }
-        
+
         return true;
     }
 

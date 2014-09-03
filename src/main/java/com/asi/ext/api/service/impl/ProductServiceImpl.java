@@ -37,9 +37,9 @@ public class ProductServiceImpl implements ProductService {
      * com.asi.ext.api.service.model.Product)
      */
     @Override
-    public ExternalAPIResponse updateProduct(String authToken, String companyId, String xid, Product serviceProduct) {
+    public ExternalAPIResponse updateProduct(String authToken, Product serviceProduct) {
         // TODO Auto-generated method stub
-        return productRepo.updateProduct(authToken, companyId, xid, serviceProduct);
+        return productRepo.updateProduct(authToken, serviceProduct);
     }
 
     /**
