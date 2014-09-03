@@ -46,7 +46,7 @@ public final class ProductParserUtil {
     
     public static String getShippersBillsBy(String shipperBillsBy) {
         if(!StringUtils.isEmpty(shipperBillsBy)) {
-            switch (shipperBillsBy) {
+            switch (shipperBillsBy.toLowerCase()) {
             case "size of the package":
                 shipperBillsBy="SIZE";
                 break;

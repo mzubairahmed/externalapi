@@ -50,7 +50,6 @@ public class ApplicationConstants {
     public static final String                       IMPRINT_LOOKUP_URL                          = "lookup.imprint.url";
     public static final String                       IMPRINT_ARTWORK_LOOKUP_URL                  = "lookup.imprint.artwork.url";
     public static final String                       SAFETY_WARNINGS_LOOKUP                      = "lookup.safety.warnings.url";
-    public static final String                       MEDIA_CITATIONS_LOOKUP                      = "lookup.media.citations.url";
     public static final String                       PRICING_SUBTYPECODE_LOOKUP                  = "lookup.pricing.subtypecode.url";
     public static final String                       PRICING_USAGELEVEL_LOOKUP                   = "lookup.pricing.usage.level.url";
     public static final String                       PRODUCT_TRADENAMES_LOOKUP                   = "lookup.product.trade.names.url";

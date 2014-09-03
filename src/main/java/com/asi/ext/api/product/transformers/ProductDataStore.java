@@ -1409,7 +1409,7 @@ public class ProductDataStore {
         if (criteriaInfo == null || criteriaInfo.isEmpty()) {
             loadCriteriaInformations();
         } 
-        if (!description.equalsIgnoreCase("Sizes")) {
+        if (!"Sizes".equalsIgnoreCase(description)) {
             for (Map.Entry<String, CriteriaInfo> crtInfo : criteriaInfo.entrySet()) {
                 if (crtInfo.getValue().getDescription().equalsIgnoreCase(description)) {
                     return crtInfo.getValue();

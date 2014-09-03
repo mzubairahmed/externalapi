@@ -137,7 +137,7 @@ public class ProductParser {
         // This lookup API needs to called all the time
         if (callAPI || mediaCitationsWSResponse == null) {
             mediaCitationsWSResponse = orgnCall.getLookupsResponse(RestAPIProperties
-                    .get(ApplicationConstants.MEDIA_CITATIONS_LOOKUP) + companyId);
+                    .get(ApplicationConstants.PRODUCT_MEDIA_CITATION) + companyId);
         }
         /*
          * if (null == mediaCitationsWSResponse) {
