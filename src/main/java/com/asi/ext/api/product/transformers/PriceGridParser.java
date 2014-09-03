@@ -176,7 +176,7 @@ public class PriceGridParser extends ProductParser {
             }
     
 
-            veloPrice.setListPrice(Double.parseDouble(serPrice.getListPrice()));
+            veloPrice.setListPrice(serPrice.getListPrice());
 
             veloPrice.setDiscountRate(getDiscountRate(serPrice.getDiscountCode()));
 
