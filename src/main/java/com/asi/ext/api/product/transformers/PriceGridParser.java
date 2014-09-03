@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestTemplate;
 
@@ -36,7 +37,6 @@ import com.asi.ext.api.util.PriceCriteriaComparator;
 import com.asi.ext.api.util.PriceGridUtil;
 import com.asi.ext.api.util.ProductParserUtil;
 import com.asi.ext.api.util.RestAPIProperties;
-import com.asi.service.product.client.vo.BasePriceDetails;
 import com.asi.service.product.client.vo.Currency;
 import com.asi.service.product.client.vo.DiscountRate;
 import com.asi.service.product.client.vo.PriceGrid;
@@ -45,10 +45,11 @@ import com.asi.service.product.client.vo.PricingItem;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductNumber;
 import com.asi.service.product.client.vo.ProductNumberConfiguration;
-import com.asi.service.product.client.vo.UpChargePriceDetails;
 import com.asi.service.product.client.vo.parser.UpChargeLookup;
 
 public class PriceGridParser extends ProductParser {
+	
+	private final static Logger              LOGGER                      = Logger.getLogger(PriceGridParser.class.getName());
 
     private final String                                            CAN_ORDER_LESS_THAN_MINIMUM    = "Can order less than minimum";
 
@@ -176,7 +177,12 @@ public class PriceGridParser extends ProductParser {
             }
     
 
-            veloPrice.setListPrice(serPrice.getListPrice());
+            try {
+            	veloPrice.setListPrice(Double.parseDouble(serPrice.getListPrice()));
+            } catch (Exception nfe) {
+            	LOGGER.error("Error occurred while parsing ListPrice for value given: " + serPrice.getListPrice());
+            	veloPrice.setListPrice(0.0d);
+            }
 
             veloPrice.setDiscountRate(getDiscountRate(serPrice.getDiscountCode()));
 
