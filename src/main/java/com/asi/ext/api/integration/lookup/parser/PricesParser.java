@@ -521,6 +521,7 @@ public class PricesParser {
 		String[] criteriaItems = null;
 		// ArrayList<String> valuesList;
 		String currentCriteria = null;
+		String crntCriteria=null;
 		String criteriaValue=null;
 		String criteriaCode;
 		if (null != temp && temp instanceof String) {
@@ -553,6 +554,15 @@ public class PricesParser {
 							.getCriteriaInfoForCriteriaCode(
 									currentCriteriaObj.getCriteriaType())
 							.getDescription().replace("Size-", "").trim());
+				}else{
+					crntCriteria=ProductDataStore
+							.getCriteriaInfoForCriteriaCode(
+									currentCriteriaObj.getCriteriaType()).getDescription();
+					if (crntCriteria.trim().startsWith("Size")
+							|| crntCriteria.contains("Apparel")
+							|| crntCriteria.trim().startsWith("SIZE"))
+						crntCriteria = "Sizes";
+					criteriaSet1.setCriteria(crntCriteria);					
 				}
 				// valuesList.add(criteriaSet1);
 				// criteriaValues.setValue(valuesList);
