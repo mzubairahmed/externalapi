@@ -7,6 +7,7 @@ import java.util.List;
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.service.model.Availability;
 import com.asi.ext.api.service.model.AvailableVariations;
+import com.asi.ext.api.service.model.Value;
 import com.asi.service.product.client.vo.CriteriaSetRelationship;
 import com.asi.service.product.client.vo.CriteriaSetRelationships;
 import com.asi.service.product.client.vo.CriteriaSetValuePath;
@@ -148,16 +149,19 @@ public class RelationshipParser {
 		boolean isChildOptionCriteria=false;
 		String tempCriteriaCode="";
 		String optionValue=null;
-	
+	//boolean isImprintMethodCriteria=false;
 		if(null!=relationships && relationships.size()>0){
 			availabilityList=new ArrayList<>();	
 			
 		for(Relationship currentRelationship:relationships){
 			availability=new Availability();
+			optionValue=null;
 			if(null!=currentRelationship.getCriteriaSetRelationships() && currentRelationship.getCriteriaSetRelationships().size()>0){
 				for(CriteriaSetRelationship currentCriteriaRelationship:currentRelationship.getCriteriaSetRelationships()){
 					tempCriteria=criteriaSetParser.findCriteriaBySetId(extPrdId,String.valueOf(currentCriteriaRelationship.getCriteriaSetId()));
-				if(null!=tempCriteria && !tempCriteria.equalsIgnoreCase("MINO") && !tempCriteria.equalsIgnoreCase("IMMD") && !tempCriteria.equalsIgnoreCase("ARTW")){
+				/*if(null!=tempCriteria && !tempCriteria.equalsIgnoreCase("MINO") && !tempCriteria.equalsIgnoreCase("IMMD") && !tempCriteria.equalsIgnoreCase("ARTW")){
+					isImprintMethodCriteria=true;
+				}*/
 					if(tempCriteria.contains(":")){
 						tempCriteriaCode=tempCriteria.substring(0,tempCriteria.indexOf(":"));
 					}else{
@@ -165,7 +169,7 @@ public class RelationshipParser {
 					}
 					if(Arrays.asList(SIZE_GROUP_CRITERIACODES).contains(tempCriteriaCode))
 						{
-						tempCriteria="Size";
+						tempCriteria="Sizes";
 						}
 					else if(Arrays.asList(OPTIONS_CRITERIACODES).contains(tempCriteriaCode)){
 						optionValue=tempCriteria.substring(tempCriteria.indexOf(":")+1);
@@ -177,7 +181,7 @@ public class RelationshipParser {
 							availability.setParentCriteria(tempCriteria);
 						}else{
 							if(isParentOptionCriteria){
-								optionValue=tempCriteria.substring(tempCriteria.indexOf(":"));
+								optionValue=tempCriteria.substring(tempCriteria.indexOf(":")+1);
 								tempCriteria=tempCriteria.substring(0,tempCriteria.indexOf(":"));
 								}
 							availability.setParentCriteria(ProductDataStore.getCriteriaInfoForCriteriaCode(tempCriteria).getDescription());
@@ -199,6 +203,7 @@ public class RelationshipParser {
 				availabileVariationsList=new ArrayList<>();
 				List<CriteriaSetValuePath> tempCriteriaSetValuePaths=currentRelationship.getCriteriaSetValuePaths();	
 				String tempValue=null;
+				Value valueobj=null;
 				for(CriteriaSetValuePath currentCriteriaSetValuePath:currentRelationship.getCriteriaSetValuePaths()){
 					tempValue=null;
 					availableVariations=new AvailableVariations();
@@ -209,6 +214,7 @@ public class RelationshipParser {
 							tempCriteria=criteriaValue.substring(criteriaValue.indexOf("__")+2);
 							tempValue=tempCriteria.substring(tempCriteria.indexOf(":")+1);
 							if(tempValue.startsWith("_")) tempValue=tempValue.substring(1);
+							
 							availableVariations.setChildValue(tempValue);
 						}else{
 							if(null==criteriaValue){
@@ -217,7 +223,17 @@ public class RelationshipParser {
 								if(criteriaValue.indexOf("__")+1<criteriaValue.length()){
 									tempValue=criteriaValue.substring(criteriaValue.indexOf("__")+1);
 									if(tempValue.startsWith("_")) tempValue=tempValue.substring(1);
-									availableVariations.setChildValue(tempValue);
+									if(tempValue.contains(":")){
+										if(criteriaValue.startsWith("MINO")){
+											tempValue=tempValue.replace(":", " ");
+											availableVariations.setChildValue(tempValue);
+										}else{
+											tempValue=tempValue.substring(tempValue.indexOf(":")+1);
+											availableVariations.setChildValue(tempValue);
+										}
+									}else{
+										availableVariations.setChildValue(tempValue);
+									}
 									
 								}
 							}
@@ -241,7 +257,18 @@ public class RelationshipParser {
 									}else{
 										tempValue=criteriaValue.substring(criteriaValue.indexOf("__")+1);
 										if(tempValue.startsWith("_")) tempValue=tempValue.substring(1);
-										availableVariations.setParentValue(tempValue);
+										if(tempValue.contains(":")){
+											if(criteriaValue.startsWith("MINO")){
+												//tempValue=
+												availableVariations.setParentValue(tempValue);
+											}else{
+												tempValue=tempValue.substring(tempValue.indexOf(":")+1);
+												availableVariations.setParentValue(tempValue);
+											}
+										}else{
+											availableVariations.setParentValue(tempValue);
+										}								
+									//	availableVariations.setParentValue(tempValue);
 									}
 								}
 								availabileVariationsList.add(availableVariations);
@@ -249,11 +276,11 @@ public class RelationshipParser {
 						}
 					}
 					
-				}}
+				}
 				availability.setAvailableVariations(availabileVariationsList);
 				}
 			}
-			if(availability.getParentCriteria()!=null)
+			if(availability.getParentCriteria()!=null)// && !availability.getParentCriteria().equalsIgnoreCase("Imprint Method"))
 			availabilityList.add(availability);
 		}		
 		}		

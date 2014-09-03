@@ -315,12 +315,14 @@ public class SizeLookup {
 							capacityValueObjList.add(capacityObj);
 						//
 							}else{
+								valueObj.setCriteriaType(criteriaCode);
 								valueObj.setValue(sizeValue);
+								if(null!=otherSize) criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),valueObj);
 								otherValueObjList.add(valueObj);
 								
 							}
 							
-							if(null!=otherSize) criteriaSetParser.addSizesReferenceSet(externalProductId,criteriaCode,criteriaSetValue.getId(),otherValueObjList);
+							
 							
 						sizeCntr++;
 					}

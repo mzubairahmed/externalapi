@@ -38,7 +38,7 @@ public class Price {
     @JsonProperty("Quantity")
     private Integer quantity;
     @JsonProperty("ListPrice")
-    private String listPrice;
+    private Double listPrice;
     @JsonProperty("NetCost")
     private Double netCost;
     @JsonProperty("MaxDecimalPlaces")
@@ -120,12 +120,12 @@ public class Price {
     }
 
     @JsonProperty("ListPrice")
-    public String getListPrice() {
+    public Double getListPrice() {
         return listPrice;
     }
 
     @JsonProperty("ListPrice")
-    public void setListPrice(String listPrice) {
+    public void setListPrice(Double listPrice) {
         this.listPrice = listPrice;
     }
 
