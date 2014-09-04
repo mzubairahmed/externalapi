@@ -245,7 +245,7 @@ public class ImportTransformer {
         // Process Breakout Configurations...
         if (!StringUtils.isEmpty(serviceProduct.getProductBreakoutBy())) {
 
-            if (serviceProduct.getProductBreakoutBy().equalsIgnoreCase("ProductNumbers")) {
+            if (serviceProduct.getProductBreakoutBy().equalsIgnoreCase("Product Number")) {
                 productToSave.setIsProductNumberBreakout(true);
             } else {
 
