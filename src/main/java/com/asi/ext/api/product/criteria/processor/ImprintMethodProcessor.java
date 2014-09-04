@@ -124,7 +124,7 @@ public class ImprintMethodProcessor extends SimpleCriteriaProcessor {
                 immdCriteriaValues.put(impMethod.getType().toUpperCase(), immdCriteriaSetValue);
             }
             if (immdCriteriaSetValue != null && impMethod.getMinimumOrder() != null) {
-                CriteriaSetValues minoCriteriaSetValue = minoProcessor.getMinQtyCriteriaSetValue(impMethod.getMinimumOrder(),
+                CriteriaSetValues minoCriteriaSetValue = minoProcessor.getMinQtyCriteriaSetValue(exisitingProduct.getExternalProductId(), impMethod.getMinimumOrder(),
                         minoCriteriaId);
                 if (minoCriteriaSetValue != null) {
                     minoCriteriaValuePathList

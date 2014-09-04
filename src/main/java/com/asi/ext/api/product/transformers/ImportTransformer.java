@@ -50,7 +50,7 @@ import com.asi.service.product.exception.InvalidProductException;
 
 /**
  * ImportTransformer consist logic for processing each individual Product,
- * and convert each product com.asi.util.json to actual {@linkplain com.mule.velocity.bean.Product} object.
+ * and convert each product json to actual {@linkplain com.mule.velocity.bean.Product} object.
  * All lookup and value processing are done by {@link #transformMessage(MuleMessage, String)}
  * 
  * @see AbstractMessageTransformer
@@ -245,13 +245,22 @@ public class ImportTransformer {
         // Process Breakout Configurations...
         if (!StringUtils.isEmpty(serviceProduct.getProductBreakoutBy())) {
 
-            if (serviceProduct.getProductBreakoutBy().equalsIgnoreCase("ProductNumbers")) {
+            if (serviceProduct.getProductBreakoutBy().equalsIgnoreCase("Product Number")) {
                 productToSave.setIsProductNumberBreakout(true);
+                productConfigurations = productToSave.getProductConfigurations();
+                if (productConfigurations != null && !productConfigurations.isEmpty()) {
+                    for (ProductConfiguration configuration : productConfigurations) {
+                        for (ProductCriteriaSets criteriaSet : configuration.getProductCriteriaSets()) {
+                            criteriaSet.setIsBrokenOutOn("false");
+                        }
+                    }
+                }
             } else {
 
                 String criteriaCode = ProductParserUtil.getCriteriaCodeFromCriteria(serviceProduct.getProductBreakoutBy(),
                         productToSave.getExternalProductId());
                 if (!StringUtils.isEmpty(criteriaCode)) {
+                    productToSave.setIsProductNumberBreakout(false);
                     productConfigurations = productToSave.getProductConfigurations();
                     if (productConfigurations != null && !productConfigurations.isEmpty()) {
                         for (ProductConfiguration configuration : productConfigurations) {
@@ -266,6 +275,16 @@ public class ImportTransformer {
                     }
                 }
             }
+        } else {
+            productConfigurations = productToSave.getProductConfigurations();
+            if (productConfigurations != null && !productConfigurations.isEmpty()) {
+                for (ProductConfiguration configuration : productConfigurations) {
+                    for (ProductCriteriaSets criteriaSet : configuration.getProductCriteriaSets()) {
+                        criteriaSet.setIsBrokenOutOn("false");
+                    }
+                }
+            }
+            productToSave.setIsProductNumberBreakout(false);
         }
 
         if (serviceProduct != null) {

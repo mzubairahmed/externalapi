@@ -400,7 +400,7 @@ public class ConfigurationsParser {
 	 */
 
 	public com.asi.ext.api.service.model.Product setProductWithConfigurations(
-			ProductDetail productDetail,
+			String authToken,ProductDetail productDetail,
 			com.asi.ext.api.service.model.Product serviceProduct) {
 		com.asi.ext.api.service.model.ProductConfigurations serviceProductConfig = new com.asi.ext.api.service.model.ProductConfigurations();
 		// Break out check
@@ -1188,7 +1188,7 @@ public class ConfigurationsParser {
 				currentCriteriaSetValue.getValue().toString());
 				if (null != ProductDataStore.getSetCodeValueIdForFobPoints(
 						currentCriteriaSetValue.getValue().toString(),
-						productDetail.getCompanyId())) {
+						authToken)) {
 					fobPointsList.add(currentCriteriaSetValue.getValue()
 							.toString());
 				}

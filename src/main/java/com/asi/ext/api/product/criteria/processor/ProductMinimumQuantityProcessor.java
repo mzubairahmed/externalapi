@@ -16,7 +16,7 @@ public class ProductMinimumQuantityProcessor extends SimpleCriteriaProcessor {
 
     protected Map<String, CriteriaSetValues> existingCriteriaValueMap = new HashMap<String, CriteriaSetValues>();
 
-    public CriteriaSetValues getMinQtyCriteriaSetValue(MinimumOrder minQty, String criteriaSetId) {
+    public CriteriaSetValues getMinQtyCriteriaSetValue(String xid, MinimumOrder minQty, String criteriaSetId) {
             String setCodeValueId = null;
         
             setCodeValueId = ProductDataStore.getMinQtySetCodeValueId(ApplicationConstants.CONST_STRING_OTHER, true);
@@ -33,9 +33,10 @@ public class ProductMinimumQuantityProcessor extends SimpleCriteriaProcessor {
         
             CriteriaSetValues tempCriteriaSetValue = existingCriteriaValueMap.get(getKeyFromValue(criteriaSetValue.getValue()));
             if (tempCriteriaSetValue != null) {
+                updateReferenceTable(xid, ApplicationConstants.CONST_MINIMUM_QUANTITY, minQty.getValue() + " "+ minQty.getUnit(), tempCriteriaSetValue);
                 return tempCriteriaSetValue;
             }
-
+            updateReferenceTable(xid, ApplicationConstants.CONST_MINIMUM_QUANTITY, minQty.getValue() + " "+ minQty.getUnit(), criteriaSetValue);
         return criteriaSetValue;
     }
 

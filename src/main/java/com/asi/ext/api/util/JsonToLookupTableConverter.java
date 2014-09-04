@@ -413,7 +413,7 @@ public final class JsonToLookupTableConverter {
                 @SuppressWarnings("unchecked")
                 LinkedHashMap<String, ?> crntValue = (LinkedHashMap<String, ?>) iter.next();
                 try {
-                	selectedLineNamesLookupTable.put(String.valueOf(crntValue.get("Name")), String.valueOf(crntValue.get("ID")).toUpperCase());
+                	selectedLineNamesLookupTable.put(String.valueOf(crntValue.get("Name")).toUpperCase(), String.valueOf(crntValue.get("ID")).toUpperCase());
                 } catch (Exception e) {
                     // Trying to get maximum data so no exception need to process now
                 }
@@ -424,6 +424,27 @@ public final class JsonToLookupTableConverter {
         return selectedLineNamesLookupTable;
     }
 
+    public static HashMap<String, String> jsonToPriceGridSubtypeCodeLookupTable(LinkedList<?> jsonList) {
+
+        HashMap<String, String> priceGridSubtypeCodesLookupTable = new HashMap<>();
+        try {
+            priceGridSubtypeCodesLookupTable = new HashMap<>(jsonList.size());
+            Iterator<?> iter = jsonList.iterator();
+            while (iter.hasNext()) {
+                @SuppressWarnings("unchecked")
+                LinkedHashMap<String, ?> crntValue = (LinkedHashMap<String, ?>) iter.next();
+                try {
+                    priceGridSubtypeCodesLookupTable.put(String.valueOf(crntValue.get("DisplayName")).toUpperCase(), String.valueOf(crntValue.get("Code")).toUpperCase());
+                } catch (Exception e) {
+                    // Trying to get maximum data so no exception need to process now
+                }
+            }
+        } catch (Exception pe) {
+            pe.printStackTrace();
+        }
+        return priceGridSubtypeCodesLookupTable;
+    }
+    
     public static HashMap<String, String> jsonToComplianceCertLookupTable(LinkedList<?> jsonList) {
 
         HashMap<String, String> complianceCertLookupTable = new HashMap<>();

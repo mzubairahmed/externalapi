@@ -32,6 +32,7 @@ public class ProductArtworkProcessor extends SimpleCriteriaProcessor {
                 criteriaSetValue.setIsSetValueMeasurement(ApplicationConstants.CONST_STRING_FALSE_SMALL);
                 criteriaSetValue.setCriteriaSetId(criteriaSetId);
                 
+                
                 String setCodeValueId = getSetCodeValueId(artworks.getValue());
                 if (CommonUtilities.isValueNull(setCodeValueId)) {
                     setCodeValueId = getSetCodeValueId(artworks.getValue(), true);
@@ -39,12 +40,13 @@ public class ProductArtworkProcessor extends SimpleCriteriaProcessor {
                 } 
                 criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
                 
-                
-                criteriaSetValue.getCriteriaSetCodeValues()[0].setCodeValue(artworks.getComments());
+                criteriaSetValue.setCriteriaValueDetail(artworks.getComments());
+                //criteriaSetValue.getCriteriaSetCodeValues()[0].setCodeValue();
                 
                 criteriaSetValue.setValue(artworks.getValue());
             } else {
-                criteriaSetValue.getCriteriaSetCodeValues()[0].setCodeValue(artworks.getComments()); 
+                criteriaSetValue.setCriteriaValueDetail(artworks.getComments());
+                //criteriaSetValue.getCriteriaSetCodeValues()[0].setCodeValue(artworks.getComments()); 
             }
             
             updateReferenceTable(xid, ApplicationConstants.CONST_ARTWORK_CODE, artworks.getValue(), criteriaSetValue);

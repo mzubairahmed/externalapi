@@ -180,7 +180,7 @@ public class RelationshipParser {
 						if(Arrays.asList(SIZE_GROUP_CRITERIACODES).contains(tempCriteriaCode)){
 							availability.setParentCriteria(tempCriteria);
 						}else{
-							if(isParentOptionCriteria){
+							if(isParentOptionCriteria && tempCriteria.contains(":")){
 								optionValue=tempCriteria.substring(tempCriteria.indexOf(":")+1);
 								tempCriteria=tempCriteria.substring(0,tempCriteria.indexOf(":"));
 								}

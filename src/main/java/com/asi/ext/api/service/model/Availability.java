@@ -47,6 +47,15 @@ public class Availability {
 	public void setAvailableVariations(List<AvailableVariations> availableVariations) {
 		this.availableVariations = availableVariations;
 	}
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Availability [parentCriteria=" + parentCriteria + ", childCriteria=" + childCriteria + ", parentOptionName="
+                + parentOptionName + ", childOptionName=" + childOptionName + ", availableVariations=" + availableVariations + "]";
+    }
+	
 	
 	
 }

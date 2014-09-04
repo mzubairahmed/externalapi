@@ -127,7 +127,7 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
                     if (hasCombo) {
                         criteriaSetCodeValues.addAll(getComboMaterial(material.getCombo(), criteriaSetValue.getId(),
                                 setCodeValueId, existingProduct.getID(), existingProduct.getExternalProductId(),
-                                String.valueOf(criteriaSetValue.getValue())));
+                                String.valueOf(criteriaSetValue.getValue()), hasBlend));
                     }
                     if (hasBlend) {
                         criteriaSetCodeValues.add(getBlendMaterials(material.getBlendMaterials(), criteriaSetValue.getId(),
@@ -178,7 +178,7 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
     }
 
     private List<CriteriaSetCodeValues> getComboMaterial(Combo materialCombo, String criteriaSetValueId,
-            String parentSetCodeValueId, String productId, String xid, String parentName) {
+            String parentSetCodeValueId, String productId, String xid, String parentName, boolean isBlendParent) {
         boolean isBlendCombo = (materialCombo.getBlendMaterials() != null && !materialCombo.getBlendMaterials().isEmpty());
 
         List<CriteriaSetCodeValues> setCodeValues = new ArrayList<CriteriaSetCodeValues>();
@@ -191,10 +191,14 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
         if (isBlendCombo) {
             parentCriteriaSetCodeValue = getBlendMaterials(materialCombo.getBlendMaterials(), criteriaSetValueId,
                     parentSetCodeValueId, productId, parentCriteriaSetCodeValue, xid);
-            setCodeValues.add(parentCriteriaSetCodeValue);
+            if (!isBlendParent) {
+                setCodeValues.add(parentCriteriaSetCodeValue);
+            }
         } else {
-            parentCriteriaSetCodeValue.setId(String.valueOf(--criteriaSetCodeValueObjectId));
-            setCodeValues.add(parentCriteriaSetCodeValue);
+            if (!isBlendParent) {
+                parentCriteriaSetCodeValue.setId(String.valueOf(--criteriaSetCodeValueObjectId));
+                setCodeValues.add(parentCriteriaSetCodeValue);
+            }
             String childCriteriaSetCodeValueId = getSetCodeValueId(materialCombo.getName(), true);
             if (childCriteriaSetCodeValueId != null) {
                 CriteriaSetCodeValues childSetCodeValue = new CriteriaSetCodeValues();

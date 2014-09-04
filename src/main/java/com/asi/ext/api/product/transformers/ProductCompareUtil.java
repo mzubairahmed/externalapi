@@ -281,7 +281,7 @@ public class ProductCompareUtil extends CommonUtilities {
         String tempCriteriaId = null;
         List<com.asi.service.product.client.vo.CriteriaSetValues> finalValuesList = new ArrayList<>();
         for (com.asi.service.product.client.vo.CriteriaSetValues crntCrtValue : currentCriteriaSetValues) {
-            
+            COMPARE_FLAG  = false;
             if (crntCrtValue.getCriteriaSetCodeValues() != null
                     && crntCrtValue.getCriteriaSetCodeValues().length > 0) {
 
@@ -327,6 +327,7 @@ public class ProductCompareUtil extends CommonUtilities {
                 }
                 if (!COMPARE_FLAG) {
                     finalValuesList.add(crntCrtValue);
+                    COMPARE_FLAG = true;
                 }
             }
         }

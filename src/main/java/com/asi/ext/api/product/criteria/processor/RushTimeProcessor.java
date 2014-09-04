@@ -67,7 +67,7 @@ public class RushTimeProcessor extends SimpleCriteriaProcessor {
     
     public ProductCriteriaSets getCriteriaSetForSameDayRush(SameDayRush sameDayRush, ProductDetail existingProduct, ProductCriteriaSets matchedCriteriaSet, int currentCriteriaId) {
     	
-        LOGGER.info("Started Processing of Same Day Rush Time values of product " + sameDayRush);
+        LOGGER.info("Started Processing of Same Day Rush of product " + sameDayRush);
 
         List<CriteriaSetValues> finalCriteriaSetValues = new ArrayList<>();
 
@@ -123,7 +123,8 @@ public class RushTimeProcessor extends SimpleCriteriaProcessor {
 //            updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE,
 //                    String.valueOf(rushTime.getBusinessDays()) + " business days", criteriaSetValue);
 //        }
-
+        updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_STRING_SAME_DAY_RUSH_SERVICE,
+                ApplicationConstants.CONST_STRING_SAME_DAY_SERVICE, criteriaSetValue);
         finalCriteriaSetValues.add(criteriaSetValue);
 
         if (!finalCriteriaSetValues.isEmpty()) {
