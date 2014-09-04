@@ -7,9 +7,9 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.asi.ext.api.product.transformers.ProductDataStore;
-
 import com.asi.ext.api.service.model.RushTime;
 import com.asi.ext.api.service.model.RushTimeValue;
+import com.asi.ext.api.service.model.SameDayRush;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.service.product.client.vo.CriteriaSetValues;
@@ -55,6 +55,88 @@ public class RushTimeProcessor extends SimpleCriteriaProcessor {
         }
     }
 
+    public ProductCriteriaSets getSameDayRushTimeCriteriaSet(SameDayRush sameDayRush, ProductDetail existingProduct, ProductCriteriaSets matchedCriteriaSet, String configId) {
+
+        this.configId = configId;
+        if (sameDayRush != null && sameDayRush.isAvailable()) {
+            return getCriteriaSetForSameDayRush(sameDayRush, existingProduct, matchedCriteriaSet, 0);
+        } else {
+            return null;
+        }
+    }
+    
+    public ProductCriteriaSets getCriteriaSetForSameDayRush(SameDayRush sameDayRush, ProductDetail existingProduct, ProductCriteriaSets matchedCriteriaSet, int currentCriteriaId) {
+    	
+        LOGGER.info("Started Processing of Same Day Rush Time values of product " + sameDayRush);
+
+        List<CriteriaSetValues> finalCriteriaSetValues = new ArrayList<>();
+
+        boolean checkExistingElements = matchedCriteriaSet != null;
+
+        HashMap<String, CriteriaSetValues> existingValueMap = new HashMap<String, CriteriaSetValues>();
+        if (checkExistingElements) {
+            existingValueMap = createTableForExistingSetValue(matchedCriteriaSet.getCriteriaSetValues());
+        } else {
+            matchedCriteriaSet = new ProductCriteriaSets();
+            // Set Basic elements
+            matchedCriteriaSet.setCriteriaSetId(String.valueOf(--uniqueCriteriaSetId));
+            matchedCriteriaSet.setProductId(existingProduct.getID());
+            matchedCriteriaSet.setCompanyId(existingProduct.getCompanyId());
+            matchedCriteriaSet.setConfigId(this.configId);
+            matchedCriteriaSet.setCriteriaCode(ApplicationConstants.CONST_STRING_SAME_DAY_RUSH_SERVICE);
+            matchedCriteriaSet.setIsBase(ApplicationConstants.CONST_STRING_FALSE_SMALL);
+            matchedCriteriaSet.setIsRequiredForOrder(ApplicationConstants.CONST_STRING_FALSE_SMALL);
+            matchedCriteriaSet.setIsDefaultConfiguration(ApplicationConstants.CONST_STRING_FALSE_SMALL);
+        }
+        
+        String setCodeValueId = getSetCodeValueIdForSDRU("");
+        CriteriaSetValues criteriaSetValue = null;
+//        Object value = getValueForRushTime(existingProduct.getExternalProductId(), sameDayRush.getBusinessDays());
+        String value = ApplicationConstants.CONST_STRING_SAME_DAY_SERVICE;
+
+        String key = getKeyFromValue(value);
+        if (checkExistingElements) {
+            criteriaSetValue = existingValueMap.get(key);
+        }
+
+        if (criteriaSetValue == null) {
+            // If no match found in the existing list
+            // Set basic properties for a criteriaSetValue
+            criteriaSetValue = new CriteriaSetValues();
+            criteriaSetValue.setId(String.valueOf(--uniqueSetValueId));
+            criteriaSetValue.setCriteriaValueDetail(sameDayRush.getDetails());
+            criteriaSetValue.setCriteriaCode(ApplicationConstants.CONST_STRING_SAME_DAY_RUSH_SERVICE);
+            criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_CUST);
+            criteriaSetValue.setIsSubset(ApplicationConstants.CONST_STRING_FALSE_SMALL);
+            criteriaSetValue.setIsSetValueMeasurement(ApplicationConstants.CONST_STRING_FALSE_SMALL);
+            criteriaSetValue.setCriteriaSetId(matchedCriteriaSet.getCriteriaSetId());
+            criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
+            criteriaSetValue.setValue(value);
+        } else {
+            criteriaSetValue.setCriteriaValueDetail(sameDayRush.getDetails());
+        }
+
+//        if (sameDayRush.getBusinessDays().equalsIgnoreCase(ApplicationConstants.CONST_STRING_RUSH_SERVICE)) {
+//            updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE,
+//                    String.valueOf(sameDayRush.getBusinessDays()), criteriaSetValue);
+//        } else {
+//            updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_RUSH_TIME_CRITERIA_CODE,
+//                    String.valueOf(rushTime.getBusinessDays()) + " business days", criteriaSetValue);
+//        }
+
+        finalCriteriaSetValues.add(criteriaSetValue);
+
+        if (!finalCriteriaSetValues.isEmpty()) {
+            matchedCriteriaSet.setCriteriaSetValues(finalCriteriaSetValues);
+        }
+
+        LOGGER.info("Completed Processing of Same Day Rush Time of product " + sameDayRush);
+
+        return matchedCriteriaSet;
+
+    }
+
+    
     public ProductCriteriaSets getCriteriaSetForRushTimes(List<RushTimeValue> rushTimes, ProductDetail existingProduct,
             ProductCriteriaSets matchedCriteriaSet, int currentCriteriaId) {
 
@@ -186,6 +268,11 @@ public class RushTimeProcessor extends SimpleCriteriaProcessor {
         return ProductDataStore.getSetCodeValueIdForRushTime(value);
     }
 
+    public String getSetCodeValueIdForSDRU(String value) {
+        return ProductDataStore.getSetCodeValueIdForSameDayService(value);
+    }
+
+    
     @Override
     protected boolean isValueIsValid(String value) {
         // TODO Auto-generated method stub
