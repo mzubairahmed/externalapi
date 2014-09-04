@@ -247,11 +247,20 @@ public class ImportTransformer {
 
             if (serviceProduct.getProductBreakoutBy().equalsIgnoreCase("Product Number")) {
                 productToSave.setIsProductNumberBreakout(true);
+                productConfigurations = productToSave.getProductConfigurations();
+                if (productConfigurations != null && !productConfigurations.isEmpty()) {
+                    for (ProductConfiguration configuration : productConfigurations) {
+                        for (ProductCriteriaSets criteriaSet : configuration.getProductCriteriaSets()) {
+                            criteriaSet.setIsBrokenOutOn("false");
+                        }
+                    }
+                }
             } else {
 
                 String criteriaCode = ProductParserUtil.getCriteriaCodeFromCriteria(serviceProduct.getProductBreakoutBy(),
                         productToSave.getExternalProductId());
                 if (!StringUtils.isEmpty(criteriaCode)) {
+                    productToSave.setIsProductNumberBreakout(false);
                     productConfigurations = productToSave.getProductConfigurations();
                     if (productConfigurations != null && !productConfigurations.isEmpty()) {
                         for (ProductConfiguration configuration : productConfigurations) {
@@ -266,6 +275,16 @@ public class ImportTransformer {
                     }
                 }
             }
+        } else {
+            productConfigurations = productToSave.getProductConfigurations();
+            if (productConfigurations != null && !productConfigurations.isEmpty()) {
+                for (ProductConfiguration configuration : productConfigurations) {
+                    for (ProductCriteriaSets criteriaSet : configuration.getProductCriteriaSets()) {
+                        criteriaSet.setIsBrokenOutOn("false");
+                    }
+                }
+            }
+            productToSave.setIsProductNumberBreakout(false);
         }
 
         if (serviceProduct != null) {
