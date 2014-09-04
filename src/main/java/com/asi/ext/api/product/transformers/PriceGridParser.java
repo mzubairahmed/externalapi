@@ -46,6 +46,7 @@ import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductNumber;
 import com.asi.service.product.client.vo.ProductNumberConfiguration;
 import com.asi.service.product.client.vo.parser.UpChargeLookup;
+import com.asi.service.product.exception.InvalidProductException;
 
 public class PriceGridParser extends ProductParser {
 	
@@ -164,9 +165,11 @@ public class PriceGridParser extends ProductParser {
                 if (priceUnit == null) {
                     productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
                             "Invalid Price Unit given, PriceUnit : " + serPrice.getPriceUnit().getName()
-                                    + ", default value (Piece) taken");
-                    priceUnit = getPriceUnit(ApplicationConstants.CONST_STRING_PIECE, true);
-                    veloPrice.setPriceUnit(priceUnit);
+                                    + ", Price Discarded");
+                    continue;
+                    //priceUnit = getPriceUnit(ApplicationConstants.CONST_STRING_PIECE, true);
+                    //veloPrice.setPriceUnit(priceUnit);
+                    //throw new InvalidProductException(xid, "Invalid Price unit given, "+serPrice.getPriceUnit().getName());
                 } else if (priceUnit.getDescription().equalsIgnoreCase(ApplicationConstants.CONST_STRING_OTHER)) {
                     if (serPrice.getPriceUnit().getPriceUnitName() != null) {
                         veloPrice.setPriceUnitName(serPrice.getPriceUnit().getPriceUnitName());
