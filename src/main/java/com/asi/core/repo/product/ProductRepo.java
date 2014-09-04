@@ -329,7 +329,7 @@ public class ProductRepo {
 
                 }
                 serviceProduct.setShipperBillsBy(shipperBillsBy);
-                serviceProduct = configurationParser.setProductWithConfigurations(productDetail, serviceProduct);
+                serviceProduct = configurationParser.setProductWithConfigurations(authToken,productDetail, serviceProduct);
                 serviceProduct = priceGridParser.setProductWithPriceGrids(productDetail, serviceProduct);
                 serviceProduct = setBasicProductDetails(productDetail, serviceProduct);
 
