@@ -1411,7 +1411,7 @@ public class ProductDataStore {
         } 
         if (!"Sizes".equalsIgnoreCase(description)) {
             for (Map.Entry<String, CriteriaInfo> crtInfo : criteriaInfo.entrySet()) {
-                if (crtInfo.getValue().getDescription().equalsIgnoreCase(description)) {
+                if (crtInfo.getValue().getDescription().trim().equalsIgnoreCase(description)) {
                     return crtInfo.getValue();
                 }
             }

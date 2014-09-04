@@ -13,6 +13,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 @JsonInclude(Include.NON_NULL)
 public class PriceGrid {
 
@@ -30,6 +31,10 @@ public class PriceGrid {
     private String                   currency;
     @JsonProperty("ProductNumber")
     private String                   productNumber;
+    @JsonProperty("UpchargeType")
+    private String                   upchargeType;
+    @JsonProperty("UpchargeUsageType")
+    private String                   upchargeUsageType;
     @JsonProperty("Prices")
     private List<Price>              prices              = new ArrayList<Price>();
     @JsonProperty("PriceConfigurations")
@@ -103,6 +108,36 @@ public class PriceGrid {
     @JsonProperty("ProductNumber")
     public void setProductNumber(String productNumber) {
         this.productNumber = productNumber;
+    }
+
+    /**
+     * @return the upchargeType
+     */
+    public String getUpchargeType() {
+        return upchargeType;
+    }
+
+    /**
+     * @param upchargeType
+     *            the upchargeType to set
+     */
+    public void setUpchargeType(String upchargeType) {
+        this.upchargeType = upchargeType;
+    }
+
+    /**
+     * @return the upchargeUsageType
+     */
+    public String getUpchargeUsageType() {
+        return upchargeUsageType;
+    }
+
+    /**
+     * @param upchargeUsageType
+     *            the upchargeUsageType to set
+     */
+    public void setUpchargeUsageType(String upchargeUsageType) {
+        this.upchargeUsageType = upchargeUsageType;
     }
 
     @JsonProperty("Prices")
