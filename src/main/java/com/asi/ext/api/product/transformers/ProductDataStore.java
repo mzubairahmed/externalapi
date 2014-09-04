@@ -92,8 +92,11 @@ public class ProductDataStore {
     private static Map<String, Currency>                              currencyLookupTable            = new HashMap<String, Currency>();
     private static Map<String, DiscountRate>                          discountLookupTable            = new HashMap<String, DiscountRate>();
 
-    public static LinkedList<LinkedHashMap>							  sizelookupsResponse		= null;
+    public static LinkedList<LinkedHashMap>							  sizelookupsResponse		     = null;
     public static LinkedList<LinkedHashMap>                           sizeElementsResponse           = null;
+    
+    private static Map<String, String>                                priceGridSubtypeCodes          = new HashMap<String, String>();
+    private static Map<String, String>                                priceGridUsageLevelCodes          = new HashMap<String, String>();
     
     public static Map<String, String>                                 productNumberAssociation    = new ConcurrentHashMap<String, String>();
     
@@ -1647,6 +1650,68 @@ public class ProductDataStore {
         }
 
         return imprintSizeLookupTable.get(ApplicationConstants.CONST_STRING_OTHER.toUpperCase());
+    }
+	
+	
+	public static String getPriceGridSubtypeCodeByName(String name) {
+	    if (priceGridSubtypeCodes == null || priceGridSubtypeCodes.isEmpty()) {
+            // Create PriceGridSubtypeCode Lookup table
+            try {
+
+                LinkedList<?> priceGridSubtypeCodeResponse = lookupRestTemplate.getForObject(
+                        RestAPIProperties.get(ApplicationConstants.PRICING_SUBTYPECODE_LOOKUP), LinkedList.class);
+                if (priceGridSubtypeCodeResponse == null || priceGridSubtypeCodeResponse.isEmpty()) {
+                    // Report error to API that we are not able to fetch data
+                    // for PriceGridSubtypeCode
+                    // throw new
+                    // VelocityException("Unable to get response from PriceGridSubtypeCode API",
+                    // null);
+                    LOGGER.error("Product PriceGridSubtypeCode Lookup API returned null response");
+                    // TODO : Batch Error
+                    return null;
+                } else {
+                    priceGridSubtypeCodes = JsonToLookupTableConverter.jsonToPriceGridSubtypeCodeLookupTable(priceGridSubtypeCodeResponse);
+                    if (priceGridSubtypeCodes == null) {
+                        return null; // TODO : LOG Batch Error
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.error("Exception while fetching/processing PriceGridSubtypeCode lookup data", e);
+                return null;
+            }
+        }
+	    return priceGridSubtypeCodes.get(name.toUpperCase());
+	}
+	
+	
+	public static String getPriceGridUsageLevelCodeByName(String name) {
+        if (priceGridUsageLevelCodes == null || priceGridUsageLevelCodes.isEmpty()) {
+            // Create PriceGridUsageLevelCode Lookup table
+            try {
+
+                LinkedList<?> priceGridUsageLevelCodeResponse = lookupRestTemplate.getForObject(
+                        RestAPIProperties.get(ApplicationConstants.PRICING_USAGELEVEL_LOOKUP), LinkedList.class);
+                if (priceGridUsageLevelCodeResponse == null || priceGridUsageLevelCodeResponse.isEmpty()) {
+                    // Report error to API that we are not able to fetch data
+                    // for PriceGridUsageLevelCode
+                    // throw new
+                    // VelocityException("Unable to get response from PriceGridUsageLevelCode API",
+                    // null);
+                    LOGGER.error("Product PriceGridUsageLevelCode Lookup API returned null response");
+                    // TODO : Batch Error
+                    return null;
+                } else {
+                    priceGridUsageLevelCodes = JsonToLookupTableConverter.jsonToPriceGridSubtypeCodeLookupTable(priceGridUsageLevelCodeResponse);
+                    if (priceGridUsageLevelCodes == null) {
+                        return null; // TODO : LOG Batch Error
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.error("Exception while fetching/processing PriceGridUsageLevelCode lookup data", e);
+                return null;
+            }
+        }
+        return priceGridUsageLevelCodes.get(name.toUpperCase());
     }
 
     /**

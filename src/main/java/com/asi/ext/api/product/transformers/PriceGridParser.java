@@ -66,7 +66,17 @@ public class PriceGridParser extends ProductParser {
     protected JerseyClientPost                                      orgnCall                       = new JerseyClientPost();
     private static int                                              uniqPItemId                    = -1;
 
-    private String getUsageLevelCode(boolean priceType) {
+    private String getUsageLevelCode(boolean priceType, String usageLevel) {
+        if (priceType) { 
+            return ApplicationConstants.CONST_STRING_NONE_CAP;
+        } else if (!CommonUtilities.isValueNull(usageLevel)) {
+            String usageLevelCode =  ProductDataStore.getPriceGridUsageLevelCodeByName(usageLevel);
+            if (usageLevelCode == null) {
+                return ApplicationConstants.CONST_STRING_NONE_CAP;
+            } else {
+                return usageLevelCode;
+            }
+        }
         return ApplicationConstants.CONST_STRING_NONE_CAP;
     }
 
@@ -83,9 +93,20 @@ public class PriceGridParser extends ProductParser {
         return criteriaCodes;
     }
 
-    private String getPriceGridSubTypeCode(boolean priceType, List<PriceConfiguration> priceConfigs, String xid) {
+    private String getPriceGridSubTypeCode(boolean priceType, List<PriceConfiguration> priceConfigs, String pgGridSubType, String xid) {
         if (priceType) { // Base price
             return ApplicationConstants.CONST_BASE_PRICE_GRID_CODE;
+        } else if (!CommonUtilities.isValueNull(pgGridSubType)) {
+            String subtypeCode =  ProductDataStore.getPriceGridSubtypeCodeByName(pgGridSubType);
+            if (subtypeCode == null) {
+                if (priceType) { // Base price
+                    return ApplicationConstants.CONST_BASE_PRICE_GRID_CODE;
+                } else {
+                    return ApplicationConstants.CONST_UPCHARGE_PRICE_GRID_CODE;
+                }
+            } else {
+                return subtypeCode;
+            }
         } else {
             Set<String> criteriaCodes = getPriceCriteriaCodes(priceConfigs, xid);
             if (criteriaCodes.size() > 1) {
@@ -309,8 +330,8 @@ public class PriceGridParser extends ProductParser {
                 newPGrid.setCurrency(getCurrencyModel(serPGrid.getCurrency(), true));
             }
             // Price Grid Type Code
-            newPGrid.setUsageLevelCode(getUsageLevelCode(serPGrid.getIsBasePrice()));
-            newPGrid.setPriceGridSubTypeCode(getPriceGridSubTypeCode(serPGrid.getIsBasePrice(), serPGrid.getPriceConfigurations(),
+            newPGrid.setUsageLevelCode(getUsageLevelCode(serPGrid.getIsBasePrice(), serPGrid.getUpchargeUsageType()));
+            newPGrid.setPriceGridSubTypeCode(getPriceGridSubTypeCode(serPGrid.getIsBasePrice(), serPGrid.getPriceConfigurations(), serPGrid.getUpchargeType(),
                     product.getExternalProductId()));
             PriceGrid extPriceGrid = getMatchingPriceGrid(product.getPriceGrids(), serPGrid);
             if (extPriceGrid != null) {
