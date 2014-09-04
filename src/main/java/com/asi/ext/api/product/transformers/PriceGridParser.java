@@ -1002,6 +1002,18 @@ public class PriceGridParser extends ProductParser {
                 // Product Number - TBD
                 currentPriceGrid.setProductNumber(getProductNumber(radarPriceGrid.getPricingItems(),
                         productDetail.getProductNumbers()));
+                if(!currentPriceGrid.getIsBasePrice()){
+                	upChargeLookup.setUpchargeTypelookupAPI(RestAPIProperties.get(ApplicationConstants.PRICING_SUBTYPECODE_LOOKUP));
+                    upChargeLookup.setUsageLevelLookupAPI(RestAPIProperties.get(ApplicationConstants.PRICING_USAGELEVEL_LOOKUP));
+                          
+                	if (upChargeLookup != null) {
+                	currentPriceGrid.setUpchargeType(upChargeLookup
+        					.getUpChargeType(radarPriceGrid.getPriceGridSubTypeCode()));
+                	currentPriceGrid.setUpchargeUsageType(upChargeLookup
+        					.getUpchargeLevel(radarPriceGrid.getUsageLevelCode()));
+        		}
+                
+                }
                 pricesList = radarPriceGrid.getPrices();
                 if (null != pricesList && pricesList.size() > 0) {
                     servicePricesList = new ArrayList<>();
@@ -1023,7 +1035,7 @@ public class PriceGridParser extends ProductParser {
                             if (ProductDataStore.isOtherPriceUnit(currentPrice.getPriceUnit().getDisplayName())) {
                                 currentPriceUnit.setPriceUnitName(currentPrice.getPriceUnitName());
                             }
-
+                            
                             currentPrices.setPriceUnit(currentPriceUnit);
                         }
                         servicePricesList.add(currentPrices);
@@ -1076,8 +1088,6 @@ public class PriceGridParser extends ProductParser {
             ProductDetail productDetail) {
         List<PriceConfiguration> pricingConfigurations = new ArrayList<>();
         // PriceConfiguration currentPriceConfig = null;
-        upChargeLookup.setUpchargeTypelookupAPI(RestAPIProperties.get(ApplicationConstants.PRICING_SUBTYPECODE_LOOKUP));
-        upChargeLookup.setUsageLevelLookupAPI(RestAPIProperties.get(ApplicationConstants.PRICING_USAGELEVEL_LOOKUP));
         PricesParser pricesParser = new PricesParser();
         // Object firstCriteria = "";
         // Object secondCriteria = "";
