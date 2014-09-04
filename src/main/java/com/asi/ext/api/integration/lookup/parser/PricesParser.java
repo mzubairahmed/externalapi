@@ -183,10 +183,8 @@ public class PricesParser {
 		if (srcString != null) {
 			if (criteriaCode != null && criteriaCode.equalsIgnoreCase("IMSZ")) {
 				// srcString=srcString.replaceAll("\\|", "-");
-			} else if (criteriaCode != null
-					&& criteriaCode.equalsIgnoreCase("FOBP")
-					&& srcString.contains(",")) {
-				srcString = "\"" + srcString + "\"";
+			} else if ("FOBP".equalsIgnoreCase(criteriaCode) && srcString.contains(",")) {
+//				srcString = "\"" + srcString + "\"";
 			}
 		}
 		return srcString;

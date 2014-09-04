@@ -62,6 +62,9 @@ public class ProductSearchService {
         	if(re.getCause() instanceof ExternalApiAuthenticationException) {
         		throw (ExternalApiAuthenticationException) re.getCause();
         	}
+        } catch (ProductNotFoundException e) {
+        	_LOGGER.error(e.getMessage());
+        	throw e;
         } catch (Exception e) {
             e.printStackTrace();
             // throw new UnhandledException(e.getMessage());
@@ -99,6 +102,13 @@ public class ProductSearchService {
         return new ResponseEntity<ErrorMessage>(errorInfo, null, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ErrorMessage> handleIOException(ProductNotFoundException ex, HttpServletRequest request) {
+        ErrorMessage errorInfo = errorMessageHandler.prepairError("error.no.priduct.id", request, null, HttpStatus.NOT_FOUND);
+        errorInfo.setErrorMessage(errorInfo.getErrorMessage() + "Product ID: " + ex.getProductID());
+        return new ResponseEntity<ErrorMessage>(errorInfo, null, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(IOException.class)
     public ResponseEntity<ErrorMessage> handleIOException(IOException ex, HttpServletRequest request) {
         ErrorMessage errorInfo = errorMessageHandler.prepairError("error.genericerror.id", request, null, HttpStatus.BAD_REQUEST);
@@ -111,12 +121,6 @@ public class ProductSearchService {
         ErrorMessage errorInfo = errorMessageHandler.prepairError("error.mediaerror.id", request, null,
                 HttpStatus.UNSUPPORTED_MEDIA_TYPE);
         return new ResponseEntity<ErrorMessage>(errorInfo, null, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
-    }
-
-    @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ErrorMessage> handleUnsupportedEncodingException(ProductNotFoundException ex, HttpServletRequest request) {
-        ErrorMessage errorInfo = errorMessageHandler.prepairError(ex, request, null, HttpStatus.NOT_FOUND);
-        return new ResponseEntity<ErrorMessage>(errorInfo, null, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UnhandledException.class)

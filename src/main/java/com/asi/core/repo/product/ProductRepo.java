@@ -301,7 +301,7 @@ public class ProductRepo {
         return dataSourceId;
     }
 
-    public com.asi.ext.api.service.model.Product getServiceProduct(String authToken, String xid) {
+    public com.asi.ext.api.service.model.Product getServiceProduct(String authToken, String xid) throws ProductNotFoundException {
         com.asi.ext.api.service.model.Product serviceProduct = null;
         String shipperBillsBy=null;
         CriteriaSetParser criteriaSetParser = new CriteriaSetParser();
@@ -343,10 +343,9 @@ public class ProductRepo {
             }
 
         } catch (ProductNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        	_LOGGER.error("ProductId: " + e.getProductID() + " Doesn't Exists");
+            throw e;
         } catch (ExternalApiAuthenticationException eau) {
-            // TODO Auto-generated catch block
             eau.printStackTrace();
             throw new RuntimeException(eau);
         }
