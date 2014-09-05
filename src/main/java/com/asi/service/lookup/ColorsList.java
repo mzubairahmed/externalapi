@@ -5,18 +5,16 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.asi.service.lookup.vo.LookupName;
-
 @XmlRootElement(name = "Colors")
 public class ColorsList {
 
-	private List<LookupName> colors = new ArrayList<>();
+	private List<String> colors = new ArrayList<>();
 
-	public List<LookupName> getColors() {
+	public List<String> getColors() {
 		return colors;
 	}
 
-	public void setColors(List<LookupName> colors) {
+	public void setColors(List<String> colors) {
 		this.colors = colors;
 	}
 	
