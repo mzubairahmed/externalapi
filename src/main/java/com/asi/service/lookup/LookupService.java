@@ -63,4 +63,41 @@ public class LookupService {
 		SafetyWarningsList safetyList = lookupValueRepository.getSafetyWarningsList();
 		return new ResponseEntity<SafetyWarningsList> (safetyList, null, HttpStatus.OK);		
 	}
+	@RequestMapping(value = "imprintmethods", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<ImprintMethodsList> getImprintMethods()
+	{
+		ImprintMethodsList imprintMethodList = lookupValueRepository.getImprintMethodsList();
+		return new ResponseEntity<ImprintMethodsList> (imprintMethodList, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "artworks", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<ArtworksList> getArtworks()
+	{
+		ArtworksList artworksList = lookupValueRepository.getArtworksList();
+		return new ResponseEntity<ArtworksList> (artworksList, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "compliances", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<ComplianceList> getComplianceCerts()
+	{
+		ComplianceList complianceList = lookupValueRepository.getComplianceList();
+		return new ResponseEntity<ComplianceList> (complianceList, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "discountrates", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<DiscountRatesList> getDiscountRates()
+	{
+		DiscountRatesList discountList = lookupValueRepository.getDiscountList();
+		return new ResponseEntity<DiscountRatesList> (discountList, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "currencies", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<CurrencyList> getCurrencyNames()
+	{
+		CurrencyList currencyList = lookupValueRepository.getCurrenciesList();
+		return new ResponseEntity<CurrencyList> (currencyList, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "criteriacodes", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<CriteriaCodesList> getCriteriaCodesList()
+	{
+		CriteriaCodesList criteriaCodesList = lookupValueRepository.getCriteriaCodesList();
+		return new ResponseEntity<CriteriaCodesList> (criteriaCodesList, null, HttpStatus.OK);		
+	}
+	
 }

@@ -567,11 +567,16 @@ public class ConfigurationsParser {
 						currentCriteriaSetValue.getCriteriaSetCodeValues()[0]
 								.getSetCodeValueId(),
 						ApplicationConstants.CONST_SHAPE_CRITERIA_CODE);
+				if(crntShape.trim().isEmpty()) {
+					if(null!=currentCriteriaSetValue.getFormatValue()) crntShape=currentCriteriaSetValue.getFormatValue();
+					else if(null!=currentCriteriaSetValue.getBaseLookupValue()) crntShape=currentCriteriaSetValue.getBaseLookupValue();
+				}
 				criteriaSetParser.addReferenceSet(
 						productDetail.getExternalProductId(),
 						currentCriteriaSetValue.getCriteriaCode(),
 						Integer.parseInt(currentCriteriaSetValue.getId()),
 						crntShape);
+				
 				shapesList.add(crntShape);
 			}
 			if (shapesList.size() > 0)

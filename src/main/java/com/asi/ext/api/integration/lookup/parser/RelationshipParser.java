@@ -169,7 +169,7 @@ public class RelationshipParser {
 					}
 					if(Arrays.asList(SIZE_GROUP_CRITERIACODES).contains(tempCriteriaCode))
 						{
-						tempCriteria="Sizes";
+						tempCriteria="Size";
 						}
 					else if(Arrays.asList(OPTIONS_CRITERIACODES).contains(tempCriteriaCode)){
 						optionValue=tempCriteria.substring(tempCriteria.indexOf(":")+1);

@@ -4,19 +4,17 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.asi.service.lookup.vo.LookupName;
-
 @XmlRootElement(name = "Shapes")
 public class ShapesList {
 
 
-		private List<LookupName> shapes = new ArrayList<>();
+		private List<String> shapes = new ArrayList<>();
 
-		public List<LookupName> getShapes() {
+		public List<String> getShapes() {
 			return shapes;
 		}
 
-		public void setShapes(List<LookupName> shapes) {
+		public void setShapes(List<String> shapes) {
 			this.shapes = shapes;
 		}
 			

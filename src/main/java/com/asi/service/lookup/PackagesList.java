@@ -4,19 +4,17 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.asi.service.lookup.vo.LookupName;
-
 @XmlRootElement(name = "Packages")
 public class PackagesList {
 
 
-		private List<LookupName> packages = new ArrayList<>();
+		private List<String> packages = new ArrayList<>();
 
-		public List<LookupName> getPackages() {
+		public List<String> getPackages() {
 			return packages;
 		}
 
-		public void setPackages(List<LookupName> packages) {
+		public void setPackages(List<String> packages) {
 			this.packages = packages;
 		}
 			
