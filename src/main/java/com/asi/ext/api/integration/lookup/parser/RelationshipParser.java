@@ -158,6 +158,8 @@ public class RelationshipParser {
 			optionValue=null;
 			if(null!=currentRelationship.getCriteriaSetRelationships() && currentRelationship.getCriteriaSetRelationships().size()>0){
 				for(CriteriaSetRelationship currentCriteriaRelationship:currentRelationship.getCriteriaSetRelationships()){
+					isChildOptionCriteria=false;
+					isParentOptionCriteria=false;
 					tempCriteria=criteriaSetParser.findCriteriaBySetId(extPrdId,String.valueOf(currentCriteriaRelationship.getCriteriaSetId()));
 				/*if(null!=tempCriteria && !tempCriteria.equalsIgnoreCase("MINO") && !tempCriteria.equalsIgnoreCase("IMMD") && !tempCriteria.equalsIgnoreCase("ARTW")){
 					isImprintMethodCriteria=true;

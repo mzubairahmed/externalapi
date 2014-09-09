@@ -10,12 +10,13 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.asi.core.repo.lookup.LookupValuesRepo;
-import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.integration.lookup.parser.LookupParser;
 import com.asi.ext.api.product.transformers.PriceGridParser;
 import com.asi.ext.api.product.transformers.ProductDataStore;
+import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.JsonToLookupTableConverter;
 import com.asi.ext.api.util.RestAPIProperties;
+import com.asi.service.product.client.vo.parser.UpChargeLookup;
 
 public class EnvironmentConfigurator implements InitializingBean {
 	private final static Logger LOGGER = Logger
@@ -60,6 +61,7 @@ public class EnvironmentConfigurator implements InitializingBean {
 		LookupParser.lookupRestTemplate=lookupRestTemplate;
 		PriceGridParser.lookupRestTemplate=lookupRestTemplate;
 		LookupValuesRepo.lookupRestTemplate=lookupRestTemplate;
+		UpChargeLookup.lookupRestTemplate=lookupRestTemplate;
     }
 
     /**

@@ -99,5 +99,22 @@ public class LookupService {
 		CriteriaCodesList criteriaCodesList = lookupValueRepository.getCriteriaCodesList();
 		return new ResponseEntity<CriteriaCodesList> (criteriaCodesList, null, HttpStatus.OK);		
 	}
-	
+	@RequestMapping(value = "upchargetypes", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<UpchargeTypesList> getUpchargeTypesList()
+	{
+		UpchargeTypesList upchargeTypesList = lookupValueRepository.getUpchargeTypes();
+		return new ResponseEntity<UpchargeTypesList> (upchargeTypesList, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "upchargelevels", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<UpchargeLevelsList> getUpchargeLevelsList()
+	{
+		UpchargeLevelsList upchargeLevelsList = lookupValueRepository.getUpchargeLevels();
+		return new ResponseEntity<UpchargeLevelsList> (upchargeLevelsList, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "pricemodifiers", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<PriceModifiers> getPriceModifiersList()
+	{
+		PriceModifiers priceModifiers = lookupValueRepository.getPriceModifiers();
+		return new ResponseEntity<PriceModifiers> (priceModifiers, null, HttpStatus.OK);		
+	}
 }
