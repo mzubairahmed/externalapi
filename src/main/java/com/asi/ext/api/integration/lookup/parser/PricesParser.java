@@ -533,7 +533,7 @@ public class PricesParser {
 						.getDescription().replace("Size-", "").trim());
 				criteriaValue=formatCriteriaValue(criteriaItems[1],
 						criteriaCode);
-				if(criteriaValue.contains(":")){
+				if(criteriaValue.contains(":") && criteriaCode.equals("IMMD")){
 					criteriaSet1.setValue(criteriaValue.substring(criteriaValue.indexOf(":")+1));
 				}else{
 					criteriaSet1.setValue(criteriaValue);

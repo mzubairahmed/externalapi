@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import com.asi.ext.api.radar.lookup.model.PriceUnitJsonModel;
 import com.asi.ext.api.rest.JersyClientGet;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.JsonToLookupTableConverter;
@@ -26,12 +27,16 @@ import com.asi.service.lookup.DiscountRatesList;
 import com.asi.service.lookup.ImprintMethodsList;
 import com.asi.service.lookup.MaterialsList;
 import com.asi.service.lookup.PackagesList;
+import com.asi.service.lookup.PriceModifiers;
 import com.asi.service.lookup.SafetyWarningsList;
 import com.asi.service.lookup.ShapesList;
+import com.asi.service.lookup.UpchargeLevelsList;
+import com.asi.service.lookup.UpchargeTypesList;
 import com.asi.service.lookup.vo.CategoriesList;
 import com.asi.service.lookup.vo.ThemesList;
 import com.asi.service.product.client.vo.Currency;
 import com.asi.service.product.client.vo.DiscountRate;
+import com.asi.service.product.client.vo.parser.UpChargeLookup;
 
 @Component
 public class LookupValuesRepo {
@@ -316,6 +321,64 @@ public class LookupValuesRepo {
 			}
 	         return criteriaCodesList;
 	}
+
+	public UpchargeTypesList getUpchargeTypes() {
+		UpchargeTypesList upchargeTypesList=new UpchargeTypesList();
+		UpChargeLookup upchargeLookup=new UpChargeLookup();
+		List<String> upchargesArrayList = new ArrayList<>();
+		try{
+	         ConcurrentHashMap<String, String> upchargesLookupTable = upchargeLookup.getUpchargeTypes(ApplicationConstants.PRICING_SUBTYPECODE_LOOKUP);
+				@SuppressWarnings("rawtypes")
+				Iterator upchargeIterator = upchargesLookupTable.keySet()
+						.iterator();
+				while (upchargeIterator.hasNext()) {
+					upchargesArrayList.add(upchargesLookupTable.get(upchargeIterator.next().toString()));
+				}
+				upchargeTypesList.setUpchargeTypes(upchargesArrayList);
+			}catch(Exception ex){
+				_LOGGER.info(ex.getMessage());
+			}
+	         return upchargeTypesList;
+	}
 	
+	public UpchargeLevelsList getUpchargeLevels() {
+		UpchargeLevelsList upchargeLevelsList=new UpchargeLevelsList();
+		UpChargeLookup upchargeLookup=new UpChargeLookup();
+		List<String> upchargesArrayList = new ArrayList<>();
+		try{
+	         ConcurrentHashMap<String, String> upchargesLookupTable = upchargeLookup.getUpchargeLevels(ApplicationConstants.PRICING_USAGELEVEL_LOOKUP);
+				@SuppressWarnings("rawtypes")
+				Iterator upchargeIterator = upchargesLookupTable.keySet()
+						.iterator();
+				while (upchargeIterator.hasNext()) {
+					upchargesArrayList.add(upchargesLookupTable.get(upchargeIterator.next().toString()));
+				}
+				upchargeLevelsList.setUpchargeLevels(upchargesArrayList);
+			}catch(Exception ex){
+				_LOGGER.info(ex.getMessage());
+			}
+	         return upchargeLevelsList;
+	}
+	
+	public PriceModifiers getPriceModifiers() {
+		PriceModifiers priceModifiers=new PriceModifiers();
+		List<String> priceUnitArrayList=new ArrayList<>();
+		try{
+			LinkedList<?> priceUnitsResponse = lookupRestTemplate.getForObject(
+		            RestAPIProperties.get(ApplicationConstants.PRICE_UNIT_LOOKUP_URL), LinkedList.class);
+		         Map<String, PriceUnitJsonModel > priceUnitLookupTable = (Map<String, PriceUnitJsonModel>) JsonToLookupTableConverter.jsonToPriceUnitLookupTable(priceUnitsResponse);
+					@SuppressWarnings("rawtypes")
+				Iterator priceUnitIterator = priceUnitLookupTable.keySet()
+						.iterator();
+				while (priceUnitIterator.hasNext()) {
+					
+					priceUnitArrayList.add(priceUnitLookupTable.get(priceUnitIterator.next().toString()).getDisplayName());
+				}
+				priceModifiers.setPricemodifiers(priceUnitArrayList);
+			}catch(Exception ex){
+				_LOGGER.info(ex.getMessage());
+			}
+	         return priceModifiers;
+	}
 	
 }

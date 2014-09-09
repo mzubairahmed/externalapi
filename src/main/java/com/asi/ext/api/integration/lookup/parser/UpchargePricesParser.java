@@ -14,12 +14,9 @@ import com.asi.service.product.client.vo.PriceGrid;
 import com.asi.service.product.client.vo.UpchargeDiscountList;
 import com.asi.service.product.client.vo.UpchargePricesList;
 import com.asi.service.product.client.vo.UpchargeQuantityList;
-import com.asi.util.json.IParser;
-import com.asi.util.json.JSONParserImpl;
 
 public class UpchargePricesParser {
     
-    private static IParser jsonParser = new JSONParserImpl();
     
 	CommonUtilities commonUtilities=new CommonUtilities();
 	public ArrayList<Object> getUpChargePricesList(List<PriceGrid> priceGrids) {
@@ -207,9 +204,9 @@ public class UpchargePricesParser {
 		return currentProduct;
 	}
 */
-    public ConcurrentHashMap<String, String> getUpchargeTypeCollectionFromJSON(String response) {
+    public ConcurrentHashMap<String, String> getUpchargeTypeCollectionFromJSON(LinkedList<?> jsonMap) {
         ConcurrentHashMap<String, String> upchargeTypes = new ConcurrentHashMap<String, String>();
-        LinkedList<?> jsonMap = (LinkedList<?>) jsonParser.parseToList(response);
+     //   LinkedList<?> jsonMap = (LinkedList<?>) jsonParser.parseToList(response);
         Iterator<?> iter = jsonMap.iterator();
         while (iter.hasNext()) {
             Map<?, ?> currentUpchargeType = (LinkedHashMap<?, ?>) iter.next();
@@ -226,9 +223,8 @@ public class UpchargePricesParser {
         return upchargeTypes;
     }
 
-    public ConcurrentHashMap<String, String> getUsageLevelCollectionFromJSON(String response) {
+    public ConcurrentHashMap<String, String> getUsageLevelCollectionFromJSON(LinkedList<?> jsonMap) {
         ConcurrentHashMap<String, String> usageLevels = new ConcurrentHashMap<String, String>();
-        LinkedList<?> jsonMap = (LinkedList<?>) jsonParser.parseToList(response);
         Iterator<?> iter = jsonMap.iterator();
         while (iter.hasNext()) {
             Map<?, ?> currentUsageLevel = (LinkedHashMap<?, ?>) iter.next();

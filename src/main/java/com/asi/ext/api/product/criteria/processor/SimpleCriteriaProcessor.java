@@ -71,6 +71,16 @@ public abstract class SimpleCriteriaProcessor {
         }
     }
 
+    protected CriteriaSetCodeValues[] getCriteriaSetCodeValues(String setCodeValueId, String setValueId, String codeValue) {
+        CriteriaSetCodeValues criteriaSetCodeValue = new CriteriaSetCodeValues();
+
+        criteriaSetCodeValue.setCriteriaSetValueId(setValueId);
+        criteriaSetCodeValue.setSetCodeValueId(setCodeValueId);
+        criteriaSetCodeValue.setCodeValue(codeValue);
+        criteriaSetCodeValue.setId(ApplicationConstants.CONST_STRING_ZERO);
+
+        return new CriteriaSetCodeValues[] { criteriaSetCodeValue };
+    }
     protected CriteriaSetCodeValues[] getCriteriaSetCodeValues(String setCodeValueId, String setValueId) {
         CriteriaSetCodeValues criteriaSetCodeValue = new CriteriaSetCodeValues();
 

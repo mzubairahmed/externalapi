@@ -38,7 +38,7 @@ public class ProductArtworkProcessor extends SimpleCriteriaProcessor {
                     setCodeValueId = getSetCodeValueId(artworks.getValue(), true);
                     criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_CUST);
                 } 
-                criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId()));
+                criteriaSetValue.setCriteriaSetCodeValues(getCriteriaSetCodeValues(setCodeValueId, criteriaSetValue.getId(),artworks.getComments()));
                 
                 criteriaSetValue.setCriteriaValueDetail(artworks.getComments());
                 //criteriaSetValue.getCriteriaSetCodeValues()[0].setCodeValue();

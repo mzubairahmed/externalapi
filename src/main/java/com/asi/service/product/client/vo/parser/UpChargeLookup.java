@@ -1,19 +1,20 @@
 package com.asi.service.product.client.vo.parser;
 
-import java.net.URI;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.client.RestTemplate;
 
-import com.asi.core.utils.JerseyClient;
 import com.asi.ext.api.integration.lookup.parser.UpchargePricesParser;
+import com.asi.ext.api.util.RestAPIProperties;
 
 
 
 public class UpChargeLookup {
     private final static Logger                      _LOGGER       = Logger.getLogger(UpChargeLookup.class.getName());
-
+    public static RestTemplate lookupRestTemplate;
     private String                                   usageLevelLookupAPI;
     private String                                   upchargeTypelookupAPI;
     
@@ -44,11 +45,18 @@ public class UpChargeLookup {
         }
     }
 
+    public ConcurrentHashMap<String, String> getUpchargeTypes(String upchargeTypeAPI){
+    	if(upchargeTypes.isEmpty()){
+    		loadUpchargeTypes(upchargeTypeAPI);
+    	}
+    	return upchargeTypes;
+    }
+    
     private void loadUpchargeTypes(final String upchargeTypelookupAPI) {
-        String response = null;
         try {
-            response = JerseyClient.invoke(new URI(upchargeTypelookupAPI));
-            upchargeTypes = upchargePricesParser.getUpchargeTypeCollectionFromJSON(response);
+        	LinkedList<?> criteriaCodesResponse = lookupRestTemplate.getForObject(
+		            RestAPIProperties.get(upchargeTypelookupAPI), LinkedList.class);
+            upchargeTypes = upchargePricesParser.getUpchargeTypeCollectionFromJSON(criteriaCodesResponse);
 
             if (upchargeTypes != null && !upchargeTypes.isEmpty()) {
                 _LOGGER.info("Building of Upcharge Types collection completed successfuly");
@@ -81,10 +89,11 @@ public class UpChargeLookup {
     }
 
     private void loadUsageLevels(final String usageLevelLookupAPI) {
-        String response = null;
         try {
-            response = JerseyClient.invoke(new URI(usageLevelLookupAPI));
-            upchargeLevel = upchargePricesParser.getUsageLevelCollectionFromJSON(response);
+        	LinkedList<?> usageLevelsResponse = lookupRestTemplate.getForObject(
+		            RestAPIProperties.get(usageLevelLookupAPI), LinkedList.class);
+
+            upchargeLevel = upchargePricesParser.getUsageLevelCollectionFromJSON(usageLevelsResponse);
 
             if (upchargeLevel != null && !upchargeLevel.isEmpty()) {
                 _LOGGER.info("Building of UsageLevel collection completed successfuly");
@@ -125,5 +134,13 @@ public class UpChargeLookup {
     public void setUpchargeTypelookupAPI(String upchargeTypelookupAPI) {
         this.upchargeTypelookupAPI = upchargeTypelookupAPI;
     }
+
+	public ConcurrentHashMap<String, String> getUpchargeLevels(
+			String pricingUsagelevelLookup) {
+    	if(upchargeLevel.isEmpty()){
+    		loadUsageLevels(pricingUsagelevelLookup);
+    	}
+    	return upchargeLevel;
+	}
 
 }
