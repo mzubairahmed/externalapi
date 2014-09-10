@@ -1,5 +1,7 @@
 package com.asi.service.lookup;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.asi.core.repo.lookup.LookupValuesRepo;
+import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.service.lookup.vo.CategoriesList;
 import com.asi.service.lookup.vo.ThemesList;
 
@@ -117,4 +120,95 @@ public class LookupService {
 		PriceModifiers priceModifiers = lookupValueRepository.getPriceModifiers();
 		return new ResponseEntity<PriceModifiers> (priceModifiers, null, HttpStatus.OK);		
 	}
+	@RequestMapping(value = "sizes/apparelbra", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<SizeUnits> getApperalBrasList()
+	{
+		SizeUnits sizeUnits = new SizeUnits();
+		sizeUnits.setSizes(lookupValueRepository.getSizeUnitsInfo(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_BRA,ApplicationConstants.CONST_STRING_UNIT));
+		return new ResponseEntity<SizeUnits> (sizeUnits, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "sizes/dressshirt", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<SizeUnits> getDressShirtsList()
+	{
+		SizeUnits sizeUnits = new SizeUnits();
+		sizeUnits.setSizes(lookupValueRepository.getSizeUnitsInfo(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_DRS_SHRT_SIZE,ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_DRS_SHRT_SIZE_NECK));
+		//List<String> dressShirtUnits=sizeUnits.getValues();
+	//	sizeUnits=lookupValueRepository.getSizeUnitsInfo(dressShirtUnits,ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_DRS_SHRT_SIZE,ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_DRS_SHRT_SIZE_SLVS);
+		return new ResponseEntity<SizeUnits> (sizeUnits, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "sizes/hoiseryuniform", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<SizeUnits> getHoiseryUniformList()
+	{
+		SizeUnits sizeUnits = new SizeUnits();
+		sizeUnits.setSizes(lookupValueRepository.getSizeUnitsInfo(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_HSR_UNIFORM,ApplicationConstants.CONST_STRING_UNIT));
+		return new ResponseEntity<SizeUnits> (sizeUnits, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "sizes/infanttoddler", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<SizeUnits> getInfantToddlerList()
+	{
+		SizeUnits sizeUnits = new SizeUnits();
+		sizeUnits.setSizes(lookupValueRepository.getSizeUnitsInfo(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_INF_TLDR,ApplicationConstants.CONST_STRING_UNIT));
+		return new ResponseEntity<SizeUnits> (sizeUnits, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "sizes/apparelpants", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<SizeUnits> getApparelPantsList()
+	{
+		SizeUnits sizeUnits = new SizeUnits();
+		sizeUnits.setSizes(lookupValueRepository.getSizeUnitsInfo(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_PANT_SIZE,ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_PANT_SIZE_INSEAM));
+		return new ResponseEntity<SizeUnits> (sizeUnits, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "sizes/standardnumbered", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<SizeUnits> getStandardNumberedList()
+	{
+		SizeUnits sizeUnits = new SizeUnits();
+		sizeUnits.setSizes(lookupValueRepository.getSizeUnitsInfo(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_STD_NUM,ApplicationConstants.CONST_STRING_UNIT));
+		return new ResponseEntity<SizeUnits> (sizeUnits, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "sizes/volumeweight", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<SizeUnits> getVolumeWeightList()
+	{
+		SizeUnits sizeUnits = new SizeUnits();
+		sizeUnits.setSizes(lookupValueRepository.getSizeUnitsInfo(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI,ApplicationConstants.CONST_STRING_UNIT));
+		return new ResponseEntity<SizeUnits> (sizeUnits, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "sizes/capacity", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<SizeUnits> getCapacityList()
+	{
+		SizeUnits sizeUnits = new SizeUnits();
+		sizeUnits.setSizes(lookupValueRepository.getSizeUnitsInfo(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY,ApplicationConstants.CONST_STRING_UNIT));
+		return new ResponseEntity<SizeUnits> (sizeUnits, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "sizes/dimension/attributes", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<SizeUnits> getDimensionAttributesList()
+	{
+		SizeUnits sizeUnits = null;//lookupValueRepository.getSizeAttributesInfo(null,ApplicationConstants.CONST_SIZE_GROUP_DIMENSION,ApplicationConstants.CONST_STRING_UNIT);
+		return new ResponseEntity<SizeUnits> (sizeUnits, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "sizes/dimension/units", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<SizeUnits> getDimensionUnitsList()
+	{
+		SizeUnits sizeUnits = lookupValueRepository.getSizeUnitsOfMeasurements(null,ApplicationConstants.CONST_SIZE_GROUP_DIMENSION,ApplicationConstants.CONST_STRING_UNIT);
+		return new ResponseEntity<SizeUnits> (sizeUnits, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "sizes/capacity/units", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<SizeUnits> getCapacityUnitsList()
+	{
+		SizeUnits sizeUnits = lookupValueRepository.getSizeUnitsOfMeasurements(null,ApplicationConstants.CONST_SIZE_GROUP_CAPACITY,ApplicationConstants.CONST_STRING_UNIT);
+		return new ResponseEntity<SizeUnits> (sizeUnits, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "sizes/volumeweight/units", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<SizeUnits> getVolumeWeightUnitsList()
+	{
+		SizeUnits sizeUnits = lookupValueRepository.getSizeUnitsOfMeasurements(null,ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI,ApplicationConstants.CONST_STRING_UNIT);
+		return new ResponseEntity<SizeUnits> (sizeUnits, null, HttpStatus.OK);		
+	}
+
+	@RequestMapping(value = "sizes/other", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<SizeUnits> getOtherSizesList()
+	{
+		SizeUnits sizeUnits = new SizeUnits();
+		sizeUnits.setSizes(lookupValueRepository.getSizeUnitsInfo(ApplicationConstants.CONST_SIZE_OTHER_CODE,ApplicationConstants.CONST_STRING_UNIT));
+		return new ResponseEntity<SizeUnits> (sizeUnits, null, HttpStatus.OK);		
+	}
+
 }

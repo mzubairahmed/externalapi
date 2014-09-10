@@ -3,6 +3,7 @@ package com.asi.core.repo.lookup;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,8 @@ import com.asi.service.lookup.PackagesList;
 import com.asi.service.lookup.PriceModifiers;
 import com.asi.service.lookup.SafetyWarningsList;
 import com.asi.service.lookup.ShapesList;
+import com.asi.service.lookup.SizeType;
+import com.asi.service.lookup.SizeUnits;
 import com.asi.service.lookup.UpchargeLevelsList;
 import com.asi.service.lookup.UpchargeTypesList;
 import com.asi.service.lookup.vo.CategoriesList;
@@ -379,6 +382,100 @@ public class LookupValuesRepo {
 				_LOGGER.info(ex.getMessage());
 			}
 	         return priceModifiers;
+	}
+
+	@SuppressWarnings("unchecked")
+	public SizeUnits getSizeUnitsOfMeasurements(List<String> attribList,String criteriaCode,String unitType) {
+		SizeUnits sizeUnits=new SizeUnits();
+		List<SizeType> sizeTypeList=null;
+		SizeType sizeType=null;
+		
+		LinkedList<LinkedHashMap> unitsResponse = lookupRestTemplate.getForObject(
+		            RestAPIProperties.get(ApplicationConstants.SIZES_CRITERIA_LOOKUP_URL), LinkedList.class);
+			unitType=unitType.trim();
+			criteriaCode=criteriaCode.trim();
+			try
+			{
+			//	LinkedList<LinkedHashMap> sizeElementsResponse=(LinkedList<LinkedHashMap>)jsonParser.parseToList(unitsResponse);
+				if(null!=unitsResponse)
+				{
+					sizeTypeList=new ArrayList<>();
+				Iterator<LinkedHashMap> iterator = unitsResponse.iterator();
+				while (iterator.hasNext()) {
+					Map sizeIndividualLookupMap = (LinkedHashMap) iterator.next();
+					if (criteriaCode.equalsIgnoreCase(sizeIndividualLookupMap.get("CriteriaCode").toString()))
+					{
+						sizeType=new SizeType();
+						sizeType.setAttribute(sizeIndividualLookupMap.get("DisplayName").toString());
+						ArrayList<LinkedHashMap> setCodeValues = (ArrayList<LinkedHashMap>) sizeIndividualLookupMap.get("UnitsOfMeasure");
+								if(null!=setCodeValues && setCodeValues.size()>0){
+									Iterator<LinkedHashMap> setCodeValuesIterator = setCodeValues.iterator();
+									attribList=new ArrayList<>();	
+									while(setCodeValuesIterator.hasNext()){
+									Map setCodeValueMap = (LinkedHashMap) setCodeValuesIterator.next();
+									attribList.add(setCodeValueMap.get("DisplayName").toString());
+									}
+									sizeType.setUnits(attribList);
+								}
+								sizeTypeList.add(sizeType);
+								}
+					
+				}
+					
+				}
+				sizeUnits.setSizeUnits(sizeTypeList);
+		}
+		catch(Exception ex){
+			_LOGGER.info(ex.getMessage());
+		}
+		return sizeUnits;
+	}
+	@SuppressWarnings("unchecked")
+	public List<String> getSizeUnitsInfo(String criteriaCode,String unitType) {
+		List<String> unitsList=null;
+		LinkedList<LinkedHashMap> unitsResponse = lookupRestTemplate.getForObject(
+		            RestAPIProperties.get(ApplicationConstants.SIZES_LOOKUP_URL), LinkedList.class);
+			unitType=unitType.trim();
+			criteriaCode=criteriaCode.trim();
+			String ElementValue = "";
+			try
+			{
+			//	LinkedList<LinkedHashMap> sizeElementsResponse=(LinkedList<LinkedHashMap>)jsonParser.parseToList(unitsResponse);
+				if(null!=unitsResponse)
+				{
+					unitsList=new ArrayList<>();					
+				Iterator<LinkedHashMap> iterator = unitsResponse.iterator();
+				while (iterator.hasNext()) {
+	
+					Map sizeIndividualLookupMap = (LinkedHashMap) iterator.next();
+					if(criteriaCode.equalsIgnoreCase(sizeIndividualLookupMap.get("Code").toString())){
+					ArrayList<LinkedHashMap> codeValueGrps = (ArrayList<LinkedHashMap>) sizeIndividualLookupMap.get("CodeValueGroups");
+							if(null!=codeValueGrps && codeValueGrps.size()>0){
+								Iterator<LinkedHashMap> codeValuesGrpiterator = codeValueGrps.iterator();
+								while(codeValuesGrpiterator.hasNext()){
+								Map codeValueGrpsMap = (LinkedHashMap) codeValuesGrpiterator.next();
+								ArrayList<LinkedHashMap> setCodeValues = (ArrayList<LinkedHashMap>) codeValueGrpsMap.get("SetCodeValues");
+								if(null!=setCodeValues && setCodeValues.size()>0){
+									Iterator<LinkedHashMap> setCodeValuesIterator = setCodeValues.iterator();
+									while(setCodeValuesIterator.hasNext()){
+									Map setCodeValueMap = (LinkedHashMap) setCodeValuesIterator.next();
+									 unitsList.add(setCodeValueMap.get("CodeValue").toString());
+									}
+								}}
+							}
+						}	
+				}
+				}
+		}
+		catch(Exception ex){
+			_LOGGER.info(ex.getMessage());
+		}
+		return unitsList;
+	}
+
+	public SizeUnits getSizeAttributesInfo(String constSizeGroupDimension, String constStringUnit) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

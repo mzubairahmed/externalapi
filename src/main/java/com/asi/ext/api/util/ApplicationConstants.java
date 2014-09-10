@@ -236,6 +236,7 @@ public class ApplicationConstants {
 
     // Units
     public static final String                       CONST_STRING_UNITS                          = "UNITS";
+    public static final String                       CONST_STRING_UNIT	                         = "UNIT";
     public static final String                       CONST_STRING_FEET_SHORT_SMALL               = "ft";
     public static final String                       CONST_STRING_FEET_SHORT_CAP                 = "FT";
     public static final String                       CONST_STRING_FEET_CAP                       = "FEET";
