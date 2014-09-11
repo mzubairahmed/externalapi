@@ -3,6 +3,7 @@
  */
 package com.asi.ext.api.util;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -368,6 +369,12 @@ public final class ProductParserUtil {
             return criteriaSetValueId != null ? String.valueOf(criteriaSetValueId) : null;
         } else if (isSizeGroup(criteriaCode)) {
             String valueToSearch = getSizeModelFromObject(criteriaCode, value);
+            // Temporary Fix for checking criteria related to sizes
+            if(null!=valueToSearch && valueToSearch.contains("=")){
+            	valueToSearch=valueToSearch.substring(valueToSearch.indexOf("=")+1);
+            	if(valueToSearch.endsWith("}"))
+            	valueToSearch=valueToSearch.substring(0,valueToSearch.length()-1);
+            }
             criteriaSetValueId = getCriteriaSetValueId(xid, criteriaCode, valueToSearch);
             return criteriaSetValueId != null ? String.valueOf(criteriaSetValueId) : null;
         }
@@ -392,10 +399,14 @@ public final class ProductParserUtil {
             }
         } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY)) {
             try {
+            	if(value instanceof LinkedHashMap){
+            		return String.valueOf(value);
+            	}else{
                 List<Map<?, ?>> values = (List<Map<?, ?>>) value;
                 for (Map<?, ?> v : values) {
                     valueToSearch = v.get("Value") + ":" + v.get("Unit");
                 }
+            	}
                 return valueToSearch;
             } catch (Exception e) {
                 return null;
@@ -403,6 +414,9 @@ public final class ProductParserUtil {
         } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI)) {
 
             try {
+            	if(value instanceof LinkedHashMap){
+            		return String.valueOf(value);
+            	}else{
                 List<?> volumes = (List<?>) value;
                 if (volumes != null && !volumes.isEmpty()) {
                     List<Map<?, ?>> values = (List<Map<?, ?>>) volumes.get(0);
@@ -411,17 +425,20 @@ public final class ProductParserUtil {
                     }
                     return valueToSearch;
                 }
-
+            	}
             } catch (Exception e) {
                 return null;
             }
 
         } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_OTHER_CODE)) {
             try {
+            	if(value instanceof LinkedHashMap){
+            		return String.valueOf(value);
+            	}else{
                 List<?> otherSizeValues = (List<?>) value;
                 for (Object val : otherSizeValues) {
                     return String.valueOf(val);
-                }
+                }}
             } catch (Exception e) {
                 return null;
             }
@@ -430,10 +447,14 @@ public final class ProductParserUtil {
                 || criteriaCode.equalsIgnoreCase("SAWI") || criteriaCode.equalsIgnoreCase("SSNM")) {
             
             try {
+            	if(value instanceof LinkedHashMap){
+            		return String.valueOf(value);
+            	}else{
                 List<?> apparelValues = (List<?>) value;
                 for (Object val : apparelValues) {
                     return String.valueOf(val);
                 }
+            	}
             } catch (Exception e) {
                 return null;
             }

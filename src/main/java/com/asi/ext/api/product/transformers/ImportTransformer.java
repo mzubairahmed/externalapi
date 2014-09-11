@@ -148,8 +148,17 @@ public class ImportTransformer {
         productToSave.setAsiProdNo(serviceProduct.getAsiProdNo());
         productToSave.setDescription(serviceProduct.getDescription());
         productToSave.setSummary(serviceProduct.getSummary());
-
+        
         productToSave.setShipperBillsByCode(ProductParserUtil.getShippersBillsBy(serviceProduct.getShipperBillsBy()));
+        if(ApplicationConstants.CONST_STRING_WEIGHT_SHORT.equals(productToSave.getShipperBillsByCode()))
+        {
+        	if(serviceProduct.getProductConfigurations()!=null && serviceProduct.getProductConfigurations().getShippingEstimates() != null){
+        		if(serviceProduct.getProductConfigurations().getShippingEstimates().getWeight()==null){
+        			productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+                            "Weight by Size is not allowed, as product dont have shipping weight : " + serviceProduct.getShipperBillsBy());
+        		}
+        	}
+        }
         if (productToSave.getShipperBillsByCode() == null) {
             productToSave.setShipperBillsByCode("");
             productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
