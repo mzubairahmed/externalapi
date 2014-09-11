@@ -161,6 +161,14 @@ public class PriceGridParser extends ProductParser {
                 veloPrice.setItemsPerUnit(1);
                 veloPrice.setPriceUnit(priceUnit);
             } else {
+            	if(serPrice.getPriceUnit().getName().equals("100") || serPrice.getPriceUnit().getName().equals("1000")){
+            		if(!serPrice.getPriceUnit().getName().equals(serPrice.getPriceUnit().getItemsPerUnit())){
+            			productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+                                "Invalid Price Items Per Unit given, PriceUnit : " + serPrice.getPriceUnit().getName()
+                                        + ", Price Discarded");
+                        continue;
+            		}
+            	}
                 priceUnit = getPriceUnit(serPrice.getPriceUnit().getName(), false);
                 if (priceUnit == null) {
                     productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
@@ -212,7 +220,7 @@ public class PriceGridParser extends ProductParser {
             veloPrice.setDiscountRate(getDiscountRate(serPrice.getDiscountCode()));
 
             // veloPrice.setPriceUnit(getPriceUnit(serPrice.getPriceUnit()));
-
+            if (null!=priceUnit && null!=priceUnit.getDescription() && !priceUnit.getDescription().equalsIgnoreCase(ApplicationConstants.CONST_STRING_OTHER))
             veloPrice.setPriceUnitName(getPriceUnitName(serPrice.getPriceUnit()));
 
             finalPrices.add(veloPrice);
@@ -380,7 +388,6 @@ public class PriceGridParser extends ProductParser {
                             "Criteria specified for product doesn't exist");
                     continue;
                 }
-
                 String criteriaSetValueId = ProductParserUtil.getCriteriaSetValueIdBaseOnValueType(xid, criteriaInfo.getCode(),
                         pConfig.getValue());
                 if (criteriaSetValueId == null) {

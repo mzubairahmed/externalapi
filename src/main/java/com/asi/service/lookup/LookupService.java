@@ -178,12 +178,12 @@ public class LookupService {
 		sizeUnits.setSizes(lookupValueRepository.getSizeUnitsInfo(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY,ApplicationConstants.CONST_STRING_UNIT));
 		return new ResponseEntity<SizeUnits> (sizeUnits, null, HttpStatus.OK);		
 	}
-	@RequestMapping(value = "sizes/dimension/attributes", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	/*@RequestMapping(value = "sizes/dimension/attributes", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
 	public ResponseEntity<SizeUnits> getDimensionAttributesList()
 	{
 		SizeUnits sizeUnits = null;//lookupValueRepository.getSizeAttributesInfo(null,ApplicationConstants.CONST_SIZE_GROUP_DIMENSION,ApplicationConstants.CONST_STRING_UNIT);
 		return new ResponseEntity<SizeUnits> (sizeUnits, null, HttpStatus.OK);		
-	}
+	}*/
 	@RequestMapping(value = "sizes/dimension/units", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
 	public ResponseEntity<SizeUnits> getDimensionUnitsList()
 	{
