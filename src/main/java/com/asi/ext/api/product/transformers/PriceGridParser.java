@@ -168,7 +168,13 @@ public class PriceGridParser extends ProductParser {
                                         + ", Price Discarded");
                         continue;
             		}
+            	}else if(serPrice.getPriceUnit().getName().equals("Piece") && !serPrice.getPriceUnit().getItemsPerUnit().equals("1")){
+            		productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+                            "Invalid Price Items Per Unit given, PriceUnit : " + serPrice.getPriceUnit().getName()
+                                    + ", Price Discarded");
+                    continue;
             	}
+            	
                 priceUnit = getPriceUnit(serPrice.getPriceUnit().getName(), false);
                 if (priceUnit == null) {
                     productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
