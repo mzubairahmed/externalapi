@@ -548,10 +548,15 @@ public class PricesParser {
 				Value currentCriteriaObj = (Value) criteriaSet1.getValue();
 				if (APPAREL_SIZE_GROUP_CRITERIACODES
 						.contains(currentCriteriaObj.getCriteriaType())) {
-					criteriaSet1.setCriteria(ProductDataStore
+							crntCriteria=ProductDataStore
 							.getCriteriaInfoForCriteriaCode(
 									currentCriteriaObj.getCriteriaType())
-							.getDescription().replace("Size-", "").trim());
+									.getDescription().replace("Size-", "").trim();
+					if (crntCriteria.trim().startsWith("Size")
+							|| crntCriteria.contains("Apparel")
+							|| crntCriteria.trim().startsWith("SIZE"))
+						crntCriteria = "Sizes";
+					criteriaSet1.setCriteria(crntCriteria);					
 				}else{
 					crntCriteria=ProductDataStore
 							.getCriteriaInfoForCriteriaCode(

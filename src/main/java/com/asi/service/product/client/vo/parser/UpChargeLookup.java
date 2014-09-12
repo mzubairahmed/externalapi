@@ -55,7 +55,7 @@ public class UpChargeLookup {
     private void loadUpchargeTypes(final String upchargeTypelookupAPI) {
         try {
         	LinkedList<?> criteriaCodesResponse = lookupRestTemplate.getForObject(
-		            RestAPIProperties.get(upchargeTypelookupAPI), LinkedList.class);
+		            upchargeTypelookupAPI, LinkedList.class);
             upchargeTypes = upchargePricesParser.getUpchargeTypeCollectionFromJSON(criteriaCodesResponse);
 
             if (upchargeTypes != null && !upchargeTypes.isEmpty()) {
@@ -91,7 +91,7 @@ public class UpChargeLookup {
     private void loadUsageLevels(final String usageLevelLookupAPI) {
         try {
         	LinkedList<?> usageLevelsResponse = lookupRestTemplate.getForObject(
-		            RestAPIProperties.get(usageLevelLookupAPI), LinkedList.class);
+		            usageLevelLookupAPI, LinkedList.class);
 
             upchargeLevel = upchargePricesParser.getUsageLevelCollectionFromJSON(usageLevelsResponse);
 

@@ -196,6 +196,7 @@ public class ApplicationConstants {
     public static final String                       CONST_STRING_VOLUME                         = "Volume";
     public static final String                       CONST_STRING_SIZE                           = "Size";
     public static final String                       CONST_STRING_SIZE_CAP                       = "SIZE";
+    public static final String                       CONST_STRING_SIZE_AND_WEIGHT_CAP            = "WSIZ";
 
     public static final String                       CONST_STRING_KEY                            = "Key";
     public static final String                       CONST_STRING_VALUE                          = "Value";
