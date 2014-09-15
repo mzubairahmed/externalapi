@@ -1173,7 +1173,7 @@ public class ConfigurationsParser {
 
 		// Line Names
 		serviceProduct.setLineNames(productLookupParser
-				.setServiceProductLineNames(productDetail));
+				.setServiceProductLineNames(productDetail,authToken));
 
 		// FOB Points
 		currentCriteriaSetValueList = getCriteriaSetValuesListByCode(

@@ -1,6 +1,7 @@
 package com.asi.ext.api.product.criteria.processor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,8 @@ public class ProductMediaItemProcessor {
 
     private final static Logger LOGGER           = Logger.getLogger(ProductMediaItemProcessor.class.getName());
     private final static String IMAGE_SERVER_URL = "http://media.asicdn.com/images/jpgb/";
+	private ArrayList<String> OPTIONS_GROUP = new ArrayList<String>(
+			Arrays.asList("SHOP", "PROP", "IMOP"));
 
     private ProductDataStore    productDatastore = new ProductDataStore();
 
@@ -141,8 +144,14 @@ public class ProductMediaItemProcessor {
                 MediaCriteriaMatches currentMediaCriteriaMatches = new MediaCriteriaMatches();
                 tempCriteriaInfo = ProductDataStore.getCriteriaInfoByDescription(currentConfig.getCriteria(), externalProductId);
                 if (tempCriteriaInfo != null) {
-                    String criteriaSetValueId = ProductDataStore.findCriteriaSetValueIdForValue(externalProductId,
+                	String criteriaSetValueId = null;
+                	if(OPTIONS_GROUP.contains(tempCriteriaInfo.getCode())){
+                		criteriaSetValueId= ProductDataStore.findCriteriaSetValueIdForValue(externalProductId,
+                                 tempCriteriaInfo.getCode(), String.valueOf(currentConfig.getOptionName()+":"+currentConfig.getValue()));
+                	}else{
+                    criteriaSetValueId = ProductDataStore.findCriteriaSetValueIdForValue(externalProductId,
                             tempCriteriaInfo.getCode(), String.valueOf(currentConfig.getValue()));
+                	}
                     if (criteriaSetValueId != null) {
                         currentMediaCriteriaMatches.setCriteriaSetValueId(criteriaSetValueId);
                         currentMediaCriteriaMatches.setMediaId(mediaId);
