@@ -778,14 +778,14 @@ public class LookupParser {
 		return serviceConfigurations;
 	}
 
-	public List<String> setServiceProductLineNames(ProductDetail productDetail) {
+	public List<String> setServiceProductLineNames(ProductDetail productDetail,String authToken) {
 		List<String> lineNamesList = new ArrayList<>();
 		List<SelectedLineNames> selectedNamesList = productDetail
 				.getSelectedLineNames();
 		for (SelectedLineNames crntSelectedLineName : selectedNamesList) {
 			if (null != ProductDataStore.getSetCodeValueIdForSelectedLineName(
 					crntSelectedLineName.getName(),
-					productDetail.getCompanyId()))
+					authToken))
 				lineNamesList.add(crntSelectedLineName.getName());
 		}
 		return lineNamesList;

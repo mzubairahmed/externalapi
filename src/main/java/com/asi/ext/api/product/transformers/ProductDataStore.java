@@ -1030,6 +1030,10 @@ public class ProductDataStore {
 
     public static String getUnitOfMeasureCode(String criteriaCode, String unit) {
         if (loadCriteriaSetAttributes()) {
+        	if(unit.equals("in"))
+        		unit="\"";
+        	if(unit.equals("ft"))
+        		unit="'";
             HashMap<String, String> unitOfMeasures = unitOfMeasureCodes.get(criteriaCode);
             if (unitOfMeasures != null && !unitOfMeasures.isEmpty()) {
                 String uom = unitOfMeasures.get(unit.toUpperCase());
@@ -1329,7 +1333,7 @@ public class ProductDataStore {
             LOGGER.error("Exception while fetching/processing Selected Line Names lookup data", e);
             return null;
         }
-    	 return selectedNamesLookupTable.get(value);    		
+    	 return selectedNamesLookupTable.get(value.toUpperCase());    		
 	}
     public static String getSetCodeValueIdForFobPoints(String value, String authToken) {
             // Create FOBPoint Lookup table
