@@ -369,6 +369,7 @@ public final class ProductParserUtil {
             return criteriaSetValueId != null ? String.valueOf(criteriaSetValueId) : null;
         } else if (isSizeGroup(criteriaCode)) {
             String valueToSearch = getSizeModelFromObject(criteriaCode, value);
+    //        valueToSearch=transformValue(valueToSearch,criteriaCode);
             // Temporary Fix for checking criteria related to sizes
             if(null!=valueToSearch && valueToSearch.contains("=")){
             	valueToSearch=valueToSearch.substring(valueToSearch.indexOf("=")+1);
@@ -381,7 +382,8 @@ public final class ProductParserUtil {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
+    
+	@SuppressWarnings("unchecked")
     private static String getSizeModelFromObject(String criteriaCode, Object value) {
         String valueToSearch = null;
         if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_DIMENSION)) {
@@ -400,7 +402,7 @@ public final class ProductParserUtil {
         } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY)) {
             try {
             	if(value instanceof LinkedHashMap){
-            		return String.valueOf(value);
+            		return String.valueOf(((LinkedHashMap) value).get("Value")+":"+((LinkedHashMap) value).get("Unit"));
             	}else{
                 List<Map<?, ?>> values = (List<Map<?, ?>>) value;
                 for (Map<?, ?> v : values) {

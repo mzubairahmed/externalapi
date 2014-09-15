@@ -150,31 +150,7 @@ public class ImportTransformer {
         productToSave.setSummary(serviceProduct.getSummary());
         
         productToSave.setShipperBillsByCode(ProductParserUtil.getShippersBillsBy(serviceProduct.getShipperBillsBy()));
-        if(null!=serviceProduct.getShipperBillsBy()){
-        if(ApplicationConstants.CONST_STRING_WEIGHT_SHORT.equals(productToSave.getShipperBillsByCode()) || ApplicationConstants.CONST_STRING_SIZE_AND_WEIGHT_CAP.equals(productToSave.getShipperBillsByCode()))
-        {
-        	if(serviceProduct.getProductConfigurations()!=null){
-        		if(serviceProduct.getProductConfigurations().getShippingEstimates() != null){
-        		if(serviceProduct.getProductConfigurations().getShippingEstimates().getWeight()==null){
-        			productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
-                            "Shipping by Weight is not allowed, as product dont have Shipping Weight : " + serviceProduct.getShipperBillsBy());
-        		}
-        		}else{
-        			productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
-                            "Shipping by Weight is not allowed, as product dont have Shipping Weight : " + serviceProduct.getShipperBillsBy());
-        		}
-        	}
-        }
-        if(ApplicationConstants.CONST_STRING_SIZE_CAP.equals(productToSave.getShipperBillsByCode()) || ApplicationConstants.CONST_STRING_SIZE_AND_WEIGHT_CAP.equals(productToSave.getShipperBillsByCode()))
-        {
-        	if(serviceProduct.getProductConfigurations()!=null && serviceProduct.getProductConfigurations().getShippingEstimates() != null){
-        		if(serviceProduct.getProductConfigurations().getShippingEstimates().getDimensions()==null){
-        			productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
-                            "Shipping by Size is not allowed, as product dont have Shipping Dimensions : " + serviceProduct.getShipperBillsBy());
-        		}
-        	}
-        }
-        }
+       
         if (productToSave.getShipperBillsByCode() == null) {
             productToSave.setShipperBillsByCode("");
             productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
