@@ -109,7 +109,7 @@ public class ProductMediaItemProcessor {
                         finalMediaCriteriaMatches.add(currentMediaCriteriaMatch);
                     } else {
                         productDatastore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
-                                "Criteria value specified for Media is not exist in product, Criteria : " + config.getCriteria()
+                                "Criteria value specified for Media doesn't exist in product, Criteria : " + config.getCriteria()
                                         + "Value : " + String.valueOf(config.getValue()));
                     }
                 } else {
@@ -149,7 +149,7 @@ public class ProductMediaItemProcessor {
                         mediaCriteriaMatchesList.add(currentMediaCriteriaMatches);
                     } else {
                         productDatastore.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
-                                "Criteria value specified for Media is not exist in product, Criteria : " + currentConfig.getCriteria()
+                                "Criteria value specified for Media doesn't exist in product, Criteria : " + currentConfig.getCriteria()
                                         + "Value : " + String.valueOf(currentConfig.getValue()));
                     }
                 } else {

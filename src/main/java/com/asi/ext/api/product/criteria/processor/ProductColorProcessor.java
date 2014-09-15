@@ -196,7 +196,8 @@ public class ProductColorProcessor extends SimpleCriteriaProcessor {
                         parentSetCodeValue = comboSetCodeValue;
                         comboSetCodeValue.setCodeValue(color.getRGBHex());
                         setCodeValueList.add(comboSetCodeValue);
-                    } else if (comboSetCodeValue.getSetCodeValueId().equalsIgnoreCase(setCodeValueIdForCombo)) {
+                    } else if (comboSetCodeValue.getSetCodeValueId().equalsIgnoreCase(setCodeValueIdForCombo) 
+                            && comboSetCodeValue.getCodeValueDetail().equalsIgnoreCase(combo.getType())) {
                         comboSetCodeValue.setCodeValueDetail(combo.getType());
                         comboSetCodeValue.setCodeValue(combo.getRgbhex());
                         setCodeValueList.add(comboSetCodeValue);
