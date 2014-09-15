@@ -208,6 +208,7 @@ public class PriceGridParser extends ProductParser {
                             productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
                                     "Incorrect format for ItemsPerUnit, ItemsPerUnit : "
                                             + serPrice.getPriceUnit().getItemsPerUnit() + ", default value (1) taken");
+                            veloPrice.setPriceUnit(priceUnit);
                         }
                     } else {
                         veloPrice.setItemsPerUnit(Integer.parseInt(priceUnit.getItemsPerUnit()));
