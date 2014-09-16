@@ -284,7 +284,8 @@ public class JsonProcessor {
 		        || srchValue.equalsIgnoreCase(ApplicationConstants.CONST_STRING_NULL_SMALL) 
 		        || srchValue.trim().equalsIgnoreCase("NON")) {
 		    //ProductParser.addErrorToBatchLogCollection(externalProductId, ApplicationConstants.CONST_BATCH_ERR_REQ_FIELD, "Currency code empty for Pricing");
-		    srchValue="USD";
+		    srchValue="";
+		    currncyCode = "";
 		}
 		//Currency currency = new Currency();
 		// String returnValue="NON";
