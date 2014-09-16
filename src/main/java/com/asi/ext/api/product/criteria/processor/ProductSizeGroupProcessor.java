@@ -321,8 +321,10 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                     continue;*/
                 }
                 String[] sizeValueElements = individualSizes[criteriaSetValuesCntr].split(";");
+                String tempSizeValue=null;
                 //valueAry = new Value[sizeValueElements.length];
                 for (int valueElementsCntr = 0; valueElementsCntr < sizeValueElements.length; valueElementsCntr++) {
+                	tempSizeValue=sizeValueElements[valueElementsCntr];
                     tempValueElement = sizeValueElements[valueElementsCntr];
                     // For Single Size Element(attribute:value:units) it will iterate once
                     if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION)) {
@@ -421,7 +423,10 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                     if (isValueObjectValidForSize(sizeCriteriaCode, value)) { 
                         valueAry.add(value);
                     } else {
-                        // TODO : Add error messages
+                    	tempSizeValue=tempSizeValue.replaceAll(":", " ");
+                        productDataStore.addErrorToBatchLogCollection(product.getExternalProductId().trim(),
+                                ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Invalid value for sizes Unit : " + tempSizeValue);
+                    	
                     }
                 }
 
@@ -1326,7 +1331,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                 return false;
             } else if (CommonUtilities.isValueNull(v.getUnitOfMeasureCode())) {
                 return false;
-            } else if (CommonUtilities.isValueNull(v.getUnitValue())) {
+            } else if (CommonUtilities.isValueNull(v.getUnitValue()) && !CommonUtilities.isValidNumber(v.getUnitValue())) {
                 return false;
             }
             return true;
@@ -1335,7 +1340,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                 return false;
             } else if (CommonUtilities.isValueNull(v.getUnitOfMeasureCode())) {
                 return false;
-            } else if (CommonUtilities.isValueNull(v.getUnitValue())) {
+            } else if (CommonUtilities.isValueNull(v.getUnitValue()) && !CommonUtilities.isValidNumber(v.getUnitValue())) {
                 return false;
             }
             return true;
@@ -1344,7 +1349,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                 return false;
             } else if (CommonUtilities.isValueNull(v.getUnitOfMeasureCode())) {
                 return false;
-            } else if (CommonUtilities.isValueNull(v.getUnitValue())) {
+            } else if (CommonUtilities.isValueNull(v.getUnitValue()) && !CommonUtilities.isValidNumber(v.getUnitValue())) {
                 return false;
             }
             return true;
