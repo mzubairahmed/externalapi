@@ -47,7 +47,6 @@ import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.ProductNumber;
 import com.asi.service.product.client.vo.ProductNumberConfiguration;
 import com.asi.service.product.client.vo.parser.UpChargeLookup;
-import com.asi.service.product.exception.InvalidProductException;
 
 public class PriceGridParser extends ProductParser {
 	
@@ -212,6 +211,7 @@ public class PriceGridParser extends ProductParser {
                             productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
                                     "Incorrect format for ItemsPerUnit, ItemsPerUnit : "
                                             + serPrice.getPriceUnit().getItemsPerUnit() + ", default value (1) taken");
+                            veloPrice.setPriceUnit(priceUnit);
                         }
                     } else {
                         veloPrice.setItemsPerUnit(Integer.parseInt(priceUnit.getItemsPerUnit()));
@@ -313,7 +313,7 @@ public class PriceGridParser extends ProductParser {
                 .getProductNumbers());
         boolean hasProductNumber = false;
         boolean foundOnePno = false;
-        int pgCounter = 0;
+       // int pgCounter = 0;
         boolean currencyErrorLogged = false;
         List<PriceGrid> finalPGrids = new ArrayList<PriceGrid>();
         for (com.asi.ext.api.service.model.PriceGrid serPGrid : servicePriceGrids) {
@@ -325,7 +325,7 @@ public class PriceGridParser extends ProductParser {
             if (!foundOnePno && hasProductNumber) {
                 foundOnePno = true;
             }
-            pgCounter++;
+           // pgCounter++;
             PriceGrid newPGrid = new PriceGrid();
             // Basic fields
             newPGrid.setID(String.valueOf(--priceGridId));
@@ -1178,7 +1178,8 @@ public class PriceGridParser extends ProductParser {
             return null;
     }
 
-    public Object getCriteriaCode(Object source) {
+    @SuppressWarnings("unchecked")
+	public Object getCriteriaCode(Object source) {
         List<Value> tempList = null;
         if (source != null && source instanceof String && !source.toString().isEmpty() && source.toString().contains(":")) {
             return source.toString().substring(0, source.toString().indexOf(":"));

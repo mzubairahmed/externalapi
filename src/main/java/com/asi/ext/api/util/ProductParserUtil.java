@@ -147,7 +147,7 @@ public final class ProductParserUtil {
 
     public static String getSizeValuesFromSize(Size size, String sizeCriteriaCode) {
         if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_DIMENSION)) {
-            return getDimensionValues(size.getDimension());
+        	return getDimensionValues(size.getDimension());
         } else if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY)) {
             return getCapacityValues(size.getCapacity());
         } else if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI)) {
@@ -158,11 +158,12 @@ public final class ProductParserUtil {
                 || sizeCriteriaCode.equalsIgnoreCase("SAIT") || sizeCriteriaCode.equalsIgnoreCase("SANS")
                 || sizeCriteriaCode.equalsIgnoreCase("SAWI") || sizeCriteriaCode.equalsIgnoreCase("SSNM")) {
             return getCSVSizesFromSizeModel(size.getApparel().getValues());
-        }
+    	}
         return "null";
+        
     }
 
-    private static String getDimensionValues(Dimension dims) {
+	private static String getDimensionValues(Dimension dims) {
         String dimValues = "";
         for (Values individualDim : dims.getValues()) {
             String individualSize = "";

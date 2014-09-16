@@ -321,8 +321,10 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                     continue;*/
                 }
                 String[] sizeValueElements = individualSizes[criteriaSetValuesCntr].split(";");
+                String tempSizeValue=null;
                 //valueAry = new Value[sizeValueElements.length];
                 for (int valueElementsCntr = 0; valueElementsCntr < sizeValueElements.length; valueElementsCntr++) {
+                	tempSizeValue=sizeValueElements[valueElementsCntr];
                     tempValueElement = sizeValueElements[valueElementsCntr];
                     // For Single Size Element(attribute:value:units) it will iterate once
                     if (sizeCriteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION)) {
@@ -421,7 +423,10 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                     if (isValueObjectValidForSize(sizeCriteriaCode, value)) { 
                         valueAry.add(value);
                     } else {
-                        // TODO : Add error messages
+                    	tempSizeValue=tempSizeValue.replaceAll(":", " ");
+                        productDataStore.addErrorToBatchLogCollection(product.getExternalProductId().trim(),
+                                ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Invalid value for sizes Unit : " + tempSizeValue);
+                    	
                     }
                 }
 
@@ -1099,7 +1104,8 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
         this.configId = configId;
         this.productId = product.getID();
         this.companyId = product.getCompanyId();
-
+        boolean validShippingDimension=true;
+        CommonUtilities commonUtils=new CommonUtilities();
         if (shippingEstimate == null) {
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION);
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT);
@@ -1115,11 +1121,21 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
         } else {
             this.criteriaSetId = String.valueOf(--criteriaSetId);
             String shippingDimensions = ProductParserUtil.getShippingDimension(shippingEstimate);
-
+            
             LOGGER.info("Shipping Dimensions Transformation Starts :" + shippingDimensions);
             dimnsAry = shippingDimensions.split(";");
             if (dimnsAry.length == 3) {
-
+            	for(String crntDims:dimnsAry){
+            		if(crntDims.contains(":") && validShippingDimension){
+            			validShippingDimension=commonUtils.isThatValidNumber(crntDims.substring(0,crntDims.indexOf(":")));
+            			if(null!=ProductDataStore.getUnitOfMeasureCode(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION,crntDims.substring(crntDims.indexOf(":")+1))){
+            				validShippingDimension=true;
+            			}else{
+            				validShippingDimension=false;
+            			}
+            		}
+            	}
+            	if(validShippingDimension){
                 ProductCriteriaSets tempCriteriaSet = getSizeCriteriaSet(shippingDimensions,
                         ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION,
                         existingCriteriaSetMap.get(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION), product);
@@ -1130,7 +1146,12 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                     existingCriteriaSetMap.put(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION, tempCriteriaSet);
                 } else {
                     existingCriteriaSetMap.remove(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_DIMENSION);
-                }
+                }}
+            	else{
+            		 addErrorToBatchLogCollection(product.getExternalProductId(), ApplicationConstants.CONST_BATCH_ERR_GENERIC_PLHDR,
+                             "Invalid Shipping Dimension Entered :"+shippingDimensions);
+                     //return null;
+            	}
             } else {
 
                 // TODO : LOG ERROR
@@ -1147,13 +1168,22 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                     existingCriteriaSetMap.get(ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE), criteriaSetId);
             existingCriteriaSetMap.put(ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE, tempCriteriaSet);
         }
-
+        boolean validShippingWeight=true;
         if (shippingEstimate.getWeight() == null) {
             // Remove Previous SDIM from the criteria set
             existingCriteriaSetMap.remove(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT);
         } else {
             this.criteriaSetId = String.valueOf(--criteriaSetId);
             String shippingWeight = ProductParserUtil.getShippingWeight(shippingEstimate);
+       		if(shippingWeight.contains(":") && validShippingWeight){
+       			validShippingWeight=commonUtils.isThatValidNumber(shippingWeight.substring(0,shippingWeight.indexOf(":")));
+    			if(null!=ProductDataStore.getUnitOfMeasureCode(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT,shippingWeight.substring(shippingWeight.indexOf(":")+1))){
+    				validShippingWeight=true;
+    			}else{
+    				validShippingWeight=false;
+    			}
+    		}
+       		if(validShippingWeight){
             ProductCriteriaSets tempCriteriaSet = getSizeCriteriaSet(shippingWeight,
                     ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT,
                     existingCriteriaSetMap.get(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT), product);
@@ -1164,7 +1194,13 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                 existingCriteriaSetMap.put(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT, tempCriteriaSet);
             } else {
                 existingCriteriaSetMap.remove(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_WEIGHT);
-            }
+            }}
+       		else{
+       		 addErrorToBatchLogCollection(product.getExternalProductId(), ApplicationConstants.CONST_BATCH_ERR_GENERIC_PLHDR,
+                     "Invalid Shipping Weight Entered :"+shippingWeight);
+       		 return null;
+       		}
+       		if(!validShippingDimension) return null;
         }
         return existingCriteriaSetMap;
 
@@ -1295,7 +1331,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                 return false;
             } else if (CommonUtilities.isValueNull(v.getUnitOfMeasureCode())) {
                 return false;
-            } else if (CommonUtilities.isValueNull(v.getUnitValue())) {
+            } else if (CommonUtilities.isValueNull(v.getUnitValue()) && !CommonUtilities.isValidNumber(v.getUnitValue())) {
                 return false;
             }
             return true;
@@ -1304,7 +1340,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                 return false;
             } else if (CommonUtilities.isValueNull(v.getUnitOfMeasureCode())) {
                 return false;
-            } else if (CommonUtilities.isValueNull(v.getUnitValue())) {
+            } else if (CommonUtilities.isValueNull(v.getUnitValue()) && !CommonUtilities.isValidNumber(v.getUnitValue())) {
                 return false;
             }
             return true;
@@ -1313,7 +1349,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                 return false;
             } else if (CommonUtilities.isValueNull(v.getUnitOfMeasureCode())) {
                 return false;
-            } else if (CommonUtilities.isValueNull(v.getUnitValue())) {
+            } else if (CommonUtilities.isValueNull(v.getUnitValue()) && !CommonUtilities.isValidNumber(v.getUnitValue())) {
                 return false;
             }
             return true;
