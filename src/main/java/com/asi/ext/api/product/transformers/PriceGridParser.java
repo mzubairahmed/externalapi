@@ -120,6 +120,9 @@ public class PriceGridParser extends ProductParser {
     }
 
     private Currency getCurrencyModel(String serCurrency, boolean getDefault) {
+    	if(serCurrency != null && serCurrency.equals("")) {
+    		serCurrency = "NON";
+    	}
         return ProductDataStore.getCurrencyForCode(serCurrency, getDefault);
     }
 
