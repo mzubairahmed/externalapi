@@ -116,12 +116,16 @@ public class ImprintMethodProcessor extends SimpleCriteriaProcessor {
         Map<String, CriteriaSetValues> artwCriteriaValues = new HashMap<String, CriteriaSetValues>();
         Map<String, CriteriaSetValues> minoCriteriaValues = new HashMap<String, CriteriaSetValues>();
 
+        Integer immdDiplaySequence = 1;
         for (ImprintMethod impMethod : imprintMethods) {
             CriteriaSetValues immdCriteriaSetValue = null;
+            // VELOEXTAPI-459 Fix: this issue doesn't exist due to ordering. It will be resolved by setting the CriteriaSetValues::DisplaySequence 1,2,3...
             if (impMethod.getType() != null && !impMethod.getType().isEmpty()) {
                 immdCriteriaSetValue = imprintMethodProcessor.getImprintCriteriaSetValue(exisitingProduct.getExternalProductId(), impMethod.getType(), impMethod.getAlias(),
                         immdCriteriaId);
+                immdCriteriaSetValue.setDisplaySequence(String.valueOf(immdDiplaySequence));
                 immdCriteriaValues.put(impMethod.getType().toUpperCase(), immdCriteriaSetValue);
+                immdDiplaySequence++;
             }
             if (immdCriteriaSetValue != null && impMethod.getMinimumOrder() != null) {
                 CriteriaSetValues minoCriteriaSetValue = minoProcessor.getMinQtyCriteriaSetValue(exisitingProduct.getExternalProductId(), impMethod.getMinimumOrder(),
