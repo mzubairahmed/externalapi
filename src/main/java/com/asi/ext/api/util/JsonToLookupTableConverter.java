@@ -941,10 +941,10 @@ public final class JsonToLookupTableConverter {
             		mediaCitation.setProductId(productID);
             		mediaCitation.setMediaCitationId(String.valueOf(current.get("ID")));
             		mediaCitation.setIsInitMediaCitation("false");
-            		
+            		mediaCitation.setProductMediaCitationReferences(new ArrayList<ProductMediaCitationReferences>());
             		productCitationReferences = (ArrayList<LinkedHashMap>) current.get("MediaCitationReferences");
 
-            		if(productCitationReferences != null && !productCitationReferences.isEmpty()) {
+            		if(!CommonUtilities.isValueNull(catalogPageNumber) && productCitationReferences != null && !productCitationReferences.isEmpty()) {
             			boolean pageNumberFound = false;
             			productMediaCitationReferences = new ArrayList<ProductMediaCitationReferences>();
 

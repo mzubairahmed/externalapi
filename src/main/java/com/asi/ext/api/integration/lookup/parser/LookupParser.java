@@ -656,6 +656,7 @@ public class LookupParser {
 		List<ProductNumber> productNumbers = productDetail.getProductNumbers();
 		String tempCriteria = "";
 		CriteriaInfo criteriaInfo = null;
+		
 		if (null != productNumbers && productNumbers.size() > 0) {
 
 			for (ProductNumber crntProductNumber : productNumbers) {
@@ -681,8 +682,13 @@ public class LookupParser {
 										.substring(0, tempCriteria.indexOf("_")));
 						currentCriteria.setCriteria(criteriaInfo
 								.getDescription());
-						currentCriteria.setValue(tempCriteria
-								.substring(tempCriteria.indexOf("__") + 2));
+						String tempValue=tempCriteria
+						        .substring(tempCriteria.indexOf("__") + 2);
+						      if(tempValue.contains(":")){
+						       currentCriteria.setValue(tempValue.substring(tempValue.indexOf(":")+1));
+						      }else{
+						       currentCriteria.setValue(tempValue);
+						      }
 					}
 					if(null!=currentCriteria.getCriteria()) criteriaList.add(currentCriteria);
 				}
