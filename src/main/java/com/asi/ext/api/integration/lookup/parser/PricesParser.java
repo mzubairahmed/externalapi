@@ -534,18 +534,21 @@ public class PricesParser {
 				criteriaValue=formatCriteriaValue(criteriaItems[1],
 						criteriaCode);
 				if(criteriaValue.contains(":") && criteriaCode.equals("IMMD")){
-					criteriaSet1.setValue(criteriaValue.substring(criteriaValue.indexOf(":")+1));
+					criteriaSet1.setStringValue(criteriaValue.substring(criteriaValue.indexOf(":")+1));
 				}else{
-					criteriaSet1.setValue(criteriaValue);
+					criteriaSet1.setStringValue(criteriaValue);
 				}
 			}
 		} else {
 			criteriaSet1 = new PriceConfiguration();
-			criteriaSet1.setValue(criteriaSetParser.findSizesCriteriaSetById(
-					externalProductId, criteriaSetValueId));
+			// BUG: VELOEXTAPI-440
+//			criteriaSet1.setValue(criteriaSetParser.findSizesCriteriaSetById(externalProductId, criteriaSetValueId));
+			Object value = criteriaSetParser.findSizesCriteriaSetById(externalProductId, criteriaSetValueId);
+			
 			// firstCriteria=(String) getCriteriaCode(criteriaSet1);
-			if (criteriaSet1.getValue() instanceof Value) {
-				Value currentCriteriaObj = (Value) criteriaSet1.getValue();
+			if (value instanceof Value) {
+				Value currentCriteriaObj = (Value) value;
+				criteriaSet1.setValue(currentCriteriaObj);
 				if (APPAREL_SIZE_GROUP_CRITERIACODES
 						.contains(currentCriteriaObj.getCriteriaType())) {
 							crntCriteria=ProductDataStore
@@ -570,9 +573,10 @@ public class PricesParser {
 				// valuesList.add(criteriaSet1);
 				// criteriaValues.setValue(valuesList);
 				// criteriaSet1=criteriaValues;
-			} else if (criteriaSet1.getValue() instanceof List) {
+			} else if (value instanceof List) {
 				@SuppressWarnings("unchecked")
-				List<Value> valueList = (List<Value>) criteriaSet1.getValue();
+				List<Value> valueList = (List<Value>) value;
+				criteriaSet1.setValues(valueList);
 				for (Value currentValue : valueList) {
 					currentCriteria = ProductDataStore
 							.getCriteriaInfoForCriteriaCode(
