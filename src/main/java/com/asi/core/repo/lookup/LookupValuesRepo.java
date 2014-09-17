@@ -11,7 +11,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.asi.ext.api.radar.lookup.model.PriceUnitJsonModel;
@@ -477,5 +483,72 @@ public class LookupValuesRepo {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
+	public List<String> getMediaCitationsList(String authToken) {
+		List<String> mediaCitationList=new ArrayList<>();
+		HttpHeaders header = new HttpHeaders();
+        header.add("AuthToken", authToken);
+        header.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> requestEntity = new HttpEntity<String>(header);
+        ResponseEntity<LinkedList> responseList = lookupRestTemplate.exchange(RestAPIProperties.get(ApplicationConstants.PRODUCT_MEDIA_CITATION),HttpMethod.GET, requestEntity, LinkedList.class);
+        if(null!=responseList.getBody()){
+        try {
+            Iterator<?> iter = responseList.getBody().iterator();
+            LinkedHashMap crntValue=null;
+            ArrayList<LinkedHashMap> productCitationReferences=null;
+            while(iter.hasNext()){
+        	    crntValue = (LinkedHashMap) iter.next();
+                    productCitationReferences = (ArrayList<LinkedHashMap>) crntValue.get("MediaCitationReferences");
+                    // changed: the reference can be left empty/blank - reference UI.
+                        for(LinkedHashMap citationReference : productCitationReferences) {
+                    			mediaCitationList.add(citationReference.get("Number").toString());
+                    	}
+            }            
+	    } catch (Exception pe) {
+            pe.printStackTrace();
+        }
+        }
+		return mediaCitationList;
+	}
+	public List<String> getLineNamesList(String authToken) {
+		List<String> mediaCitationList=new ArrayList<>();
+		HttpHeaders header = new HttpHeaders();
+        header.add("AuthToken", authToken);
+        header.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> requestEntity = new HttpEntity<String>(header);
+        ResponseEntity<List> responseList = lookupRestTemplate.exchange(RestAPIProperties.get(ApplicationConstants.SELECTED_LINES_LOOKUP),HttpMethod.GET, requestEntity, List.class);
+        if(null!=responseList.getBody()){
+        try {
+           
+        	ArrayList<LinkedHashMap> productCitationReferences = (ArrayList<LinkedHashMap>) responseList.getBody();
+                    // changed: the reference can be left empty/blank - reference UI.
+                        for(LinkedHashMap citationReference : productCitationReferences) {
+                    			mediaCitationList.add(citationReference.get("Name").toString());
+                    	}
+	    } catch (Exception pe) {
+            pe.printStackTrace();
+        }
+        }
+		return mediaCitationList;
+	}
+	public List<String> getFobPointsList(String authToken) {
+		List<String> mediaCitationList=new ArrayList<>();
+		HttpHeaders header = new HttpHeaders();
+        header.add("AuthToken", authToken);
+        header.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> requestEntity = new HttpEntity<String>(header);
+        ResponseEntity<List> responseList = lookupRestTemplate.exchange(RestAPIProperties.get(ApplicationConstants.FOBP_POINTS_LOOKUP),HttpMethod.GET, requestEntity, List.class);
+        if(null!=responseList.getBody()){
+        try {
+            ArrayList<LinkedHashMap>   productCitationReferences = (ArrayList<LinkedHashMap>) responseList.getBody();
+                    // changed: the reference can be left empty/blank - reference UI.
+                        for(LinkedHashMap citationReference : productCitationReferences) {
+                    			mediaCitationList.add(citationReference.get("Name").toString());
+                    	}
+	    } catch (Exception pe) {
+            pe.printStackTrace();
+        }
+        }
+		return mediaCitationList;
+	}
 }
