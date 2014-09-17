@@ -1578,12 +1578,16 @@ public class ProductDataStore {
 
 	public static Catalog getMediaCitationById(String mediaCitationId, String mediaCitationReferenceId, String companyId) {
         
-		LinkedList<?> responseList = lookupRestTemplate.getForObject((RestAPIProperties.get(ApplicationConstants.PRODUCT_MEDIA_CITATION)+companyId),LinkedList.class);
-
+		
+		HttpHeaders header = new HttpHeaders();
+        header.add("AuthToken", companyId);
+        header.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> requestEntity = new HttpEntity<String>(header);
+        ResponseEntity<LinkedList> responseList = lookupRestTemplate.exchange((RestAPIProperties.get(ApplicationConstants.PRODUCT_MEDIA_CITATION.replaceAll("\\?company_id=", ""))),HttpMethod.GET, requestEntity, LinkedList.class);
         if(StringUtils.isEmpty(mediaCitationReferenceId)) {
-        	return JsonToLookupTableConverter.jsonToCatalogsWithoutReference(responseList, mediaCitationId);
+        	return JsonToLookupTableConverter.jsonToCatalogsWithoutReference(responseList.getBody(), mediaCitationId);
         } else {
-        	return JsonToLookupTableConverter.jsonToCatalogs(responseList, mediaCitationId, mediaCitationReferenceId);
+        	return JsonToLookupTableConverter.jsonToCatalogs(responseList.getBody(), mediaCitationId, mediaCitationReferenceId);
         }
 	}
 		

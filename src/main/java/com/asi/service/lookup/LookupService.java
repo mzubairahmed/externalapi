@@ -1,10 +1,9 @@
 package com.asi.service.lookup;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -210,5 +209,26 @@ public class LookupService {
 		sizeUnits.setSizes(lookupValueRepository.getSizeUnitsInfo(ApplicationConstants.CONST_SIZE_OTHER_CODE,ApplicationConstants.CONST_STRING_UNIT));
 		return new ResponseEntity<SizeUnits> (sizeUnits, null, HttpStatus.OK);		
 	}
-
+	@RequestMapping(value = "mediacitations", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<MediaCitation> getMediaCitationsList(@RequestHeader("AuthToken") String authToken)
+	{
+		MediaCitation mediaCitation = new MediaCitation();
+		mediaCitation.setMediaCitation(lookupValueRepository.getMediaCitationsList(authToken));
+		return new ResponseEntity<MediaCitation> (mediaCitation, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "selectedlinenames", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<LineNames> getLineNamesList(@RequestHeader("AuthToken") String authToken)
+	{
+		LineNames lineNames = new LineNames();
+		lineNames.setLineNames(lookupValueRepository.getLineNamesList(authToken));
+		return new ResponseEntity<LineNames> (lineNames, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "fobpoints", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<FobPoints> getFobPointsList(@RequestHeader("AuthToken") String authToken)
+	{
+		FobPoints fobPoints = new FobPoints();
+		fobPoints.setFobpoints(lookupValueRepository.getFobPointsList(authToken));
+		return new ResponseEntity<FobPoints> (fobPoints, null, HttpStatus.OK);		
+	}
+//
 }
