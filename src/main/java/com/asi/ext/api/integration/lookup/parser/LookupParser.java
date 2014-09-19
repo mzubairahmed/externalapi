@@ -27,6 +27,7 @@ import com.asi.ext.api.service.model.ImprintMethod;
 import com.asi.ext.api.service.model.MinimumOrder;
 import com.asi.ext.api.service.model.Option;
 import com.asi.ext.api.service.model.Size;
+import com.asi.ext.api.service.model.StringValue;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.RestAPIProperties;
@@ -685,9 +686,10 @@ public class LookupParser {
 						String tempValue=tempCriteria
 						        .substring(tempCriteria.indexOf("__") + 2);
 						      if(tempValue.contains(":")){
-						       currentCriteria.setValue(tempValue.substring(tempValue.indexOf(":")+1));
+						       //currentCriteria.setValue(tempValue.substring(tempValue.indexOf(":")+1));
+						    	  currentCriteria.setValue(new StringValue(tempValue.substring(tempValue.indexOf(":")+1)));
 						      }else{
-						       currentCriteria.setValue(tempValue);
+						       currentCriteria.setValue(new StringValue(tempValue));
 						      }
 					}
 					if(null!=currentCriteria.getCriteria()) criteriaList.add(currentCriteria);

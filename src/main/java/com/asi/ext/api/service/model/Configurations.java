@@ -1,18 +1,29 @@
 package com.asi.ext.api.service.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonInclude(Include.NON_NULL)
+@XmlAccessorType(XmlAccessType.FIELD)
+
+@XmlSeeAlso({ValueWrapper.class})
 public class Configurations {
 
     @JsonProperty("Criteria")
     private String criteria;
     @JsonProperty("OptionName")
     private String optionName;
+    //@JsonProperty("Value")
+   // private Object value;
     @JsonProperty("Value")
-    private Object value;
-
+    @XmlElement(name="Value")
+    private BaseValue value;
+       
     public String getOptionName() {
 		return optionName;
 	}
@@ -32,13 +43,14 @@ public class Configurations {
     }
 
     @JsonProperty("Value")
-    public Object getValue() {
-        return value;
-    }
+	public BaseValue getValue() {
+		return value;
+	}
     @JsonProperty("Value")
-    public void setValue(Object value) {
-        this.value = value;
-    }
+	public void setValue(BaseValue value) {
+		this.value = value;
+	}
+
 
 
 }

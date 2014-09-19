@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 @XmlAccessorType(XmlAccessType.NONE)
 @JsonInclude(Include.NON_NULL)
-public class Value {
+public class Value extends BaseValue {
     @JsonProperty("Attribute")
     @XmlElement(name="attribute")
     private String attribute;
@@ -18,7 +18,7 @@ public class Value {
     @JsonProperty("Value")
     private String value;
 
-    @JsonIgnore
+	@JsonIgnore
     private String criteriaType;
     @JsonIgnore
     public String getCriteriaType() {

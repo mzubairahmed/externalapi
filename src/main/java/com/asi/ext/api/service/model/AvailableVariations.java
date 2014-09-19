@@ -3,6 +3,7 @@ package com.asi.ext.api.service.model;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlElement;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -10,25 +11,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class AvailableVariations {
 	
 	@JsonProperty("ParentValue")
-	private Object parentValue;
+	@XmlElement(name="ParentValue")
+	private BaseValue parentValue;
 	
 	@JsonProperty("ChildValue")
-	@XmlAnyElement(lax = true)
-	private Object childValue;
+	@XmlElement(name="ChildValue")
+	private BaseValue childValue;
 	
-	public Object getParentValue() {
+	public BaseValue getParentValue() {
 		return parentValue;
 	}
 	
-	public void setParentValue(Object parentValue) {
+	public void setParentValue(BaseValue parentValue) {
 		this.parentValue = parentValue;
 	}
 	
-	public Object getChildValue() {
+	public BaseValue getChildValue() {
 		return childValue;
 	}
 	
-	public void setChildValue(Object childValue) {
+	public void setChildValue(BaseValue childValue) {
 		this.childValue = childValue;
 	}
 	

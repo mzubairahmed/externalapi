@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.asi.ext.api.product.transformers.ProductDataStore;
+import com.asi.ext.api.service.model.ListValue;
 import com.asi.ext.api.service.model.PriceConfiguration;
+import com.asi.ext.api.service.model.StringValue;
 import com.asi.ext.api.service.model.Value;
 import com.asi.ext.api.service.model.Values;
 import com.asi.ext.api.util.CommonUtilities;
@@ -534,9 +536,9 @@ public class PricesParser {
 				criteriaValue=formatCriteriaValue(criteriaItems[1],
 						criteriaCode);
 				if(criteriaValue.contains(":") && criteriaCode.equals("IMMD")){
-					criteriaSet1.setStringValue(criteriaValue.substring(criteriaValue.indexOf(":")+1));
+					criteriaSet1.setValue(new StringValue(criteriaValue.substring(criteriaValue.indexOf(":")+1)));
 				}else{
-					criteriaSet1.setStringValue(criteriaValue);
+					criteriaSet1.setValue(new StringValue(criteriaValue));
 				}
 			}
 		} else {
@@ -576,7 +578,7 @@ public class PricesParser {
 			} else if (value instanceof List) {
 				@SuppressWarnings("unchecked")
 				List<Value> valueList = (List<Value>) value;
-				criteriaSet1.setValues(valueList);
+				criteriaSet1.setValue(new ListValue(valueList));
 				for (Value currentValue : valueList) {
 					currentCriteria = ProductDataStore
 							.getCriteriaInfoForCriteriaCode(
