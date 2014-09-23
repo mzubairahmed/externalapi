@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.radar.model.CriteriaInfo;
+import com.asi.ext.api.service.model.BaseValue;
 import com.asi.ext.api.service.model.Configurations;
 import com.asi.ext.api.service.model.Image;
 import com.asi.ext.api.util.ApplicationConstants;
@@ -96,12 +97,11 @@ public class ProductMediaItemProcessor {
             CriteriaInfo criteriaInfo = null;
 
             for (Configurations config : mediaConfigs) {
-                
                 criteriaInfo = ProductDataStore.getCriteriaInfoByDescription(config.getCriteria(), xid);
                 if (criteriaInfo != null) {
                     Object criteriaValueToSearch = ProductParserUtil.getCriteriaValueFromConfig(config, criteriaInfo.getCode());
                     String criteriaSetValueId = ProductParserUtil.getCriteriaSetValueIdBaseOnValueType(xid, criteriaInfo.getCode(),
-                            criteriaValueToSearch);
+                            (BaseValue)criteriaValueToSearch);
                     if (criteriaSetValueId != null) {
                         MediaCriteriaMatches currentMediaCriteriaMatch = existingMediaCriteriaMap.get(criteriaSetValueId);
                         if (currentMediaCriteriaMatch == null) {

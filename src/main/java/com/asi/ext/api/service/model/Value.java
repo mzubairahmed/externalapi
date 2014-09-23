@@ -10,15 +10,15 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 @XmlAccessorType(XmlAccessType.NONE)
 @JsonInclude(Include.NON_NULL)
-public class Value {
+public class Value extends BaseValue {
     @JsonProperty("Attribute")
-    @XmlElement(name="attribute")
+    @XmlElement(name="Attribute")
     private String attribute;
     @XmlElement(name="Value")
     @JsonProperty("Value")
     private String value;
 
-    @JsonIgnore
+	@JsonIgnore
     private String criteriaType;
     @JsonIgnore
     public String getCriteriaType() {
@@ -36,11 +36,11 @@ public class Value {
     public void setAttribute(String attribute) {
         this.attribute = attribute;
     }
-
+    @JsonProperty("Value")
     public String getValue() {
         return value;
     }
-
+    @JsonProperty("Value")
     public void setValue(String value) {
         this.value = value;
     }
