@@ -101,6 +101,30 @@ public class LookupService {
 		CriteriaCodesList criteriaCodesList = lookupValueRepository.getCriteriaCodesList();
 		return new ResponseEntity<CriteriaCodesList> (criteriaCodesList, null, HttpStatus.OK);		
 	}
+	@RequestMapping(value = "basepricecriterias", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<CriteriaCodesList> getBaseCriteriaCodesList()
+	{
+		CriteriaCodesList criteriaCodesList = lookupValueRepository.getCriteriaCodesListByType("baseprice");
+		return new ResponseEntity<CriteriaCodesList> (criteriaCodesList, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "upchargecriterias", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<CriteriaCodesList> getUpchargeCriteriaCodesList()
+	{
+		CriteriaCodesList criteriaCodesList = lookupValueRepository.getCriteriaCodesListByType("upcharge");
+		return new ResponseEntity<CriteriaCodesList> (criteriaCodesList, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "productnumbercriterias", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<CriteriaCodesList> getProductNumberCriteriaCodesList()
+	{
+		CriteriaCodesList criteriaCodesList = lookupValueRepository.getCriteriaCodesListByType("productnumber");
+		return new ResponseEntity<CriteriaCodesList> (criteriaCodesList, null, HttpStatus.OK);		
+	}
+	@RequestMapping(value = "availabilitycriterias", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
+	public ResponseEntity<CriteriaCodesList> getAvailabilityCriteriaCodesList()
+	{
+		CriteriaCodesList criteriaCodesList = lookupValueRepository.getCriteriaCodesList();
+		return new ResponseEntity<CriteriaCodesList> (criteriaCodesList, null, HttpStatus.OK);		
+	}
 	@RequestMapping(value = "upchargetypes", headers="content-type=application/json, application/xml" ,produces={"application/xml", "application/json"} )
 	public ResponseEntity<UpchargeTypesList> getUpchargeTypesList()
 	{

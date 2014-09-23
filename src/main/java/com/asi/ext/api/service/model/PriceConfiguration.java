@@ -1,6 +1,5 @@
 package com.asi.ext.api.service.model;
 
-
 import javax.xml.bind.annotation.XmlElement;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -12,11 +11,9 @@ public class PriceConfiguration {
 
     @JsonProperty("Criteria")
     private String criteria;
-
     @JsonProperty("Value")
-    @XmlElement(name="Value")
+//    @XmlElement(name="Value")
     private BaseValue value;
-    
     @JsonProperty("OptionName")
     private String optionName;
 
@@ -29,11 +26,11 @@ public class PriceConfiguration {
     public void setCriteria(String criteria) {
         this.criteria = criteria;
     }
-
+    @JsonProperty("Value")
     public BaseValue getValue() {
         return value;
     }
-
+    @JsonProperty("Value")
     public void setValue(BaseValue value) {
         this.value = value;
     }

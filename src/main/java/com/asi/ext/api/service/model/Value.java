@@ -8,28 +8,23 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 @XmlAccessorType(XmlAccessType.NONE)
 @JsonInclude(Include.NON_NULL)
 public class Value extends BaseValue {
-
-	@JsonProperty("Attribute")
-    @XmlElement(name="attribute")
+    @JsonProperty("Attribute")
+    @XmlElement(name="Attribute")
     private String attribute;
-
-	@XmlElement(name="Value")
+    @XmlElement(name="Value")
     @JsonProperty("Value")
     private String value;
 
 	@JsonIgnore
     private String criteriaType;
-
-	@JsonIgnore
+    @JsonIgnore
     public String getCriteriaType() {
 		return criteriaType;
 	}
-
-	@JsonIgnore
+    @JsonIgnore
 	public void setCriteriaType(String criteriaType) {
 		this.criteriaType = criteriaType;
 	}
@@ -41,11 +36,11 @@ public class Value extends BaseValue {
     public void setAttribute(String attribute) {
         this.attribute = attribute;
     }
-
+    @JsonProperty("Value")
     public String getValue() {
         return value;
     }
-
+    @JsonProperty("Value")
     public void setValue(String value) {
         this.value = value;
     }
