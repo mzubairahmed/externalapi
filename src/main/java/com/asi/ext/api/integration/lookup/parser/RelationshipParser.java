@@ -7,6 +7,8 @@ import java.util.List;
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.service.model.Availability;
 import com.asi.ext.api.service.model.AvailableVariations;
+import com.asi.ext.api.service.model.ListValue;
+import com.asi.ext.api.service.model.StringValue;
 import com.asi.ext.api.service.model.Value;
 import com.asi.service.product.client.vo.CriteriaSetRelationship;
 import com.asi.service.product.client.vo.CriteriaSetRelationships;
@@ -206,6 +208,7 @@ public class RelationshipParser {
 				List<CriteriaSetValuePath> tempCriteriaSetValuePaths=currentRelationship.getCriteriaSetValuePaths();	
 				String tempValue=null;
 				Value valueobj=null;
+				Object objectValue=null;
 				for(CriteriaSetValuePath currentCriteriaSetValuePath:currentRelationship.getCriteriaSetValuePaths()){
 					tempValue=null;
 					availableVariations=new AvailableVariations();
@@ -217,10 +220,16 @@ public class RelationshipParser {
 							tempValue=tempCriteria.substring(tempCriteria.indexOf(":")+1);
 							if(tempValue.startsWith("_")) tempValue=tempValue.substring(1);
 							
-							availableVariations.setChildValue(tempValue);
+							availableVariations.setChildValue(new StringValue(tempValue));
 						}else{
 							if(null==criteriaValue){
-								availableVariations.setChildValue(criteriaSetParser.findSizesCriteriaSetById(extPrdId, String.valueOf(currentCriteriaSetValuePath.getCriteriaSetValueId())));
+								objectValue=criteriaSetParser.findSizesCriteriaSetById(extPrdId, String.valueOf(currentCriteriaSetValuePath.getCriteriaSetValueId()));
+								if(objectValue instanceof Value){
+									availableVariations.setChildValue((Value)objectValue);
+								}else if(objectValue instanceof List){
+									availableVariations.setChildValue(new ListValue((List<Value>)objectValue));
+								}
+								
 							}else{
 								if(criteriaValue.indexOf("__")+1<criteriaValue.length()){
 									tempValue=criteriaValue.substring(criteriaValue.indexOf("__")+1);
@@ -228,13 +237,13 @@ public class RelationshipParser {
 									if(tempValue.contains(":")){
 										if(criteriaValue.startsWith("MINO")){
 											tempValue=tempValue.replace(":", " ");
-											availableVariations.setChildValue(tempValue);
+											availableVariations.setChildValue(new StringValue(tempValue));
 										}else{
 											tempValue=tempValue.substring(tempValue.indexOf(":")+1);
-											availableVariations.setChildValue(tempValue);
+											availableVariations.setChildValue(new StringValue(tempValue));
 										}
 									}else{
-										availableVariations.setChildValue(tempValue);
+										availableVariations.setChildValue(new StringValue(tempValue));
 									}
 									
 								}
@@ -246,29 +255,35 @@ public class RelationshipParser {
 								criteriaValue=criteriaSetParser.findCriteriaSetValueById(extPrdId,String.valueOf(pairingCriteriaSetPath.getCriteriaSetValueId()));
 								if(isParentOptionCriteria){
 									if(null==criteriaValue){
-										availableVariations.setParentValue(criteriaSetParser.findSizesCriteriaSetById(extPrdId, String.valueOf(pairingCriteriaSetPath.getCriteriaSetValueId())));
+										objectValue=criteriaSetParser.findSizesCriteriaSetById(extPrdId, String.valueOf(pairingCriteriaSetPath.getCriteriaSetValueId()));
+										if(objectValue instanceof Value){
+											availableVariations.setParentValue((Value)objectValue);
+										}else if(objectValue instanceof List){
+											availableVariations.setParentValue(new ListValue((List<Value>)objectValue));
+										}
 									}else{
 										tempCriteria=criteriaValue.substring(criteriaValue.indexOf("__")+2);
 										tempValue=tempCriteria.substring(tempCriteria.indexOf(":")+1);
 										if(tempValue.startsWith("_")) tempValue=tempValue.substring(1);
-										availableVariations.setParentValue(tempValue);
+										availableVariations.setParentValue(new StringValue(tempValue));
 									}
 								}else{
 									if(null==criteriaValue){
-										availableVariations.setParentValue(criteriaSetParser.findSizesCriteriaSetById(extPrdId, String.valueOf(pairingCriteriaSetPath.getCriteriaSetValueId())));
+										objectValue=criteriaSetParser.findSizesCriteriaSetById(extPrdId, String.valueOf(pairingCriteriaSetPath.getCriteriaSetValueId()));
+										availableVariations.setParentValue(new ListValue((List<Value>)objectValue));
 									}else{
 										tempValue=criteriaValue.substring(criteriaValue.indexOf("__")+1);
 										if(tempValue.startsWith("_")) tempValue=tempValue.substring(1);
 										if(tempValue.contains(":")){
 											if(criteriaValue.startsWith("MINO")){
 												//tempValue=
-												availableVariations.setParentValue(tempValue);
+												availableVariations.setParentValue(new StringValue(tempValue));
 											}else{
 												tempValue=tempValue.substring(tempValue.indexOf(":")+1);
-												availableVariations.setParentValue(tempValue);
+												availableVariations.setParentValue(new StringValue(tempValue));
 											}
 										}else{
-											availableVariations.setParentValue(tempValue);
+											availableVariations.setParentValue(new StringValue(tempValue));
 										}								
 									//	availableVariations.setParentValue(tempValue);
 									}

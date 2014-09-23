@@ -153,7 +153,6 @@ public class ProductDataStore {
             return null;
         }
         HashMap<String, String> tempMap = criteriaSetValueReferenceTable.get(extPrdId.trim());
-
         if (tempMap == null || tempMap.isEmpty()) {
             return null;
         }

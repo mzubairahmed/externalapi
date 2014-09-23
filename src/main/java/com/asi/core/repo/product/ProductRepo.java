@@ -36,6 +36,9 @@ import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.ext.api.service.model.Catalog;
 import com.asi.ext.api.service.model.Configurations;
 import com.asi.ext.api.service.model.Image;
+import com.asi.ext.api.service.model.ListValue;
+import com.asi.ext.api.service.model.StringValue;
+import com.asi.ext.api.service.model.Value;
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.ProductClient;
 import com.asi.service.product.client.vo.Batch;
@@ -445,12 +448,19 @@ public class ProductRepo {
                             tempValue=mediaCriteriaStr.substring(mediaCriteriaStr.indexOf("__") + 2);
                             if(tempValue.contains(":") && Arrays.asList(OPTION_CRITERIACODES).contains(criteriaInfo.getCode())){
                             	currentConfiguration.setOptionName(tempValue.substring(0,tempValue.indexOf(":")));
-                            	currentConfiguration.setValue(tempValue.substring(tempValue.indexOf(":")+1));
+                            	//currentConfiguration.setValue(tempValue.substring(tempValue.indexOf(":")+1));
+                            	currentConfiguration.setValue(new StringValue(tempValue.substring(tempValue.indexOf(":")+1)));
                             }else{
                             	if(tempValue.contains(":")){
-                            		currentConfiguration.setValue(tempValue.substring(tempValue.indexOf(":")+1));
+                            	//	currentConfiguration.setStringValue(tempValue.substring(tempValue.indexOf(":")+1));
+                            		StringValue strValue=new StringValue();
+                            		strValue.setValue(tempValue.substring(tempValue.indexOf(":")+1));
+                            	currentConfiguration.setValue(strValue);
+                            	//	currentConfiguration.setValues(null);
                             	}else{
-                            		currentConfiguration.setValue(tempValue);
+                            		//currentConfiguration.setStringValue(tempValue);
+                            		currentConfiguration.setValue(new StringValue(tempValue.substring(tempValue.indexOf(":")+1)));
+                            		//currentConfiguration.setValues(null);
                             	}
                             }
                             mediaConfigurations.add(currentConfiguration);
@@ -459,9 +469,23 @@ public class ProductRepo {
         					mediaItemsObj=criteriaSetParser.findSizesCriteriaSetById(radProduct.getExternalProductId(), String.valueOf(currentMediaCriteriaMatch.getCriteriaSetValueId()));
         					
         					tempValue=ProductDataStore.getCriteriaInfoForCriteriaCode(pricesParser.getCriteriaCode(mediaItemsObj).toString()).getDescription().replace("Size-", "").trim();
-        					tempValue=tempValue.replace("SIZE -","").trim();
+        					//tempValue=tempValue.replace("SIZE -","").trim();
+        					if(tempValue.contains("SIZE")){
+        						tempValue="Sizes";
+        					}
         					currentConfiguration.setCriteria(tempValue);
-        					currentConfiguration.setValue(mediaItemsObj);
+        					if(mediaItemsObj instanceof Value){
+        						
+        						currentConfiguration.setValue((Value)mediaItemsObj);
+        						//currentConfiguration.setValues(null);
+        						//currentConfiguration.setStringValue(null);
+        					}else if(mediaItemsObj instanceof List){
+        						ListValue lsValue=new ListValue();
+        						lsValue.setValue((List<Value>)mediaItemsObj);
+        						currentConfiguration.setValue(lsValue);
+        					//	currentConfiguration.setValue(null);
+        					//	currentConfiguration.setStringValue(null);
+        					}
         					mediaConfigurations.add(currentConfiguration);
                         }
                     }

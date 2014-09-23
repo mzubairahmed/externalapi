@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.ext.api.service.model.Availability;
+import com.asi.ext.api.service.model.BaseValue;
 import com.asi.ext.api.service.model.Capacity;
 import com.asi.ext.api.service.model.Configurations;
 import com.asi.ext.api.service.model.Dimension;
@@ -19,6 +20,7 @@ import com.asi.ext.api.service.model.PriceGrid;
 import com.asi.ext.api.service.model.Product;
 import com.asi.ext.api.service.model.ShippingEstimate;
 import com.asi.ext.api.service.model.Size;
+import com.asi.ext.api.service.model.StringValue;
 import com.asi.ext.api.service.model.Value;
 import com.asi.ext.api.service.model.Values;
 import com.asi.ext.api.service.model.Volume;
@@ -120,6 +122,7 @@ public final class ProductParserUtil {
     }
 
     public static Integer getCriteriaSetValueId(String xid, String criteriaCode, Object value) {
+    	
         String result = ProductDataStore.findCriteriaSetValueIdForValue(xid, criteriaCode, String.valueOf(value));
         if (result != null) {
             return Integer.parseInt(result);
@@ -363,10 +366,10 @@ public final class ProductParserUtil {
         return ApplicationConstants.SIZE_GROUP_CRITERIACODES.contains(criteriaCode);
     }
 
-    public static String getCriteriaSetValueIdBaseOnValueType(String xid, String criteriaCode, Object value) {
+    public static String getCriteriaSetValueIdBaseOnValueType(String xid, String criteriaCode, BaseValue value) {
         Object criteriaSetValueId = null;
-        if (value instanceof String) {
-            criteriaSetValueId = getCriteriaSetValueId(xid, criteriaCode, value);
+       if (value instanceof StringValue) {
+            criteriaSetValueId = getCriteriaSetValueId(xid, criteriaCode, ((StringValue) value).getValue());
             return criteriaSetValueId != null ? String.valueOf(criteriaSetValueId) : null;
         } else if (isSizeGroup(criteriaCode)) {
             String valueToSearch = getSizeModelFromObject(criteriaCode, value);
@@ -404,7 +407,11 @@ public final class ProductParserUtil {
             try {
             	if(value instanceof LinkedHashMap){
             		return String.valueOf(((LinkedHashMap) value).get("Value")+":"+((LinkedHashMap) value).get("Unit"));
-            	}else{
+            	}else if(value instanceof Value){
+            		return String.valueOf(((Value) value).getValue()+":"+(((Value) value).getUnit()));
+            	}
+            	else{
+            		
                 List<Map<?, ?>> values = (List<Map<?, ?>>) value;
                 for (Map<?, ?> v : values) {
                     valueToSearch = v.get("Value") + ":" + v.get("Unit");

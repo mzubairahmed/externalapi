@@ -27,6 +27,7 @@ import com.asi.ext.api.radar.model.PricingItems;
 import com.asi.ext.api.radar.model.Product;
 import com.asi.ext.api.radar.model.ProductConfigurations;
 import com.asi.ext.api.radar.model.ProductCriteriaSets;
+import com.asi.ext.api.service.model.BaseValue;
 import com.asi.ext.api.service.model.Price;
 import com.asi.ext.api.service.model.PriceConfiguration;
 import com.asi.ext.api.service.model.Value;
@@ -398,7 +399,7 @@ public class PriceGridParser extends ProductParser {
                     continue;
                 }
                 String criteriaSetValueId = ProductParserUtil.getCriteriaSetValueIdBaseOnValueType(xid, criteriaInfo.getCode(),
-                        pConfig.getValue());
+                        (BaseValue)pConfig.getValue());
                 if (criteriaSetValueId == null) {
                     productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
                             "Criteria value specified for product doesn't exist, value : " + pConfig.getValue());
