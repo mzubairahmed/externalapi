@@ -1,6 +1,7 @@
 package com.asi.core.repo.lookup;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -17,7 +18,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.asi.ext.api.radar.lookup.model.PriceUnitJsonModel;
@@ -52,7 +52,7 @@ public class LookupValuesRepo {
 	public static RestTemplate lookupRestTemplate;
 	private static Logger _LOGGER = LoggerFactory
 			.getLogger(LookupValuesRepo.class);
-
+	private String[] nonBasePriceCriterias={"IMCL","FOBP","ADCL","SHES","SDIM","THEM","ADLN","SHWT","MINO","LMIN","SMPL","ARTW"};
 	public CategoriesList getAllCategories() {
 		CategoriesList categoriesList = new CategoriesList();
 		ConcurrentHashMap<String, String> categoryCodeLookupTable;
@@ -550,5 +550,36 @@ public class LookupValuesRepo {
         }
         }
 		return mediaCitationList;
+	}
+
+	public CriteriaCodesList getCriteriaCodesListByType(String criteriaListType) {
+		CriteriaCodesList criteriaCodesList=new CriteriaCodesList();
+		List<String> criteriaCodesArrayList = new ArrayList<>();
+		try{
+			LinkedList<?> criteriaCodesResponse = lookupRestTemplate.getForObject(
+		            RestAPIProperties.get(ApplicationConstants.CRITERIA_INFO_URL), LinkedList.class);
+			 Iterator<?> iter = criteriaCodesResponse.iterator();
+	            while (iter.hasNext()) {
+	                try {
+	                    LinkedHashMap crntValue = (LinkedHashMap) iter.next();
+	                    //criteriaCodeLookupData.put(String.valueOf(crntValue.get("Description")).toUpperCase(),
+	                      //      String.valueOf(crntValue.get("Code")));
+	                    if(criteriaListType.equalsIgnoreCase("baseprice") && String.valueOf(crntValue.get("IsAllowBasePrice")).equalsIgnoreCase("true")){
+	                    	criteriaCodesArrayList.add(crntValue.get("Description").toString());	
+	                    }else if(criteriaListType.equalsIgnoreCase("upcharge") && String.valueOf(crntValue.get("IsAllowUpcharge")).equalsIgnoreCase("true")){
+	                    	criteriaCodesArrayList.add(crntValue.get("Description").toString());
+	                    }else if(criteriaListType.equalsIgnoreCase("productnumber") && String.valueOf(crntValue.get("IsProductNumberAssignmentAllowed")).equalsIgnoreCase("true")){
+	                    		criteriaCodesArrayList.add(crntValue.get("Description").toString());
+	                    }
+	                    
+	                } catch (Exception e) {
+	                } // Collecting maximum elements
+	            }
+	           				
+				criteriaCodesList.setCriteriaCodes(criteriaCodesArrayList);
+			}catch(Exception ex){
+				_LOGGER.info(ex.getMessage());
+			}
+	         return criteriaCodesList;
 	}
 }
