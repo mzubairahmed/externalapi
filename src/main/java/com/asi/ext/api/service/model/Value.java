@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonInclude(Include.NON_NULL)
 public class Value extends BaseValue {
     @JsonProperty("Attribute")
-    @XmlElement(name="attribute")
+    @XmlElement(name="Attribute")
     private String attribute;
     @XmlElement(name="Value")
     @JsonProperty("Value")
@@ -36,11 +36,11 @@ public class Value extends BaseValue {
     public void setAttribute(String attribute) {
         this.attribute = attribute;
     }
-
+    @JsonProperty("Value")
     public String getValue() {
         return value;
     }
-
+    @JsonProperty("Value")
     public void setValue(String value) {
         this.value = value;
     }
