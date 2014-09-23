@@ -336,7 +336,7 @@ public class LookupValuesRepo {
 		UpChargeLookup upchargeLookup=new UpChargeLookup();
 		List<String> upchargesArrayList = new ArrayList<>();
 		try{
-	         ConcurrentHashMap<String, String> upchargesLookupTable = upchargeLookup.getUpchargeTypes(ApplicationConstants.PRICING_SUBTYPECODE_LOOKUP);
+	         ConcurrentHashMap<String, String> upchargesLookupTable = upchargeLookup.getUpchargeTypes(RestAPIProperties.get(ApplicationConstants.PRICING_SUBTYPECODE_LOOKUP));
 				@SuppressWarnings("rawtypes")
 				Iterator upchargeIterator = upchargesLookupTable.keySet()
 						.iterator();
@@ -355,7 +355,7 @@ public class LookupValuesRepo {
 		UpChargeLookup upchargeLookup=new UpChargeLookup();
 		List<String> upchargesArrayList = new ArrayList<>();
 		try{
-	         ConcurrentHashMap<String, String> upchargesLookupTable = upchargeLookup.getUpchargeLevels(ApplicationConstants.PRICING_USAGELEVEL_LOOKUP);
+	         ConcurrentHashMap<String, String> upchargesLookupTable = upchargeLookup.getUpchargeLevels(RestAPIProperties.get(ApplicationConstants.PRICING_USAGELEVEL_LOOKUP));
 				@SuppressWarnings("rawtypes")
 				Iterator upchargeIterator = upchargesLookupTable.keySet()
 						.iterator();
