@@ -398,8 +398,7 @@ public class PriceGridParser extends ProductParser {
                             "Criteria specified for product doesn't exist");
                     continue;
                 }
-                String criteriaSetValueId = ProductParserUtil.getCriteriaSetValueIdBaseOnValueType(xid, criteriaInfo.getCode(),
-                        (BaseValue)pConfig.getValue());
+                String criteriaSetValueId = ProductParserUtil.getCriteriaSetValueIdBaseOnValueType(xid, criteriaInfo.getCode(), pConfig.getValue());
                 if (criteriaSetValueId == null) {
                     productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
                             "Criteria value specified for product doesn't exist, value : " + pConfig.getValue());

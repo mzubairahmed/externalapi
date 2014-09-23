@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
 
 import com.asi.ext.api.product.transformers.ProductDataStore;
@@ -39,6 +40,8 @@ public final class ProductParserUtil {
     private final static String PRODUCT_ID = ApplicationConstants.CONST_STRING_ZERO;
     private final static String ID         = ApplicationConstants.CONST_STRING_ZERO;
 
+    private static Logger _LOGGER = Logger.getLogger(ProductParserUtil.class);
+    
     public final static String getConfigId(List<ProductConfiguration> productConfigurations) {
         if (productConfigurations != null && productConfigurations.size() > 0) {
             return productConfigurations.get(0).getID() + "";
@@ -401,6 +404,7 @@ public final class ProductParserUtil {
                 }
                 valueToSearch = finalValue;
             } catch (Exception e) {
+            	_LOGGER.error(e.getMessage(), e);
                 return null;
             }
         } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY)) {
