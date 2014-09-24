@@ -548,7 +548,12 @@ public class PricesParser {
 			// BUG: VELOEXTAPI-440
 //			criteriaSet1.setValue(criteriaSetParser.findSizesCriteriaSetById(externalProductId, criteriaSetValueId));
 			Object value = criteriaSetParser.findSizesCriteriaSetById(externalProductId, criteriaSetValueId);
-			
+			if(value instanceof java.util.List) {
+				if(((java.util.List) value).size() == 1) {
+					Value singleValue = (Value) ((java.util.List) value).get(0);
+					value = singleValue;
+				}
+			}
 			// firstCriteria=(String) getCriteriaCode(criteriaSet1);
 			if (value instanceof Value) {
 				Value currentCriteriaObj = (Value) value;
