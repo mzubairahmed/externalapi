@@ -13,7 +13,7 @@ import com.asi.service.lookup.vo.CategoriesList;
 import com.asi.service.lookup.vo.ThemesList;
 
 @RestController
-@RequestMapping("resources/lookup")
+@RequestMapping("lookup")
 public class LookupService {
 	@Autowired private LookupValuesRepo lookupValueRepository;
 

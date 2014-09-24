@@ -1,10 +1,7 @@
 package com.asi.ext.api.service.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@XmlRootElement(name="Value")
 public class StringValue extends BaseValue {
 	@JsonProperty("Value")
 	private String value=null;

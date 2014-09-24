@@ -809,6 +809,7 @@ public class ConfigurationsParser {
 				} else {
 					material.setAlias(currentCriteriaSetValue.getValue()
 							.toString());
+					if(null!=currentCriteriaSetValue.getCriteriaSetCodeValues() && currentCriteriaSetValue.getCriteriaSetCodeValues().length>0){
 					materialName = ProductDataStore
 							.reverseLookupFindAttribute(
 									currentCriteriaSetValue
@@ -834,6 +835,7 @@ public class ConfigurationsParser {
 								currentCriteriaSetValue.getCriteriaCode(),
 								Integer.parseInt(currentCriteriaSetValue
 										.getId()), materialName);
+					}
 					}
 				}
 				materialList.add(material);
@@ -1081,6 +1083,8 @@ public class ConfigurationsParser {
 			String currentImprintMethod = "";
 			int imprintCntr = 0;
 			for (com.asi.service.product.client.vo.CriteriaSetValues currentCriteriaSetValue : currentCriteriaSetValueList) {
+				if(null!=currentCriteriaSetValue.getCriteriaSetCodeValues() && currentCriteriaSetValue
+								.getCriteriaSetCodeValues().length>0){
 				currentImprintMethod = ProductDataStore
 						.reverseLookupFindAttribute(currentCriteriaSetValue
 								.getCriteriaSetCodeValues()[0]
@@ -1105,6 +1109,7 @@ public class ConfigurationsParser {
 						imprintMethods += "||" + currentImprintMethod;
 					}
 					imprintCntr++;
+				}
 				}
 			}
 		}

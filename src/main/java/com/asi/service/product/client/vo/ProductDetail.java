@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "SameDayRushFlag",
     "AsiProdNo",
     "NewProductFlag",
+    "SEOFlag",
     "NewProductExpirationDate",
     "FullColorProcessFlag",
     "VisibleForAllUsersFlag",
@@ -94,6 +95,8 @@ public class ProductDetail {
     private String asiProdNo;
     @JsonProperty("NewProductFlag")
     private String newProductFlag;
+    @JsonProperty("SEOFlag")
+    private String SEOFlag;
     @JsonProperty("NewProductExpirationDate")
     private String newProductExpirationDate;
 	@JsonProperty("FullColorProcessFlag")
@@ -344,7 +347,13 @@ public class ProductDetail {
         this.newProductFlag = newProductFlag;
     }
 
-    @JsonProperty("FullColorProcessFlag")
+    public String getSEOFlag() {
+		return SEOFlag;
+	}
+	public void setSEOFlag(String sEOFlag) {
+		this.SEOFlag = sEOFlag;
+	}
+	@JsonProperty("FullColorProcessFlag")
     public String getFullColorProcessFlag() {
         return fullColorProcessFlag;
     }

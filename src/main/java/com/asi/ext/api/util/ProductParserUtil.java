@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
 
 import com.asi.ext.api.product.transformers.ProductDataStore;
@@ -16,6 +17,7 @@ import com.asi.ext.api.service.model.BaseValue;
 import com.asi.ext.api.service.model.Capacity;
 import com.asi.ext.api.service.model.Configurations;
 import com.asi.ext.api.service.model.Dimension;
+import com.asi.ext.api.service.model.ListValue;
 import com.asi.ext.api.service.model.PriceGrid;
 import com.asi.ext.api.service.model.Product;
 import com.asi.ext.api.service.model.ShippingEstimate;
@@ -39,6 +41,8 @@ public final class ProductParserUtil {
     private final static String PRODUCT_ID = ApplicationConstants.CONST_STRING_ZERO;
     private final static String ID         = ApplicationConstants.CONST_STRING_ZERO;
 
+    private static Logger _LOGGER = Logger.getLogger(ProductParserUtil.class);
+    
     public final static String getConfigId(List<ProductConfiguration> productConfigurations) {
         if (productConfigurations != null && productConfigurations.size() > 0) {
             return productConfigurations.get(0).getID() + "";
@@ -391,16 +395,27 @@ public final class ProductParserUtil {
     private static String getSizeModelFromObject(String criteriaCode, Object value) {
         String valueToSearch = null;
         if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_DIMENSION)) {
-            try {
-                List<Map<?, ?>> dimValuesList = (List<Map<?, ?>>) value;
-                String finalValue = "";
-                for (Map<?, ?> dimValue : dimValuesList) {
-                    if (dimValue.get("Attribute") != null) {
-                        finalValue = CommonUtilities.appendValue(finalValue, dimValue.get("Attribute") + ":" + dimValue.get("Value") + ":" + dimValue.get("Unit"), ";");
-                    } 
-                }
+        	String finalValue = "";
+        	try {
+            	if(value instanceof List) {
+	                List<Map<?, ?>> dimValuesList = (List<Map<?, ?>>) value;
+	                for (Map<?, ?> dimValue : dimValuesList) {
+	                    if (dimValue.get("Attribute") != null) {
+	                        finalValue = CommonUtilities.appendValue(finalValue, dimValue.get("Attribute") + ":" + dimValue.get("Value") + ":" + dimValue.get("Unit"), ";");
+	                    } 
+	                }
+            	} else if(value instanceof ListValue) {
+            		ListValue listValue = (ListValue) value;
+            		List<Value> dimsValues = listValue.getValue();
+            		for(Value dimsValue : dimsValues) {
+            			finalValue += dimsValue.getAttribute() + ":" + dimsValue.getValue() + ":" + dimsValue.getUnit() + ";";
+            		}
+            		finalValue = finalValue.substring(0, finalValue.lastIndexOf(";"));
+            		
+            	}
                 valueToSearch = finalValue;
-            } catch (Exception e) {
+        	} catch (Exception e) {
+            	_LOGGER.error(e.getMessage(), e);
                 return null;
             }
         } else if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY)) {
@@ -426,7 +441,10 @@ public final class ProductParserUtil {
             try {
             	if(value instanceof LinkedHashMap){
             		return String.valueOf(value);
-            	}else{
+            	} else if(value instanceof Value) {
+            		Value singleValue = (Value) value;
+            		valueToSearch = singleValue.getValue() + ":" + singleValue.getUnit();
+            	} else {
                 List<?> volumes = (List<?>) value;
                 if (volumes != null && !volumes.isEmpty()) {
                     List<Map<?, ?>> values = (List<Map<?, ?>>) volumes.get(0);

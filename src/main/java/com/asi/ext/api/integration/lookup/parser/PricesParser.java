@@ -536,8 +536,10 @@ public class PricesParser {
 				criteriaValue=formatCriteriaValue(criteriaItems[1],
 						criteriaCode);
 				if(criteriaValue.contains(":") && criteriaCode.equals("IMMD")){
+					// criteriaSet1.setValue(criteriaValue.substring(criteriaValue.indexOf(":")+1));
 					criteriaSet1.setValue(new StringValue(criteriaValue.substring(criteriaValue.indexOf(":")+1)));
 				}else{
+					// criteriaSet1.setValue(criteriaValue);
 					criteriaSet1.setValue(new StringValue(criteriaValue));
 				}
 			}
@@ -546,7 +548,12 @@ public class PricesParser {
 			// BUG: VELOEXTAPI-440
 //			criteriaSet1.setValue(criteriaSetParser.findSizesCriteriaSetById(externalProductId, criteriaSetValueId));
 			Object value = criteriaSetParser.findSizesCriteriaSetById(externalProductId, criteriaSetValueId);
-			
+			if(value instanceof java.util.List) {
+				if(((java.util.List) value).size() == 1) {
+					Value singleValue = (Value) ((java.util.List) value).get(0);
+					value = singleValue;
+				}
+			}
 			// firstCriteria=(String) getCriteriaCode(criteriaSet1);
 			if (value instanceof Value) {
 				Value currentCriteriaObj = (Value) value;
@@ -556,7 +563,7 @@ public class PricesParser {
 							crntCriteria=ProductDataStore
 							.getCriteriaInfoForCriteriaCode(
 									currentCriteriaObj.getCriteriaType())
-									.getDescription().replace("Size-", "").trim();
+									.getDescription().trim();
 					if (crntCriteria.trim().startsWith("Size")
 							|| crntCriteria.contains("Apparel")
 							|| crntCriteria.trim().startsWith("SIZE"))
@@ -577,6 +584,7 @@ public class PricesParser {
 				// criteriaSet1=criteriaValues;
 			} else if (value instanceof List) {
 				@SuppressWarnings("unchecked")
+				// List<Value> valueList = (List<Value>) criteriaSet1.getValue();
 				List<Value> valueList = (List<Value>) value;
 				criteriaSet1.setValue(new ListValue(valueList));
 				for (Value currentValue : valueList) {
