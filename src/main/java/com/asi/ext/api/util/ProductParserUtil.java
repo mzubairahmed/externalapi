@@ -17,6 +17,7 @@ import com.asi.ext.api.service.model.BaseValue;
 import com.asi.ext.api.service.model.Capacity;
 import com.asi.ext.api.service.model.Configurations;
 import com.asi.ext.api.service.model.Dimension;
+import com.asi.ext.api.service.model.ListValue;
 import com.asi.ext.api.service.model.PriceGrid;
 import com.asi.ext.api.service.model.Product;
 import com.asi.ext.api.service.model.ShippingEstimate;
@@ -394,16 +395,26 @@ public final class ProductParserUtil {
     private static String getSizeModelFromObject(String criteriaCode, Object value) {
         String valueToSearch = null;
         if (criteriaCode.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_DIMENSION)) {
-            try {
-                List<Map<?, ?>> dimValuesList = (List<Map<?, ?>>) value;
-                String finalValue = "";
-                for (Map<?, ?> dimValue : dimValuesList) {
-                    if (dimValue.get("Attribute") != null) {
-                        finalValue = CommonUtilities.appendValue(finalValue, dimValue.get("Attribute") + ":" + dimValue.get("Value") + ":" + dimValue.get("Unit"), ";");
-                    } 
-                }
+        	String finalValue = "";
+        	try {
+            	if(value instanceof List) {
+	                List<Map<?, ?>> dimValuesList = (List<Map<?, ?>>) value;
+	                for (Map<?, ?> dimValue : dimValuesList) {
+	                    if (dimValue.get("Attribute") != null) {
+	                        finalValue = CommonUtilities.appendValue(finalValue, dimValue.get("Attribute") + ":" + dimValue.get("Value") + ":" + dimValue.get("Unit"), ";");
+	                    } 
+	                }
+            	} else if(value instanceof ListValue) {
+            		ListValue listValue = (ListValue) value;
+            		List<Value> dimsValues = listValue.getValue();
+            		for(Value dimsValue : dimsValues) {
+            			finalValue += dimsValue.getAttribute() + ":" + dimsValue.getValue() + ":" + dimsValue.getUnit() + ";";
+            		}
+            		finalValue = finalValue.substring(0, finalValue.lastIndexOf(";"));
+            		
+            	}
                 valueToSearch = finalValue;
-            } catch (Exception e) {
+        	} catch (Exception e) {
             	_LOGGER.error(e.getMessage(), e);
                 return null;
             }

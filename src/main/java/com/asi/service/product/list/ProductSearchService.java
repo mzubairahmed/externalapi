@@ -61,6 +61,8 @@ public class ProductSearchService {
         } catch (RuntimeException re) {
         	if(re.getCause() instanceof ExternalApiAuthenticationException) {
         		throw (ExternalApiAuthenticationException) re.getCause();
+        	} else {
+        		throw re;
         	}
         } catch (ProductNotFoundException e) {
         	_LOGGER.error(e.getMessage());
