@@ -528,6 +528,7 @@ public class ProductRepo {
         serviceProduct.setAdditionalShippingInfo(radProduct.getAdditionalShippingInfo());
         serviceProduct.setPriceConfirmedThru(radProduct.getPriceConfirmationDate());
         serviceProduct.setCanShipInPlainBox(radProduct.getIsShippableInPlainBox());
+       	serviceProduct.setSeoFlag("Y".equalsIgnoreCase(radProduct.getSEOFlag()));
         return serviceProduct;
     }
 

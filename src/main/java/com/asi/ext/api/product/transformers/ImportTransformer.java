@@ -148,6 +148,9 @@ public class ImportTransformer {
         productToSave.setAsiProdNo(serviceProduct.getAsiProdNo());
         productToSave.setDescription(serviceProduct.getDescription());
         productToSave.setSummary(serviceProduct.getSummary());
+
+        // Fix for VELOEXTAPI-472
+        productToSave.setSEOFlag(existingRadarModel.getSEOFlag());
         
         productToSave.setShipperBillsByCode(ProductParserUtil.getShippersBillsBy(serviceProduct.getShipperBillsBy()));
        

@@ -43,6 +43,12 @@ public class Product {
     private boolean               breakOutByPrice;
     @JsonProperty("CanShipInPlainBox")
     private boolean               canShipInPlainBox;
+
+    // Fix for VELOEXTAPI-472
+    @JsonProperty("SEOFlag")
+    @XmlElement(name = "SEOFlag")
+    private boolean seoFlag;
+
     @JsonProperty("LineNames")
     @XmlElementWrapper(name = "LineNames")
     @XmlElement(name = "LineName")
@@ -398,5 +404,13 @@ public class Product {
     public void setCanShipInPlainBox(boolean canShipInPlainBox) {
         this.canShipInPlainBox = canShipInPlainBox;
     }
+
+	public boolean getSeoFlag() {
+		return seoFlag;
+	}
+
+	public void setSeoFlag(boolean sEOFlag) {
+		seoFlag = sEOFlag;
+	}
 
 }

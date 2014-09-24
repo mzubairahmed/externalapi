@@ -441,7 +441,10 @@ public final class ProductParserUtil {
             try {
             	if(value instanceof LinkedHashMap){
             		return String.valueOf(value);
-            	}else{
+            	} else if(value instanceof Value) {
+            		Value singleValue = (Value) value;
+            		valueToSearch = singleValue.getValue() + ":" + singleValue.getUnit();
+            	} else {
                 List<?> volumes = (List<?>) value;
                 if (volumes != null && !volumes.isEmpty()) {
                     List<Map<?, ?>> values = (List<Map<?, ?>>) volumes.get(0);
