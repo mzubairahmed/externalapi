@@ -334,7 +334,7 @@ public class ProductRepo {
                 serviceProduct.setShipperBillsBy(shipperBillsBy);
                 serviceProduct = configurationParser.setProductWithConfigurations(authToken,productDetail, serviceProduct);
                 serviceProduct = priceGridParser.setProductWithPriceGrids(productDetail, serviceProduct);
-                serviceProduct = setBasicProductDetails(productDetail, serviceProduct);
+                serviceProduct = setBasicProductDetails(authToken,productDetail, serviceProduct);
 
                 criteriaSetParser.removeCriteriaReferencesByExternalId(serviceProduct.getExternalProductId());
                 criteriaSetParser.removeCriteriaReferencesForSizesByExternalId(serviceProduct.getExternalProductId());
@@ -356,7 +356,7 @@ public class ProductRepo {
         return serviceProduct;
     }
 
-    private com.asi.ext.api.service.model.Product setBasicProductDetails(ProductDetail radProduct,
+    private com.asi.ext.api.service.model.Product setBasicProductDetails(String authToken,ProductDetail radProduct,
             com.asi.ext.api.service.model.Product serviceProduct) {
         // Selected Safety Warnings
         List<SelectedSafetyWarnings> safetyWarningsList = radProduct.getSelectedSafetyWarnings();
@@ -505,10 +505,10 @@ public class ProductRepo {
                 List<ProductMediaCitationReferences> references = currentMediaCitation.getProductMediaCitationReferences();
                 if (references != null && !references.isEmpty()) {
                     catalog = ProductDataStore.getMediaCitationById(currentMediaCitation.getMediaCitationId(), references.get(0)
-                            .getMediaCitationReferenceId(), radProduct.getCompanyId());
+                            .getMediaCitationReferenceId(), authToken);
                 } else {
                     catalog = ProductDataStore.getMediaCitationByIdWithoutReference(currentMediaCitation.getMediaCitationId(),
-                            radProduct.getCompanyId());
+                            authToken);
                 }
                 catalogsList.add(catalog);
             }

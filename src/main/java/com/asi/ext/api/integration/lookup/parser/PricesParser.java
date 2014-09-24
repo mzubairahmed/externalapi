@@ -563,7 +563,7 @@ public class PricesParser {
 							crntCriteria=ProductDataStore
 							.getCriteriaInfoForCriteriaCode(
 									currentCriteriaObj.getCriteriaType())
-									.getDescription().replace("Size-", "").trim();
+									.getDescription().trim();
 					if (crntCriteria.trim().startsWith("Size")
 							|| crntCriteria.contains("Apparel")
 							|| crntCriteria.trim().startsWith("SIZE"))
