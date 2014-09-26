@@ -37,14 +37,14 @@ import com.asi.service.resource.response.ExternalAPIResponse;
 @RestController
 @RequestMapping("product")
 public class ProductServiceResource {
-
+	
     @Autowired
     ProductService                   productService;
 
     private static Logger            _LOGGER = Logger.getLogger(ProductServiceResource.class);
     @Autowired
     private MessageSource            messageSource;
-
+    
     @Secured("ROLE_CUSTOMER")
     @RequestMapping(value = "{companyid}/pid/{xid}", method = RequestMethod.PUT, headers = { MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_ATOM_XML_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE,
@@ -69,7 +69,7 @@ public class ProductServiceResource {
     // @Secured("ROLE_CUSTOMER")
     @RequestMapping(method = RequestMethod.POST, headers = "content-type=application/json, application/xml", produces = {
             "application/xml; charset=UTF-8", "application/json; charset=UTF-8" })
-    public ResponseEntity<ExternalAPIResponse> updateProduct(HttpEntity<Product> requestEntity, @RequestHeader("AuthToken") String authToken) throws Exception {
+    public ResponseEntity<ExternalAPIResponse> updateProduct(HttpEntity<Product> requestEntity, HttpServletRequest request, @RequestHeader("AuthToken") String authToken) throws Exception {
         if (_LOGGER.isDebugEnabled()) {
             _LOGGER.debug("calling service");
         }
@@ -89,7 +89,8 @@ public class ProductServiceResource {
             return new ResponseEntity<ExternalAPIResponse>(message, null, HttpStatus.BAD_REQUEST);
         } 
         try {
-            message = productService.updateProduct(authToken, requestEntity.getBody());
+        	String batchId = request.getParameter("batchId");
+            message = productService.updateProduct(authToken, batchId, requestEntity.getBody());
         } catch (Exception e) {
             throw e;
         }

@@ -51,7 +51,7 @@ public class BatchServiceResource {
 			_LOGGER.error(e.getMessage(), e);
 			throw e;
 		}
-		
+
 	}
 	
 	@RequestMapping(value = "Finalize", method = RequestMethod.PUT, headers = "content-type=application/json, application/xml", 
