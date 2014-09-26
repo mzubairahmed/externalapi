@@ -41,9 +41,9 @@ public class Batch {
     @JsonProperty("BatchDataSources")
     private List<BatchDataSource> batchDataSources = new ArrayList<BatchDataSource>();
     @JsonProperty("BatchErrorLogs")
-    private List<Object> batchErrorLogs = new ArrayList<Object>();
+    private List<BatchErrorLog> batchErrorLogs = new ArrayList<BatchErrorLog>();
     @JsonProperty("BatchProducts")
-    private List<Object> batchProducts = new ArrayList<Object>();
+    private List<BatchProduct> batchProducts = new ArrayList<BatchProduct>();
     @JsonProperty("AuditStatusCode")
     private String auditStatusCode;
     @JsonProperty("ModId")
@@ -124,22 +124,22 @@ public class Batch {
     }
 
     @JsonProperty("BatchErrorLogs")
-    public List<Object> getBatchErrorLogs() {
+    public List<BatchErrorLog> getBatchErrorLogs() {
         return batchErrorLogs;
     }
 
     @JsonProperty("BatchErrorLogs")
-    public void setBatchErrorLogs(List<Object> batchErrorLogs) {
+    public void setBatchErrorLogs(List<BatchErrorLog> batchErrorLogs) {
         this.batchErrorLogs = batchErrorLogs;
     }
 
     @JsonProperty("BatchProducts")
-    public List<Object> getBatchProducts() {
+    public List<BatchProduct> getBatchProducts() {
         return batchProducts;
     }
 
     @JsonProperty("BatchProducts")
-    public void setBatchProducts(List<Object> batchProducts) {
+    public void setBatchProducts(List<BatchProduct> batchProducts) {
         this.batchProducts = batchProducts;
     }
 

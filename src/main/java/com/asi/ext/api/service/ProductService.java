@@ -17,6 +17,6 @@ public interface ProductService {
     
     public Product getProduct(String companyId, String xid);
     
-    public ExternalAPIResponse updateProduct(String authToken, Product serviceProduct);
+    public ExternalAPIResponse updateProduct(String authToken, String batchId, Product serviceProduct);
 
 }
