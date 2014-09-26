@@ -67,10 +67,10 @@ public class ProductRepo {
     private ProductDataStore      lookupDataStore        = new ProductDataStore();
     private RestAPIMessageHandler velocityMessageHandler = RestAPIMessageHandler.getInstance();
     
-    private static final String SHIPPER_BILL_BY_WEIGHT = "WEIG";
+    /*private static final String SHIPPER_BILL_BY_WEIGHT = "WEIG";
     private static final String SHIPPER_BILL_BY_SIZE = "SIZE";
     private static final String SHIPPER_BILL_BY_BOTH = "WSIZ";
-    
+    */
 
     /**
      * @return the productClient
@@ -179,7 +179,7 @@ public class ProductRepo {
             return productClient.convertExceptionToResponseModel(ea);
         }
         try {
-            
+//            serviceProduct=transformBaseValues(serviceProduct);
             // Doing Transformation of Service product to pure Radar object model (Core Component)
             existingRadarProduct = productTransformer.generateRadarProduct(serviceProduct, existingRadarProduct, authToken);
         } catch (Exception e) {
@@ -203,8 +203,27 @@ public class ProductRepo {
 
         return response;
     }
-
-    /**
+/*
+    private com.asi.ext.api.service.model.Product transformBaseValues(
+			com.asi.ext.api.service.model.Product serviceProduct) {
+    	BaseAnnotedValue baseAnnotedValue=new BaseAnnotedValue();
+    	BaseValue baseValue=null;
+    	for(PriceGrid crntPriceGrd:serviceProduct.getPriceGrids()){
+			for(PriceConfiguration crntPriceConfig:crntPriceGrd.getPriceConfigurations()){
+    			baseValue=crntPriceConfig.getValue();
+    			if(baseValue instanceof List){
+    				ListValue listValue=(ListValue) baseValue;
+    				baseAnnotedValue=baseValue;
+    		
+    			}
+    		}
+    				
+    	}
+    	
+		return serviceProduct;
+	}
+*/
+	/**
      * @param response
      * @param xid
      * @return
@@ -356,7 +375,8 @@ public class ProductRepo {
         return serviceProduct;
     }
 
-    private com.asi.ext.api.service.model.Product setBasicProductDetails(String authToken,ProductDetail radProduct,
+    @SuppressWarnings("unchecked")
+	private com.asi.ext.api.service.model.Product setBasicProductDetails(String authToken,ProductDetail radProduct,
             com.asi.ext.api.service.model.Product serviceProduct) {
         // Selected Safety Warnings
         List<SelectedSafetyWarnings> safetyWarningsList = radProduct.getSelectedSafetyWarnings();
@@ -467,7 +487,7 @@ public class ProductRepo {
         				}else{
         					PricesParser pricesParser=new PricesParser();
         					mediaItemsObj=criteriaSetParser.findSizesCriteriaSetById(radProduct.getExternalProductId(), String.valueOf(currentMediaCriteriaMatch.getCriteriaSetValueId()));
-        					
+        					if(null!=mediaItemsObj){
         					tempValue=ProductDataStore.getCriteriaInfoForCriteriaCode(pricesParser.getCriteriaCode(mediaItemsObj).toString()).getDescription().replace("Size-", "").trim();
         					//tempValue=tempValue.replace("SIZE -","").trim();
         					if(tempValue.contains("SIZE")){
@@ -487,6 +507,7 @@ public class ProductRepo {
         					//	currentConfiguration.setStringValue(null);
         					}
         					mediaConfigurations.add(currentConfiguration);
+        					}
                         }
                     }
                     currentImage.setConfigurations(mediaConfigurations);
