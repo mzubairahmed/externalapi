@@ -32,7 +32,8 @@ public class ProductOptionsProcessor extends SimpleCriteriaProcessor {
     private final static Logger LOGGER              = Logger.getLogger(ProductOptionsProcessor.class.getName());
 
     private int                 uniqueCriteriaSetId = 1;
-    private String              configId            = "0";
+    @SuppressWarnings("unused")
+	private String              configId            = "0";
 
     private ProductDataStore    productDataStore    = new ProductDataStore();
 
@@ -59,6 +60,12 @@ public class ProductOptionsProcessor extends SimpleCriteriaProcessor {
                 LOGGER.info("Invalid Option Type " + option.getOptionType());
                 productDataStore.addErrorToBatchLogCollection(existingProduct.getExternalProductId().trim(),
                         ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Invalid Option type " + option.getOptionType());
+                continue;
+            }
+            if(null== option.getName() || option.getName().trim().length()<=0){
+            	LOGGER.info("Option Name is Mandatory for given " + option.getOptionType());
+                productDataStore.addErrorToBatchLogCollection(existingProduct.getExternalProductId().trim(),
+                        ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Please provide Option Name for " + option.getOptionType());
                 continue;
             }
             String setCodeValueId = ProductDataStore.getSetCodeValueIdForOptions(criteriaCode);

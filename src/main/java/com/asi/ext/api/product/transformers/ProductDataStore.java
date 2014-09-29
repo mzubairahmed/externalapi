@@ -1094,7 +1094,7 @@ public class ProductDataStore {
   {
 	  boolean otherpriceUnitChk=false;
 	  com.asi.service.product.client.vo.PriceUnit curentPriceUnit=getPriceUnit(priceUnit, false);
-	  if(curentPriceUnit.getDisplayName().equalsIgnoreCase("other"))
+	  if(null!=curentPriceUnit && curentPriceUnit.getDisplayName().equalsIgnoreCase("other"))
 		  otherpriceUnitChk=true;
 	  
 	  return otherpriceUnitChk;

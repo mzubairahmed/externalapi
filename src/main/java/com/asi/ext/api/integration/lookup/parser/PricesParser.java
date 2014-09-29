@@ -591,7 +591,7 @@ public class PricesParser {
 					currentCriteria = ProductDataStore
 							.getCriteriaInfoForCriteriaCode(
 									currentValue.getCriteriaType())
-							.getDescription().replace("Size-", "").trim();
+							.getDescription().trim();
 					if (currentCriteria.trim().startsWith("Size")
 							|| currentCriteria.contains("Apparel")
 							|| currentCriteria.trim().startsWith("SIZE"))

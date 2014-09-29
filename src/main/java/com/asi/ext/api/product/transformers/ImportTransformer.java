@@ -151,15 +151,24 @@ public class ImportTransformer {
 
         // Fix for VELOEXTAPI-472
         productToSave.setSEOFlag(existingRadarModel.getSEOFlag());
-        
         productToSave.setShipperBillsByCode(ProductParserUtil.getShippersBillsBy(serviceProduct.getShipperBillsBy()));
        
         if (productToSave.getShipperBillsByCode() == null) {
             productToSave.setShipperBillsByCode("");
             productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
                     "Invalid value provided for ShippersBillsBy : " + serviceProduct.getShipperBillsBy());
+        }else{
+        	if(serviceProduct.getProductConfigurations().getShippingEstimates().getDimensions()==null && serviceProduct.getShipperBillsBy().contains("Size")){
+        		 productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+                         "Invalid value provided for ShippersBillsBy : " + serviceProduct.getShipperBillsBy());
+        	}
+        	if(serviceProduct.getProductConfigurations().getShippingEstimates().getWeight()==null && serviceProduct.getShipperBillsBy().contains("Weight")){
+        		productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+                        "Invalid value provided for ShippersBillsBy : " + serviceProduct.getShipperBillsBy());
+        	}
         }
-
+        
+        
         productToSave.setDisclaimer(serviceProduct.getProductDisclaimer());
         productToSave.setAdditionalInfo(serviceProduct.getAdditionalProductInfo());
         productToSave.setDistributorComments(serviceProduct.getDistributorOnlyComments());

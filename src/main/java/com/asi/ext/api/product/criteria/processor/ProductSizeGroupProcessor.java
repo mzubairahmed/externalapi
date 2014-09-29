@@ -1123,6 +1123,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
             String shippingDimensions = ProductParserUtil.getShippingDimension(shippingEstimate);
             
             LOGGER.info("Shipping Dimensions Transformation Starts :" + shippingDimensions);
+            if(null!=shippingDimensions){
             dimnsAry = shippingDimensions.split(";");
             if (dimnsAry.length == 3) {
             	for(String crntDims:dimnsAry){
@@ -1155,6 +1156,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
             } else {
 
                 // TODO : LOG ERROR
+            }
             }
             LOGGER.info("Shipping Dimensions Transformation Ends");
         }

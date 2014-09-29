@@ -1069,8 +1069,8 @@ public class PriceGridParser extends ProductParser {
                             if (null != currentPrice.getItemsPerUnit() && currentPrice.getItemsPerUnit() > 0)
                                 currentPriceUnit.setItemsPerUnit(String.valueOf(currentPrice.getItemsPerUnit()));
 
-                            currentPriceUnit.setName((null != currentPrice.getPriceUnit().getDisplayName() && !currentPrice
-                                    .getPriceUnit().getDisplayName().isEmpty()) ? currentPrice.getPriceUnit().getDisplayName()
+                            currentPriceUnit.setName((null != currentPrice.getPriceUnitName() && !currentPrice
+                                    .getPriceUnitName().isEmpty()) ? currentPrice.getPriceUnitName()
                                     : null);
                             if (ProductDataStore.isOtherPriceUnit(currentPrice.getPriceUnit().getDisplayName())) {
                                 currentPriceUnit.setPriceUnitName(currentPrice.getPriceUnitName());
