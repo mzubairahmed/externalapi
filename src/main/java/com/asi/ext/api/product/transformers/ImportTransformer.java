@@ -150,7 +150,8 @@ public class ImportTransformer {
         productToSave.setSummary(serviceProduct.getSummary());
 
         // Fix for VELOEXTAPI-472
-        productToSave.setSEOFlag(existingRadarModel.getSEOFlag());
+        
+        productToSave.setSEOFlag((null!=existingRadarModel && null!=existingRadarModel.getSEOFlag())?existingRadarModel.getSEOFlag():null);
         productToSave.setShipperBillsByCode(ProductParserUtil.getShippersBillsBy(serviceProduct.getShipperBillsBy()));
        
         if (productToSave.getShipperBillsByCode() == null) {
@@ -158,11 +159,11 @@ public class ImportTransformer {
             productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
                     "Invalid value provided for ShippersBillsBy : " + serviceProduct.getShipperBillsBy());
         }else{
-        	if(serviceProduct.getProductConfigurations().getShippingEstimates().getDimensions()==null && serviceProduct.getShipperBillsBy().contains("Size")){
+        	if(serviceProduct.getProductConfigurations().getShippingEstimates().getDimensions()==null && null!=serviceProduct.getShipperBillsBy() && serviceProduct.getShipperBillsBy().contains("Size")){
         		 productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
                          "Invalid value provided for ShippersBillsBy : " + serviceProduct.getShipperBillsBy());
         	}
-        	if(serviceProduct.getProductConfigurations().getShippingEstimates().getWeight()==null && serviceProduct.getShipperBillsBy().contains("Weight")){
+        	if(serviceProduct.getProductConfigurations().getShippingEstimates().getWeight()==null && null!=serviceProduct.getShipperBillsBy() && serviceProduct.getShipperBillsBy().contains("Weight")){
         		productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
                         "Invalid value provided for ShippersBillsBy : " + serviceProduct.getShipperBillsBy());
         	}
@@ -330,7 +331,7 @@ public class ImportTransformer {
 
     private List<ProductConfiguration> processProductConfigurations(String configId,
             Map<String, ProductCriteriaSets> existingCriteriaSetMap, Map<String, List<ProductCriteriaSets>> optionsCriteriaSet,
-            com.asi.ext.api.service.model.ProductConfigurations serviceProdConfigs, ProductDetail rdrProduct, boolean isNewProduct) {
+            com.asi.ext.api.service.model.ProductConfigurations serviceProdConfigs, ProductDetail rdrProduct, boolean isNewProduct) throws InvalidProductException {
         List<ProductConfiguration> updatedProductConfigurationList = new ArrayList<>();
 
         if (serviceProdConfigs == null) {

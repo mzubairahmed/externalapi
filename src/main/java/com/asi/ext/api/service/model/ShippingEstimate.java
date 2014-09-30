@@ -11,19 +11,19 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class ShippingEstimate {
 
     @JsonProperty("NumberOfItems")
-    private Value numberOfItems;
+    private BaseValue numberOfItems;
     @JsonProperty("Dimensions")
     private Dimensions    dimensions;
     @JsonProperty("Weight")
-    private Value        weight;
+    private BaseValue        weight;
 
     @JsonProperty("NumberOfItems")
-    public Value getNumberOfItems() {
+    public BaseValue getNumberOfItems() {
         return numberOfItems;
     }
 
     @JsonProperty("NumberOfItems")
-    public void setNumberOfItems(Value numberOfItems) {
+    public void setNumberOfItems(BaseValue numberOfItems) {
         this.numberOfItems = numberOfItems;
     }
 
@@ -38,12 +38,12 @@ public class ShippingEstimate {
     }
 
     @JsonProperty("Weight")
-    public Value getWeight() {
+    public BaseValue getWeight() {
         return weight;
     }
 
     @JsonProperty("Weight")
-    public void setWeight(Value weight) {
+    public void setWeight(BaseValue weight) {
         this.weight = weight;
     }
 

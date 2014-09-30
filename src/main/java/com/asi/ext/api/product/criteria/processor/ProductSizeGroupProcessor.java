@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.springframework.util.StringUtils;
 
 import com.asi.ext.api.exception.VelocityException;
 import com.asi.ext.api.product.transformers.JerseyClientPost;
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.response.JsonProcessor;
 import com.asi.ext.api.service.model.Apparel;
+import com.asi.ext.api.service.model.BaseValue;
 import com.asi.ext.api.service.model.ShippingEstimate;
 import com.asi.ext.api.service.model.Size;
 import com.asi.ext.api.util.ApplicationConstants;
@@ -28,6 +28,7 @@ import com.asi.service.product.client.vo.CriteriaSetValues;
 import com.asi.service.product.client.vo.ProductCriteriaSets;
 import com.asi.service.product.client.vo.ProductDetail;
 import com.asi.service.product.client.vo.Value;
+import com.asi.service.product.exception.InvalidProductException;
 
 public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
     private final static Logger  LOGGER                      = Logger.getLogger(ProductSizeGroupProcessor.class.getName());
@@ -995,7 +996,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
  }
      
     
-    @SuppressWarnings({ "rawtypes", "unused" })
+    @SuppressWarnings({ "rawtypes" })
     private void findSizeValueDetails(String criteriaCode, LinkedList<LinkedHashMap> criteriaAttributes,
             CriteriaSetValues criteriaSetValue, String externalProductId) {
         // String[] stringAry=new String[2];
@@ -1100,7 +1101,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
 
     public Map<String, ProductCriteriaSets> processShippingItem(ProductDetail product,
             Map<String, ProductCriteriaSets> existingCriteriaSetMap, String configId, ShippingEstimate shippingEstimate,
-            int criteriaSetId) {
+            int criteriaSetId) throws InvalidProductException {
         this.configId = configId;
         this.productId = product.getID();
         this.companyId = product.getCompanyId();
@@ -1200,7 +1201,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
        		else{
        		 addErrorToBatchLogCollection(product.getExternalProductId(), ApplicationConstants.CONST_BATCH_ERR_GENERIC_PLHDR,
                      "Invalid Shipping Weight Entered :"+shippingWeight);
-       		 return null;
+       		throw new InvalidProductException(product.getExternalProductId(), "Product cannot be saved, validation failed");
        		}
        		if(!validShippingDimension) return null;
         }
@@ -1239,7 +1240,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
 
         String setCodeValueId = getSetCodeValueId(ApplicationConstants.CONST_STRING_OTHER);
         CriteriaSetValues criteriaSetValue = null;
-        Value value = getValueForShippingItem(existingProduct.getExternalProductId(), shippingEstimate.getNumberOfItems());
+        Value value = getValueForShippingItem(existingProduct.getExternalProductId(), (com.asi.ext.api.service.model.Value) shippingEstimate.getNumberOfItems());
         if (value == null) {
             return null;
         } else {
@@ -1253,7 +1254,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
                 // Set basic properties for a criteriaSetValue
                 criteriaSetValue = new CriteriaSetValues();
                 criteriaSetValue.setId(String.valueOf(--uniqueSetValueId));
-                criteriaSetValue.setCriteriaValueDetail(shippingEstimate.getNumberOfItems().getUnit());
+                criteriaSetValue.setCriteriaValueDetail(((com.asi.ext.api.service.model.Value) shippingEstimate.getNumberOfItems()).getUnit());
                 criteriaSetValue.setCriteriaCode(ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE);
                 criteriaSetValue.setValueTypeCode(ApplicationConstants.CONST_VALUE_TYPE_CODE_CUST);
                 criteriaSetValue.setIsSubset(ApplicationConstants.CONST_STRING_FALSE_SMALL);
@@ -1264,7 +1265,7 @@ public class ProductSizeGroupProcessor extends SimpleCriteriaProcessor {
             }
         }
         if (criteriaSetValue != null) {
-            criteriaSetValue.setCriteriaValueDetail(shippingEstimate.getNumberOfItems().getUnit());
+            criteriaSetValue.setCriteriaValueDetail(((com.asi.ext.api.service.model.Value) shippingEstimate.getNumberOfItems()).getUnit());
         }
         updateReferenceTable(existingProduct.getExternalProductId(), ApplicationConstants.CONST_SHIPPING_ITEM_CRITERIA_CODE,
                 String.valueOf(ProductParserUtil.getShippingItem(shippingEstimate)), criteriaSetValue);

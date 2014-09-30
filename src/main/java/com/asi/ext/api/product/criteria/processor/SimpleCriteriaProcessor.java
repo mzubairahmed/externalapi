@@ -46,9 +46,6 @@ public abstract class SimpleCriteriaProcessor {
                 }
                 sourceValue = sourceValue.replace("|", "-").trim();
                 return sourceValue;
-            } else if (sourceValue.contains("=")) {
-                String elements[] = sourceValue.split("=");
-                return elements.length > 1 ? elements[1] : elements[0];
             } else {
                 return sourceValue.trim();
             }

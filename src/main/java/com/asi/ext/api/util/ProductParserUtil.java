@@ -266,8 +266,8 @@ public final class ProductParserUtil {
     public static String getShippingWeight(ShippingEstimate shippingEstimate) {
         String shippingWeight = "";
         if (shippingEstimate != null && shippingEstimate.getWeight() != null) {
-            shippingWeight = CommonUtilities.appendValue(shippingWeight, shippingEstimate.getWeight().getValue(), "");
-            shippingWeight = CommonUtilities.appendValue(shippingWeight, shippingEstimate.getWeight().getUnit(), ":");
+            shippingWeight = CommonUtilities.appendValue(shippingWeight, ((Value)shippingEstimate.getWeight()).getValue(), "");
+            shippingWeight = CommonUtilities.appendValue(shippingWeight, ((Value)shippingEstimate.getWeight()).getUnit(), ":");
             return shippingWeight;
         } else {
             return "null";
@@ -277,8 +277,8 @@ public final class ProductParserUtil {
     public static String getShippingItem(ShippingEstimate shippingEstimate) {
         String numberOfItems = "";
         if (shippingEstimate != null && shippingEstimate.getNumberOfItems() != null) {
-            numberOfItems = CommonUtilities.appendValue(numberOfItems, shippingEstimate.getNumberOfItems().getValue(), "");
-            numberOfItems = CommonUtilities.appendValue(numberOfItems, shippingEstimate.getNumberOfItems().getUnit(), ":");
+            numberOfItems = CommonUtilities.appendValue(numberOfItems, ((Value)shippingEstimate.getNumberOfItems()).getValue(), "");
+            numberOfItems = CommonUtilities.appendValue(numberOfItems, ((Value)shippingEstimate.getNumberOfItems()).getUnit(), ":");
             return numberOfItems;
         } else {
             return "null";
@@ -462,6 +462,9 @@ public final class ProductParserUtil {
             try {
             	if(value instanceof LinkedHashMap){
             		return String.valueOf(value);
+            	}else if(value instanceof Value) {
+            		Value singleValue = (Value) value;
+            		valueToSearch = singleValue.getValue();
             	}else{
                 List<?> otherSizeValues = (List<?>) value;
                 for (Object val : otherSizeValues) {
