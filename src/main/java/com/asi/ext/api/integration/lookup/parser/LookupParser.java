@@ -765,6 +765,7 @@ public class LookupParser {
 					currentOption = new Option();
 					currentOption.setOptionType(crntOptionType);
 					currentOption.setName(optionDetails[1]);
+					if(optionAryList.size()>0 && null!=optionAryList && !optionAryList.get(0).trim().isEmpty()){
 					optionValueAry = optionAryList.get(0).split(",");
 					for (String currentOptValue : optionValueAry) {
 						currentOption.getValues().add(currentOptValue);
@@ -775,7 +776,11 @@ public class LookupParser {
 							.valueOf((optionAryList.get(2).equalsIgnoreCase("Y")?"true":"false")));
 					currentOption
 							.setAdditionalInformation(optionAryList.get(3));
-
+					}else{
+						currentOption=null;
+					/*	productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+		                        "Option value is required : " + currentOption.getName());*/
+					}
 				}
 				if (null != currentOption)
 					optionsList.add(currentOption);
