@@ -151,6 +151,7 @@ public class ProductMateriaProcessor extends SimpleCriteriaProcessor {
             } catch (Exception e) {
             }// Nothing to for now
             finalCriteriaSetValues.add(criteriaSetValue);
+            material.setAlias(material.getAlias().replaceAll("Blend:", ""));
             updateReferenceTable(
                     existingProduct.getExternalProductId(),
                     ApplicationConstants.CONST_MATERIALS_CRITERIA_CODE,

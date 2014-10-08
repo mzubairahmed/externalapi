@@ -76,11 +76,19 @@ public class ProductOptionsProcessor extends SimpleCriteriaProcessor {
             optionCriteriaSet.setCriteriaSetId(String.valueOf(--uniqueCriteriaSetId));
             optionCriteriaSet.setProductId(existingProduct.getID());
             optionCriteriaSet.setCompanyId(existingProduct.getCompanyId());
+            if (option.getValues() == null || option.getValues().size() == 0)
+            {
+             	LOGGER.info("Option Value is Mandatory for given " + option.getOptionType());
+                productDataStore.addErrorToBatchLogCollection(existingProduct.getExternalProductId().trim(),
+                        ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE, "Option " + option.getName()+" is discarded as its Option Value is not provided");
+                continue;
+            }
             if (option.getValues() != null && option.getValues().size() == 1 && CommonUtilities.isValueNull(option.getName())) {
                 optionCriteriaSet.setCriteriaDetail(option.getValues().get(0));
             } else {
                 optionCriteriaSet.setCriteriaDetail(option.getName());
             }
+            
             optionCriteriaSet.setDescription(option.getAdditionalInformation());
             optionCriteriaSet.setConfigId(configId);
             optionCriteriaSet.setCriteriaCode(criteriaCode);

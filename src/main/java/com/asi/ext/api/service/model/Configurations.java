@@ -1,8 +1,9 @@
 package com.asi.ext.api.service.model;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -18,11 +19,11 @@ public class Configurations {
     private String criteria;
     @JsonProperty("OptionName")
     private String optionName;
-    //@JsonProperty("Value")
-   // private Object value;
     @JsonProperty("Value")
-    @XmlElement(name="Value")
-    private BaseValue value;
+    private List<Object> value;
+   // @JsonProperty("Value")
+    ///@XmlElement(name="Value")
+ //   private BaseValue value;
        
     public String getOptionName() {
 		return optionName;
@@ -41,15 +42,15 @@ public class Configurations {
     public void setCriteria(String criteria) {
         this.criteria = criteria;
     }
-
     @JsonProperty("Value")
-	public BaseValue getValue() {
+	public List<Object> getValue() {
 		return value;
 	}
     @JsonProperty("Value")
-	public void setValue(BaseValue value) {
+	public void setValue(List<Object> value) {
 		this.value = value;
 	}
+
 
 
 

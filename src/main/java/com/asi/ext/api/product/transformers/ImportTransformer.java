@@ -159,6 +159,7 @@ public class ImportTransformer {
             productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
                     "Invalid value provided for ShippersBillsBy : " + serviceProduct.getShipperBillsBy());
         }else{
+        	if(null!=serviceProduct.getProductConfigurations().getShippingEstimates()){
         	if(serviceProduct.getProductConfigurations().getShippingEstimates().getDimensions()==null && null!=serviceProduct.getShipperBillsBy() && serviceProduct.getShipperBillsBy().contains("Size")){
         		 productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
                          "Invalid value provided for ShippersBillsBy : " + serviceProduct.getShipperBillsBy());
@@ -166,7 +167,7 @@ public class ImportTransformer {
         	if(serviceProduct.getProductConfigurations().getShippingEstimates().getWeight()==null && null!=serviceProduct.getShipperBillsBy() && serviceProduct.getShipperBillsBy().contains("Weight")){
         		productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
                         "Invalid value provided for ShippersBillsBy : " + serviceProduct.getShipperBillsBy());
-        	}
+        	}}
         }
         
         

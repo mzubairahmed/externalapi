@@ -27,7 +27,6 @@ import com.asi.ext.api.service.model.ImprintMethod;
 import com.asi.ext.api.service.model.MinimumOrder;
 import com.asi.ext.api.service.model.Option;
 import com.asi.ext.api.service.model.Size;
-import com.asi.ext.api.service.model.StringValue;
 import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.ext.api.util.RestAPIProperties;
@@ -657,7 +656,7 @@ public class LookupParser {
 		List<ProductNumber> productNumbers = productDetail.getProductNumbers();
 		String tempCriteria = "";
 		CriteriaInfo criteriaInfo = null;
-		
+		List<com.asi.ext.api.service.model.Value> objList=new ArrayList<>();
 		if (null != productNumbers && productNumbers.size() > 0) {
 
 			for (ProductNumber crntProductNumber : productNumbers) {
@@ -686,11 +685,31 @@ public class LookupParser {
 						String tempValue=tempCriteria
 						        .substring(tempCriteria.indexOf("__") + 2);
 						      if(tempValue.contains(":")){
-						       //currentCriteria.setValue(tempValue.substring(tempValue.indexOf(":")+1));
-						    	  currentCriteria.setValue(new StringValue(tempValue.substring(tempValue.indexOf(":")+1)));
+						       currentCriteria.setValue(CommonUtilities.getListData(tempValue.substring(tempValue.indexOf(":")+1)));
+						    	  //currentCriteria.setValue(new StringValue(tempValue.substring(tempValue.indexOf(":")+1)));
 						      }else{
-						       currentCriteria.setValue(new StringValue(tempValue));
+						       currentCriteria.setValue(CommonUtilities.getListData((tempValue)));
 						      }
+					}else{
+						Object objValue = criteriaSetParser.findSizesCriteriaSetById(productDetail.getExternalProductId(),
+								currentCriteriaSetvalueId);
+						if(objValue instanceof com.asi.ext.api.service.model.Value){
+						criteriaInfo = ProductDataStore
+								.getCriteriaInfoForCriteriaCode(((com.asi.ext.api.service.model.Value)objValue).getCriteriaType());
+						currentCriteria.setCriteria(criteriaInfo
+								.getDescription());
+						currentCriteria.setValue(CommonUtilities.getListData(objValue));
+						}else if(objValue instanceof List){
+							currentCriteria.setValue((List<Object>) objValue);
+							objList=(List<com.asi.ext.api.service.model.Value>)objValue;
+							for(com.asi.ext.api.service.model.Value crntValue:objList){
+								criteriaInfo = ProductDataStore
+										.getCriteriaInfoForCriteriaCode(crntValue.getCriteriaType());
+								currentCriteria.setCriteria(criteriaInfo
+										.getDescription());
+								break;
+							}
+						}
 					}
 					if(null!=currentCriteria.getCriteria()) criteriaList.add(currentCriteria);
 				}
@@ -765,6 +784,7 @@ public class LookupParser {
 					currentOption = new Option();
 					currentOption.setOptionType(crntOptionType);
 					currentOption.setName(optionDetails[1]);
+					if(optionAryList.size()>0 && null!=optionAryList && !optionAryList.get(0).trim().isEmpty()){
 					optionValueAry = optionAryList.get(0).split(",");
 					for (String currentOptValue : optionValueAry) {
 						currentOption.getValues().add(currentOptValue);
@@ -775,7 +795,11 @@ public class LookupParser {
 							.valueOf((optionAryList.get(2).equalsIgnoreCase("Y")?"true":"false")));
 					currentOption
 							.setAdditionalInformation(optionAryList.get(3));
-
+					}else{
+						currentOption=null;
+					/*	productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+		                        "Option value is required : " + currentOption.getName());*/
+					}
 				}
 				if (null != currentOption)
 					optionsList.add(currentOption);
