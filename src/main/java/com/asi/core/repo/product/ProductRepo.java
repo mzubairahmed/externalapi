@@ -39,6 +39,7 @@ import com.asi.ext.api.service.model.Image;
 import com.asi.ext.api.service.model.ListValue;
 import com.asi.ext.api.service.model.StringValue;
 import com.asi.ext.api.service.model.Value;
+import com.asi.ext.api.util.CommonUtilities;
 import com.asi.service.product.client.LookupValuesClient;
 import com.asi.service.product.client.ProductClient;
 import com.asi.service.product.client.vo.Batch;
@@ -468,18 +469,18 @@ public class ProductRepo {
                             tempValue=mediaCriteriaStr.substring(mediaCriteriaStr.indexOf("__") + 2);
                             if(tempValue.contains(":") && Arrays.asList(OPTION_CRITERIACODES).contains(criteriaInfo.getCode())){
                             	currentConfiguration.setOptionName(tempValue.substring(0,tempValue.indexOf(":")));
-                            	//currentConfiguration.setValue(tempValue.substring(tempValue.indexOf(":")+1));
-                            	currentConfiguration.setValue(new StringValue(tempValue.substring(tempValue.indexOf(":")+1)));
+                            	currentConfiguration.setValue(CommonUtilities.getListData(tempValue.substring(tempValue.indexOf(":")+1)));
+                            	//currentConfiguration.setValue(new StringValue(tempValue.substring(tempValue.indexOf(":")+1)));
                             }else{
                             	if(tempValue.contains(":")){
                             	//	currentConfiguration.setStringValue(tempValue.substring(tempValue.indexOf(":")+1));
                             		StringValue strValue=new StringValue();
                             		strValue.setValue(tempValue.substring(tempValue.indexOf(":")+1));
-                            	currentConfiguration.setValue(strValue);
+                            	currentConfiguration.setValue(CommonUtilities.getListData(strValue));
                             	//	currentConfiguration.setValues(null);
                             	}else{
                             		//currentConfiguration.setStringValue(tempValue);
-                            		currentConfiguration.setValue(new StringValue(tempValue.substring(tempValue.indexOf(":")+1)));
+                            		currentConfiguration.setValue(CommonUtilities.getListData(tempValue.substring(tempValue.indexOf(":")+1)));
                             		//currentConfiguration.setValues(null);
                             	}
                             }
@@ -496,13 +497,13 @@ public class ProductRepo {
         					currentConfiguration.setCriteria(tempValue);
         					if(mediaItemsObj instanceof Value){
         						
-        						currentConfiguration.setValue((Value)mediaItemsObj);
+        						currentConfiguration.setValue(CommonUtilities.getListData(mediaItemsObj));
         						//currentConfiguration.setValues(null);
         						//currentConfiguration.setStringValue(null);
         					}else if(mediaItemsObj instanceof List){
         						ListValue lsValue=new ListValue();
         						lsValue.setValue((List<Value>)mediaItemsObj);
-        						currentConfiguration.setValue(lsValue);
+        						currentConfiguration.setValue((List<Object>)mediaItemsObj);
         					//	currentConfiguration.setValue(null);
         					//	currentConfiguration.setStringValue(null);
         					}

@@ -721,7 +721,7 @@ public final class JsonToLookupTableConverter {
             	if(infoMap.containsKey("DefaultPriceGridSubTypeCode"))
             	info.setDefaultPriceGridSubTypeCode(infoMap.get("DefaultPriceGridSubTypeCode").toString());
             	//info.setCriteriaTypeDisplayName(infoMap.get("DisplayName").toString()); 
-            	info.setDescription(infoMap.get("Description").toString());
+            	info.setDescription(infoMap.get("Description").toString().replaceAll("SIZE -", "").trim());
                 criteriaInfoMap.put(info.getCode(), info);
             }
         }
@@ -848,7 +848,7 @@ public final class JsonToLookupTableConverter {
 	            while (iter.hasNext()) {
 	                try {
 	                    LinkedHashMap crntValue = (LinkedHashMap) iter.next();
-	                    criteriaCodeLookupData.put(String.valueOf(crntValue.get("Description")).toUpperCase(),
+	                    criteriaCodeLookupData.put(String.valueOf(crntValue.get("Description")).toUpperCase().replaceAll("SIZE -", "").trim(),
 	                            String.valueOf(crntValue.get("Code")));
 	                } catch (Exception e) {
 	                } // Collecting maximum elements
