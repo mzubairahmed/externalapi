@@ -142,9 +142,20 @@ public final class ProductParserUtil {
 					result = ProductDataStore.findCriteriaSetValueIdForValue(
 							xid, criteriaCode, String.valueOf(crntObj));
 				} else if (crntObj instanceof LinkedHashMap) {   // Value
+					if(null==((LinkedHashMap) crntObj).get("Attribute")){
 					result = ProductDataStore.findCriteriaSetValueIdForValue(
 							xid, criteriaCode, ((LinkedHashMap) crntObj).get("Value") + ":"
 									+ ((LinkedHashMap) crntObj).get("Unit"));
+					}else{
+						listofValue=true;
+						if(null==srcCriteriaValue){
+							srcCriteriaValue= ((LinkedHashMap) crntObj).get("Attribute")+":"+ ((LinkedHashMap) crntObj).get("Value") + ":"
+										+ ((LinkedHashMap) crntObj).get("Unit");
+						}else{
+							srcCriteriaValue+=";"+ ((LinkedHashMap) crntObj).get("Attribute")+":"+ ((LinkedHashMap) crntObj).get("Value") + ":"
+											+ ((LinkedHashMap) crntObj).get("Unit");
+						}
+					}
 				} else if (crntObj instanceof Value) {
 					if(listObj.size()==1){
 					result = ProductDataStore.findCriteriaSetValueIdForValue(
