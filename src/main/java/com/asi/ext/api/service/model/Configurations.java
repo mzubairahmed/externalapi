@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -20,9 +21,10 @@ public class Configurations {
     @JsonProperty("OptionName")
     private String optionName;
     @JsonProperty("Value")
+    @XmlElement(name="Value")
     private List<Object> value;
    // @JsonProperty("Value")
-    ///@XmlElement(name="Value")
+
  //   private BaseValue value;
        
     public String getOptionName() {

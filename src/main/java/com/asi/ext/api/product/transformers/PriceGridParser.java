@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.asi.ext.api.exception.AmbiguousPriceCriteriaException;
@@ -164,18 +165,20 @@ public class PriceGridParser extends ProductParser {
                 veloPrice.setItemsPerUnit(1);
                 veloPrice.setPriceUnit(priceUnit);
             } else {
-            	if(serPrice.getPriceUnit().getName().equals("100") || serPrice.getPriceUnit().getName().equals("1000")){
-            		if(!serPrice.getPriceUnit().getName().equals(serPrice.getPriceUnit().getItemsPerUnit())){
-            			productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
-                                "Invalid Price Items Per Unit given, PriceUnit : " + serPrice.getPriceUnit().getName()
-                                        + ", Price Discarded");
-                        continue;
-            		}
-            	}else if(serPrice.getPriceUnit().getName().equals("Piece") && !serPrice.getPriceUnit().getItemsPerUnit().equals("1")){
-            		productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
-                            "Invalid Price Items Per Unit given, PriceUnit : " + serPrice.getPriceUnit().getName()
-                                    + ", Price Discarded");
-                    continue;
+            	if(!StringUtils.isEmpty(serPrice.getPriceUnit().getName())) {
+	            	if(serPrice.getPriceUnit().getName().equals("100") || serPrice.getPriceUnit().getName().equals("1000")){
+	            		if(!serPrice.getPriceUnit().getName().equals(serPrice.getPriceUnit().getItemsPerUnit())){
+	            			productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+	                                "Invalid Price Items Per Unit given, PriceUnit : " + serPrice.getPriceUnit().getName()
+	                                        + ", Price Discarded");
+	                        continue;
+	            		}
+	            	}else if(serPrice.getPriceUnit().getName().equals("Piece") && !serPrice.getPriceUnit().getItemsPerUnit().equals("1")){
+	            		productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
+	                            "Invalid Price Items Per Unit given, PriceUnit : " + serPrice.getPriceUnit().getName()
+	                                    + ", Price Discarded");
+	                    continue;
+	            	}
             	}
             	
                 priceUnit = getPriceUnit(serPrice.getPriceUnit().getName(), false);
