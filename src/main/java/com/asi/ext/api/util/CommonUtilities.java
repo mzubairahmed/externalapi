@@ -998,4 +998,9 @@ public class CommonUtilities {
         }
         return null;
     }
+    public static List<Object> getListData(Object obj){
+    	List<Object> finalList=new ArrayList<>();
+    	finalList.add(obj);
+    	return finalList;
+    }
 }
