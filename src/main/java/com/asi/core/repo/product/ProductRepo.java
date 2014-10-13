@@ -169,7 +169,7 @@ public class ProductRepo {
         return null;
     }
 
-    public ExternalAPIResponse updateProduct(String authToken, com.asi.ext.api.service.model.Product serviceProduct) {
+    public ExternalAPIResponse updateProduct(String authToken, String batchId, com.asi.ext.api.service.model.Product serviceProduct) {
         ProductDetail existingRadarProduct = null;
         try {
             // existingRadarProduct = productClient.getRadarProduct(companyId, serviceProduct.getExternalProductId());
@@ -183,6 +183,9 @@ public class ProductRepo {
 //            serviceProduct=transformBaseValues(serviceProduct);
             // Doing Transformation of Service product to pure Radar object model (Core Component)
             existingRadarProduct = productTransformer.generateRadarProduct(serviceProduct, existingRadarProduct, authToken);
+            if(!StringUtils.isEmpty(batchId)) {
+            	existingRadarProduct.setDataSourceId(batchId);
+            }
         } catch (Exception e) {
             _LOGGER.error("Exception while generating Radar product", e);
             ExternalAPIResponse response = productClient.convertExceptionToResponseModel(e);

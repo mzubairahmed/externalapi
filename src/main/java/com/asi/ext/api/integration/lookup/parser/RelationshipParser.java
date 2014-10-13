@@ -271,7 +271,11 @@ public class RelationshipParser {
 								}else{
 									if(null==criteriaValue){
 										objectValue=criteriaSetParser.findSizesCriteriaSetById(extPrdId, String.valueOf(pairingCriteriaSetPath.getCriteriaSetValueId()));
-										availableVariations.setParentValue((List<Object>)objectValue);
+										if(objectValue instanceof List){
+											availableVariations.setParentValue((List<Object>)objectValue);
+										}else{
+											availableVariations.setParentValue(CommonUtilities.getListData(objectValue));
+										}
 									}else{
 										tempValue=criteriaValue.substring(criteriaValue.indexOf("__")+1);
 										if(tempValue.startsWith("_")) tempValue=tempValue.substring(1);

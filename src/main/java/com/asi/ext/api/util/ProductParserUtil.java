@@ -540,7 +540,15 @@ public final class ProductParserUtil {
 		} else if (criteriaCode
 				.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY)) {
 			try {
-				if (value instanceof LinkedHashMap) {
+				if (value instanceof List) {
+					if(((List<Object>)value).get(0) instanceof LinkedHashMap){
+					return String.valueOf(((LinkedHashMap) ((List<Object>)value).get(0)).get("Value")
+							+ ":" + ((LinkedHashMap) ((List<Object>)value).get(0)).get("Unit"));
+					}else if(((List<Object>)value).get(0) instanceof Value){
+								return String.valueOf(((Value) ((List<Object>)value).get(0)).getValue() + ":"
+										+ (((Value) ((List<Object>)value).get(0)).getUnit()));
+							}
+				}else if (value instanceof LinkedHashMap) {
 					return String.valueOf(((LinkedHashMap) value).get("Value")
 							+ ":" + ((LinkedHashMap) value).get("Unit"));
 				} else if (value instanceof Value) {
@@ -561,7 +569,15 @@ public final class ProductParserUtil {
 				.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI)) {
 
 			try {
-				if (value instanceof LinkedHashMap) {
+				if (value instanceof List) {
+					if(((List<Object>)value).get(0) instanceof LinkedHashMap){
+					return String.valueOf(((LinkedHashMap) ((List<Object>)value).get(0)).get("Value")
+							+ ":" + ((LinkedHashMap) ((List<Object>)value).get(0)).get("Unit"));
+					}else if(((List<Object>)value).get(0) instanceof Value){
+								return String.valueOf(((Value) ((List<Object>)value).get(0)).getValue() + ":"
+										+ (((Value) ((List<Object>)value).get(0)).getUnit()));
+							}
+				}else if (value instanceof LinkedHashMap) {
 					return String.valueOf(value);
 				} else if (value instanceof Value) {
 					Value singleValue = (Value) value;
@@ -586,7 +602,15 @@ public final class ProductParserUtil {
 		} else if (criteriaCode
 				.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_OTHER_CODE)) {
 			try {
-				if (value instanceof LinkedHashMap) {
+				if (value instanceof List) {
+					if(((List<Object>)value).get(0) instanceof LinkedHashMap){
+					return String.valueOf(((LinkedHashMap) ((List<Object>)value).get(0)).get("Value")
+							+ ":" + ((LinkedHashMap) ((List<Object>)value).get(0)).get("Unit"));
+					}else if(((List<Object>)value).get(0) instanceof Value){
+								return String.valueOf(((Value) ((List<Object>)value).get(0)).getValue() + ":"
+										+ (((Value) ((List<Object>)value).get(0)).getUnit()));
+							}
+				}else if (value instanceof LinkedHashMap) {
 					return String.valueOf(value);
 				} else if (value instanceof Value) {
 					Value singleValue = (Value) value;
@@ -608,7 +632,22 @@ public final class ProductParserUtil {
 				|| criteriaCode.equalsIgnoreCase("SSNM")) {
 
 			try {
-				if (value instanceof LinkedHashMap) {
+				if (value instanceof List) {
+					if(((List<Object>)value).get(0) instanceof LinkedHashMap){
+						if(null==((LinkedHashMap) ((List<Object>)value).get(0)).get("Unit")){
+							return String.valueOf(((LinkedHashMap) ((List<Object>)value).get(0)).get("Value"));
+						}else {					
+							return String.valueOf(((LinkedHashMap) ((List<Object>)value).get(0)).get("Value")+ ":" + ((LinkedHashMap) ((List<Object>)value).get(0)).get("Unit"));						
+						}
+					}else if(((List<Object>)value).get(0) instanceof Value){
+						if(null==(((Value) ((List<Object>)value).get(0)).getUnit())){
+							return String.valueOf(((Value) ((List<Object>)value).get(0)).getValue());
+						}else{
+							return String.valueOf(((Value) ((List<Object>)value).get(0)).getValue() + ":"
+									+ (((Value) ((List<Object>)value).get(0)).getUnit()));
+						}						
+							}
+				}else if (value instanceof LinkedHashMap) {
 					return String.valueOf(value);
 				} else {
 					List<?> apparelValues = (List<?>) value;

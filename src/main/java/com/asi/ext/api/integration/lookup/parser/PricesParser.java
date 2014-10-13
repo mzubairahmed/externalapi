@@ -8,6 +8,7 @@ import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.service.model.PriceConfiguration;
 import com.asi.ext.api.service.model.Value;
 import com.asi.ext.api.service.model.Values;
+import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.service.product.client.vo.BasePriceDetails;
 import com.asi.service.product.client.vo.DiscountList;
@@ -564,7 +565,7 @@ public class PricesParser {
 									.getDescription().trim();
 					if (crntCriteria.trim().startsWith("Size")
 							|| crntCriteria.contains("Apparel")
-							|| crntCriteria.trim().startsWith("SIZE"))
+							|| crntCriteria.trim().startsWith("SIZE") || currentCriteriaObj.getCriteriaType().contains(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_STD_NUM))
 						crntCriteria = "Size";
 					criteriaSet1.setCriteria(crntCriteria);					
 				}else{
@@ -573,7 +574,7 @@ public class PricesParser {
 									currentCriteriaObj.getCriteriaType()).getDescription();
 					if (crntCriteria.trim().startsWith("Size")
 							|| crntCriteria.contains("Apparel")
-							|| crntCriteria.trim().startsWith("SIZE"))
+							|| crntCriteria.trim().startsWith("SIZE") || currentCriteriaObj.getCriteriaType().contains(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_STD_NUM))
 						crntCriteria = "Size";
 					criteriaSet1.setCriteria(crntCriteria);					
 				}

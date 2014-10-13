@@ -24,7 +24,7 @@ public class Configurations {
     @XmlElement(name="Value")
     private List<Object> value;
    // @JsonProperty("Value")
-    ///@XmlElement(name="Value")
+
  //   private BaseValue value;
        
     public String getOptionName() {

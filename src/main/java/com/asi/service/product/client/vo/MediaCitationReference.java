@@ -16,6 +16,8 @@ public class MediaCitationReference {
     private String sequence;
     @JsonProperty("MediaCitationId")
     private String mediaCitationId;
+    @JsonProperty("MediaId")
+    private String mediaId;
 
     public MediaCitationReference() {
     }
@@ -92,6 +94,20 @@ public class MediaCitationReference {
     public void setMediaCitationId(String mediaCitationId) {
         this.mediaCitationId = mediaCitationId;
     }
+
+	/**
+	 * @return the mediaId
+	 */
+	public String getMediaId() {
+		return mediaId;
+	}
+
+	/**
+	 * @param mediaId the mediaId to set
+	 */
+	public void setMediaId(String mediaId) {
+		this.mediaId = mediaId;
+	}
 
 }
 
