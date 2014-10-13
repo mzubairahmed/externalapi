@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 @XmlAccessorType(XmlAccessType.NONE)
 @JsonInclude(Include.NON_NULL)
-public class Value extends BaseValue {
+public class Value {
     @JsonProperty("Attribute")
     @XmlElement(name="Attribute")
     private String attribute;

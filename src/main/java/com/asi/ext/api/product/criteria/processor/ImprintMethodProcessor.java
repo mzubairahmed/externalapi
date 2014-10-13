@@ -32,7 +32,7 @@ public class ImprintMethodProcessor extends SimpleCriteriaProcessor {
     
     private RelationshipProcessor relationshipProcessor = new RelationshipProcessor();
 
-    private int                 criteiraSetId = -2000;
+    private int                 criteiraSetId = -2100;
 
     public ProductDetail processImprintAndRelations(ProductDetail existingProduct,
             Map<String, ProductCriteriaSets> existingCriteriaSetMap, String configId) {
@@ -50,7 +50,7 @@ public class ImprintMethodProcessor extends SimpleCriteriaProcessor {
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("Imprint Methods to Process : "+imprintMethods);
         }
-        
+        criteiraSetId = -2100;
         ImprintRelationData imprintRelationData = new ImprintRelationData();
         ProductImprintMethodProcessor imprintMethodProcessor = new ProductImprintMethodProcessor();
         ProductArtworkProcessor artworkProcessor = new ProductArtworkProcessor();

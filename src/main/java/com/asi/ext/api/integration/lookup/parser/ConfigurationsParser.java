@@ -1229,7 +1229,7 @@ public class ConfigurationsParser {
 				if (shippingItemValue.getUnit() == null)
 					shippingItemValue.setUnit(currentCriteriaSetValue
 							.getCriteriaValueDetail());
-				shippingEstimate.setNumberOfItems(shippingItemValue);
+				shippingEstimate.setNumberOfItems(CommonUtilities.getListData(shippingItemValue));
 			}
 		}
 		currentCriteriaSetValueList = getCriteriaSetValuesListByCode(
@@ -1248,7 +1248,7 @@ public class ConfigurationsParser {
 								currentCriteriaSetValue.getCriteriaCode(),
 								currentCriteriaSetValue.getValue(),
 								productDetail.getExternalProductId()).get(0);
-				shippingEstimate.setWeight(shippingItemValue);
+				shippingEstimate.setWeight(CommonUtilities.getListData(shippingItemValue));
 			}
 
 		}

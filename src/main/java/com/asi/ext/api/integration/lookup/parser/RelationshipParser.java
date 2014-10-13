@@ -10,6 +10,7 @@ import com.asi.ext.api.service.model.AvailableVariations;
 import com.asi.ext.api.service.model.ListValue;
 import com.asi.ext.api.service.model.StringValue;
 import com.asi.ext.api.service.model.Value;
+import com.asi.ext.api.util.CommonUtilities;
 import com.asi.service.product.client.vo.CriteriaSetRelationship;
 import com.asi.service.product.client.vo.CriteriaSetRelationships;
 import com.asi.service.product.client.vo.CriteriaSetValuePath;
@@ -220,14 +221,14 @@ public class RelationshipParser {
 							tempValue=tempCriteria.substring(tempCriteria.indexOf(":")+1);
 							if(tempValue.startsWith("_")) tempValue=tempValue.substring(1);
 							
-							availableVariations.setChildValue(new StringValue(tempValue));
+							availableVariations.setChildValue(CommonUtilities.getListData(tempValue));
 						}else{
 							if(null==criteriaValue){
 								objectValue=criteriaSetParser.findSizesCriteriaSetById(extPrdId, String.valueOf(currentCriteriaSetValuePath.getCriteriaSetValueId()));
 								if(objectValue instanceof Value){
-									availableVariations.setChildValue((Value)objectValue);
+									availableVariations.setChildValue(CommonUtilities.getListData(objectValue));
 								}else if(objectValue instanceof List){
-									availableVariations.setChildValue(new ListValue((List<Value>)objectValue));
+									availableVariations.setChildValue((List<Object>)objectValue);
 								}
 								
 							}else{
@@ -237,13 +238,13 @@ public class RelationshipParser {
 									if(tempValue.contains(":")){
 										if(criteriaValue.startsWith("MINO")){
 											tempValue=tempValue.replace(":", " ");
-											availableVariations.setChildValue(new StringValue(tempValue));
+											availableVariations.setChildValue(CommonUtilities.getListData(tempValue));
 										}else{
 											tempValue=tempValue.substring(tempValue.indexOf(":")+1);
-											availableVariations.setChildValue(new StringValue(tempValue));
+											availableVariations.setChildValue(CommonUtilities.getListData(tempValue));
 										}
 									}else{
-										availableVariations.setChildValue(new StringValue(tempValue));
+										availableVariations.setChildValue(CommonUtilities.getListData(tempValue));
 									}
 									
 								}
@@ -257,33 +258,33 @@ public class RelationshipParser {
 									if(null==criteriaValue){
 										objectValue=criteriaSetParser.findSizesCriteriaSetById(extPrdId, String.valueOf(pairingCriteriaSetPath.getCriteriaSetValueId()));
 										if(objectValue instanceof Value){
-											availableVariations.setParentValue((Value)objectValue);
+											availableVariations.setParentValue((List<Object>)objectValue);
 										}else if(objectValue instanceof List){
-											availableVariations.setParentValue(new ListValue((List<Value>)objectValue));
+											availableVariations.setParentValue((List<Object>)objectValue);
 										}
 									}else{
 										tempCriteria=criteriaValue.substring(criteriaValue.indexOf("__")+2);
 										tempValue=tempCriteria.substring(tempCriteria.indexOf(":")+1);
 										if(tempValue.startsWith("_")) tempValue=tempValue.substring(1);
-										availableVariations.setParentValue(new StringValue(tempValue));
+										availableVariations.setParentValue(CommonUtilities.getListData(tempValue));
 									}
 								}else{
 									if(null==criteriaValue){
 										objectValue=criteriaSetParser.findSizesCriteriaSetById(extPrdId, String.valueOf(pairingCriteriaSetPath.getCriteriaSetValueId()));
-										availableVariations.setParentValue(new ListValue((List<Value>)objectValue));
+										availableVariations.setParentValue((List<Object>)objectValue);
 									}else{
 										tempValue=criteriaValue.substring(criteriaValue.indexOf("__")+1);
 										if(tempValue.startsWith("_")) tempValue=tempValue.substring(1);
 										if(tempValue.contains(":")){
 											if(criteriaValue.startsWith("MINO")){
 												//tempValue=
-												availableVariations.setParentValue(new StringValue(tempValue));
+												availableVariations.setParentValue(CommonUtilities.getListData(tempValue));
 											}else{
 												tempValue=tempValue.substring(tempValue.indexOf(":")+1);
-												availableVariations.setParentValue(new StringValue(tempValue));
+												availableVariations.setParentValue(CommonUtilities.getListData(tempValue));
 											}
 										}else{
-											availableVariations.setParentValue(new StringValue(tempValue));
+											availableVariations.setParentValue(CommonUtilities.getListData(tempValue));
 										}								
 									//	availableVariations.setParentValue(tempValue);
 									}

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,6 @@ import com.asi.ext.api.radar.model.PricingItems;
 import com.asi.ext.api.radar.model.Product;
 import com.asi.ext.api.radar.model.ProductConfigurations;
 import com.asi.ext.api.radar.model.ProductCriteriaSets;
-import com.asi.ext.api.service.model.BaseValue;
 import com.asi.ext.api.service.model.Price;
 import com.asi.ext.api.service.model.PriceConfiguration;
 import com.asi.ext.api.service.model.Value;
@@ -164,6 +164,7 @@ public class PriceGridParser extends ProductParser {
                 veloPrice.setItemsPerUnit(1);
                 veloPrice.setPriceUnit(priceUnit);
             } else {
+            	if(null!=serPrice.getPriceUnit().getName()){
             	if(serPrice.getPriceUnit().getName().equals("100") || serPrice.getPriceUnit().getName().equals("1000")){
             		if(!serPrice.getPriceUnit().getName().equals(serPrice.getPriceUnit().getItemsPerUnit())){
             			productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
@@ -179,6 +180,7 @@ public class PriceGridParser extends ProductParser {
             	}
             	
                 priceUnit = getPriceUnit(serPrice.getPriceUnit().getName(), false);
+            	}
                 if (priceUnit == null) {
                     productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
                             "Invalid Price Unit given, PriceUnit : " + serPrice.getPriceUnit().getName()
@@ -388,7 +390,8 @@ public class PriceGridParser extends ProductParser {
     private List<PricingItem> getPricingItems(List<PriceConfiguration> priceConfigs, String pGridId, String productId,
             boolean isBasePrice, List<PricingItem> extPItem, String xid) {
         List<PricingItem> finalPricingItems = new ArrayList<PricingItem>();
-
+        String criteriaSetValueId = null;
+        List<Object> objList=null;
         for (PriceConfiguration pConfig : priceConfigs) {
             if (pConfig != null && !new PriceConfiguration().equals(pConfig) && pConfig.getCriteria() != null) {
                 CriteriaInfo criteriaInfo = ProductDataStore.getCriteriaInfoByDescription(pConfig.getCriteria(), xid);
@@ -398,7 +401,39 @@ public class PriceGridParser extends ProductParser {
                             "Criteria specified for product doesn't exist");
                     continue;
                 }
-                String criteriaSetValueId = ProductParserUtil.getCriteriaSetValueIdBaseOnValueType(xid, criteriaInfo.getCode(), pConfig.getValue());
+                objList=pConfig.getValue();
+                boolean listofValue=false;
+                String srcCriteriaValue=null;
+                LinkedHashMap linkdHashMap=null;
+                for(Object crntObj:objList){
+                if(crntObj instanceof String){
+                	criteriaSetValueId = ProductParserUtil.getCriteriaSetValueIdBaseOnValueType(xid, criteriaInfo.getCode(), CommonUtilities.getListData(crntObj));
+                }else if(crntObj instanceof Value){
+                	criteriaSetValueId = ProductParserUtil.getCriteriaSetValueIdBaseOnValueType(xid, criteriaInfo.getCode(), CommonUtilities.getListData(crntObj));
+                }else if(crntObj instanceof LinkedHashMap){
+                	if(null==((LinkedHashMap) crntObj).get("Attribute")){
+                		if(null==((LinkedHashMap) crntObj).get("Unit")){
+                			criteriaSetValueId = ProductParserUtil.getCriteriaSetValueIdBaseOnValueType(xid, criteriaInfo.getCode(), CommonUtilities.getListData(((LinkedHashMap) crntObj).get("Value")));
+                		}else{
+                		criteriaSetValueId = ProductParserUtil.getCriteriaSetValueIdBaseOnValueType(xid, criteriaInfo.getCode(), CommonUtilities.getListData(((LinkedHashMap) crntObj).get("Value") + ":"
+    									+ ((LinkedHashMap) crntObj).get("Unit")));
+                		}
+    					}else{
+    						listofValue=true;
+    						if(null==srcCriteriaValue){
+    							srcCriteriaValue= ((LinkedHashMap) crntObj).get("Attribute")+":"+ ((LinkedHashMap) crntObj).get("Value") + ":"
+    										+ ((LinkedHashMap) crntObj).get("Unit");
+    						}else{
+    							srcCriteriaValue+=";"+ ((LinkedHashMap) crntObj).get("Attribute")+":"+ ((LinkedHashMap) crntObj).get("Value") + ":"
+    											+ ((LinkedHashMap) crntObj).get("Unit");
+    						}
+    					}
+                } 
+                }
+                if(listofValue){
+                	criteriaSetValueId = ProductParserUtil.getCriteriaSetValueIdBaseOnValueType(xid, criteriaInfo.getCode(),CommonUtilities.getListData(srcCriteriaValue));
+                listofValue=false;
+                }
                 if (criteriaSetValueId == null) {
                     productDataStore.addErrorToBatchLogCollection(xid, ApplicationConstants.CONST_BATCH_ERR_INVALID_VALUE,
                             "Criteria value specified for product doesn't exist, value : " + pConfig.getValue());
