@@ -495,7 +495,7 @@ public class ProductRepo {
         					tempValue=ProductDataStore.getCriteriaInfoForCriteriaCode(pricesParser.getCriteriaCode(mediaItemsObj).toString()).getDescription().replace("Size-", "").trim();
         					//tempValue=tempValue.replace("SIZE -","").trim();
         					if(tempValue.contains("SIZE")){
-        						tempValue="Sizes";
+        						tempValue="Size";
         					}
         					currentConfiguration.setCriteria(tempValue);
         					if(mediaItemsObj instanceof Value){

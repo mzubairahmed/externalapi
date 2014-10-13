@@ -13,7 +13,6 @@ import org.springframework.util.StringUtils;
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.radar.model.CriteriaInfo;
 import com.asi.ext.api.service.model.Availability;
-import com.asi.ext.api.service.model.BaseValue;
 import com.asi.ext.api.service.model.Capacity;
 import com.asi.ext.api.service.model.Configurations;
 import com.asi.ext.api.service.model.Dimension;
@@ -22,7 +21,6 @@ import com.asi.ext.api.service.model.PriceGrid;
 import com.asi.ext.api.service.model.Product;
 import com.asi.ext.api.service.model.ShippingEstimate;
 import com.asi.ext.api.service.model.Size;
-import com.asi.ext.api.service.model.StringValue;
 import com.asi.ext.api.service.model.Value;
 import com.asi.ext.api.service.model.Values;
 import com.asi.ext.api.service.model.Volume;
@@ -344,9 +342,9 @@ public final class ProductParserUtil {
 		String shippingWeight = "";
 		if (shippingEstimate != null && shippingEstimate.getWeight() != null) {
 			shippingWeight = CommonUtilities.appendValue(shippingWeight,
-					((Value) shippingEstimate.getWeight()).getValue(), "");
+					(((Value)((List<Object>)shippingEstimate.getWeight()).get(0)).getValue()), "");
 			shippingWeight = CommonUtilities.appendValue(shippingWeight,
-					((Value) shippingEstimate.getWeight()).getUnit(), ":");
+					(((Value)((List<Object>)shippingEstimate.getWeight()).get(0)).getUnit()), ":");
 			return shippingWeight;
 		} else {
 			return "null";
@@ -477,11 +475,12 @@ public final class ProductParserUtil {
 	}
 
 	public static String getCriteriaSetValueIdBaseOnValueType(String xid,
-			String criteriaCode, BaseValue value) {
+			String criteriaCode, List<Object> value) {
 		Object criteriaSetValueId = null;
-		if (value instanceof StringValue) {
+		
+		if (value.get(0) instanceof String) {
 			criteriaSetValueId = getCriteriaSetValueId(xid, criteriaCode,
-					((StringValue) value).getValue());
+					value);
 			return criteriaSetValueId != null ? String
 					.valueOf(criteriaSetValueId) : null;
 		} else if (isSizeGroup(criteriaCode)) {
@@ -496,7 +495,7 @@ public final class ProductParserUtil {
 							valueToSearch.length() - 1);
 			}
 			criteriaSetValueId = getCriteriaSetValueId(xid, criteriaCode,
-					valueToSearch);
+					CommonUtilities.getListData(valueToSearch));
 			return criteriaSetValueId != null ? String
 					.valueOf(criteriaSetValueId) : null;
 		}
@@ -541,7 +540,15 @@ public final class ProductParserUtil {
 		} else if (criteriaCode
 				.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_CAPACITY)) {
 			try {
-				if (value instanceof LinkedHashMap) {
+				if (value instanceof List) {
+					if(((List<Object>)value).get(0) instanceof LinkedHashMap){
+					return String.valueOf(((LinkedHashMap) ((List<Object>)value).get(0)).get("Value")
+							+ ":" + ((LinkedHashMap) ((List<Object>)value).get(0)).get("Unit"));
+					}else if(((List<Object>)value).get(0) instanceof Value){
+								return String.valueOf(((Value) ((List<Object>)value).get(0)).getValue() + ":"
+										+ (((Value) ((List<Object>)value).get(0)).getUnit()));
+							}
+				}else if (value instanceof LinkedHashMap) {
 					return String.valueOf(((LinkedHashMap) value).get("Value")
 							+ ":" + ((LinkedHashMap) value).get("Unit"));
 				} else if (value instanceof Value) {
@@ -562,7 +569,15 @@ public final class ProductParserUtil {
 				.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_GROUP_SHIPPING_VOL_WEI)) {
 
 			try {
-				if (value instanceof LinkedHashMap) {
+				if (value instanceof List) {
+					if(((List<Object>)value).get(0) instanceof LinkedHashMap){
+					return String.valueOf(((LinkedHashMap) ((List<Object>)value).get(0)).get("Value")
+							+ ":" + ((LinkedHashMap) ((List<Object>)value).get(0)).get("Unit"));
+					}else if(((List<Object>)value).get(0) instanceof Value){
+								return String.valueOf(((Value) ((List<Object>)value).get(0)).getValue() + ":"
+										+ (((Value) ((List<Object>)value).get(0)).getUnit()));
+							}
+				}else if (value instanceof LinkedHashMap) {
 					return String.valueOf(value);
 				} else if (value instanceof Value) {
 					Value singleValue = (Value) value;
@@ -587,7 +602,15 @@ public final class ProductParserUtil {
 		} else if (criteriaCode
 				.equalsIgnoreCase(ApplicationConstants.CONST_SIZE_OTHER_CODE)) {
 			try {
-				if (value instanceof LinkedHashMap) {
+				if (value instanceof List) {
+					if(((List<Object>)value).get(0) instanceof LinkedHashMap){
+					return String.valueOf(((LinkedHashMap) ((List<Object>)value).get(0)).get("Value")
+							+ ":" + ((LinkedHashMap) ((List<Object>)value).get(0)).get("Unit"));
+					}else if(((List<Object>)value).get(0) instanceof Value){
+								return String.valueOf(((Value) ((List<Object>)value).get(0)).getValue() + ":"
+										+ (((Value) ((List<Object>)value).get(0)).getUnit()));
+							}
+				}else if (value instanceof LinkedHashMap) {
 					return String.valueOf(value);
 				} else if (value instanceof Value) {
 					Value singleValue = (Value) value;
@@ -609,7 +632,22 @@ public final class ProductParserUtil {
 				|| criteriaCode.equalsIgnoreCase("SSNM")) {
 
 			try {
-				if (value instanceof LinkedHashMap) {
+				if (value instanceof List) {
+					if(((List<Object>)value).get(0) instanceof LinkedHashMap){
+						if(null==((LinkedHashMap) ((List<Object>)value).get(0)).get("Unit")){
+							return String.valueOf(((LinkedHashMap) ((List<Object>)value).get(0)).get("Value"));
+						}else {					
+							return String.valueOf(((LinkedHashMap) ((List<Object>)value).get(0)).get("Value")+ ":" + ((LinkedHashMap) ((List<Object>)value).get(0)).get("Unit"));						
+						}
+					}else if(((List<Object>)value).get(0) instanceof Value){
+						if(null==(((Value) ((List<Object>)value).get(0)).getUnit())){
+							return String.valueOf(((Value) ((List<Object>)value).get(0)).getValue());
+						}else{
+							return String.valueOf(((Value) ((List<Object>)value).get(0)).getValue() + ":"
+									+ (((Value) ((List<Object>)value).get(0)).getUnit()));
+						}						
+							}
+				}else if (value instanceof LinkedHashMap) {
 					return String.valueOf(value);
 				} else {
 					List<?> apparelValues = (List<?>) value;
@@ -649,15 +687,15 @@ public final class ProductParserUtil {
 		return true;
 	}
 
-	public static Object getCriteriaValueFromConfig(Configurations config,
+	public static List<Object> getCriteriaValueFromConfig(Configurations config,
 			String criteriaCode) {
 
 		if (CommonUtilities.isValueNull(config.getOptionName())) {
 			return config.getValue();
 		} else if (isOptionGroup(criteriaCode)
 				&& !CommonUtilities.isValueNull(config.getOptionName())) {
-			return config.getOptionName() + ":"
-					+ String.valueOf(config.getValue());
+			return CommonUtilities.getListData(config.getOptionName() + ":"
+					+ String.valueOf(config.getValue()));
 		} else {
 			return config.getValue();
 		}

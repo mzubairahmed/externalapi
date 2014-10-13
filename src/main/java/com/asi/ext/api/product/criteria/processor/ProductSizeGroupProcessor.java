@@ -16,7 +16,6 @@ import com.asi.ext.api.product.transformers.JerseyClientPost;
 import com.asi.ext.api.product.transformers.ProductDataStore;
 import com.asi.ext.api.response.JsonProcessor;
 import com.asi.ext.api.service.model.Apparel;
-import com.asi.ext.api.service.model.BaseValue;
 import com.asi.ext.api.service.model.ShippingEstimate;
 import com.asi.ext.api.service.model.Size;
 import com.asi.ext.api.util.ApplicationConstants;

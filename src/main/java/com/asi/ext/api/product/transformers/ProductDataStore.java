@@ -1415,7 +1415,7 @@ public class ProductDataStore {
         if (criteriaInfo == null || criteriaInfo.isEmpty()) {
             loadCriteriaInformations();
         } 
-        if (!"Sizes".equalsIgnoreCase(description)) {
+        if (!"Size".equalsIgnoreCase(description)) {
             for (Map.Entry<String, CriteriaInfo> crtInfo : criteriaInfo.entrySet()) {
                 if (crtInfo.getValue().getDescription().trim().equalsIgnoreCase(description)) {
                     return crtInfo.getValue();

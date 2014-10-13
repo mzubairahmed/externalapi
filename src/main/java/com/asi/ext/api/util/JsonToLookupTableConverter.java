@@ -721,7 +721,7 @@ public final class JsonToLookupTableConverter {
             	if(infoMap.containsKey("DefaultPriceGridSubTypeCode"))
             	info.setDefaultPriceGridSubTypeCode(infoMap.get("DefaultPriceGridSubTypeCode").toString());
             	//info.setCriteriaTypeDisplayName(infoMap.get("DisplayName").toString()); 
-            	info.setDescription(infoMap.get("Description").toString().replaceAll("SIZE -", "").trim());
+            	info.setDescription(infoMap.get("Description").toString().trim());//.replaceAll("SIZE -", "")
                 criteriaInfoMap.put(info.getCode(), info);
             }
         }

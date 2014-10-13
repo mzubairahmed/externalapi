@@ -5,11 +5,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.asi.ext.api.product.transformers.ProductDataStore;
-import com.asi.ext.api.service.model.ListValue;
 import com.asi.ext.api.service.model.PriceConfiguration;
-import com.asi.ext.api.service.model.StringValue;
 import com.asi.ext.api.service.model.Value;
 import com.asi.ext.api.service.model.Values;
+import com.asi.ext.api.util.ApplicationConstants;
 import com.asi.ext.api.util.CommonUtilities;
 import com.asi.service.product.client.vo.BasePriceDetails;
 import com.asi.service.product.client.vo.DiscountList;
@@ -537,10 +536,10 @@ public class PricesParser {
 						criteriaCode);
 				if(criteriaValue.contains(":") && criteriaCode.equals("IMMD")){
 					// criteriaSet1.setValue(criteriaValue.substring(criteriaValue.indexOf(":")+1));
-					criteriaSet1.setValue(new StringValue(criteriaValue.substring(criteriaValue.indexOf(":")+1)));
+					criteriaSet1.setValue(CommonUtilities.getListData(criteriaValue.substring(criteriaValue.indexOf(":")+1)));
 				}else{
 					// criteriaSet1.setValue(criteriaValue);
-					criteriaSet1.setValue(new StringValue(criteriaValue));
+					criteriaSet1.setValue(CommonUtilities.getListData(criteriaValue));
 				}
 			}
 		} else {
@@ -557,7 +556,7 @@ public class PricesParser {
 			// firstCriteria=(String) getCriteriaCode(criteriaSet1);
 			if (value instanceof Value) {
 				Value currentCriteriaObj = (Value) value;
-				criteriaSet1.setValue(currentCriteriaObj);
+				criteriaSet1.setValue(CommonUtilities.getListData(currentCriteriaObj));
 				if (APPAREL_SIZE_GROUP_CRITERIACODES
 						.contains(currentCriteriaObj.getCriteriaType())) {
 							crntCriteria=ProductDataStore
@@ -566,8 +565,8 @@ public class PricesParser {
 									.getDescription().trim();
 					if (crntCriteria.trim().startsWith("Size")
 							|| crntCriteria.contains("Apparel")
-							|| crntCriteria.trim().startsWith("SIZE"))
-						crntCriteria = "Sizes";
+							|| crntCriteria.trim().startsWith("SIZE") || currentCriteriaObj.getCriteriaType().contains(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_STD_NUM))
+						crntCriteria = "Size";
 					criteriaSet1.setCriteria(crntCriteria);					
 				}else{
 					crntCriteria=ProductDataStore
@@ -575,8 +574,8 @@ public class PricesParser {
 									currentCriteriaObj.getCriteriaType()).getDescription();
 					if (crntCriteria.trim().startsWith("Size")
 							|| crntCriteria.contains("Apparel")
-							|| crntCriteria.trim().startsWith("SIZE"))
-						crntCriteria = "Sizes";
+							|| crntCriteria.trim().startsWith("SIZE") || currentCriteriaObj.getCriteriaType().contains(ApplicationConstants.CONST_SIZE_GROUP_SHP_APR_STD_NUM))
+						crntCriteria = "Size";
 					criteriaSet1.setCriteria(crntCriteria);					
 				}
 				// valuesList.add(criteriaSet1);
@@ -586,7 +585,7 @@ public class PricesParser {
 				@SuppressWarnings("unchecked")
 				// List<Value> valueList = (List<Value>) criteriaSet1.getValue();
 				List<Value> valueList = (List<Value>) value;
-				criteriaSet1.setValue(new ListValue(valueList));
+				criteriaSet1.setValue((List<Object>)value);
 				for (Value currentValue : valueList) {
 					currentCriteria = ProductDataStore
 							.getCriteriaInfoForCriteriaCode(
@@ -595,7 +594,7 @@ public class PricesParser {
 					if (currentCriteria.trim().startsWith("Size")
 							|| currentCriteria.contains("Apparel")
 							|| currentCriteria.trim().startsWith("SIZE"))
-						currentCriteria = "Sizes";
+						currentCriteria = "Size";
 					criteriaSet1.setCriteria(currentCriteria);
 				}
 			}
