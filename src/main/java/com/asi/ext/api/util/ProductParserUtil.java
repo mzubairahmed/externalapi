@@ -604,8 +604,12 @@ public final class ProductParserUtil {
 			try {
 				if (value instanceof List) {
 					if(((List<Object>)value).get(0) instanceof LinkedHashMap){
+						if(null==((LinkedHashMap) ((List<Object>)value).get(0)).get("Unit")){
+							return String.valueOf(((LinkedHashMap) ((List<Object>)value).get(0)).get("Value"));		
+						}else{
 					return String.valueOf(((LinkedHashMap) ((List<Object>)value).get(0)).get("Value")
 							+ ":" + ((LinkedHashMap) ((List<Object>)value).get(0)).get("Unit"));
+						}
 					}else if(((List<Object>)value).get(0) instanceof Value){
 								return String.valueOf(((Value) ((List<Object>)value).get(0)).getValue() + ":"
 										+ (((Value) ((List<Object>)value).get(0)).getUnit()));
