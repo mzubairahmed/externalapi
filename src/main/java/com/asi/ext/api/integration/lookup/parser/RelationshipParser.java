@@ -258,7 +258,7 @@ public class RelationshipParser {
 									if(null==criteriaValue){
 										objectValue=criteriaSetParser.findSizesCriteriaSetById(extPrdId, String.valueOf(pairingCriteriaSetPath.getCriteriaSetValueId()));
 										if(objectValue instanceof Value){
-											availableVariations.setParentValue((List<Object>)objectValue);
+											availableVariations.setParentValue(CommonUtilities.getListData(objectValue));
 										}else if(objectValue instanceof List){
 											availableVariations.setParentValue((List<Object>)objectValue);
 										}
