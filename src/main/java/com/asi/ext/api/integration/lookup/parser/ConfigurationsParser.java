@@ -3,6 +3,8 @@ package com.asi.ext.api.integration.lookup.parser;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -1073,6 +1075,26 @@ public class ConfigurationsParser {
 		currentCriteriaSetValueList = getCriteriaSetValuesListByCode(
 				productDetail.getProductConfigurations().get(0),
 				ApplicationConstants.CONST_IMPRINT_METHOD_CODE);
+		
+		Collections.sort(currentCriteriaSetValueList, new Comparator<com.asi.service.product.client.vo.CriteriaSetValues>() {
+
+			@Override
+			public int compare(CriteriaSetValues o1, CriteriaSetValues o2) {
+				try {
+					if(Integer.parseInt(o1.getDisplaySequence()) < Integer.parseInt(o2.getDisplaySequence())) {
+						return -1;
+					} else {
+						return 1;
+					}
+				} catch (NumberFormatException e) {
+					_LOGGER.error("Invalid displaySequece in Imprint method criteriaset", e);
+					return 0;
+				}
+			}
+			
+			
+		});
+		
 		List<ImprintMethod> imprintMethodsList = new ArrayList<>();
 		String imprintMethods = "";
 		if (null != currentCriteriaSetValueList
@@ -1334,6 +1356,26 @@ public class ConfigurationsParser {
 						currentProductCriteriaSets.getCriteriaSetId());
 				productCriteriaSetValuesList = currentProductCriteriaSets
 						.getCriteriaSetValues();
+
+				Collections.sort(productCriteriaSetValuesList, new Comparator<com.asi.service.product.client.vo.CriteriaSetValues>() {
+
+					@Override
+					public int compare(CriteriaSetValues o1, CriteriaSetValues o2) {
+						try {
+							if(Integer.parseInt(o1.getDisplaySequence()) < Integer.parseInt(o2.getDisplaySequence())) {
+								return -1;
+							} else {
+								return 1;
+							}
+						} catch (NumberFormatException e) {
+							_LOGGER.error("Invalid displaySequece in Imprint method criteriaset", e);
+							return 0;
+						}
+					}
+					
+					
+				});
+
 				currentSize = productLookupParser.findSizeValueDetails(
 						currentSize,
 						currentProductCriteriaSets.getCriteriaCode(),
